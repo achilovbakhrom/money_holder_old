@@ -1,5 +1,7 @@
 package com.jim.pocketaccounter.finance;
 
+import com.jim.pocketaccounter.database.Currency;
+
 import java.util.Calendar;
 
 /**

@@ -5,14 +5,18 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.credit.ReckingCredit;
-import com.jim.pocketaccounter.debt.DebtBorrow;
-import com.jim.pocketaccounter.debt.Recking;
-import com.jim.pocketaccounter.helper.PocketAccounterDatabase;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
-import com.jim.pocketaccounter.helper.SmsParseObject;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.CurrencyAmount;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.utils.PocketAccounterDatabase;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.SmsParseObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

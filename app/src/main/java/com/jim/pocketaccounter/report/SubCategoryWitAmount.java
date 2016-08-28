@@ -1,6 +1,6 @@
 package com.jim.pocketaccounter.report;
 
-import com.jim.pocketaccounter.finance.SubCategory;
+import com.jim.pocketaccounter.database.SubCategory;
 
 public class SubCategoryWitAmount {
     private SubCategory subCategory;

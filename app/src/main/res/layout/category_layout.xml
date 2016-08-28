@@ -53,7 +53,7 @@
 
     </ListView>
 
-    <com.jim.pocketaccounter.helper.FloatingActionButton
+    <com.jim.pocketaccounter.utils.FloatingActionButton
         android:id="@+id/fabAccountAdd"
         android:layout_width="@dimen/fiftysix_dp"
         android:layout_height="@dimen/fiftysix_dp"

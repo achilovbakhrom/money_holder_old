@@ -11,10 +11,10 @@ import android.util.Log;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.debt.DebtBorrow;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

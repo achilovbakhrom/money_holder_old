@@ -6,14 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.database.Account;
 
 import java.util.ArrayList;
 
@@ -41,7 +38,7 @@ public class RecordAccountAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.record_edit_spinner_item, parent, false);
 		ImageView ivAccountListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
-		ivAccountListIcon.setImageResource(result.get(position).getIcon());
+//		ivAccountListIcon.setImageResource(result.get(position).getIcon());
 		TextView tvAccountListName = (TextView) view.findViewById(R.id.tvAccountListName);
 		tvAccountListName.setText(result.get(position).getName());
 		return view;

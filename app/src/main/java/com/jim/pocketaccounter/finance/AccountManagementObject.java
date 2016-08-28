@@ -1,5 +1,8 @@
 package com.jim.pocketaccounter.finance;
 
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.CurrencyAmount;
+
 import java.util.ArrayList;
 
 public class AccountManagementObject {

@@ -6,22 +6,17 @@ package com.jim.pocketaccounter.widget;
     import android.content.Context;
     import android.content.DialogInterface;
     import android.content.Intent;
-    import android.content.SharedPreferences;
     import android.content.pm.PackageManager;
     import android.content.res.Resources;
-    import android.database.Cursor;
     import android.graphics.Bitmap;
     import android.graphics.BitmapFactory;
-    import android.graphics.Matrix;
     import android.media.ExifInterface;
     import android.net.Uri;
     import android.os.Build;
     import android.os.Bundle;
     import android.os.Handler;
-    import android.preference.PreferenceManager;
     import android.provider.MediaStore;
     import android.support.v4.app.ActivityCompat;
-    import android.support.v4.app.FragmentManager;
     import android.support.v4.content.ContextCompat;
     import android.support.v7.app.AlertDialog;
     import android.support.v7.app.AppCompatActivity;
@@ -46,28 +41,19 @@ package com.jim.pocketaccounter.widget;
     import android.widget.RelativeLayout;
     import android.widget.Spinner;
     import android.widget.TextView;
-    import android.widget.Toast;
 
-    import com.jim.pocketaccounter.PocketAccounter;
     import com.jim.pocketaccounter.R;
-    import com.jim.pocketaccounter.RecordEditFragment;
-    import com.jim.pocketaccounter.SettingsActivity;
-    import com.jim.pocketaccounter.credit.CreditDetials;
-    import com.jim.pocketaccounter.credit.ReckingCredit;
-    import com.jim.pocketaccounter.debt.DebtBorrow;
-    import com.jim.pocketaccounter.debt.Recking;
-    import com.jim.pocketaccounter.finance.Account;
-    import com.jim.pocketaccounter.finance.Currency;
+    import com.jim.pocketaccounter.database.Account;
+    import com.jim.pocketaccounter.database.Currency;
     import com.jim.pocketaccounter.finance.FinanceManager;
-    import com.jim.pocketaccounter.finance.FinanceRecord;
     import com.jim.pocketaccounter.finance.RecordAccountAdapter;
     import com.jim.pocketaccounter.finance.RecordCategoryAdapter;
     import com.jim.pocketaccounter.finance.RecordSubCategoryAdapter;
-    import com.jim.pocketaccounter.finance.RootCategory;
-    import com.jim.pocketaccounter.finance.SubCategory;
-    import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
-    import com.jim.pocketaccounter.photocalc.PhotoAdapter;
-    import com.jim.pocketaccounter.photocalc.PhotoDetails;
+    import com.jim.pocketaccounter.database.RootCategory;
+    import com.jim.pocketaccounter.database.SubCategory;
+    import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+//    import com.jim.pocketaccounter.photocalc.PhotoAdapter;
+    import com.jim.pocketaccounter.database.PhotoDetails;
     import com.transitionseverywhere.AutoTransition;
     import com.transitionseverywhere.Transition;
     import com.transitionseverywhere.TransitionManager;
@@ -79,23 +65,18 @@ package com.jim.pocketaccounter.widget;
     import java.io.File;
     import java.io.FileInputStream;
     import java.io.FileNotFoundException;
-    import java.io.FileOutputStream;
     import java.io.IOException;
-    import java.io.OutputStream;
     import java.text.DecimalFormat;
     import java.text.DecimalFormatSymbols;
-    import java.text.ParseException;
-    import java.text.SimpleDateFormat;
     import java.util.ArrayList;
     import java.util.Calendar;
     import java.util.UUID;
 
-    import static android.app.Activity.RESULT_OK;
     import static com.jim.pocketaccounter.debt.AddBorrowFragment.RESULT_LOAD_IMAGE;
-    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH;
-    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE;
-    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
-    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
+//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH;
+//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE;
+//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
+//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
 
     public class CalcActivity extends AppCompatActivity implements View.OnClickListener {
         private boolean keyforback=false;
@@ -129,7 +110,7 @@ package com.jim.pocketaccounter.widget;
         RecyclerView myListPhoto;
         ArrayList<PhotoDetails> myTickets;
         ArrayList<PhotoDetails> myTicketsFromBackRoll;
-        PhotoAdapter myTickedAdapter;
+//        PhotoAdapter myTickedAdapter;
         boolean openAddingDialog=false;
         FinanceManager financeManager;
         private int WIDGET_ID;
@@ -230,14 +211,14 @@ package com.jim.pocketaccounter.widget;
             myListPhoto = (RecyclerView) findViewById(R.id.recycler_calc);
             myListPhoto.setLayoutManager(layoutManager);
 
-            myTickedAdapter =new PhotoAdapter(myTickets,CalcActivity.this, new RecordEditFragment.OpenIntentFromAdapter() {
-                @Override
-                public void startActivityFromFragmentForResult(Intent intent) {
-
-                    startActivityForResult(intent,REQUEST_DELETE_PHOTOS);
-                }
-            });
-            myListPhoto.setAdapter(myTickedAdapter);
+//            myTickedAdapter =new PhotoAdapter(myTickets,CalcActivity.this, new RecordEditFragment.OpenIntentFromAdapter() {
+//                @Override
+//                public void startActivityFromFragmentForResult(Intent intent) {
+//
+//                    startActivityForResult(intent,REQUEST_DELETE_PHOTOS);
+//                }
+//            });
+//            myListPhoto.setAdapter(myTickedAdapter);
 
 
         }
@@ -875,286 +856,286 @@ package com.jim.pocketaccounter.widget;
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, final Intent data) {
-//        super.onActivityResult(requestCode,resultCode,data);
-            Log.d("resulttt", "onActivityResult: Keldi "+((data!=null)?"PUSTOY":"NIMADIRLA"));
-            if(requestCode==REQUEST_DELETE_PHOTOS&&data!=null&&resultCode==RESULT_OK){
-                Log.d("resulttt", "onActivityResult: "+(int)data.getExtras().get(COUNT_DELETES));
-                if((int)data.getExtras().get(COUNT_DELETES)!=0){
-                    for (int i = 0; i < (int)data.getExtras().get(COUNT_DELETES); i++) {
-
-                        for (int j = myTickets.size()-1; j>=0; j--) {
-                            if(myTickets.get(j).getPhotopath().matches((String) data.getExtras().get(BEGIN_DELETE_TICKKETS_PATH+i))){
-                                myTicketsFromBackRoll.remove(myTickets.get(j));
-                                myTickets.remove(j);
-                                myTickedAdapter.notifyItemRemoved(j);
-                            }
-                        }
-                    }
-
-                    (new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < (int)data.getExtras().get(COUNT_DELETES); i++) {
-                                File fileForDelete=new File((String) data.getExtras().get(BEGIN_DELETE_TICKKETS_PATH+i));
-                                File fileForDeleteCache=new File((String) data.getExtras().get(BEGIN_DELETE_TICKKETS_PATH_CACHE+i));
-
-                                try {
-                                    fileForDelete.delete();
-                                    fileForDeleteCache.delete();
-                                }
-                                catch (Exception o){
-                                    o.printStackTrace();
-                                }
-                            }
-
-                        }
-                    })).start();
-
-
-                }
-
-
-            }
-            if (requestCode == RESULT_LOAD_IMAGE && null != data) {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                Cursor cursor = CalcActivity.this.getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String picturePath = cursor.getString(columnIndex);
-                cursor.close();
-
-                File fileDir = new File(picturePath);
-
-                if(!fileDir.exists()){
-
-                    return;
-
-                }
-
-                try {
-
-                    Bitmap bitmap;
-                    Bitmap bitmapCache;
-
-
-
-                    bitmap = decodeFile(fileDir) ;
-                    bitmapCache=decodeFileToCache(fileDir);
-
-                    Matrix m = new Matrix();
-                    m.postRotate( neededRotation(fileDir) );
-
-                    bitmap = Bitmap.createBitmap(bitmap,
-                            0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                            m, true);
-
-                    bitmapCache=Bitmap.createBitmap(bitmapCache,
-                            0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
-                            m, true);
-
-                    String path = android.os.Environment
-
-                            .getExternalStorageDirectory()
-
-                            + File.separator
-
-                            + "MoneyHolder" + File.separator + "Tickets";
-
-                    String path_cache = android.os.Environment
-
-                            .getExternalStorageDirectory()
-
-                            + File.separator
-
-                            + "MoneyHolder" + File.separator + ".cache";
-
-
-
-
-                    File pathik=new File(path);
-                    if(!pathik.exists()){
-                        pathik.mkdirs();
-                        File file = new File(pathik,".nomedia");
-                        file.createNewFile();
-                    }
-
-                    File path_cache_file=new File(path_cache);
-                    if(!path_cache_file.exists()){
-                        path_cache_file.mkdirs();
-                        File file = new File(path_cache_file,".nomedia");
-                        file.createNewFile();
-                    }
-
-
-                    OutputStream outFile = null;
-                    OutputStream outFileCache = null;
-
-                    SimpleDateFormat sp=new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
-                    String filename="ticket-"+sp.format(System.currentTimeMillis())  + ".jpg";
-
-                    File file = new File(path,filename);
-                    File fileTocache = new File(path_cache,filename);
-
-
-                    try {
-
-                        outFile = new FileOutputStream(file);
-                        outFileCache=new FileOutputStream(fileTocache);
-
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outFile);
-                        bitmapCache.compress(Bitmap.CompressFormat.JPEG, 100, outFileCache);
-
-
-                        outFile.flush();
-                        outFileCache.flush();
-
-                        outFile.close();
-                        outFileCache.close();
-
-                        PhotoDetails temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
-                        myTickets.add(temp);
-                        myTickedAdapter.notifyDataSetChanged();
-
-
-                    } catch (FileNotFoundException e) {
-
-                        e.printStackTrace();
-
-                    } catch (IOException e) {
-
-                        e.printStackTrace();
-
-                    } catch (Exception e) {
-
-                        e.printStackTrace();
-
-                    }
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
-
-
-            }
-            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-
-                File fileDir = new File(CalcActivity.this.getExternalFilesDir(null),"temp.jpg");
-
-                if(!fileDir.exists()){
-                    return;
-
-                }
-
-                try {
-
-                    Bitmap bitmap;
-                    Bitmap bitmapCache;
-
-
-
-                    bitmap = decodeFile(fileDir) ;
-                    bitmapCache=decodeFileToCache(fileDir);
-
-                    Matrix m = new Matrix();
-                    m.postRotate( neededRotation(fileDir) );
-
-                    bitmap = Bitmap.createBitmap(bitmap,
-                            0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                            m, true);
-
-                    bitmapCache=Bitmap.createBitmap(bitmapCache,
-                            0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
-                            m, true);
-
-                    String path = android.os.Environment
-
-                            .getExternalStorageDirectory()
-
-                            + File.separator
-
-                            + "MoneyHolder" + File.separator + "Tickets";
-
-                    String path_cache = android.os.Environment
-
-                            .getExternalStorageDirectory()
-
-                            + File.separator
-
-                            + "MoneyHolder" + File.separator + ".cache";
-
-
-                    fileDir.delete();
-
-
-                    File pathik=new File(path);
-                    if(!pathik.exists()){
-                        pathik.mkdirs();
-                        File file = new File(pathik,".nomedia");
-                        file.createNewFile();
-                    }
-
-                    File path_cache_file=new File(path_cache);
-                    if(!path_cache_file.exists()){
-                        path_cache_file.mkdirs();
-                        File file = new File(path_cache_file,".nomedia");
-                        file.createNewFile();
-                    }
-
-
-                    OutputStream outFile = null;
-                    OutputStream outFileCache = null;
-
-                    SimpleDateFormat sp=new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-                    String filename="ticket-"+sp.format(System.currentTimeMillis())  + ".jpg";
-
-                    File file = new File(path,filename);
-                    File fileTocache = new File(path_cache,filename);
-
-
-                    try {
-
-                        outFile = new FileOutputStream(file);
-                        outFileCache=new FileOutputStream(fileTocache);
-
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outFile);
-                        bitmapCache.compress(Bitmap.CompressFormat.JPEG, 100, outFileCache);
-
-
-                        outFile.flush();
-                        outFileCache.flush();
-
-                        outFile.close();
-                        outFileCache.close();
-
-                        PhotoDetails temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
-                        myTickets.add(temp);
-                        myTickedAdapter.notifyDataSetChanged();
-
-
-                    } catch (FileNotFoundException e) {
-
-                        e.printStackTrace();
-
-                    } catch (IOException e) {
-
-                        e.printStackTrace();
-
-                    } catch (Exception e) {
-
-                        e.printStackTrace();
-
-                    }
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
-
-            }
+////        super.onActivityResult(requestCode,resultCode,data);
+//            Log.d("resulttt", "onActivityResult: Keldi "+((data!=null)?"PUSTOY":"NIMADIRLA"));
+//            if(requestCode==REQUEST_DELETE_PHOTOS&&data!=null&&resultCode==RESULT_OK){
+//                Log.d("resulttt", "onActivityResult: "+(int)data.getExtras().get(COUNT_DELETES));
+//                if((int)data.getExtras().get(COUNT_DELETES)!=0){
+//                    for (int i = 0; i < (int)data.getExtras().get(COUNT_DELETES); i++) {
+//
+//                        for (int j = myTickets.size()-1; j>=0; j--) {
+//                            if(myTickets.get(j).getPhotopath().matches((String) data.getExtras().get(BEGIN_DELETE_TICKKETS_PATH+i))){
+//                                myTicketsFromBackRoll.remove(myTickets.get(j));
+//                                myTickets.remove(j);
+//                                myTickedAdapter.notifyItemRemoved(j);
+//                            }
+//                        }
+//                    }
+//
+//                    (new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            for (int i = 0; i < (int)data.getExtras().get(COUNT_DELETES); i++) {
+//                                File fileForDelete=new File((String) data.getExtras().get(BEGIN_DELETE_TICKKETS_PATH+i));
+//                                File fileForDeleteCache=new File((String) data.getExtras().get(BEGIN_DELETE_TICKKETS_PATH_CACHE+i));
+//
+//                                try {
+//                                    fileForDelete.delete();
+//                                    fileForDeleteCache.delete();
+//                                }
+//                                catch (Exception o){
+//                                    o.printStackTrace();
+//                                }
+//                            }
+//
+//                        }
+//                    })).start();
+//
+//
+//                }
+//
+//
+//            }
+//            if (requestCode == RESULT_LOAD_IMAGE && null != data) {
+//                Uri selectedImage = data.getData();
+//                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+//                Cursor cursor = CalcActivity.this.getContentResolver().query(selectedImage,
+//                        filePathColumn, null, null, null);
+//                cursor.moveToFirst();
+//
+//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                String picturePath = cursor.getString(columnIndex);
+//                cursor.close();
+//
+//                File fileDir = new File(picturePath);
+//
+//                if(!fileDir.exists()){
+//
+//                    return;
+//
+//                }
+//
+//                try {
+//
+//                    Bitmap bitmap;
+//                    Bitmap bitmapCache;
+//
+//
+//
+//                    bitmap = decodeFile(fileDir) ;
+//                    bitmapCache=decodeFileToCache(fileDir);
+//
+//                    Matrix m = new Matrix();
+//                    m.postRotate( neededRotation(fileDir) );
+//
+//                    bitmap = Bitmap.createBitmap(bitmap,
+//                            0, 0, bitmap.getWidth(), bitmap.getHeight(),
+//                            m, true);
+//
+//                    bitmapCache=Bitmap.createBitmap(bitmapCache,
+//                            0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
+//                            m, true);
+//
+//                    String path = android.os.Environment
+//
+//                            .getExternalStorageDirectory()
+//
+//                            + File.separator
+//
+//                            + "MoneyHolder" + File.separator + "Tickets";
+//
+//                    String path_cache = android.os.Environment
+//
+//                            .getExternalStorageDirectory()
+//
+//                            + File.separator
+//
+//                            + "MoneyHolder" + File.separator + ".cache";
+//
+//
+//
+//
+//                    File pathik=new File(path);
+//                    if(!pathik.exists()){
+//                        pathik.mkdirs();
+//                        File file = new File(pathik,".nomedia");
+//                        file.createNewFile();
+//                    }
+//
+//                    File path_cache_file=new File(path_cache);
+//                    if(!path_cache_file.exists()){
+//                        path_cache_file.mkdirs();
+//                        File file = new File(path_cache_file,".nomedia");
+//                        file.createNewFile();
+//                    }
+//
+//
+//                    OutputStream outFile = null;
+//                    OutputStream outFileCache = null;
+//
+//                    SimpleDateFormat sp=new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+//                    String filename="ticket-"+sp.format(System.currentTimeMillis())  + ".jpg";
+//
+//                    File file = new File(path,filename);
+//                    File fileTocache = new File(path_cache,filename);
+//
+//
+//                    try {
+//
+//                        outFile = new FileOutputStream(file);
+//                        outFileCache=new FileOutputStream(fileTocache);
+//
+//                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outFile);
+//                        bitmapCache.compress(Bitmap.CompressFormat.JPEG, 100, outFileCache);
+//
+//
+//                        outFile.flush();
+//                        outFileCache.flush();
+//
+//                        outFile.close();
+//                        outFileCache.close();
+//
+//                        PhotoDetails temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
+//                        myTickets.add(temp);
+//                        myTickedAdapter.notifyDataSetChanged();
+//
+//
+//                    } catch (FileNotFoundException e) {
+//
+//                        e.printStackTrace();
+//
+//                    } catch (IOException e) {
+//
+//                        e.printStackTrace();
+//
+//                    } catch (Exception e) {
+//
+//                        e.printStackTrace();
+//
+//                    }
+//
+//                } catch (Exception e) {
+//
+//                    e.printStackTrace();
+//                }
+//
+//
+//            }
+//            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+//
+//                File fileDir = new File(CalcActivity.this.getExternalFilesDir(null),"temp.jpg");
+//
+//                if(!fileDir.exists()){
+//                    return;
+//
+//                }
+//
+//                try {
+//
+//                    Bitmap bitmap;
+//                    Bitmap bitmapCache;
+//
+//
+//
+//                    bitmap = decodeFile(fileDir) ;
+//                    bitmapCache=decodeFileToCache(fileDir);
+//
+//                    Matrix m = new Matrix();
+//                    m.postRotate( neededRotation(fileDir) );
+//
+//                    bitmap = Bitmap.createBitmap(bitmap,
+//                            0, 0, bitmap.getWidth(), bitmap.getHeight(),
+//                            m, true);
+//
+//                    bitmapCache=Bitmap.createBitmap(bitmapCache,
+//                            0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
+//                            m, true);
+//
+//                    String path = android.os.Environment
+//
+//                            .getExternalStorageDirectory()
+//
+//                            + File.separator
+//
+//                            + "MoneyHolder" + File.separator + "Tickets";
+//
+//                    String path_cache = android.os.Environment
+//
+//                            .getExternalStorageDirectory()
+//
+//                            + File.separator
+//
+//                            + "MoneyHolder" + File.separator + ".cache";
+//
+//
+//                    fileDir.delete();
+//
+//
+//                    File pathik=new File(path);
+//                    if(!pathik.exists()){
+//                        pathik.mkdirs();
+//                        File file = new File(pathik,".nomedia");
+//                        file.createNewFile();
+//                    }
+//
+//                    File path_cache_file=new File(path_cache);
+//                    if(!path_cache_file.exists()){
+//                        path_cache_file.mkdirs();
+//                        File file = new File(path_cache_file,".nomedia");
+//                        file.createNewFile();
+//                    }
+//
+//
+//                    OutputStream outFile = null;
+//                    OutputStream outFileCache = null;
+//
+//                    SimpleDateFormat sp=new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+//                    String filename="ticket-"+sp.format(System.currentTimeMillis())  + ".jpg";
+//
+//                    File file = new File(path,filename);
+//                    File fileTocache = new File(path_cache,filename);
+//
+//
+//                    try {
+//
+//                        outFile = new FileOutputStream(file);
+//                        outFileCache=new FileOutputStream(fileTocache);
+//
+//                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outFile);
+//                        bitmapCache.compress(Bitmap.CompressFormat.JPEG, 100, outFileCache);
+//
+//
+//                        outFile.flush();
+//                        outFileCache.flush();
+//
+//                        outFile.close();
+//                        outFileCache.close();
+//
+//                        PhotoDetails temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
+//                        myTickets.add(temp);
+//                        myTickedAdapter.notifyDataSetChanged();
+//
+//
+//                    } catch (FileNotFoundException e) {
+//
+//                        e.printStackTrace();
+//
+//                    } catch (IOException e) {
+//
+//                        e.printStackTrace();
+//
+//                    } catch (Exception e) {
+//
+//                        e.printStackTrace();
+//
+//                    }
+//
+//                } catch (Exception e) {
+//
+//                    e.printStackTrace();
+//                }
+//
+//            }
 
 
         }
@@ -1206,125 +1187,125 @@ package com.jim.pocketaccounter.widget;
         }
 
         private void createNewRecord() {
-            onEqual();
-            String value = tvRecordEditDisplay.getText().toString();
-            if (value.length() > 14)
-                value = value.substring(0, 14);
-            if (account.isLimited()) {
-                double limit =  account.getLimitSum();
-                double accounted = PocketAccounterGeneral.getCost(date, account.getStartMoneyCurrency(), account.getLimitCurrency(), account.getAmount());
-                for (int i = 0; i < PocketAccounter.financeManager.getRecords().size(); i++) {
-                    FinanceRecord tempac=PocketAccounter.financeManager.getRecords().get(i);
-                    if (tempac.getAccount().getId().matches(account.getId())) {
-                        if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-                            accounted = accounted + PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
-                        else
-                            accounted = accounted - PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
-                    }
-                }
-                for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
-                    if (debtBorrow.isCalculate()) {
-                        if (debtBorrow.getAccount().getId().matches(account.getId())) {
-                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                accounted = accounted - PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
-                            } else {
-                                accounted = accounted + PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
-                            }
-                            for (Recking recking : debtBorrow.getReckings()) {
-                                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                                Calendar cal = Calendar.getInstance();
-                                try {
-                                    cal.setTime(format.parse(recking.getPayDate()));
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                                if (debtBorrow.getType() == DebtBorrow.DEBT) {
-                                    accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                                } else {
-                                    accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                                }
-                            }
-                        } else {
-                            for (Recking recking : debtBorrow.getReckings()) {
-                                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                                Calendar cal = Calendar.getInstance();
-                                if (recking.getAccountId().matches(account.getId())) {
-                                    try {
-                                        cal.setTime(format.parse(recking.getPayDate()));
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
-                                    }
-                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                        accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                                    } else {
-                                        accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                //TODO editda tekwir ozini hisoblamaslini
-                for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-                    if (creditDetials.isKey_for_include()) {
-                        for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-                            if (reckingCredit.getAccountId().matches(account.getId())) {
-                                Calendar cal = Calendar.getInstance();
-                                cal.setTimeInMillis(reckingCredit.getPayDate());
-                                accounted = accounted - PocketAccounterGeneral.getCost(cal, creditDetials.getValyute_currency(),account.getLimitCurrency(), reckingCredit.getAmount());
-                            }
-                        }
-                    }
-                }
-                accounted = accounted - PocketAccounterGeneral.getCost(date, currency, account.getLimitCurrency() ,Double.parseDouble(tvRecordEditDisplay.getText().toString()));
-                if (-limit > accounted) {
-                    Toast.makeText(this, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                //
-            }
-            if (Double.parseDouble(value) != 0) {
-
-                    FinanceRecord newRecord = new FinanceRecord();
-                    newRecord.setCategory(category);
-                    newRecord.setSubCategory(subCategory);
-                    newRecord.setDate(date);
-                    newRecord.setAccount(account);
-                    newRecord.setCurrency(currency);
-                    newRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
-                    newRecord.setRecordId(uid_code);
-                    newRecord.setAllTickets(myTickets);
-                    newRecord.setComment(comment_add.getText().toString());
-                    financeManager.getRecords().add(newRecord);
-                    financeManager.saveRecords();
-                PreferenceManager.getDefaultSharedPreferences(CalcActivity.this).edit().putBoolean(KEY_FOR_INSTALAZING,true).apply();
-                if(AppWidgetManager.INVALID_APPWIDGET_ID!=WIDGET_ID)
-                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                            WIDGET_ID);
-
-                finish();
-
-            }
-            else {
-
-                (new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (PhotoDetails temp:myTickets) {
-                            File forDeleteTicket=new File(temp.getPhotopath());
-                            File forDeleteTicketCache=new File(temp.getPhotopathCache());
-                            try {
-                                forDeleteTicket.delete();
-                                forDeleteTicketCache.delete();
-                            }
-                            catch (Exception o){
-                                o.printStackTrace();
-                            }
-                        }
-                    }
-                })).start();
-            }
+//            onEqual();
+//            String value = tvRecordEditDisplay.getText().toString();
+//            if (value.length() > 14)
+//                value = value.substring(0, 14);
+//            if (account.isLimited()) {
+//                double limit =  account.getLimitSum();
+//                double accounted = PocketAccounterGeneral.getCost(date, account.getStartMoneyCurrency(), account.getLimitCurrency(), account.getAmount());
+//                for (int i = 0; i < PocketAccounter.financeManager.getRecords().size(); i++) {
+//                    FinanceRecord tempac=PocketAccounter.financeManager.getRecords().get(i);
+//                    if (tempac.getAccount().getDebtBorrowsId().matches(account.getDebtBorrowsId())) {
+//                        if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
+//                            accounted = accounted + PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
+//                        else
+//                            accounted = accounted - PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
+//                    }
+//                }
+//                for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
+//                    if (debtBorrow.isCalculate()) {
+//                        if (debtBorrow.getAccount().getDebtBorrowsId().matches(account.getDebtBorrowsId())) {
+//                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
+//                                accounted = accounted - PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
+//                            } else {
+//                                accounted = accounted + PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
+//                            }
+//                            for (Recking recking : debtBorrow.getReckings()) {
+//                                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+//                                Calendar cal = Calendar.getInstance();
+//                                try {
+//                                    cal.setTime(format.parse(recking.getPayDate()));
+//                                } catch (ParseException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                if (debtBorrow.getType() == DebtBorrow.DEBT) {
+//                                    accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                                } else {
+//                                    accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                                }
+//                            }
+//                        } else {
+//                            for (Recking recking : debtBorrow.getReckings()) {
+//                                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+//                                Calendar cal = Calendar.getInstance();
+//                                if (recking.getAccountId().matches(account.getDebtBorrowsId())) {
+//                                    try {
+//                                        cal.setTime(format.parse(recking.getPayDate()));
+//                                    } catch (ParseException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
+//                                        accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                                    } else {
+//                                        accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//                //TODO editda tekwir ozini hisoblamaslini
+//                for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
+//                    if (creditDetials.isKey_for_include()) {
+//                        for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+//                            if (reckingCredit.getAccountId().matches(account.getDebtBorrowsId())) {
+//                                Calendar cal = Calendar.getInstance();
+//                                cal.setTimeInMillis(reckingCredit.getPayDate());
+//                                accounted = accounted - PocketAccounterGeneral.getCost(cal, creditDetials.getValyute_currency(),account.getLimitCurrency(), reckingCredit.getAmount());
+//                            }
+//                        }
+//                    }
+//                }
+//                accounted = accounted - PocketAccounterGeneral.getCost(date, currency, account.getLimitCurrency() ,Double.parseDouble(tvRecordEditDisplay.getText().toString()));
+//                if (-limit > accounted) {
+//                    Toast.makeText(this, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//
+//                //
+//            }
+//            if (Double.parseDouble(value) != 0) {
+//
+//                    FinanceRecord newRecord = new FinanceRecord();
+//                    newRecord.setCategory(category);
+//                    newRecord.setSubCategory(subCategory);
+//                    newRecord.setDate(date);
+//                    newRecord.setAccount(account);
+//                    newRecord.setCurrency(currency);
+//                    newRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
+//                    newRecord.setRecordId(uid_code);
+//                    newRecord.setAllTickets(myTickets);
+//                    newRecord.setComment(comment_add.getText().toString());
+//                    financeManager.getRecords().add(newRecord);
+//                    financeManager.saveRecords();
+//                PreferenceManager.getDefaultSharedPreferences(CalcActivity.this).edit().putBoolean(KEY_FOR_INSTALAZING,true).apply();
+//                if(AppWidgetManager.INVALID_APPWIDGET_ID!=WIDGET_ID)
+//                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+//                            WIDGET_ID);
+//
+//                finish();
+//
+//            }
+//            else {
+//
+//                (new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (PhotoDetails temp:myTickets) {
+//                            File forDeleteTicket=new File(temp.getPhotopath());
+//                            File forDeleteTicketCache=new File(temp.getPhotopathCache());
+//                            try {
+//                                forDeleteTicket.delete();
+//                                forDeleteTicketCache.delete();
+//                            }
+//                            catch (Exception o){
+//                                o.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                })).start();
+//            }
 
         }
 

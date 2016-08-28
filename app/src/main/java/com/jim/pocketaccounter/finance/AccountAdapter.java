@@ -12,10 +12,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.jim.pocketaccounter.AccountFragment;
-import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.util.ArrayList;
 
@@ -47,7 +46,7 @@ public class AccountAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.account_list_item, parent, false);
 		ImageView ivAccountListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
-		ivAccountListIcon.setImageResource(result.get(position).getIcon());
+//		ivAccountListIcon.setImageResource(result.get(position).getIcon());
 		TextView tvAccountListName = (TextView) view.findViewById(R.id.tvAccountListName);
 		tvAccountListName.setText(result.get(position).getName());
 		CheckBox chbAccountListItem = (CheckBox) view.findViewById(R.id.chbAccountListItem);

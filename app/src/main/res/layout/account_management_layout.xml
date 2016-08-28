@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="@dimen/eight_dp"/>
-    <com.jim.pocketaccounter.helper.FloatingActionButton
+    <com.jim.pocketaccounter.utils.FloatingActionButton
         android:layout_width="@dimen/fiftysix_dp"
         android:layout_height="@dimen/fiftysix_dp"
 

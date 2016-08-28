@@ -1,7 +1,6 @@
 package com.jim.pocketaccounter.report;
-import android.util.Log;
 
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -5,7 +5,7 @@
     android:background="@color/white"
     android:layout_centerInParent="true">
 
-    <com.jim.pocketaccounter.helper.CurrencyChecbox
+    <com.jim.pocketaccounter.utils.CurrencyChecbox
         android:id="@+id/chbCurrencyChoose"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

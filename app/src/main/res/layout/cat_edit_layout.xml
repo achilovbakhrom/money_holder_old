@@ -141,7 +141,7 @@
 
     </LinearLayout>
 
-    <com.jim.pocketaccounter.helper.FABIcon
+    <com.jim.pocketaccounter.utils.FABIcon
         android:id="@+id/fabAccountIcon"
         android:layout_width="@dimen/fiftysix_dp"
         android:layout_height="@dimen/fiftysix_dp"

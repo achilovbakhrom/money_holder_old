@@ -1,6 +1,6 @@
 package com.jim.pocketaccounter.report;
 
-import com.jim.pocketaccounter.finance.RootCategory;
+import com.jim.pocketaccounter.database.RootCategory;
 
 import java.util.ArrayList;
 

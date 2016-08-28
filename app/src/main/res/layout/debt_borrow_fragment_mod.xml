@@ -26,7 +26,7 @@
         android:background="@android:color/white"
         android:layout_below="@+id/tlDebtBorrowFragment" />
 
-        <com.jim.pocketaccounter.helper.FloatingActionButton
+        <com.jim.pocketaccounter.utils.FloatingActionButton
             android:id="@+id/fbDebtBorrowFragment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

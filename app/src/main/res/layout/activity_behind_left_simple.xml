@@ -32,7 +32,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:orientation="horizontal">
-						<com.jim.pocketaccounter.helper.CircleImageView
+						<com.jim.pocketaccounter.utils.CircleImageView
 							android:id="@+id/userphoto"
 							android:layout_width="@dimen/fifty_dp"
 							android:layout_height="@dimen/fifty_dp"
@@ -122,7 +122,7 @@
 			android:id="@+id/framee"
 			android:layout_width="@dimen/hundred"
 			android:layout_height="@dimen/hundred">
-			<com.jim.pocketaccounter.helper.FABIcon
+			<com.jim.pocketaccounter.utils.FABIcon
 
 				android:layout_width="@dimen/fiftysix_dp"
 				android:layout_height="@dimen/fiftysix_dp"

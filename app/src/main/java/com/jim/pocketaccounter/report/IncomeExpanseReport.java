@@ -4,13 +4,14 @@ import android.content.Context;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.credit.ReckingCredit;
-import com.jim.pocketaccounter.debt.DebtBorrow;
-import com.jim.pocketaccounter.debt.Recking;
-import com.jim.pocketaccounter.finance.FinanceRecord;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,6 +95,25 @@ public class IncomeExpanseReport {
             e.set(Calendar.MINUTE, 59);
             e.set(Calendar.SECOND, 59);
             e.set(Calendar.MILLISECOND, 59);
+            for (Account account : PocketAccounter.financeManager.getAccounts()) {
+                if (account.getAmount() != 0) {
+                    Calendar calendar = PocketAccounterGeneral.getFirstExpenseDay(account);
+                    if (calendar.compareTo(b) >= 0 && calendar.compareTo(e) <= 0) {
+                        IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
+                        RootCategory category = new RootCategory();
+                        category.setType(PocketAccounterGeneral.INCOME);
+                        category.setIcon("icons_25");
+//                        category.setSubCategories(null);
+                        category.setName(account.getName());
+                        category.setId(account.getId());
+                        detail.setCategory(category);
+                        detail.setSubCategory(null);
+                        detail.setAmount(account.getAmount());
+                        detail.setCurrency(account.getStartMoneyCurrency());
+                        details.add(detail);
+                    }
+                }
+            }
             for (int i=0; i<records.size(); i++) {
                 if (records.get(i).getDate().compareTo(b) >= 0 &&
                         records.get(i).getDate().compareTo(e) <= 0) {

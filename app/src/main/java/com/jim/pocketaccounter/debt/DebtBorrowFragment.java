@@ -1,6 +1,5 @@
 package com.jim.pocketaccounter.debt;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,7 +17,8 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.helper.FloatingActionButton;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.utils.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -116,16 +116,16 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.fbDebtBorrowFragment) {
-            switch (viewPager.getCurrentItem()) {
-                case BORROW_FRAGMENT: {
-                    ((PocketAccounter) getContext()).replaceFragment(AddBorrowFragment.getInstance(BORROW_FRAGMENT));
-                    break;
-                }
-                case DEBT_FRAGMENT: {
-                    ((PocketAccounter) getContext()).replaceFragment(AddBorrowFragment.getInstance(DEBT_FRAGMENT));
-                    break;
-                }
-            }
+//            switch (viewPager.getCurrentItem()) {
+//                case BORROW_FRAGMENT: {
+//                    ((PocketAccounter) getContext()).replaceFragment(AddBorrowFragment.getInstance(BORROW_FRAGMENT));
+//                    break;
+//                }
+//                case DEBT_FRAGMENT: {
+//                    ((PocketAccounter) getContext()).replaceFragment(AddBorrowFragment.getInstance(DEBT_FRAGMENT));
+//                    break;
+//                }
+//            }
         }
     }
 

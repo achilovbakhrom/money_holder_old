@@ -1,10 +1,8 @@
 package com.jim.pocketaccounter.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,11 +13,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.finance.Category;
 import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.finance.RootCategory;
+import com.jim.pocketaccounter.database.RootCategory;
 
 import java.util.ArrayList;
 

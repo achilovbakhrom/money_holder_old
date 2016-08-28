@@ -20,15 +20,15 @@ import android.widget.RemoteViews;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.credit.ReckingCredit;
-import com.jim.pocketaccounter.debt.DebtBorrow;
-import com.jim.pocketaccounter.debt.Recking;
-import com.jim.pocketaccounter.finance.Account;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.finance.FinanceRecord;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;

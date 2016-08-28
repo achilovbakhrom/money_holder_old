@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.Account;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class TransferAccountAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.transfer_account_item, parent, false);
 		ImageView ivTransferItem = (ImageView) view.findViewById(R.id.ivTransferItem);
-		ivTransferItem.setImageResource(result.get(position).getIcon());
+//		ivTransferItem.setImageResource(result.get(position).getIcon());
 		TextView tvTransferItem = (TextView) view.findViewById(R.id.tvTransferItem);
 		tvTransferItem.setText(result.get(position).getName());
 		return view;

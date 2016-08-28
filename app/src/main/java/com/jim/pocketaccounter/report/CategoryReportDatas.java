@@ -5,12 +5,12 @@ import android.util.Log;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.debt.DebtBorrow;
-import com.jim.pocketaccounter.finance.FinanceRecord;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.finance.SubCategory;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

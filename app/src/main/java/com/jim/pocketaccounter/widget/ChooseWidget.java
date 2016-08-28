@@ -7,29 +7,20 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.RootCategoryEditFragment;
 import com.jim.pocketaccounter.finance.CategoryAdapter;
 import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.helper.FloatingActionButton;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
-import com.jim.pocketaccounter.helper.ScrollDirectionListener;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.util.ArrayList;
 

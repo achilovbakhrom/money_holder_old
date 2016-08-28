@@ -1,8 +1,8 @@
 package com.jim.pocketaccounter.report;
 
-import com.jim.pocketaccounter.finance.Currency;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.finance.SubCategory;
+import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SubCategory;
 
 import java.util.Calendar;
 

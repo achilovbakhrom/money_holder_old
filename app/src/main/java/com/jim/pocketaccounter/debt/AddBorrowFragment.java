@@ -38,24 +38,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.credit.ReckingCredit;
-import com.jim.pocketaccounter.finance.Account;
-import com.jim.pocketaccounter.finance.Currency;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.Person;
+import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.finance.FinanceRecord;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -480,7 +478,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         }
                         debtBorrow.setInfo(mode + ":" + sequence);
                         Log.d("sss", mode + ":" + sequence);
-                        debtBorrow.setReckings(reckings);
+//                        debtBorrow.setReckings(reckings);
                         list.add(0, debtBorrow);
                         Bundle bundle = new Bundle();
                         bundle.putInt("pos", debtBorrow.getType());
@@ -489,7 +487,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                     ivToolbarMostRight.setVisibility(View.INVISIBLE);
                     manager.setDebtBorrows(list);
                     manager.saveDebtBorrows();
-                    ((PocketAccounter) getContext()).replaceFragment(fragment, PockerTag.DEBTS);
+//                    ((PocketAccounter) getContext()).replaceFragment(fragment, PockerTag.DEBTS);
                 }
             }
         }
@@ -497,99 +495,99 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 
     private boolean isMumkin(DebtBorrow debt) {
         Account account = manager.getAccounts().get(PersonAccount.getSelectedItemPosition());
-        if (account.isLimited() && calculate.isChecked()) {
-            double limit =  account.getLimitSum();
-            double accounted = PocketAccounterGeneral.getCost(debt.getTakenDate(),account.getStartMoneyCurrency(),account.getLimitCurrency(),account.getAmount());
-            for (int i = 0; i < PocketAccounter.financeManager.getRecords().size(); i++) {
-                FinanceRecord tempac=PocketAccounter.financeManager.getRecords().get(i);
-                if (tempac.getAccount().getId().matches(account.getId())) {
-                    if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-                        accounted = accounted + PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
-                    else
-                        accounted = accounted - PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
-                }
-            }
-            for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
-                if (debtBorrow.isCalculate() && (currentDebtBorrow != null && !debtBorrow.getId().matches(currentDebtBorrow.getId()) || currentDebtBorrow == null)) {
-                    if (debtBorrow.getAccount().getId().matches(account.getId())) {
-                        if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                            accounted = accounted - PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
-                        } else {
-                            accounted = accounted + PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
-                        }
-                        for (Recking recking : debtBorrow.getReckings()) {
-                            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                            Calendar cal = Calendar.getInstance();
-                            try {
-                                cal.setTime(format.parse(recking.getPayDate()));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                            if (debtBorrow.getType() == DebtBorrow.DEBT) {
-                                accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                            } else {
-                                accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                            }
-                        }
-                    } else {
-                        for (Recking recking : debtBorrow.getReckings()) {
-                            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                            Calendar cal = Calendar.getInstance();
-                            if (recking.getAccountId().matches(account.getId())) {
-                                try {
-                                    cal.setTime(format.parse(recking.getPayDate()));
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                                if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                    accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                                } else {
-                                    accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-                if (creditDetials.isKey_for_include()) {
-                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-                        if (reckingCredit.getAccountId().matches(account.getId())) {
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTimeInMillis(reckingCredit.getPayDate());
-                            accounted = accounted - PocketAccounterGeneral.getCost(cal, creditDetials.getValyute_currency(),account.getLimitCurrency(), reckingCredit.getAmount());
-                        }
-                    }
-                }
-            }
-            if (debt.getType() == DebtBorrow.DEBT) {
-                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
-                        simpleDateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(currentDebtBorrow.getReckings().get(0).getPayDate())) {
-                    accounted = accounted + PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                    accounted = accounted - currentDebtBorrow.getReckings().get(0).getAmount();
-                } else {
-                    accounted = accounted + PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                }
-            } else {
-                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
-                        simpleDateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(currentDebtBorrow.getReckings().get(0).getPayDate())) {
-                    accounted = accounted - PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                    accounted = accounted + currentDebtBorrow.getReckings().get(0).getAmount();
-                } else {
-                    accounted = accounted - PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                }
-            }
-
-            if (-limit > accounted) {
-                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            return true;
-        }
+//        if (account.isLimited() && calculate.isChecked()) {
+//            double limit =  account.getLimitSum();
+//            double accounted = PocketAccounterGeneral.getCost(debt.getTakenDate(),account.getStartMoneyCurrency(),account.getLimitCurrency(),account.getAmount());
+//            for (int i = 0; i < PocketAccounter.financeManager.getRecords().size(); i++) {
+//                FinanceRecord tempac=PocketAccounter.financeManager.getRecords().get(i);
+//                if (tempac.getAccount().getId().matches(account.getId())) {
+//                    if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
+//                        accounted = accounted + PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
+//                    else
+//                        accounted = accounted - PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
+//                }
+//            }
+//            for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
+//                if (debtBorrow.isCalculate() && (currentDebtBorrow != null && !debtBorrow.getId().matches(currentDebtBorrow.getId()) || currentDebtBorrow == null)) {
+//                    if (debtBorrow.getAccount().getId().matches(account.getId())) {
+//                        if (debtBorrow.getType() == DebtBorrow.BORROW) {
+//                            accounted = accounted - PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
+//                        } else {
+//                            accounted = accounted + PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
+//                        }
+//                        for (Recking recking : debtBorrow.getReckings()) {
+//                            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+//                            Calendar cal = Calendar.getInstance();
+//                            try {
+//                                cal.setTime(format.parse(recking.getPayDate()));
+//                            } catch (ParseException e) {
+//                                e.printStackTrace();
+//                            }
+//                            if (debtBorrow.getType() == DebtBorrow.DEBT) {
+//                                accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                            } else {
+//                                accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                            }
+//                        }
+//                    } else {
+//                        for (Recking recking : debtBorrow.getReckings()) {
+//                            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+//                            Calendar cal = Calendar.getInstance();
+//                            if (recking.getAccountId().matches(account.getId())) {
+//                                try {
+//                                    cal.setTime(format.parse(recking.getPayDate()));
+//                                } catch (ParseException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                if (debtBorrow.getType() == DebtBorrow.BORROW) {
+//                                    accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                                } else {
+//                                    accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
+//                if (creditDetials.isKey_for_include()) {
+//                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+//                        if (reckingCredit.getAccountId().matches(account.getId())) {
+//                            Calendar cal = Calendar.getInstance();
+//                            cal.setTimeInMillis(reckingCredit.getPayDate());
+//                            accounted = accounted - PocketAccounterGeneral.getCost(cal, creditDetials.getValyute_currency(),account.getLimitCurrency(), reckingCredit.getAmount());
+//                        }
+//                    }
+//                }
+//            }
+//            if (debt.getType() == DebtBorrow.DEBT) {
+//                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
+//                        simpleDateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(currentDebtBorrow.getReckings().get(0).getPayDate())) {
+//                    accounted = accounted + PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                    accounted = accounted - currentDebtBorrow.getReckings().get(0).getAmount();
+//                } else {
+//                    accounted = accounted + PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                }
+//            } else {
+//                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
+//                        simpleDateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(currentDebtBorrow.getReckings().get(0).getPayDate())) {
+//                    accounted = accounted - PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                    accounted = accounted + currentDebtBorrow.getReckings().get(0).getAmount();
+//                } else {
+//                    accounted = accounted - PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                }
+//            }
+//
+//            if (-limit > accounted) {
+//                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+//                return false;
+//            }
+//            return true;
+//        }
         return true;
     }
 

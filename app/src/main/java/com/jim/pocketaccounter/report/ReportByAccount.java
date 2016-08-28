@@ -4,16 +4,15 @@ import android.content.Context;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.credit.ReckingCredit;
-import com.jim.pocketaccounter.debt.DebtBorrow;
-import com.jim.pocketaccounter.debt.Recking;
-import com.jim.pocketaccounter.finance.Account;
-import com.jim.pocketaccounter.finance.Category;
-import com.jim.pocketaccounter.finance.Currency;
-import com.jim.pocketaccounter.finance.FinanceRecord;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.helper.PocketAccounterGeneral;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,16 +50,19 @@ public class ReportByAccount {
         RootCategory cat = new RootCategory();
         cat.setName(context.getResources().getString(R.string.start_amount));
         cat.setType(PocketAccounterGeneral.INCOME);
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         for (Account account : PocketAccounter.financeManager.getAccounts()) {
-            if (account.getAmount() == 0) continue;
-            AccountDataRow row = new AccountDataRow();
-            row.setType(PocketAccounterGeneral.INCOME);
-            row.setDate(account.getCalendar());
-            row.setCategory(cat);
-            row.setSubCategory(null);
-            row.setCurrency(account.getStartMoneyCurrency());
-            row.setAmount(account.getAmount());
-            result.add(row);
+            if (account.getAmount() != 0 && this.account.getId().matches(account.getId()) &&
+                    account.getStartMoneyCurrency().getId().matches(currency.getId())) {
+                AccountDataRow row = new AccountDataRow();
+                row.setType(PocketAccounterGeneral.INCOME);
+                row.setDate(PocketAccounterGeneral.getFirstExpenseDay(account));
+                row.setCategory(cat);
+                row.setSubCategory(null);
+                row.setCurrency(account.getStartMoneyCurrency());
+                row.setAmount(account.getAmount());
+                result.add(row);
+            }
         }
         for (int i = 0; i < temp.size(); i++) {
             if (begin.compareTo(temp.get(i).getDate()) <= 0

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.SubCategory;
 
 import java.util.ArrayList;
 

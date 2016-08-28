@@ -1,7 +1,5 @@
 package com.jim.pocketaccounter.syncbase;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -11,19 +9,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -39,15 +30,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.CreditDetials;
-import com.jim.pocketaccounter.credit.ReckingCredit;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * Created by DEV on 16.06.2016.
@@ -115,12 +100,8 @@ public class SignInGoogleMoneyHold {
 
     }
     public void regitRequstGet(Intent data){
-
-
-
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         Log.d(TAG,data.toString());
-
         if (result.isSuccess()) {
             showProgressDialog();
             GoogleSignInAccount account = result.getSignInAccount();
@@ -134,7 +115,6 @@ public class SignInGoogleMoneyHold {
         } else {
             hideProgressDialog();
             succsesEvent.updateToFailed();
-
         }
     }
     public void revokeAccess() {

@@ -8,36 +8,27 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StreamDownloadTask;
 import com.google.firebase.storage.UploadTask;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.SettingsActivity;
-import com.jim.pocketaccounter.finance.Account;
-import com.jim.pocketaccounter.finance.Currency;
-import com.jim.pocketaccounter.finance.CurrencyCost;
-import com.jim.pocketaccounter.finance.RootCategory;
-import com.jim.pocketaccounter.finance.SubCategory;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.CurrencyCost;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SubCategory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -275,7 +266,7 @@ public class SyncBase {
             Account newAccount = new Account();
             newAccount.setName(cursor.getString(cursor.getColumnIndex("account_name")));
             newAccount.setId(cursor.getString(cursor.getColumnIndex("account_id")));
-            newAccount.setIcon(cursor.getInt(cursor.getColumnIndex("icon")));
+//            newAccount.setIcon(cursor.getInt(cursor.getColumnIndex("icon")));
             newAccount.setLimitCurrency(null);
             newAccount.setStartMoneyCurrency(null);
             newAccount.setAmount(0);
@@ -309,7 +300,7 @@ public class SyncBase {
             values.put("start_amount", account.getAmount());
             values.put("start_money_currency_id", currencies.get(0).getId());
             values.put("limit_currency_id", currencies.get(0).getId());
-            values.put("is_limited", account.isLimited());
+//            values.put("is_limited", account.isLimited());
             values.put("limit_amount", account.getLimitSum());
             db.insert("account_table", null, values);
         }
@@ -454,7 +445,7 @@ public class SyncBase {
                 }
             }
             category.setId(id);
-            category.setSubCategories(subCategories);
+//            category.setSubCategories(subCategories);
             categories.add(category);
             catsCursor.moveToNext();
         }

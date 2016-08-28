@@ -67,7 +67,7 @@
             android:layout_gravity="center_vertical">
             <requestFocus />
         </EditText>
-        <com.jim.pocketaccounter.helper.FABIcon
+        <com.jim.pocketaccounter.utils.FABIcon
             android:id="@+id/fabChooseIcon"
             android:layout_width="@dimen/fiftysix_dp"
             android:layout_height="@dimen/fiftysix_dp"

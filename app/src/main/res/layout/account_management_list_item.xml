@@ -20,28 +20,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="match_parent"
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/sixteen_dp"
+                android:layout_marginRight="@dimen/sixteen_dp">
+                <ImageView
+                    android:layout_width="@dimen/thirty_dp"
+                    android:layout_height="@dimen/thirty_dp"
+                    android:layout_marginRight="@dimen/ten_dp"
+                    android:layout_marginTop="@dimen/ten_dp"
+                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:src="@drawable/icons_1"
+                    android:id="@+id/ivAccontManagement"/>
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/sixteen_dp"
-                    android:layout_marginRight="@dimen/sixteen_dp">
-                    <ImageView
-                        android:layout_width="@dimen/thirty_dp"
-                        android:layout_height="@dimen/thirty_dp"
-                        android:layout_marginRight="@dimen/ten_dp"
-                        android:layout_marginTop="@dimen/ten_dp"
-                        android:layout_marginBottom="@dimen/ten_dp"
-                        android:src="@drawable/icons_1"
-                        android:id="@+id/ivAccontManagement"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/sixteen_sp"
-                        android:id="@+id/tvAccManAccName"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@color/toolbar_text_color"
-                        android:text="CASH"/>
-            </LinearLayout>
+                    android:textSize="@dimen/sixteen_sp"
+                    android:id="@+id/tvAccManAccName"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/toolbar_text_color"
+                    android:text="CASH"/>
+        </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/one_dp"
@@ -49,7 +51,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/grey_light2">
+                android:background="@color/grey_light2"
+                android:orientation="vertical"
+                >
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -59,6 +63,18 @@
                     android:layout_marginLeft="@dimen/twenty_dp"
                     android:layout_marginRight="@dimen/thirty_dp"
                     />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/ten_dp"
+                    android:text="asdsad"
+                    android:paddingBottom="@dimen/eight_dp"
+                    android:layout_gravity="right"
+                    android:textStyle="bold"
+                    android:id="@+id/tvAccountManagementSchot"
+                    />
+
             </LinearLayout>
 
         </LinearLayout>
