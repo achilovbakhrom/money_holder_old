@@ -1,8 +1,24 @@
 package com.jim.pocketaccounter.modulesandcomponents.modules;
 
 
+
+import android.content.Context;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.managers.DrawerInitializer;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.SettingsManager;
+import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.DatePicker;
+import com.jim.pocketaccounter.utils.IconChooseDialog;
+import com.jim.pocketaccounter.utils.WarningDialog;
+
+import java.text.SimpleDateFormat;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,12 +30,74 @@ import dagger.Provides;
 public class PocketAccounterActivityModule {
     private PAFragmentManager paFragmentManager;
     private PocketAccounter pocketAccounter;
-    public PocketAccounterActivityModule(PocketAccounter pocketAccounter) {
+    private ToolbarManager toolbarManager;
+    private DrawerInitializer drawerInitializer;
+    private Toolbar toolbar;
+    private LogicManager logicManager;
+    public PocketAccounterActivityModule(PocketAccounter pocketAccounter, Toolbar toolbar) {
         this.pocketAccounter = pocketAccounter;
+        paFragmentManager = new PAFragmentManager(pocketAccounter);
+        this.toolbar = toolbar;
+        toolbarManager = new ToolbarManager(pocketAccounter, toolbar);
+        drawerInitializer = new DrawerInitializer(this.pocketAccounter, paFragmentManager);
+        logicManager = new LogicManager(pocketAccounter);
+        Log.d("sss", toolbar == null ? "null toolbar" : toolbar.getClass().getName());
     }
+
+    @Provides
+    public LogicManager getLogicManager() {
+        if (logicManager == null)
+            logicManager = new LogicManager(pocketAccounter);
+        return logicManager;
+    }
+
     @Provides
     public PAFragmentManager getPaFragmentManager() {
-        paFragmentManager = new PAFragmentManager(pocketAccounter);
+        if (paFragmentManager == null)
+            paFragmentManager = new PAFragmentManager(pocketAccounter);
         return paFragmentManager;
+    }
+    @Provides
+    public ToolbarManager getToolbarManager() {
+        if (toolbarManager == null)
+            toolbarManager = new ToolbarManager(pocketAccounter, toolbar);
+        return toolbarManager;
+    }
+    @Provides
+    public Context getContext() {
+        return pocketAccounter;
+    }
+    @Provides
+    public SettingsManager getSettingsManager() {
+        return new SettingsManager(pocketAccounter);
+    }
+
+    @Provides
+    @Named(value = "common_formatter")
+    public SimpleDateFormat getCommonFormatter() {
+        return new SimpleDateFormat("dd.MM.yyyy");
+    }
+    @Provides
+    @Named(value = "display_formmatter")
+    public SimpleDateFormat getDisplayFormatter() {
+        return new SimpleDateFormat("dd LLLL, yyyy");
+    }
+    @Provides
+    public DrawerInitializer getDrawerInitializer() {
+        if (drawerInitializer == null)
+            drawerInitializer = new DrawerInitializer(this.pocketAccounter, paFragmentManager);
+        return drawerInitializer;
+    }
+    @Provides
+    public WarningDialog getWarningDialog() {
+        return new WarningDialog(pocketAccounter);
+    }
+    @Provides
+    public IconChooseDialog getIconsChooseDialog() {
+        return new IconChooseDialog(pocketAccounter);
+    }
+    @Provides
+    public DatePicker getDatePicker() {
+        return new DatePicker(pocketAccounter);
     }
 }

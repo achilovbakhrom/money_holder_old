@@ -45,7 +45,7 @@ package com.jim.pocketaccounter.widget;
     import com.jim.pocketaccounter.R;
     import com.jim.pocketaccounter.database.Account;
     import com.jim.pocketaccounter.database.Currency;
-    import com.jim.pocketaccounter.finance.FinanceManager;
+//    import com.jim.pocketaccounter.finance.FinanceManager;
     import com.jim.pocketaccounter.finance.RecordAccountAdapter;
     import com.jim.pocketaccounter.finance.RecordCategoryAdapter;
     import com.jim.pocketaccounter.finance.RecordSubCategoryAdapter;
@@ -112,7 +112,7 @@ package com.jim.pocketaccounter.widget;
         ArrayList<PhotoDetails> myTicketsFromBackRoll;
 //        PhotoAdapter myTickedAdapter;
         boolean openAddingDialog=false;
-        FinanceManager financeManager;
+//        FinanceManager financeManager;
         private int WIDGET_ID;
         LinearLayout mainView;
         public static String KEY_FOR_INSTALAZING="key_for_init";
@@ -122,7 +122,7 @@ package com.jim.pocketaccounter.widget;
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_calc);
             mainView=(LinearLayout) findViewById(R.id.llRoot);
-            financeManager=new FinanceManager(this);
+//            financeManager=new FinanceManager(this);
             comment = (TextView) findViewById(R.id.textView18);
             comment_add = (EditText) findViewById(R.id.comment_add);
             date=Calendar.getInstance();
@@ -134,12 +134,12 @@ package com.jim.pocketaccounter.widget;
             category = new RootCategory();
             String catId = getIntent().getStringExtra(WidgetKeys.KEY_FOR_INTENT_ID);
             WIDGET_ID = getIntent().getIntExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID,  AppWidgetManager.INVALID_APPWIDGET_ID);
-            for (int i=0; i<financeManager.getCategories().size(); i++) {
-                if (financeManager.getCategories().get(i).getId().matches(catId)) {
-                    category = financeManager.getCategories().get(i);
-                    break;
-                }
-            }
+//            for (int i=0; i<financeManager.getCategories().size(); i++) {
+//                if (financeManager.getCategories().get(i).getId().matches(catId)) {
+//                    category = financeManager.getCategories().get(i);
+//                    break;
+//                }
+//            }
 
 
 
@@ -152,38 +152,38 @@ package com.jim.pocketaccounter.widget;
             spRecordEdit = (Spinner) findViewById(R.id.spRecordEdit);
             spToolbar = (Spinner) toolbar.findViewById(R.id.spToolbar);
             spToolbar.setVisibility(View.VISIBLE);
-            RecordAccountAdapter accountAdapter = new RecordAccountAdapter(CalcActivity.this, financeManager.getAccounts());
-            spToolbar.setAdapter(accountAdapter);
-            spToolbar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    account = financeManager.getAccounts().get(position);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
-            final String[] currencies = new String[financeManager.getCurrencies().size()];
-            for (int i = 0; i < financeManager.getCurrencies().size(); i++)
-                currencies[i] = financeManager.getCurrencies().get(i).getAbbr();
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(CalcActivity.this, R.layout.spinner_single_item_calc, currencies);
-            spRecordEdit.setAdapter(adapter);
-            for (int i = 0; i < financeManager.getCurrencies().size(); i++) {
-                if (financeManager.getCurrencies().get(i).getId().matches(financeManager.getMainCurrency().getId())) {
-                    spRecordEdit.setSelection(i);
-                    break;
-                }
-            }
-            spRecordEdit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    currency = financeManager.getCurrencies().get(position);
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
+//            RecordAccountAdapter accountAdapter = new RecordAccountAdapter(CalcActivity.this, financeManager.getAccounts());
+//            spToolbar.setAdapter(accountAdapter);
+//            spToolbar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    account = financeManager.getAccounts().get(position);
+//                }
+//
+//                @Override
+//                public void onNothingSelected(AdapterView<?> parent) {
+//                }
+//            });
+//            final String[] currencies = new String[financeManager.getCurrencies().size()];
+//            for (int i = 0; i < financeManager.getCurrencies().size(); i++)
+//                currencies[i] = financeManager.getCurrencies().get(i).getAbbr();
+//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(CalcActivity.this, R.layout.spinner_single_item_calc, currencies);
+//            spRecordEdit.setAdapter(adapter);
+//            for (int i = 0; i < financeManager.getCurrencies().size(); i++) {
+//                if (financeManager.getCurrencies().get(i).getId().matches(financeManager.getMainCurrency().getId())) {
+//                    spRecordEdit.setSelection(i);
+//                    break;
+//                }
+//            }
+//            spRecordEdit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//                @Override
+//                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                    currency = financeManager.getCurrencies().get(position);
+//                }
+//                @Override
+//                public void onNothingSelected(AdapterView<?> parent) {
+//                }
+//            });
 
 
             ivRecordEditCategory = (ImageView) findViewById(R.id.ivRecordEditCategory);
@@ -1158,25 +1158,25 @@ package com.jim.pocketaccounter.widget;
                     items[1] = income;
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(CalcActivity.this, android.R.layout.simple_list_item_1, items);
                     lvCategoryChoose.setAdapter(adapter);
-                    lvCategoryChoose.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            ArrayList<RootCategory> categories = new ArrayList<RootCategory>();
-                            if (position == 0) {
-                                for (int i = 0; i < financeManager.getCategories().size(); i++) {
-                                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
-                                        categories.add(financeManager.getCategories().get(i));
-                                }
-                            } else {
-                                for (int i = 0; i < financeManager.getCategories().size(); i++) {
-                                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
-                                        categories.add(financeManager.getCategories().get(i));
-                                }
-                            }
-                            dialog.dismiss();
-                            openCategoryDialog(categories);
-                        }
-                    });
+//                    lvCategoryChoose.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            ArrayList<RootCategory> categories = new ArrayList<RootCategory>();
+//                            if (position == 0) {
+//                                for (int i = 0; i < financeManager.getCategories().size(); i++) {
+//                                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
+//                                        categories.add(financeManager.getCategories().get(i));
+//                                }
+//                            } else {
+//                                for (int i = 0; i < financeManager.getCategories().size(); i++) {
+//                                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
+//                                        categories.add(financeManager.getCategories().get(i));
+//                                }
+//                            }
+//                            dialog.dismiss();
+//                            openCategoryDialog(categories);
+//                        }
+//                    });
                     dialog.show();
                     break;
                 case R.id.rlSubcategory:

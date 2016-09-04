@@ -1,4 +1,4 @@
-package com.jim.pocketaccounter.utils;
+package com.jim.pocketaccounter.utils.navdrawer;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,11 +11,12 @@ import android.widget.TextView;
 import com.jim.pocketaccounter.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class LeftMenuAdapter extends BaseAdapter {
-	private ArrayList<LeftMenuItem> result;
+	private List<LeftMenuItem> result;
 	private LayoutInflater inflater;
-	public LeftMenuAdapter(Context context, ArrayList<LeftMenuItem> result) {
+	public LeftMenuAdapter(Context context, List<LeftMenuItem> result) {
 	    this.result = result;
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	  }

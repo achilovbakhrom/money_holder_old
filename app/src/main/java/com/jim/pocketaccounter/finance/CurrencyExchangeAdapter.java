@@ -12,13 +12,19 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.CurrencyCost;
+import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 @SuppressLint("ViewHolder")
 public class CurrencyExchangeAdapter extends BaseAdapter {
@@ -27,11 +33,16 @@ public class CurrencyExchangeAdapter extends BaseAdapter {
 	private int mode;
 	private boolean[] selected;
 	private String abbr;
+	@Inject
+	LogicManager logicManager;
+	@Inject
+	CommonOperations commonOperations;
 	public CurrencyExchangeAdapter(Context context, ArrayList<CurrencyCost> result, boolean[] selected, int mode, String abbr) {
 	    this.result = result;
 	    this.mode = mode;
 	    this.selected = selected;
 		this.abbr = abbr;
+		((PocketAccounter) context).component((PocketAccounterApplication)context.getApplicationContext()).inject(this);
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	  }
 	@Override
@@ -54,7 +65,7 @@ public class CurrencyExchangeAdapter extends BaseAdapter {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		String text = dateFormat.format(result.get(position).getDay().getTime())
 					  + "    1"+ abbr
-					  + "=" + decFormat.format(1/result.get(position).getCost())+PocketAccounter.financeManager.getMainCurrency().getAbbr();
+					  + "=" + decFormat.format(1/result.get(position).getCost())+commonOperations.getMainCurrency().getAbbr();
 		tvCurrencyExchangeListItem.setText(text);
 		CheckBox chbCurrencyExchangeListItem = (CheckBox) view.findViewById(R.id.chbCurrencyExchangeListItem);
 		chbCurrencyExchangeListItem.setOnCheckedChangeListener(new OnCheckedChangeListener() {

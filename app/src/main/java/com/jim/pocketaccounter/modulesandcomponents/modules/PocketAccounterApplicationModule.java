@@ -7,6 +7,8 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DatabaseMigration;
+import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.utils.DataCache;
 
 import org.greenrobot.greendao.database.Database;
@@ -58,5 +60,13 @@ public class PocketAccounterApplicationModule {
         if (preferences == null)
             preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
         return preferences;
+    }
+    @Provides
+    public ReportManager reportManager() {
+        return new ReportManager(pocketAccounterApplication);
+    }
+    @Provides
+    public CommonOperations getCommonOperations() {
+        return new CommonOperations(pocketAccounterApplication);
     }
 }

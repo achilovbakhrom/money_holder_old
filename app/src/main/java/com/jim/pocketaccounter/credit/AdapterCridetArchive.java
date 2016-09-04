@@ -35,7 +35,7 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
 
     DecimalFormat formater;
     public AdapterCridetArchive( Context This){
-        this.cardDetials=PocketAccounter.financeManager.getArchiveCredits();
+//        this.cardDetials=PocketAccounter.financeManager.getArchiveCredits();
         this.context=This;
         dateformarter=new SimpleDateFormat("dd.MM.yyyy");
         formater=new DecimalFormat("0.##");

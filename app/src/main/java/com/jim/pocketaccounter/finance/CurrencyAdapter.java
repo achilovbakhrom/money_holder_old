@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.finance;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,25 +13,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 public class CurrencyAdapter extends BaseAdapter {
-	private ArrayList<Currency> result;
+	private List<Currency> result;
 	private LayoutInflater inflater;
-	private FinanceManager manager;
 	private int mode;
 	private boolean[] selected;
-	public CurrencyAdapter(Context context, ArrayList<Currency> result, boolean[] selected, int mode) {
+	@Inject
+	LogicManager manager;
+	@Inject
+	CommonOperations commonOperations;
+	public CurrencyAdapter(Context context, List<Currency> result, boolean[] selected, int mode) {
 	    this.result = result;
 	    this.selected = selected;
 	    this.mode = mode;
-	    manager = PocketAccounter.financeManager;
+		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	  }
 	@Override
@@ -58,14 +68,14 @@ public class CurrencyAdapter extends BaseAdapter {
 		ImageView ivCurrencyMain = (ImageView) view.findViewById(R.id.ivCurrencyMain);
 		if (result.get(position).getMain()) {
 			ivCurrencyMain.setImageResource(R.drawable.main_currency);
-			((TextView) view.findViewById(R.id.tvCurrencyCost)).setVisibility(View.GONE);
+			view.findViewById(R.id.tvCurrencyCost).setVisibility(View.GONE);
 		}
 		else {
 			ivCurrencyMain.setImageResource(R.drawable.not_main_currency);
 			SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 			DecimalFormat decFormat = new DecimalFormat("0.00##");
 			TextView tvCurrencyCost = (TextView) view.findViewById(R.id.tvCurrencyCost);
-			tvCurrencyCost.setText(format.format(result.get(position).getCosts().get(result.get(position).getCosts().size()-1).getDay().getTime())+"  "+"1"+result.get(position).getAbbr()+": "+decFormat.format(1/result.get(position).getCosts().get(result.get(position).getCosts().size()-1).getCost())+manager.getMainCurrency().getAbbr());
+			tvCurrencyCost.setText(format.format(result.get(position).getCosts().get(result.get(position).getCosts().size()-1).getDay().getTime())+"  "+"1"+result.get(position).getAbbr()+": "+decFormat.format(1/result.get(position).getCosts().get(result.get(position).getCosts().size()-1).getCost())+commonOperations.getMainCurrency().getAbbr());
 		}
 		if (mode == PocketAccounterGeneral.EDIT_MODE) {
 			ivCurrencyMain.setVisibility(View.GONE);

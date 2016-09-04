@@ -24,11 +24,9 @@ public class Currency {
 	private String id;
 	@Property
 	private boolean isMain = false;
-	@ToMany(joinProperties = {
-			@JoinProperty(name = "id", referencedName = "currencyId")
-	})
+	@ToMany(referencedJoinProperty = "currencyId")
 	@NotNull
-	private List<CurrencyCost> costs = new ArrayList<>();
+	private List<CurrencyCost> costs;
 	/** Used for active entity operations. */
 	@Generated(hash = 1033120508)
 	private transient CurrencyDao myDao;
@@ -133,6 +131,7 @@ public class Currency {
 	    }
 	    return costs;
 	}
+
 	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 869658167)
 	public void __setDaoSession(DaoSession daoSession) {

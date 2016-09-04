@@ -1338,4 +1338,12 @@
     <string name="choesetypeing">Select photo</string>
     <string name="savein">SAVE</string>
     <string name="ok_b">OK</string>
+    <string name="must_be_one_currency">В системе должно быть минимум одна валюта!!!</string>
+    <string name="replanish">Пополнить</string>
+    <string name="limit_not_setted">Лимит не установлен</string>
+    <string name="transfer">Трансфер денег</string>
+    <string name="limit_interval">Интервал лимита</string>
+    <string name="such_account_name_exists_error">Счет с таким названием уже существует!!!</string>
+    <string name="none_zero_account">Не нулевой счет</string>
+    <string name="operations">Операции</string>
 </resources>

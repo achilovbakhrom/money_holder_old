@@ -2,8 +2,12 @@ package com.jim.pocketaccounter.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.utils.DataCache;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -14,21 +18,17 @@ import javax.inject.Inject;
  */
 
 public class DatabaseMigration extends DaoMaster.DevOpenHelper{
-
-    private Context context;
-    private final String OLD_DB_NAME = "PocketAccounterDatabase";
-    @Inject
-    DataCache dataCache;
-    @Inject
-    SharedPreferences preferences;
+    private SharedPreferences preferences;
     public DatabaseMigration(Context context, String name) {
         super(context, name);
-        this.context = context;
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Override
     public void onCreate(Database db) {
         super.onCreate(db);
-
+        Log.d("sss", "onCreating db");
+        preferences.edit().putBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, true).commit();
+        Log.d("sss", preferences.getBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, false) + "after");
     }
 }

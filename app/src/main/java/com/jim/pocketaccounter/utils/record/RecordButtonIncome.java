@@ -11,27 +11,36 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.finance.CategoryAdapter;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+
+import javax.inject.Inject;
 
 public class RecordButtonIncome {
 	public static final int MOST_LEFT = 0, SIMPLE = 1, MOST_RIGHT = 2;
 	private boolean pressed = false;
 	private RectF container;
 	private int type;
-	private RootCategory category;
+	private BoardButton boardButton;
 	private Path shape;
 	private Bitmap shadow;
 	private float radius, clearance;
 	private float aLetterHeight;
 	private Context context;
 	private Calendar date;
+	@Inject
+	DaoSession daoSession;
 	public RecordButtonIncome(Context context, int type, Calendar date) {
 		this.context = context;
+		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
 		clearance = context.getResources().getDimension(R.dimen.one_dp);
 		shape = new Path();
 		Paint paint = new Paint();
@@ -153,7 +162,14 @@ public class RecordButtonIncome {
 			break;
 		}
 		bitmapPaint.setAlpha(0xFF);
-		if (category != null) {
+		if (boardButton != null) {
+			RootCategory category = null;
+			for (RootCategory cat : daoSession.getRootCategoryDao().loadAll()) {
+				if (cat.getId().matches(boardButton.getCategoryId())) {
+					category = cat;
+					break;
+				}
+			}
 			int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
 			temp = BitmapFactory.decodeResource(context.getResources(), resId);
 			scaled = Bitmap.createScaledBitmap(temp, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
@@ -205,5 +221,5 @@ public class RecordButtonIncome {
 	public Path getShape() {
 		return shape;
 	}
-	public void setCategory(RootCategory category) {this.category = category;}
+	public void setCategory(BoardButton boardButton) {this.boardButton = boardButton;}
 }

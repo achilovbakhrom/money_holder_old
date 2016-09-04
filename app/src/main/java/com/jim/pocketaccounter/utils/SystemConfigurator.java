@@ -23,6 +23,7 @@ import com.jim.pocketaccounter.database.PhotoDetails;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SubCategory;
 
 import java.io.File;
@@ -31,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -87,7 +89,7 @@ public class SystemConfigurator {
                     costCursor.moveToNext();
                 }
                 currencies.add(newCurrency);
-                costCursor.moveToNext();
+                cursor.moveToNext();
             }
 
             //loading categories
@@ -264,6 +266,7 @@ public class SystemConfigurator {
             Cursor reckCursor = old.query("debtborrow_recking_table", null, null, null, null, null, null);
             dbCursor.moveToFirst();
             while (!dbCursor.isAfterLast()) {
+                Log.d(PocketAccounterGeneral.TAG, "regeneration-db");
                 DebtBorrow newDebtBorrow = new DebtBorrow();
                 Person newPerson = new Person();
                 newPerson.setName(dbCursor.getString(dbCursor.getColumnIndex("person_name")));
@@ -432,12 +435,121 @@ public class SystemConfigurator {
             daoSession.getFinanceRecordDao().saveInTx(financeRecords);
             daoSession.getDebtBorrowDao().saveInTx(debtBorrows);
             daoSession.getCreditDetialsDao().saveInTx(creditDetialses);
-
+            for (Currency currency : currencies)
+                    Log.d("sss", currency.getName() + " " + currency.getAbbr());
             //delete file
             if (oldDBFile.delete())
                 Log.d(PocketAccounterGeneral.TAG, oldDBFile.getName() + " is deleted successfully !!!");
             else
                 Log.d(PocketAccounterGeneral.TAG, "Can't delete file: " + oldDBFile.getName() + ". Please try again...");
+        } else {
+            if (preferences.getBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, true)) {
+                preferences.edit().putBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, false).commit();
+                //inserting currencies
+                String [] currencyNames = context.getResources().getStringArray(R.array.base_currencies);
+                String [] currencyIds = context.getResources().getStringArray(R.array.currency_ids);
+                String [] currencyCosts = context.getResources().getStringArray(R.array.currency_costs);
+                String [] currencySigns = context.getResources().getStringArray(R.array.base_abbrs);
+
+                for (int i=0; i<3; i++) {
+                    Currency currency = new Currency();
+                    currency.setName(currencyNames[i]);
+                    currency.setId(currencyIds[i]);
+                    currency.setMain(i == 0);
+                    currency.setAbbr(currencySigns[i]);
+                    CurrencyCost currencyCost = new CurrencyCost();
+                    currencyCost.setCurrencyId(currencyIds[i]);
+                    currencyCost.setDay(Calendar.getInstance());
+                    currencyCost.setCost(Double.parseDouble(currencyCosts[i]));
+                    daoSession.getCurrencyCostDao().insert(currencyCost);
+                    List<CurrencyCost> costs = new ArrayList<>();
+                    costs.add(currencyCost);
+                    currency.setCosts(costs);
+                    daoSession.getCurrencyDao().insert(currency);
+                }
+
+                //inserting accounts
+                String[] accountNames = context.getResources().getStringArray(R.array.account_names);
+                String[] accountIds = context.getResources().getStringArray(R.array.account_ids);
+                String[] accountIcons = context.getResources().getStringArray(R.array.account_icons);
+                int[] icons = new int[accountIcons.length];
+                for (int i=0; i<accountIcons.length; i++) {
+                    int resId = context.getResources().getIdentifier(accountIcons[i], "drawable", context.getPackageName());
+                    icons[i] = resId;
+                }
+                for (int i=0; i<accountNames.length; i++) {
+                    Account account = new Account();
+                    account.setName(accountNames[i]);
+                    account.setIcon(accountIcons[i]);
+                    account.setId(accountIds[i]);
+                    account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll().get(0));
+                    account.setLimitCurrency(daoSession.getCurrencyDao().loadAll().get(0));
+                    account.setAmount(0.0d);
+                    account.setLimited(false);
+                    account.setLimitSum(0.0d);
+                    account.setLimitBeginTime(Calendar.getInstance());
+                    account.setLimitTime(Calendar.getInstance());
+                    account.setNonMinus(false);
+                    account.setCalendar(Calendar.getInstance());
+                    daoSession.getAccountDao().insert(account);
+                }
+
+                //inserting categories
+                String[] catValues = context.getResources().getStringArray(R.array.cat_values);
+                String[] catTypes = context.getResources().getStringArray(R.array.cat_types);
+                String[] catIcons = context.getResources().getStringArray(R.array.cat_icons);
+                for (int i=0; i<catValues.length; i++) {
+                    RootCategory rootCategory = new RootCategory();
+                    int resId = context.getResources().getIdentifier(catValues[i], "string", context.getPackageName());
+                    rootCategory.setName(context.getResources().getString(resId));
+                    rootCategory.setId(catValues[i]);
+                    rootCategory.setType(Integer.parseInt(catTypes[i]));
+                    rootCategory.setIcon(catIcons[i]);
+                    int arrayId = context.getResources().getIdentifier(catValues[i], "array", context.getPackageName());
+                    if (arrayId != 0) {
+                        int subcatIconArrayId = context.getResources().getIdentifier(catValues[i]+"_icons", "array", context.getPackageName());
+                        String[] subCats = context.getResources().getStringArray(arrayId);
+                        String[] tempIcons = context.getResources().getStringArray(subcatIconArrayId);
+                        List<SubCategory> subCategories = new ArrayList<>();
+                        for (int j=0; j<subCats.length; j++) {
+                            SubCategory subCategory = new SubCategory();
+                            subCategory.setName(subCats[j]);
+                            subCategory.setId(UUID.randomUUID().toString());
+                            subCategory.setParentId(catValues[i]);
+                            subCategory.setIcon(tempIcons[j]);
+                            subCategories.add(subCategory);
+                            daoSession.getSubCategoryDao().insert(subCategory);
+                        }
+                        rootCategory.setSubCategories(subCategories);
+                    }
+                    daoSession.getRootCategoryDao().insert(rootCategory);
+                }
+
+                //inserting expenses and incomes
+                int incomes = 0, expenses = 0;
+                List<RootCategory> categories = daoSession.getRootCategoryDao().loadAll();
+                Log.d("sss", "exp list and inc list "+categories.size());
+                for (int i=0; i<categories.size() && incomes<PocketAccounterGeneral.INCOME_BUTTONS_COUNT; i++) {
+                    if (categories.get(i).getType() == PocketAccounterGeneral.INCOME) {
+                        BoardButton boardButton = new BoardButton();
+                        boardButton.setCategoryId(categories.get(i).getId());
+                        boardButton.setPos(incomes);
+                        boardButton.setType(PocketAccounterGeneral.INCOME);
+                        daoSession.getBoardButtonDao().insert(boardButton);
+                        incomes++;
+                    }
+                }
+                for (int i=0; i<categories.size() && expenses<PocketAccounterGeneral.EXPANCE_BUTTONS_COUNT; i++) {
+                    if (categories.get(i).getType() == PocketAccounterGeneral.EXPENSE) {
+                        BoardButton boardButton = new BoardButton();
+                        boardButton.setCategoryId(categories.get(i).getId());
+                        boardButton.setPos(expenses);
+                        boardButton.setType(PocketAccounterGeneral.EXPENSE);
+                        daoSession.getBoardButtonDao().insert(boardButton);
+                        expenses++;
+                    }
+                }
+            }
         }
     }
 }

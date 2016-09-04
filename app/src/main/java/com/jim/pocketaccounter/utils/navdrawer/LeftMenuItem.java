@@ -1,4 +1,4 @@
-package com.jim.pocketaccounter.utils;
+package com.jim.pocketaccounter.utils.navdrawer;
 
 public class LeftMenuItem {
 	private String titleName="";

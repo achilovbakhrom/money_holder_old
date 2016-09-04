@@ -83,14 +83,14 @@ public class CategoryReportView extends LinearLayout {
         this.begin = (Calendar) begin.clone();
         this.end = (Calendar) end.clone();
         categoryReportDatas = new CategoryReportDatas(getContext(), begin, end);
-        if (type == PocketAccounterGeneral.INCOME) {
-            pieChart.setCenterText(getResources().getString(R.string.income));
-            datas = categoryReportDatas.makeIncomeReport();
-        }
-        else {
-            pieChart.setCenterText(getResources().getString(R.string.expanse));
-            datas = categoryReportDatas.makeExpanseReport();
-        }
+//        if (type == PocketAccounterGeneral.INCOME) {
+//            pieChart.setCenterText(getResources().getString(R.string.income));
+//            datas = categoryReportDatas.makeIncomeReport();
+//        }
+//        else {
+//            pieChart.setCenterText(getResources().getString(R.string.expanse));
+//            datas = categoryReportDatas.makeExpanseReport();
+//        }
         drawReport(datas);
 
     }

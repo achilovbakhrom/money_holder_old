@@ -22,12 +22,12 @@ public class IncomeExpanseDataRow {
         totalIncome = 0;
         totalExpanse = 0;
         totalProfit = 0;
-        for (int i=0; i<details.size(); i++) {
-            if (details.get(i).getCategory().getType() == PocketAccounterGeneral.INCOME)
-                totalIncome = totalIncome + PocketAccounterGeneral.getCost(date, details.get(i).getCurrency(), details.get(i).getAmount());
-            else
-                totalExpanse = totalExpanse + PocketAccounterGeneral.getCost(date, details.get(i).getCurrency(), details.get(i).getAmount());
-        }
+//        for (int i=0; i<details.size(); i++) {
+//            if (details.get(i).getCategory().getType() == PocketAccounterGeneral.INCOME)
+//                totalIncome = totalIncome + PocketAccounterGeneral.getCost(date, details.get(i).getCurrency(), details.get(i).getAmount());
+//            else
+//                totalExpanse = totalExpanse + PocketAccounterGeneral.getCost(date, details.get(i).getCurrency(), details.get(i).getAmount());
+//        }
         totalProfit = totalIncome - totalExpanse;
     }
 }

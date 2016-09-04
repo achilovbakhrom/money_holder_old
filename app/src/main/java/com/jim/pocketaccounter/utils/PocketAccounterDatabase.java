@@ -18,6 +18,7 @@ import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.database.PhotoDetails;
 

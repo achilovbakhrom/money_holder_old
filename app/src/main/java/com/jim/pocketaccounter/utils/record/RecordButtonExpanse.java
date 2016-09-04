@@ -12,12 +12,17 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.util.Calendar;
+
+import javax.inject.Inject;
 
 public class RecordButtonExpanse {
 	public static final int TOP_LEFT = 0, SIMPLE = 1, LEFT_SIMPLE = 2, LEFT_BOTTOM = 3, BOTTOM_SIMPLE = 4,
@@ -29,11 +34,14 @@ public class RecordButtonExpanse {
 	private Bitmap shadow;
 	private float radius, clearance;
 	private Context context;
-	private RootCategory category;
+	private BoardButton boardButton;
 	private float aLetterHeight;
 	private Calendar date;
+	@Inject
+	DaoSession daoSession;
 	public RecordButtonExpanse(Context context, int type, Calendar date) {
 		this.context = context;
+		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
 		this.date = (Calendar) date.clone();
 		clearance = context.getResources().getDimension(R.dimen.one_dp);
 		shape = new Path();
@@ -313,7 +321,14 @@ public class RecordButtonExpanse {
 			break;
 		}
 		bitmapPaint.setAlpha(0xFF);
-		if (category != null) {
+		if (boardButton != null) {
+			RootCategory category = null;
+			for (RootCategory cat : daoSession.getRootCategoryDao().loadAll()) {
+				if (cat.getId().matches(boardButton.getCategoryId())) {
+					category = cat;
+					break;
+				}
+			}
 			int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
 			temp = BitmapFactory.decodeResource(context.getResources(), resId);
 			scaled = Bitmap.createScaledBitmap(temp, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
@@ -364,5 +379,5 @@ public class RecordButtonExpanse {
 	public RectF getContainer() {
 		return container;
 	}
-	public void setCategory(RootCategory category) {this.category = category;}
+	public void setCategory(BoardButton boardButton) {this.boardButton = boardButton;}
 }

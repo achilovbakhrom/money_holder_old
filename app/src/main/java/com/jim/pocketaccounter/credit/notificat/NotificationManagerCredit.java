@@ -13,7 +13,6 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.DebtBorrow;
-import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.ParseException;
@@ -29,7 +28,7 @@ public class NotificationManagerCredit {
 	private AlarmManager alarmManager;
 	private ArrayList<CreditDetials> myCredits;
 	private ArrayList<DebtBorrow> myDebdbor;
-	private FinanceManager myFinance;
+//	private FinanceManager myFinance;
 	private int count = 0;
 	private int count_intent = 0;
 	final static long forDay=1000L*60L*60L*24L;
@@ -40,9 +39,9 @@ public class NotificationManagerCredit {
 	public NotificationManagerCredit(Context context) {
 		this.context = context;
 		alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-		myFinance= PocketAccounter.financeManager;
-		myCredits= myFinance.getCredits();
-		myDebdbor=myFinance.getDebtBorrows();
+//		myFinance= PocketAccounter.financeManager;
+//		myCredits= myFinance.getCredits();
+//		myDebdbor=myFinance.getDebtBorrows();
 	}
 		
 	public void notificSetCredit() throws InterruptedException {

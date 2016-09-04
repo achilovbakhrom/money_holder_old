@@ -176,18 +176,18 @@ public class TableView extends LinearLayout {
                         lvReportByIncomeExpanseInfo.setAdapter(adapter);
                         TextView tvReportByIncomeExpanseTotalIncome = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseTotalIncome);
                         DecimalFormat decimalFormat = new DecimalFormat("0.00##");
-                        tvReportByIncomeExpanseTotalIncome.setText(decimalFormat.format(row.getTotalExpanse()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
-                        TextView tvReportByIncomeExpanseExpanse = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseExpanse);
-                        tvReportByIncomeExpanseExpanse.setText(decimalFormat.format(row.getTotalIncome()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
-                        TextView tvReportByIncomeExpanseProfit = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseProfit);
-                        tvReportByIncomeExpanseProfit.setText(decimalFormat.format(row.getTotalProfit()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
+//                        tvReportByIncomeExpanseTotalIncome.setText(decimalFormat.format(row.getTotalExpanse()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
+//                        TextView tvReportByIncomeExpanseExpanse = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseExpanse);
+//                        tvReportByIncomeExpanseExpanse.setText(decimalFormat.format(row.getTotalIncome()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
+//                        TextView tvReportByIncomeExpanseProfit = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseProfit);
+//                        tvReportByIncomeExpanseProfit.setText(decimalFormat.format(row.getTotalProfit()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
                         dialog.show();
                     }
                 }
             });
             SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
             DecimalFormat decimalFormat = new DecimalFormat("0.00");
-            String abbr = PocketAccounter.financeManager.getMainCurrency().getAbbr();
+//            String abbr = PocketAccounter.financeManager.getMainCurrency().getAbbr();
             if (isFirstBitmap) {
                 AccountDataRow row = (AccountDataRow) result.get(position);
                 holder.tvTableFirstCol.setVisibility(GONE);
@@ -202,8 +202,8 @@ public class TableView extends LinearLayout {
                     holder.ivTableItem.setImageBitmap(operation);
                 }
                 holder.tvTableSecondCol.setText(format.format(row.getDate().getTime()));
-                abbr = row.getCurrency().getAbbr();
-                holder.tvTableThirdCol.setText(decimalFormat.format(row.getAmount()) + abbr);
+//                abbr = row.getCurrency().getAbbr();
+//                holder.tvTableThirdCol.setText(decimalFormat.format(row.getAmount()) + abbr);
                 String text = row.getCategory().getName();
                 if (row.getSubCategory() != null)
                     text = text + ", " + row.getSubCategory().getName();
@@ -213,9 +213,9 @@ public class TableView extends LinearLayout {
                 holder.tvTableFirstCol.setVisibility(VISIBLE);
                 holder.ivTableItem.setVisibility(GONE);
                 holder.tvTableFirstCol.setText(format.format(row.getDate().getTime()));
-                holder.tvTableSecondCol.setText(decimalFormat.format(row.getTotalIncome()) + abbr);
-                holder.tvTableThirdCol.setText(decimalFormat.format(row.getTotalExpanse()) + abbr);
-                holder.tvTableFourthCol.setText(decimalFormat.format(row.getTotalProfit()) + abbr);
+//                holder.tvTableSecondCol.setText(decimalFormat.format(row.getTotalIncome()) + abbr);
+//                holder.tvTableThirdCol.setText(decimalFormat.format(row.getTotalExpanse()) + abbr);
+//                holder.tvTableFourthCol.setText(decimalFormat.format(row.getTotalProfit()) + abbr);
             }
         }
     }

@@ -7,25 +7,29 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.CurrencyChecbox;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 public class CurrencyChooseAdapter extends BaseAdapter {
 	private ArrayList<Currency> result;
 	private LayoutInflater inflater;
-	private Context context;
-	private FinanceManager manager;
 	private boolean[] chbs;
+	@Inject
+	DaoSession daoSession;
+
 	public CurrencyChooseAdapter(Context context, ArrayList<Currency> result, boolean[] chbs) {
 	    this.result = result;
-	    this.chbs = chbs;
-	    manager = PocketAccounter.financeManager;
-	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	  }
+		this.chbs = chbs;
+		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
+		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
 	@Override
 	public int getCount() {
 		return result.size();
@@ -47,8 +51,8 @@ public class CurrencyChooseAdapter extends BaseAdapter {
 		TextView tvChooseAbbr = (TextView) view.findViewById(R.id.tvCurrencyChooseSign);
 		tvChooseAbbr.setText(result.get(position).getAbbr());
 		CurrencyChecbox chbChoose = (CurrencyChecbox) view.findViewById(R.id.chbCurrencyChoose);
-		for (int i=0; i<manager.getCurrencies().size(); i++) {
-			if (result.get(position).getId().matches(manager.getCurrencies().get(i).getId())) {
+		for (Currency currency : daoSession.getCurrencyDao().loadAll()) {
+			if (result.get(position).getId().matches(currency.getId())) {
 				chbChoose.setChecked(true);
 				break;
 			}

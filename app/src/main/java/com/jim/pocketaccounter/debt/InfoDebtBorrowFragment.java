@@ -36,7 +36,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.Recking;
-import com.jim.pocketaccounter.finance.FinanceManager;
+//import com.jim.pocketaccounter.finance.FinanceManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
     private FrameLayout borrowPay;
     private CircleImageView circleImageView;
     private android.support.v7.widget.RecyclerView recyclerView;
-    private FinanceManager manager;
+//    private FinanceManager manager;
     private String id = "";
     private PeysAdapter peysAdapter;
     private Spinner accountSp;
@@ -109,16 +109,16 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
         isHaveReking = (FrameLayout) view.findViewById(R.id.ifListHave);
         ((ImageView) PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight)).setVisibility(View.VISIBLE);
 
-        manager = PocketAccounter.financeManager;
-        debtBorrow = new DebtBorrow();
-        if (manager.getDebtBorrows() != null) {
-            for (DebtBorrow db : manager.getDebtBorrows()) {
-                if (db.getId().matches(id)) {
-                    debtBorrow = db;
-                    break;
-                }
-            }
-        }
+//        manager = PocketAccounter.financeManager;
+//        debtBorrow = new DebtBorrow();
+//        if (manager.getDebtBorrows() != null) {
+//            for (DebtBorrow db : manager.getDebtBorrows()) {
+//                if (db.getId().matches(id)) {
+//                    debtBorrow = db;
+//                    break;
+//                }
+//            }
+//        }
 
         isCheks = new boolean[debtBorrow.getReckings().size()];
         for (int i = 0; i < isCheks.length; i++) {
@@ -151,14 +151,14 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                         }).setNegativeButton(getResources().getString(R.string.delete), new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
-                                        manager.getDebtBorrows().remove(debtBorrow);
-                                        manager.saveDebtBorrows();
-                                        manager.loadDebtBorrows();
-                                        ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
-                                        DebtBorrowFragment fragment = new DebtBorrowFragment();
-                                        Bundle bundle = new Bundle();
-                                        bundle.putInt("pos", debtBorrow.isTo_archive() ? 2 : debtBorrow.getType());
-                                        fragment.setArguments(bundle);
+//                                        manager.getDebtBorrows().remove(debtBorrow);
+//                                        manager.saveDebtBorrows();
+//                                        manager.loadDebtBorrows();
+//                                        ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
+//                                        DebtBorrowFragment fragment = new DebtBorrowFragment();
+//                                        Bundle bundle = new Bundle();
+//                                        bundle.putInt("pos", debtBorrow.isTo_archive() ? 2 : debtBorrow.getType());
+//                                        fragment.setArguments(bundle);
 //                                        ((PocketAccounter) getContext()).replaceFragment(fragment, PockerTag.DEBTS);
                                     }
                                 });
@@ -184,14 +184,14 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                             }).setNegativeButton(getResources().getString(R.string.delete), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
-                            manager.getDebtBorrows().remove(debtBorrow);
-                            manager.saveDebtBorrows();
-                            manager.loadDebtBorrows();
-                            ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
-                            DebtBorrowFragment fragment = new DebtBorrowFragment();
-                            Bundle bundle = new Bundle();
-                            bundle.putInt("pos", debtBorrow.isTo_archive() ? 2 : debtBorrow.getType());
-                            fragment.setArguments(bundle);
+//                            manager.getDebtBorrows().remove(debtBorrow);
+//                            manager.saveDebtBorrows();
+//                            manager.loadDebtBorrows();
+//                            ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
+//                            DebtBorrowFragment fragment = new DebtBorrowFragment();
+//                            Bundle bundle = new Bundle();
+//                            bundle.putInt("pos", debtBorrow.isTo_archive() ? 2 : debtBorrow.getType());
+//                            fragment.setArguments(bundle);
 //                            ((PocketAccounter) getContext()).replaceFragment(fragment, PockerTag.DEBTS);
                         }
                     });
@@ -390,12 +390,12 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
 
     private boolean isMumkin(DebtBorrow debt, String accountId, Double summ) {
         Account account = null;
-        for (Account ac : manager.getAccounts()) {
-            if (ac.getId().matches(accountId)) {
-                account = ac;
-                break;
-            }
-        }
+//        for (Account ac : manager.getAccounts()) {
+//            if (ac.getId().matches(accountId)) {
+//                account = ac;
+//                break;
+//            }
+//        }
 //        if (account.isLimited() && debt.isCalculate()) {
 //            double limit = account.getLimitSum();
 //            double accounted = PocketAccounterGeneral.getCost(debt.getTakenDate(),account.getStartMoneyCurrency(),account.getLimitCurrency(),account.getAmount());
@@ -489,15 +489,15 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             final EditText comment = (EditText) dialogView.findViewById(R.id.etInfoDebtBorrowPayComment);
             accountSp = (Spinner) dialogView.findViewById(R.id.spInfoDebtBorrowAccount);
 
-            final String[] accaounts = new String[manager.getAccounts().size()];
-            for (int i = 0; i < accaounts.length; i++) {
-                accaounts[i] = manager.getAccounts().get(i).getName();
-            }
+//            final String[] accaounts = new String[manager.getAccounts().size()];
+//            for (int i = 0; i < accaounts.length; i++) {
+//                accaounts[i] = manager.getAccounts().get(i).getName();
+//            }
 
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                    getContext(), R.layout.spiner_gravity_right, accaounts);
-
-            accountSp.setAdapter(arrayAdapter);
+//            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+//                    getContext(), R.layout.spiner_gravity_right, accaounts);
+//
+//            accountSp.setAdapter(arrayAdapter);
 
             if (!debtBorrow.isCalculate()) {
                 dialogView.findViewById(R.id.is_calc).setVisibility(View.GONE);
@@ -542,8 +542,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                     int len = debtBorrow.getCurrency().getAbbr().length();
                     if (!enterPay.getText().toString().isEmpty() && Double.parseDouble(enterPay.getText().toString()) != 0) {
 
-                        if (debtBorrow.isCalculate() && isMumkin(debtBorrow, manager.getAccounts().get(accountSp.getSelectedItemPosition()).getId(), Double.parseDouble(enterPay.getText().toString())))
-                            tek = true;
+//                        if (debtBorrow.isCalculate() && isMumkin(debtBorrow, manager.getAccounts().get(accountSp.getSelectedItemPosition()).getId(), Double.parseDouble(enterPay.getText().toString())))
+//                            tek = true;
                         if (!debtBorrow.isCalculate()) tek = true;
 
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -582,18 +582,18 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             dialog.getWindow().setLayout(7 * width / 8, RelativeLayout.LayoutParams.WRAP_CONTENT);
             dialog.show();
         } else {
-            for (int i = 0; i < manager.getDebtBorrows().size(); i++) {
-                if (manager.getDebtBorrows().get(i).getId().matches(debtBorrow.getId())) {
-                    manager.getDebtBorrows().get(i).setTo_archive(true);
-                    break;
-                }
-            }
+//            for (int i = 0; i < manager.getDebtBorrows().size(); i++) {
+//                if (manager.getDebtBorrows().get(i).getId().matches(debtBorrow.getId())) {
+//                    manager.getDebtBorrows().get(i).setTo_archive(true);
+//                    break;
+//                }
+//            }
 
-            ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
-            DebtBorrowFragment fragment = new DebtBorrowFragment();
-            Bundle bundle = new Bundle();
-            bundle.putInt("pos", debtBorrow.getType());
-            fragment.setArguments(bundle);
+//            ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
+//            DebtBorrowFragment fragment = new DebtBorrowFragment();
+//            Bundle bundle = new Bundle();
+//            bundle.putInt("pos", debtBorrow.getType());
+//            fragment.setArguments(bundle);
 //            ((PocketAccounter) getContext()).replaceFragment(fragment, PockerTag.DEBTS);
         }
     }
@@ -639,12 +639,12 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             if (!debtBorrow.isCalculate()) {
                 view.infoAccount.setVisibility(View.GONE);
             } else {
-                for (Account account : manager.getAccounts()) {
-                    if (account.getId().matches(list.get(position).getAccountId())) {
-                        view.infoAccount.setText(getString(R.string.by) + account.getName());
-                        break;
-                    }
-                }
+//                for (Account account : manager.getAccounts()) {
+//                    if (account.getId().matches(list.get(position).getAccountId())) {
+//                        view.infoAccount.setText(getString(R.string.by) + account.getName());
+//                        break;
+//                    }
+//                }
             }
             if (mode == 0) {
                 view.rootView.setOnClickListener(new View.OnClickListener() {
@@ -703,12 +703,12 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
         }
 
         public void setDataChanged(String clDate, double value, String accountId, String comment) {
-            for (Account account : manager.getAccounts()) {
-                if (account.getName().matches(accountId)) {
-                    accountId = account.getId();
-                    break;
-                }
-            }
+//            for (Account account : manager.getAccounts()) {
+//                if (account.getName().matches(accountId)) {
+//                    accountId = account.getId();
+//                    break;
+//                }
+//            }
             Recking recking = new Recking(clDate, value, debtBorrow.getId(), accountId, comment);
             list.add(0, recking);
             double qoldiq = 0;
@@ -727,7 +727,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                 leftAmount.setText(getResources().getString(R.string.repaid));
             }
 //            debtBorrow.setReckings(list);
-            manager.setDebtBorrows(manager.getDebtBorrows());
+//            manager.setDebtBorrows(manager.getDebtBorrows());
             isHaveReking.setVisibility(View.VISIBLE);
             notifyItemInserted(0);
             isCheks = new boolean[list.size()];
@@ -759,7 +759,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
     @Override
     public void onStop() {
         super.onStop();
-        manager.saveDebtBorrows();
-        manager.loadDebtBorrows();
+//        manager.saveDebtBorrows();
+//        manager.loadDebtBorrows();
     }
 }

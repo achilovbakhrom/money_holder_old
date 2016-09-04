@@ -36,7 +36,6 @@ public class PocketAccounterApplication extends Application {
         SystemConfigurator configurator = new SystemConfigurator(this);
         configurator.configurate();
 
-
     }
     public PocketAccounterApplicationComponent component() {
         return pocketAccounterApplicationComponent;

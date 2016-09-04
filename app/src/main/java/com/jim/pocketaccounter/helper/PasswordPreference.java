@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.SettingsActivity;
+//import com.jim.pocketaccounter.SettingsActivity;
 
 import java.util.zip.Inflater;
 

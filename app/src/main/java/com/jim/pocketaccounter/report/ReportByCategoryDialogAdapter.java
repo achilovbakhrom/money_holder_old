@@ -41,7 +41,7 @@ public class ReportByCategoryDialogAdapter extends BaseAdapter {
 		tvReportByCategoryListSubCatName.setText("- "+result.get(position).getSubCategory().getName());
 		TextView tvReportByCategoryListSubCatAmount = (TextView) view.findViewById(R.id.tvReportByCategoryListSubCatAmount);
 		DecimalFormat format = new DecimalFormat("0.00##");
-		tvReportByCategoryListSubCatAmount.setText(format.format(result.get(position).getAmount())+ PocketAccounter.financeManager.getMainCurrency().getAbbr());
+//		tvReportByCategoryListSubCatAmount.setText(format.format(result.get(position).getAmount())+ PocketAccounter.financeManager.getMainCurrency().getAbbr());
 		return view;
 	}
 }

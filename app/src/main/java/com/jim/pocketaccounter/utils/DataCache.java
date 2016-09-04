@@ -7,6 +7,7 @@ import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SmsParseObject;
 
 import java.util.List;
 

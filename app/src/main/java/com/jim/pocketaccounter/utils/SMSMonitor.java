@@ -12,7 +12,8 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.finance.FinanceManager;
+import com.jim.pocketaccounter.database.SmsParseObject;
+//import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.widget.WidgetKeys;
@@ -29,8 +30,8 @@ public class SMSMonitor extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getExtras() == null) return;
-        FinanceManager manager = new FinanceManager(context);
-        ArrayList<SmsParseObject> objects = manager.getSmsObjects();
+//        FinanceManager manager = new FinanceManager(context);
+//        ArrayList<SmsParseObject> objects = manager.getSmsObjects();
         if (intent != null && intent.getAction() != null &&
                 ACTION.compareToIgnoreCase(intent.getAction()) == 0) {
             Object[] pduArray = (Object[]) intent.getExtras().get("pdus");
@@ -44,160 +45,160 @@ public class SMSMonitor extends BroadcastReceiver {
                 else {
                     messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
                 }
-                for (int j=0; j<objects.size(); j++) {
-                    if (messages[i].getDisplayOriginatingAddress().contains(objects.get(j).getNumber())) {
-                        String messageBody = messages[i].getMessageBody();
-                        String amount = "";
-                        RootCategory category = null;
-                        Account account;
-                        Currency currency ;
-                        if (objects.get(j).getType() == PocketAccounterGeneral.SMS_ONLY_INCOME) {
-                            String sms_income_id = context.getResources().getString(R.string.sms_parse_income_id);
-                            boolean catFound = false;
-                            for (int k=0; k<manager.getCategories().size(); k++) {
-                                if (sms_income_id.matches(manager.getCategories().get(k).getId())) {
-                                    category = manager.getCategories().get(k);
-                                    catFound = true;
-                                    break;
-                                }
-                            }
-                            if (!catFound) {
-                                category = new RootCategory();
-//                                category.setSubCategories(new ArrayList<SubCategory>());
-                                category.setName(context.getResources().getString(R.string.sms_parse_income));
-                                category.setType(PocketAccounterGeneral.INCOME);
-                                category.setId(sms_income_id);
-                                category.setIcon("icons_20");
-                                manager.getCategories().add(category);
-                                manager.saveCategories();
-                            }
-
-                        }
-                        if (objects.get(j).getType() == PocketAccounterGeneral.SMS_ONLY_EXPENSE) {
-                            String sms_expense_id = context.getResources().getString(R.string.sms_parse_expense_id);
-                            boolean catFound = false;
-                            for (int k=0; k<manager.getCategories().size(); k++) {
-                                if (sms_expense_id.matches(manager.getCategories().get(k).getId())) {
-                                    category = manager.getCategories().get(k);
-                                    catFound = true;
-                                    break;
-                                }
-                            }
-                            if (!catFound) {
-                                category = new RootCategory();
-//                                category.setSubCategories(new ArrayList<SubCategory>());
-                                category.setName(context.getResources().getString(R.string.sms_parse_expense));
-                                category.setType(PocketAccounterGeneral.EXPENSE);
-                                category.setId(sms_expense_id);
-                                category.setIcon("icons_21");
-                                manager.getCategories().add(category);
-                                manager.saveCategories();
-                            }
-                        }
-                        if (objects.get(j).getType() == PocketAccounterGeneral.SMS_BOTH) {
-                            boolean catFound = false;
-                            String[] incomes = objects.get(j).getIncomeWords().split(",");
-                            for (int k=0; k < incomes.length; k++) {
-                                if (messageBody.contains(incomes[k])) {
-                                    catFound = true;
-                                    String sms_income_id = context.getResources().getString(R.string.sms_parse_income_id);
-                                    boolean incFound = false;
-                                    for (int l=0; l<manager.getCategories().size(); l++) {
-                                        if (sms_income_id.matches(manager.getCategories().get(l).getId())) {
-                                            category = manager.getCategories().get(l);
-                                            incFound = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!incFound) {
-                                        category = new RootCategory();
-//                                        category.setSubCategories(new ArrayList<SubCategory>());
-                                        category.setName(context.getResources().getString(R.string.sms_parse_income));
-                                        category.setType(PocketAccounterGeneral.INCOME);
-                                        category.setId(sms_income_id);
-                                        category.setIcon("icons_20");
-                                        manager.getCategories().add(category);
-                                        manager.saveCategories();
-                                    }
-                                    break;
-                                }
-                            }
-                            if (!catFound) {
-                                String[] expenses = objects.get(j).getExpenseWords().split(",");
-                                for (int k=0; k < expenses.length; k++) {
-                                    if (messageBody.contains(expenses[k])) {
-                                        catFound = true;
-                                        String sms_expense_id = context.getResources().getString(R.string.sms_parse_expense_id);
-                                        boolean expFound = false;
-                                        for (int l=0; l<manager.getCategories().size(); l++) {
-                                            if (sms_expense_id.matches(manager.getCategories().get(l).getId())) {
-                                                category = manager.getCategories().get(l);
-                                                expFound = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!expFound) {
-                                            category = new RootCategory();
-//                                            category.setSubCategories(new ArrayList<SubCategory>());
-                                            category.setName(context.getResources().getString(R.string.sms_parse_expense));
-                                            category.setType(PocketAccounterGeneral.EXPENSE);
-                                            category.setId(sms_expense_id);
-                                            category.setIcon("icons_21");
-                                            manager.getCategories().add(category);
-                                            manager.saveCategories();
-                                        }
-                                    }
-                                }
-                            }
-                            if (!catFound) return;
-                        }
-                        boolean amountFound = false;
-                        String[] amounts = objects.get(j).getAmountWords().split(",");
-                        for (int k=0; k<amounts.length; k++) {
-                            if (messageBody.contains(amounts[k])) {
-                                amountFound = true;
-                                int pos = messageBody.lastIndexOf(amounts[k]);
-                                while(!isNumber(messageBody.charAt(pos))) {
-                                    pos++;
-                                }
-
-                                while (isNumber(messageBody.charAt(pos))) {
-                                    amount += messageBody.charAt(pos);
-                                    pos++;
-                                }
-                            }
-                            if (!amountFound) return;
-                        }
-                        currency = objects.get(i).getCurrency();
-                        account = objects.get(i).getAccount();
-                        double sum = parseDouble(amount);
-                        FinanceRecord record = new FinanceRecord();
-                        record.setDate(Calendar.getInstance());
-                        record.setCategory(category);
-                        record.setSubCategory(null);
-                        record.setCurrency(currency);
-                        record.setAccount(account);
-                        record.setRecordId("record_"+UUID.randomUUID().toString());
-                        record.setAmount(sum);
-                        if (PocketAccounter.financeManager != null) {
-                            PocketAccounter.financeManager.getRecords().add(record);
-                            PocketAccounter.financeManager.saveRecords();
-                        } else
-                        {
-                            manager.getRecords().add(record);
-                            manager.saveRecords();
-                        }
-                        //TODO
-                        SharedPreferences sPref;
-                        sPref = context.getSharedPreferences("infoFirst", MODE_PRIVATE);
-                        int t=sPref.getInt(WidgetKeys.SPREF_WIDGET_ID,-1);
-                        if(t>=0){
-                            if(AppWidgetManager.INVALID_APPWIDGET_ID!=t)
-                                WidgetProvider.updateWidget(context, AppWidgetManager.getInstance(context),
-                                        t);
-                        }
-                    }
-                }
+//                for (int j=0; j<objects.size(); j++) {
+//                    if (messages[i].getDisplayOriginatingAddress().contains(objects.get(j).getNumber())) {
+//                        String messageBody = messages[i].getMessageBody();
+//                        String amount = "";
+//                        RootCategory category = null;
+//                        Account account;
+//                        Currency currency ;
+//                        if (objects.get(j).getType() == PocketAccounterGeneral.SMS_ONLY_INCOME) {
+//                            String sms_income_id = context.getResources().getString(R.string.sms_parse_income_id);
+//                            boolean catFound = false;
+//                            for (int k=0; k<manager.getCategories().size(); k++) {
+//                                if (sms_income_id.matches(manager.getCategories().get(k).getId())) {
+//                                    category = manager.getCategories().get(k);
+//                                    catFound = true;
+//                                    break;
+//                                }
+//                            }
+//                            if (!catFound) {
+//                                category = new RootCategory();
+////                                category.setSubCategories(new ArrayList<SubCategory>());
+//                                category.setName(context.getResources().getString(R.string.sms_parse_income));
+//                                category.setType(PocketAccounterGeneral.INCOME);
+//                                category.setId(sms_income_id);
+//                                category.setIcon("icons_20");
+//                                manager.getCategories().add(category);
+//                                manager.saveCategories();
+//                            }
+//
+//                        }
+//                        if (objects.get(j).getType() == PocketAccounterGeneral.SMS_ONLY_EXPENSE) {
+//                            String sms_expense_id = context.getResources().getString(R.string.sms_parse_expense_id);
+//                            boolean catFound = false;
+//                            for (int k=0; k<manager.getCategories().size(); k++) {
+//                                if (sms_expense_id.matches(manager.getCategories().get(k).getId())) {
+//                                    category = manager.getCategories().get(k);
+//                                    catFound = true;
+//                                    break;
+//                                }
+//                            }
+//                            if (!catFound) {
+//                                category = new RootCategory();
+////                                category.setSubCategories(new ArrayList<SubCategory>());
+//                                category.setName(context.getResources().getString(R.string.sms_parse_expense));
+//                                category.setType(PocketAccounterGeneral.EXPENSE);
+//                                category.setId(sms_expense_id);
+//                                category.setIcon("icons_21");
+//                                manager.getCategories().add(category);
+//                                manager.saveCategories();
+//                            }
+//                        }
+//                        if (objects.get(j).getType() == PocketAccounterGeneral.SMS_BOTH) {
+//                            boolean catFound = false;
+//                            String[] incomes = objects.get(j).getIncomeWords().split(",");
+//                            for (int k=0; k < incomes.length; k++) {
+//                                if (messageBody.contains(incomes[k])) {
+//                                    catFound = true;
+//                                    String sms_income_id = context.getResources().getString(R.string.sms_parse_income_id);
+//                                    boolean incFound = false;
+//                                    for (int l=0; l<manager.getCategories().size(); l++) {
+//                                        if (sms_income_id.matches(manager.getCategories().get(l).getId())) {
+//                                            category = manager.getCategories().get(l);
+//                                            incFound = true;
+//                                            break;
+//                                        }
+//                                    }
+//                                    if (!incFound) {
+//                                        category = new RootCategory();
+////                                        category.setSubCategories(new ArrayList<SubCategory>());
+//                                        category.setName(context.getResources().getString(R.string.sms_parse_income));
+//                                        category.setType(PocketAccounterGeneral.INCOME);
+//                                        category.setId(sms_income_id);
+//                                        category.setIcon("icons_20");
+//                                        manager.getCategories().add(category);
+//                                        manager.saveCategories();
+//                                    }
+//                                    break;
+//                                }
+//                            }
+//                            if (!catFound) {
+//                                String[] expenses = objects.get(j).getExpenseWords().split(",");
+//                                for (int k=0; k < expenses.length; k++) {
+//                                    if (messageBody.contains(expenses[k])) {
+//                                        catFound = true;
+//                                        String sms_expense_id = context.getResources().getString(R.string.sms_parse_expense_id);
+//                                        boolean expFound = false;
+//                                        for (int l=0; l<manager.getCategories().size(); l++) {
+//                                            if (sms_expense_id.matches(manager.getCategories().get(l).getId())) {
+//                                                category = manager.getCategories().get(l);
+//                                                expFound = true;
+//                                                break;
+//                                            }
+//                                        }
+//                                        if (!expFound) {
+//                                            category = new RootCategory();
+////                                            category.setSubCategories(new ArrayList<SubCategory>());
+//                                            category.setName(context.getResources().getString(R.string.sms_parse_expense));
+//                                            category.setType(PocketAccounterGeneral.EXPENSE);
+//                                            category.setId(sms_expense_id);
+//                                            category.setIcon("icons_21");
+//                                            manager.getCategories().add(category);
+//                                            manager.saveCategories();
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                            if (!catFound) return;
+//                        }
+//                        boolean amountFound = false;
+//                        String[] amounts = objects.get(j).getAmountWords().split(",");
+//                        for (int k=0; k<amounts.length; k++) {
+//                            if (messageBody.contains(amounts[k])) {
+//                                amountFound = true;
+//                                int pos = messageBody.lastIndexOf(amounts[k]);
+//                                while(!isNumber(messageBody.charAt(pos))) {
+//                                    pos++;
+//                                }
+//
+//                                while (isNumber(messageBody.charAt(pos))) {
+//                                    amount += messageBody.charAt(pos);
+//                                    pos++;
+//                                }
+//                            }
+//                            if (!amountFound) return;
+//                        }
+//                        currency = objects.get(i).getCurrency();
+//                        account = objects.get(i).getAccount();
+//                        double sum = parseDouble(amount);
+//                        FinanceRecord record = new FinanceRecord();
+//                        record.setDate(Calendar.getInstance());
+//                        record.setCategory(category);
+//                        record.setSubCategory(null);
+//                        record.setCurrency(currency);
+//                        record.setAccount(account);
+//                        record.setRecordId("record_"+UUID.randomUUID().toString());
+//                        record.setAmount(sum);
+//                        if (PocketAccounter.financeManager != null) {
+//                            PocketAccounter.financeManager.getRecords().add(record);
+//                            PocketAccounter.financeManager.saveRecords();
+//                        } else
+//                        {
+//                            manager.getRecords().add(record);
+//                            manager.saveRecords();
+//                        }
+//                        //TODO
+//                        SharedPreferences sPref;
+//                        sPref = context.getSharedPreferences("infoFirst", MODE_PRIVATE);
+//                        int t=sPref.getInt(WidgetKeys.SPREF_WIDGET_ID,-1);
+//                        if(t>=0){
+//                            if(AppWidgetManager.INVALID_APPWIDGET_ID!=t)
+//                                WidgetProvider.updateWidget(context, AppWidgetManager.getInstance(context),
+//                                        t);
+//                        }
+//                    }
+//                }
             }
         }
         abortBroadcast();

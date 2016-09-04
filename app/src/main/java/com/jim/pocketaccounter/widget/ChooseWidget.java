@@ -18,7 +18,7 @@ import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.finance.CategoryAdapter;
-import com.jim.pocketaccounter.finance.FinanceManager;
+//import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
@@ -31,7 +31,7 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
     private CheckBox chbCatIncomes, chbCatExpanses;
     private int mode = PocketAccounterGeneral.NORMAL_MODE;
     private boolean[] selected;
-    private FinanceManager financeManager;
+//    private FinanceManager financeManager;
     private String BUTTON_ID;
     int mAppWidgetId;
     String GOBACK="s";
@@ -61,7 +61,7 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
 
 
 
-        financeManager=new FinanceManager(this);
+//        financeManager=new FinanceManager(this);
         
         lvCategories = (ListView) findViewById(R.id.lvAccounts);
         lvCategories.setOnItemClickListener(this);
@@ -78,16 +78,16 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
 
     private void refreshList(int mode) {
         ArrayList<RootCategory> categories = new ArrayList<RootCategory>();
-        for (int i = 0; i< financeManager.getCategories().size(); i++) {
-            if (chbCatIncomes.isChecked()) {
-                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
-                    categories.add(financeManager.getCategories().get(i));
-            }
-            if(chbCatExpanses.isChecked()) {
-                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
-                    categories.add(financeManager.getCategories().get(i));
-            }
-        }
+//        for (int i = 0; i< financeManager.getCategories().size(); i++) {
+//            if (chbCatIncomes.isChecked()) {
+//                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
+//                    categories.add(financeManager.getCategories().get(i));
+//            }
+//            if(chbCatExpanses.isChecked()) {
+//                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
+//                    categories.add(financeManager.getCategories().get(i));
+//            }
+//        }
         CategoryAdapter adapter = new CategoryAdapter(this, categories, selected, mode);
         lvCategories.setAdapter(adapter);
     }
@@ -145,7 +145,7 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
         if (mode == PocketAccounterGeneral.NORMAL_MODE) {
             if (chbCatExpanses.isChecked() && chbCatIncomes.isChecked()){
 
-                sPref.edit().putString(BUTTON_ID,financeManager.getCategories().get(position).getId()).apply();
+//                sPref.edit().putString(BUTTON_ID,financeManager.getCategories().get(position).getId()).apply();
                 setResult(RESULT_OK);
                 if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
                     WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
@@ -162,10 +162,10 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
 
             else if (chbCatExpanses.isChecked() && !chbCatIncomes.isChecked()) {
                 ArrayList<RootCategory> categories = new ArrayList<>();
-                for (int i=0; i < financeManager.getCategories().size(); i++) {
-                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
-                        categories.add(financeManager.getCategories().get(i));
-                }
+//                for (int i=0; i < financeManager.getCategories().size(); i++) {
+//                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
+//                        categories.add(financeManager.getCategories().get(i));
+//                }
                 sPref.edit().putString(BUTTON_ID,categories.get(position).getId()).apply();
                 setResult(RESULT_OK);
                 if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
@@ -183,10 +183,10 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
             }
             else if (chbCatIncomes.isChecked() && !chbCatExpanses.isChecked()) {
                 ArrayList<RootCategory> categories = new ArrayList<>();
-                for (int i=0; i < financeManager.getCategories().size(); i++) {
-                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
-                        categories.add(financeManager.getCategories().get(i));
-                }
+//                for (int i=0; i < financeManager.getCategories().size(); i++) {
+//                    if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
+//                        categories.add(financeManager.getCategories().get(i));
+//                }
                 sPref.edit().putString(BUTTON_ID,categories.get(position).getId()).apply();
                 setResult(RESULT_OK);
                 if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
@@ -219,7 +219,7 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
 
         }
         else {
-            selected = new boolean[financeManager.getCategories().size()];
+//            selected = new boolean[financeManager.getCategories().size()];
 
         }
         refreshList(mode);
@@ -229,85 +229,86 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
         if (chbCatIncomes.isChecked() && chbCatExpanses.isChecked()) {
             for (int i=0; i<selected.length; i++) {
                 if (selected[i]) {
-                    String id = financeManager.getCategories().get(i).getId();
-                    for (int j=0; j<financeManager.getExpanses().size(); j++) {
-                        if (financeManager.getExpanses().get(j) == null)	continue;
-                        if (financeManager.getExpanses().get(j).getId().matches(id))
-                            financeManager.getExpanses().set(j, null);
-                    }
-                    for (int j=0; j<financeManager.getIncomes().size(); j++) {
-                        if (financeManager.getIncomes().get(j) == null)	continue;
-                        if (financeManager.getIncomes().get(j).getId().matches(id))
-                            financeManager.getIncomes().set(j, null);
-                    }
-                    for (int j=0; j<financeManager.getRecords().size(); j++) {
-                        if (financeManager.getRecords().get(j).getCategory().getId().matches(id)) {
-                            financeManager.getRecords().remove(j);
-                            j--;
-                        }
-                    }
-                    financeManager.getCategories().set(i, null);
-                }
-            }
-        } else if (chbCatIncomes.isChecked() && !chbCatExpanses.isChecked()) {
-            ArrayList<RootCategory> categories = new ArrayList<>();
-            for (int i=0; i < financeManager.getCategories().size(); i++) {
-                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
-                    categories.add(financeManager.getCategories().get(i));
-            }
-            for (int i=0; i<selected.length; i++) {
-                if (selected[i]) {
-                    String id = categories.get(i).getId();
-                    for (int j=0; j<financeManager.getIncomes().size(); j++) {
-                        if (financeManager.getIncomes().get(j) == null)	continue;
-                        if (financeManager.getIncomes().get(j).getId().matches(id))
-                            financeManager.getIncomes().set(j, null);
-                    }
-                    for (int j=0; j<financeManager.getRecords().size(); j++) {
-                        if (financeManager.getRecords().get(j).getCategory().getId().matches(id)) {
-                            financeManager.getRecords().remove(j);
-                            j--;
-                        }
-                    }
-                    for (int j=0; j<financeManager.getCategories().size(); j++) {
-                        if (financeManager.getCategories().get(j).getId().matches(id))
-                            financeManager.getCategories().set(j, null);
-                    }
-                }
-            }
-        } else if (!chbCatIncomes.isChecked() && chbCatExpanses.isChecked()) {
-            ArrayList<RootCategory> categories = new ArrayList<>();
-            for (int i=0; i < financeManager.getCategories().size(); i++) {
-                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
-                    categories.add(financeManager.getCategories().get(i));
-            }
-            for (int i=0; i<selected.length; i++) {
-                if (selected[i]) {
-                    String id = categories.get(i).getId();
-                    for (int j=0; j<financeManager.getExpanses().size(); j++) {
-                        if (financeManager.getExpanses().get(j) == null)	continue;
-                        if (financeManager.getExpanses().get(j).getId().matches(id))
-                            financeManager.getExpanses().set(j, null);
-                    }
-                    for (int j=0; j<financeManager.getRecords().size(); j++) {
-                        if (financeManager.getRecords().get(j).getCategory().getId().matches(id)) {
-                            financeManager.getRecords().remove(j);
-                            j--;
-                        }
-                    }
-                    for (int j=0; j<financeManager.getCategories().size(); j++) {
-                        if (financeManager.getCategories().get(j).getId().matches(id))
-                            financeManager.getCategories().set(j, null);
-                    }
+//                    String id = financeManager.getCategories().get(i).getId();
+//                    for (int j=0; j<financeManager.getExpanses().size(); j++) {
+//                        if (financeManager.getExpanses().get(j) == null)	continue;
+//                        if (financeManager.getExpanses().get(j).getId().matches(id))
+//                            financeManager.getExpanses().set(j, null);
+//                    }
+//                    for (int j=0; j<financeManager.getIncomes().size(); j++) {
+//                        if (financeManager.getIncomes().get(j) == null)	continue;
+//                        if (financeManager.getIncomes().get(j).getId().matches(id))
+//                            financeManager.getIncomes().set(j, null);
+//                    }
+//                    for (int j=0; j<financeManager.getRecords().size(); j++) {
+//                        if (financeManager.getRecords().get(j).getCategory().getId().matches(id)) {
+//                            financeManager.getRecords().remove(j);
+//                            j--;
+//                        }
+//                    }
+//                    financeManager.getCategories().set(i, null);
                 }
             }
         }
-        for (int i = 0; i< financeManager.getCategories().size(); i++) {
-            if (financeManager.getCategories().get(i) == null) {
-                financeManager.getCategories().remove(i);
-                i--;
-            }
-        }
+//        else if (chbCatIncomes.isChecked() && !chbCatExpanses.isChecked()) {
+//            ArrayList<RootCategory> categories = new ArrayList<>();
+//            for (int i=0; i < financeManager.getCategories().size(); i++) {
+//                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.INCOME)
+//                    categories.add(financeManager.getCategories().get(i));
+//            }
+//            for (int i=0; i<selected.length; i++) {
+//                if (selected[i]) {
+//                    String id = categories.get(i).getId();
+//                    for (int j=0; j<financeManager.getIncomes().size(); j++) {
+//                        if (financeManager.getIncomes().get(j) == null)	continue;
+//                        if (financeManager.getIncomes().get(j).getId().matches(id))
+//                            financeManager.getIncomes().set(j, null);
+//                    }
+//                    for (int j=0; j<financeManager.getRecords().size(); j++) {
+//                        if (financeManager.getRecords().get(j).getCategory().getId().matches(id)) {
+//                            financeManager.getRecords().remove(j);
+//                            j--;
+//                        }
+//                    }
+//                    for (int j=0; j<financeManager.getCategories().size(); j++) {
+//                        if (financeManager.getCategories().get(j).getId().matches(id))
+//                            financeManager.getCategories().set(j, null);
+//                    }
+//                }
+//            }
+//        } else if (!chbCatIncomes.isChecked() && chbCatExpanses.isChecked()) {
+//            ArrayList<RootCategory> categories = new ArrayList<>();
+//            for (int i=0; i < financeManager.getCategories().size(); i++) {
+//                if (financeManager.getCategories().get(i).getType() == PocketAccounterGeneral.EXPENSE)
+//                    categories.add(financeManager.getCategories().get(i));
+//            }
+//            for (int i=0; i<selected.length; i++) {
+//                if (selected[i]) {
+//                    String id = categories.get(i).getId();
+//                    for (int j=0; j<financeManager.getExpanses().size(); j++) {
+//                        if (financeManager.getExpanses().get(j) == null)	continue;
+//                        if (financeManager.getExpanses().get(j).getId().matches(id))
+//                            financeManager.getExpanses().set(j, null);
+//                    }
+//                    for (int j=0; j<financeManager.getRecords().size(); j++) {
+//                        if (financeManager.getRecords().get(j).getCategory().getId().matches(id)) {
+//                            financeManager.getRecords().remove(j);
+//                            j--;
+//                        }
+//                    }
+//                    for (int j=0; j<financeManager.getCategories().size(); j++) {
+//                        if (financeManager.getCategories().get(j).getId().matches(id))
+//                            financeManager.getCategories().set(j, null);
+//                    }
+//                }
+//            }
+//        }
+//        for (int i = 0; i< financeManager.getCategories().size(); i++) {
+//            if (financeManager.getCategories().get(i) == null) {
+//                financeManager.getCategories().remove(i);
+//                i--;
+//            }
+//        }
     }
     @Override
     public void onStop() {

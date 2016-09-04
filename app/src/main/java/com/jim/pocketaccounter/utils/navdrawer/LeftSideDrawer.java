@@ -1,4 +1,4 @@
-package com.jim.pocketaccounter.utils;
+package com.jim.pocketaccounter.utils.navdrawer;
 
 import android.app.Activity;
 import android.content.Context;
