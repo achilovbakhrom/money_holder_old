@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
-
     <LinearLayout
         android:id="@+id/llCategoryCheckboxes"
         android:layout_width="match_parent"
@@ -12,7 +11,6 @@
         android:background="@color/toolbar_color"
         android:orientation="horizontal"
         android:clickable="true">
-
         <CheckBox
             android:id="@+id/chbCatIncomes"
             android:layout_width="wrap_content"
@@ -27,8 +25,6 @@
             android:text="@string/income"
             android:textColor="@color/toolbar_text_color"
             android:textSize="@dimen/twelve_sp" />
-
-
         <CheckBox
             android:id="@+id/chbCatExpanses"
             android:layout_width="wrap_content"
@@ -44,16 +40,16 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/lvAccounts"
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/rvCategories"
         android:layout_below="@+id/llCategoryCheckboxes"
         android:layout_weight="1" >
 
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
-    <com.jim.pocketaccounter.utils.FloatingActionButton
+    <com.jim.pocketaccounter.utils.FABIcon
         android:id="@+id/fabAccountAdd"
         android:layout_width="@dimen/fiftysix_dp"
         android:layout_height="@dimen/fiftysix_dp"

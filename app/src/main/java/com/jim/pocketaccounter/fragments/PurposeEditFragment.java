@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,20 +30,16 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
-import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.DatePicker;
-import com.jim.pocketaccounter.utils.IconChooseDialog;
-import com.jim.pocketaccounter.utils.OnDatePickListener;
-import com.jim.pocketaccounter.utils.OnIconPickListener;
-import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.FABIcon;
+import com.jim.pocketaccounter.utils.IconChooseDialog;
+import com.jim.pocketaccounter.utils.OnIconPickListener;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -54,7 +49,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
-public class AccountEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
+public class PurposeEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
     @Inject
     LogicManager logicManager;
     @Inject
@@ -71,21 +66,22 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 	@Inject
 	DatePicker datePicker;
 
-	private Account account;
-	private EditText etAccountEditName;
-	private FABIcon fabAccountIcon;
-	private RelativeLayout checkBoxSum;
-	private CheckBox chbAccountStartSumEnabled;
-	private RelativeLayout rlStartSumContainer;
-	private EditText etStartMoney;
-	private Spinner spStartMoneyCurrency;
-	private CheckBox chbAccountNoneZero;
 	private String choosenIcon = "icons_1";
-	private Calendar begin = Calendar.getInstance();
-	private Calendar end = Calendar.getInstance();
+	private Purpose purpose;
+	private EditText etPurposeEditName;
+	private FABIcon fabPurposeIcon;
+	private CheckBox chbPurposeEarn;
+	private EditText etPurposeTotal;
+	private Spinner spPurposeCurrency;
+	private LinearLayout llPurposePeriod;
+	private Spinner spPurposePeriod;
+	private TextView tvPurposeBeginDate;
+	private TextView tvPurposeEndDate;
+	private Calendar begin = null;
+	private Calendar end = null;
 	@SuppressLint("ValidFragment")
-	public AccountEditFragment(Account account) {
-		this.account = account;
+	public PurposeEditFragment(Purpose purpose) {
+		this.purpose = purpose;
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -124,16 +120,19 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 		ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, items);
 
 		//1 account name
-		etAccountEditName = (EditText) rootView.findViewById(R.id.etAccountEditName);
+		etPurposeEditName = (EditText) rootView.findViewById(R.id.etPurposeEditName);
+
+		etPurposeTotal = (EditText) rootView.findViewById(R.id.etPurposeTotal);
+		spPurposeCurrency = (Spinner) rootView.findViewById(R.id.spPurposeCurrency);
 
 		//2 account icon
-		fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon);
+		fabPurposeIcon = (FABIcon) rootView.findViewById(R.id.fabPurposeIcon);
 		int resId = getResources().getIdentifier(choosenIcon, "drawable", getContext().getPackageName());
 		Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
 		Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.twentyfive_dp),
 				(int)getResources().getDimension(R.dimen.twentyfive_dp), false);
-		fabAccountIcon.setImageBitmap(bitmap);
-		fabAccountIcon.setOnClickListener(new OnClickListener() {
+		fabPurposeIcon.setImageBitmap(bitmap);
+		fabPurposeIcon.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
@@ -144,7 +143,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 						Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
 						Bitmap b = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
 								(int) getResources().getDimension(R.dimen.twentyfive_dp), false);
-						fabAccountIcon.setImageBitmap(b);
+						fabPurposeIcon.setImageBitmap(b);
 						iconChooseDialog.setSelectedIcon(icon);
 						iconChooseDialog.dismiss();
 					}
@@ -154,29 +153,19 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 		});
 
 		//3 account start sum
-		chbAccountStartSumEnabled = (CheckBox) rootView.findViewById(R.id.chbAccountStartSumEnabled);
-		chbAccountStartSumEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		chbPurposeEarn = (CheckBox) rootView.findViewById(R.id.chbPurposeEarn);
+		chbPurposeEarn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked)
-					rlStartSumContainer.setVisibility(View.VISIBLE);
-				else
-					rlStartSumContainer.setVisibility(View.GONE);
+
 			}
 		});
-		checkBoxSum = (RelativeLayout) rootView.findViewById(R.id.checkBoxSum);
-		rlStartSumContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartSumContainer);
-		rlStartSumContainer.setVisibility(View.GONE);
-		etStartMoney = (EditText) rootView.findViewById(R.id.etStartMoney);
-		spStartMoneyCurrency = (Spinner) rootView.findViewById(R.id.spStartMoneyCurrency);
-		spStartMoneyCurrency.setAdapter(arrayAdapter);
-		spStartMoneyCurrency.setSelection(mainCurrencyPos);
+		llPurposePeriod = (LinearLayout) rootView.findViewById(R.id.llPurposePeriod);
+		spPurposePeriod = (Spinner) rootView.findViewById(R.id.spPurposePeriod);
+		tvPurposeBeginDate = (TextView) rootView.findViewById(R.id.tvPurposeBeginDate);
+		tvPurposeEndDate = (TextView) rootView.findViewById(R.id.tvPurposeEndDate);
 
-
-		//4 account none zero
-		chbAccountNoneZero = (CheckBox) rootView.findViewById(R.id.noneZeroAccount);
-
-		if (account != null) {
+		if (purpose != null) {
 			etAccountEditName.setText(account.getName());
 			resId = getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
 			temp = BitmapFactory.decodeResource(getResources(), resId);

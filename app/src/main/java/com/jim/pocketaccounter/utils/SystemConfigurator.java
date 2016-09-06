@@ -189,16 +189,16 @@ public class SystemConfigurator {
                         }
                     }
                 }
-                if (limitCurrencyId != null) {
-                    for (Currency currency:currencies) {
-                        if (currency.getId().matches(limitCurrencyId)) {
-                            newAccount.setLimitCurrency(currency);
-                            break;
-                        }
-                    }
-                }
-                newAccount.setLimited(cursor.getInt(cursor.getColumnIndex("is_limited")) != 0);
-                newAccount.setLimitSum(cursor.getDouble(cursor.getColumnIndex("limit_amount")));
+//                if (limitCurrencyId != null) {
+//                    for (Currency currency:currencies) {
+//                        if (currency.getId().matches(limitCurrencyId)) {
+//                            newAccount.setLimitCurrency(currency);
+//                            break;
+//                        }
+//                    }
+//                }
+//                newAccount.setLimited(cursor.getInt(cursor.getColumnIndex("is_limited")) != 0);
+//                newAccount.setLimitSum(cursor.getDouble(cursor.getColumnIndex("limit_amount")));
                 accounts.add(newAccount);
                 cursor.moveToNext();
             }
@@ -483,13 +483,8 @@ public class SystemConfigurator {
                     account.setIcon(accountIcons[i]);
                     account.setId(accountIds[i]);
                     account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll().get(0));
-                    account.setLimitCurrency(daoSession.getCurrencyDao().loadAll().get(0));
                     account.setAmount(0.0d);
-                    account.setLimited(false);
-                    account.setLimitSum(0.0d);
-                    account.setLimitBeginTime(Calendar.getInstance());
-                    account.setLimitTime(Calendar.getInstance());
-                    account.setNonMinus(false);
+                    account.setNoneMinusAccount(false);
                     account.setCalendar(Calendar.getInstance());
                     daoSession.getAccountDao().insert(account);
                 }

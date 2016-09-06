@@ -39,6 +39,7 @@ import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -54,8 +55,7 @@ import javax.inject.Named;
 
 @SuppressLint("InflateParams")
 public class AccountFragment extends Fragment {
-	private FloatingActionButton fabAccountAdd;
-	private boolean[] selected;
+	private FABIcon fabAccountAdd;
     private RecyclerView recyclerView;
 	@Inject
 	WarningDialog warningDialog;
@@ -97,11 +97,18 @@ public class AccountFragment extends Fragment {
 		});
         toolbarManager.setTitle(getResources().getString(R.string.accounts));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+		toolbarManager.setImageToSecondImage(R.drawable.transfer_money);
+		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+			}
+		});
         toolbarManager.setSpinnerVisibility(View.GONE);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvAccounts);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        fabAccountAdd = (FloatingActionButton) rootView.findViewById(R.id.fabAccountAdd);
+        fabAccountAdd = (FABIcon) rootView.findViewById(R.id.fabAccountAdd);
 		fabAccountAdd.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -115,44 +122,7 @@ public class AccountFragment extends Fragment {
 
 	private void refreshList() {
 		AccountAdapter adapter = new AccountAdapter(daoSession.getAccountDao().loadAll());
-		for (Account account : daoSession.getAccountDao().loadAll()) {
-			Log.d("sss", account.getName() + "\n"+
-			account.getLimited() + "\n"+
-			account.getLimitInterval() + "\n"+
-			account.getNonMinus() + "\n"+
-			account.getLimitCurrency().getAbbr() + "\n"+
-			account.getStartMoneyCurrency().getAbbr());
-
-		}
 		recyclerView.setAdapter(adapter);
-	}
-
-	private void deleteAccounts() {
-		final List<Account> deletingAccounts = new ArrayList<>();
-		List<Account> allAccounts = daoSession.getAccountDao().loadAll();
-		for (int i=0; i<selected.length; i++) {
-			if (!selected[i]) {
-				deletingAccounts.add(allAccounts.get(i));
-				break;
-			}
-		}
-		warningDialog.setText(getResources().getString(R.string.account_delete_warning));
-		warningDialog.setOnYesButtonListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				int result = logicManager.deleteAccount(deletingAccounts);
-				if (result == LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT)
-					Toast.makeText(getContext(), "В системе должен быть, покрайней мере один счет!", Toast.LENGTH_SHORT).show();
-				warningDialog.dismiss();
-			}
-		});
-		warningDialog.setOnNoButtonClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				warningDialog.dismiss();
-			}
-		});
-		warningDialog.show();
 	}
 
     private class AccountAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -167,39 +137,26 @@ public class AccountFragment extends Fragment {
             view.tvAccountListName.setText(result.get(position).getName());
 			int resId = getResources().getIdentifier(result.get(position).getIcon(),"drawable", getContext().getPackageName());
             view.ivAccountListIcon.setImageResource(resId);
+			String startMoney = "";
 			if (result.get(position).getAmount() == 0)
-            	view.tvAccStartMoney.setText(result.get(position).getAmount()+"");
+            	startMoney = getResources().getString(R.string.start_amount) + ": "+0+"\n";
 			else
-				view.tvAccStartMoney.setText(result.get(position).getAmount()+result.get(position).getStartMoneyCurrency().getAbbr());
-			if (result.get(position).getLimited()) {
-				view.rlProgressBar.setMax((int) result.get(position).getLimitSum());
-				view.rlProgressBar.setProgress((int)reportManager.calculateLimitAccountsAmount(result.get(position)));
-				view.llAccountLimit.setVisibility(View.VISIBLE);
-                view.tvAccLimit.setText(Double.toString(result.get(position).getLimitSum()));
-				if (result.get(position).getLimitInterval()) {
-					view.tvAccLimitTimeInterval.setVisibility(View.VISIBLE);
-					view.tvAccLimitTimeInterval.setText(dateFormat.format(result.get(position).getLimitBeginTime().getTime())+ "-"+
-														dateFormat.format(result.get(position).getLimitTime().getTime()));
-					view.tvAccountLimitPerDay.setVisibility(View.VISIBLE);
-					view.tvAccountLimitPerDay.setText(Double.toString(result.get(position).getLimitSum()/commonOperations.countOfDayBetweenCalendars(
-							result.get(position).getLimitBeginTime(),
-							result.get(position).getLimitTime()
-					)));
-				}
-				else {
-					view.tvAccLimitTimeInterval.setVisibility(View.GONE);
-					view.tvAccountLimitPerDay.setVisibility(View.GONE);
-				}
-				view.tvAccountRemain.setText(Double.toString(result.get(position).getLimitSum()-reportManager.calculateLimitAccountsAmount(result.get(position))));
-            }
-            else {
-                view.tvAccLimit.setText(R.string.limit_not_setted);
-				view.llAccountLimit.setVisibility(View.GONE);
-			}
+				startMoney = getResources().getString(R.string.start_amount) + ": "+result.get(position).getAmount()+result.get(position).getStartMoneyCurrency().getAbbr()+"\n";
+			if (result.get(position).getNoneMinusAccount())
+				startMoney += getString(R.string.none_minusable_account);
+			else
+				startMoney += getString(R.string.minusable_account);
+			view.tvAccStartMoney.setText(startMoney);
 			Map<Currency, Double> map = reportManager.getRemain(result.get(position));
 			String text = "";
 			for (Currency currency : map.keySet())
 				text = text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr()+"\n";
+			view.view.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					paFragmentManager.displayFragment(new AccountInfoFragment(result.get(position)));
+				}
+			});
 			view.tvContent.setText(text);
         }
 
@@ -213,28 +170,14 @@ public class AccountFragment extends Fragment {
         ImageView ivAccountListIcon;
         TextView tvAccountListName;
         TextView tvAccStartMoney;
-        TextView tvAccLimit;
-        TextView tvAccLimitDate;
-        LinearLayout llAccountLimit;
-        ProgressBar rlProgressBar;
         TextView tvContent;
-		TextView tvAccountLimitPerDay;
-		TextView tvAccountRemain;
-		TextView tvAccLimitTimeInterval;
         View view;
         public ViewHolder(View view) {
             super(view);
-            rlProgressBar = (ProgressBar) view.findViewById(R.id.rlProgressBar);
             ivAccountListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
             tvAccStartMoney = (TextView) view.findViewById(R.id.tvAccStartMoney);
             tvAccountListName = (TextView) view.findViewById(R.id.tvAccountListName);
-            tvAccLimitDate = (TextView) view.findViewById(R.id.tvAccLimitDate);
-            tvAccLimit = (TextView) view.findViewById(R.id.tvAccLimit);
-			llAccountLimit = (LinearLayout) view.findViewById(R.id.llAccountLimit);
             tvContent = (TextView) view.findViewById(R.id.tvContent);
-			tvAccountLimitPerDay = (TextView) view.findViewById(R.id.tvAccountLimitPerDay);
-			tvAccountRemain = (TextView) view.findViewById(R.id.tvAccountRemain);
-			tvAccLimitTimeInterval = (TextView) view.findViewById(R.id.tvAccLimitTimeInterval);
             this.view = view;
         }
     }

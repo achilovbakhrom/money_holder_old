@@ -3,14 +3,22 @@ package com.jim.pocketaccounter.modulesandcomponents.components;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.finance.CurrencyAdapter;
 import com.jim.pocketaccounter.finance.CurrencyExchangeAdapter;
+import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.fragments.AccountEditFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
+import com.jim.pocketaccounter.fragments.AccountInfoFragment;
+import com.jim.pocketaccounter.fragments.CategoryFragment;
+import com.jim.pocketaccounter.fragments.CategoryInfoFragment;
 import com.jim.pocketaccounter.fragments.CurrencyChooseFragment;
 import com.jim.pocketaccounter.fragments.CurrencyEditFragment;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
+import com.jim.pocketaccounter.fragments.PurposeFragment;
+import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
+import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
+import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
 
 import dagger.Component;
@@ -32,4 +40,12 @@ public interface PocketAccounterActivityComponent {
     void inject(CurrencyExchangeAdapter currencyExchangeAdapter);
     void inject(AccountFragment accountFragment);
     void inject(AccountEditFragment accountEditFragment);
+    void inject(CategoryFragment categoryFragment);
+    void inject(AccountInfoFragment accountInfoFragment);
+    void inject(SubCatAddEditDialog subCatAddEditDialog);
+    void inject(RootCategoryEditFragment rootCategoryEditFragment);
+    void inject(CategoryInfoFragment categoryInfoFragment);
+    void inject(PurposeFragment purposeFragment);
+    void inject(TransferDialog transferDialog);
+    void inject(TransferAccountAdapter transferAccountAdapter);
 }

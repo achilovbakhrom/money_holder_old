@@ -66,8 +66,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	}
 	private void initButtons() {
 		buttons = new ArrayList<>();
-		Log.d("size", ""+daoSession.getRootCategoryDao().loadAll().size());
-
 		for (int i=0; i < PocketAccounterGeneral.EXPANCE_BUTTONS_COUNT; i++) {
 			RecordButtonExpanse button = null;
 			int type = 0;
@@ -113,8 +111,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			for (int j=0; j<boardButtonList.size(); j++) {
 				if (boardButtonList.get(j).getType() == PocketAccounterGeneral.EXPENSE &&
 						boardButtonList.get(j).getPos() == i) {
-					if (boardButtonList.get(j).getCategoryId().matches("") ||
-							boardButtonList.get(j).getCategoryId() == null) {
+					if (boardButtonList.get(j).getCategoryId() == null ||
+							boardButtonList.get(j).getCategoryId().matches("")) {
 						button.setCategory(null);
 						break;
 					}

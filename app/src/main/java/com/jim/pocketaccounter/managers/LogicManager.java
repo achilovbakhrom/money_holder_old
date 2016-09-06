@@ -7,6 +7,8 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.Currency;
@@ -21,10 +23,16 @@ import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseObjectDao;
+import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.database.SubCategoryDao;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.WhereCondition;
 
 import java.util.Calendar;
 import java.util.List;
@@ -38,7 +46,6 @@ import javax.inject.Inject;
 public class LogicManager {
     @Inject
     DaoSession daoSession;
-
     private CurrencyDao currencyDao;
     private CurrencyCostDao currencyCostDao;
     private FinanceRecordDao recordDao;
@@ -47,6 +54,9 @@ public class LogicManager {
     private SmsParseObjectDao smsParseObjectDao;
     private AccountDao accountDao;
     private ReckingCreditDao reckingCreditDao;
+    private SubCategoryDao subCategoryDao;
+    private BoardButtonDao boardButtonDao;
+    private RootCategoryDao rootCategoryDao;
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         currencyDao = daoSession.getCurrencyDao();
@@ -57,6 +67,9 @@ public class LogicManager {
         smsParseObjectDao = daoSession.getSmsParseObjectDao();
         accountDao = daoSession.getAccountDao();
         reckingCreditDao = daoSession.getReckingCreditDao();
+        subCategoryDao = daoSession.getSubCategoryDao();
+        boardButtonDao = daoSession.getBoardButtonDao();
+        rootCategoryDao = daoSession.getRootCategoryDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -90,16 +103,10 @@ public class LogicManager {
 
     public int insertAccount(Account account) {
         Query<Account> accountQuery = accountDao.queryBuilder()
-                .where(AccountDao.Properties.Id.eq(account.getId())).build();
-        if (!accountQuery.list().isEmpty()) {
-            accountDao.save(account);
-            return LogicManagerConstants.UPDATED_SUCCESSFULL;
-        }
-        accountQuery = accountDao.queryBuilder()
                 .where(AccountDao.Properties.Name.eq(account.getName())).build();
         if (!accountQuery.list().isEmpty())
             return LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS;
-        accountDao.insert(account);
+        accountDao.insertOrReplace(account);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
@@ -181,13 +188,13 @@ public class LogicManager {
                     CurrencyCost currencyCost = currencies.get(j).getCosts().get(k);
                     if (currencyCost.getDay().compareTo(currDay) >= 0)
                         currencyCost.setCost(currencyCost.getCost()/current.getCost());
-                    currencyCostDao.save(currencyCost);
+                    currencyCostDao.insertOrReplace(currencyCost);
                 }
             }
             mainCurrency.getCosts().get(i).setCost(mainCurrency.getCosts().get(i).getCost()/koeff);
-            currencyCostDao.save(mainCurrency.getCosts().get(i));
+            currencyCostDao.insertOrReplaceInTx(mainCurrency.getCosts().get(i));
         }
-        currencyDao.saveInTx(currencies);
+        currencyDao.insertOrReplaceInTx(currencies);
     }
 
     //currency costs
@@ -209,7 +216,6 @@ public class LogicManager {
                 costsCurrency.getCosts().remove(i);
                 i--;
             }
-            return LogicManagerConstants.DELETED_SUCCESSFUL;
         }
         else {
             for (CurrencyCost cc : currencyCost) {
@@ -221,10 +227,62 @@ public class LogicManager {
                 }
             }
             currencyCostDao.deleteInTx(currencyCost);
-            return LogicManagerConstants.DELETED_SUCCESSFUL;
         }
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
-    
+    public int insertSubCategory(List<SubCategory> subCategories) {
+        subCategoryDao.insertOrReplaceInTx(subCategories);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
 
+    public int deleteSubcategories(List<SubCategory> subCategories) {
+        for (SubCategory subCategory : subCategories) {
+            for (FinanceRecord financeRecord : recordDao.loadAll()) {
+                if (financeRecord.getSubCategory() != null && financeRecord.getSubCategory().getId().equals(subCategory.getId()))
+                    recordDao.delete(financeRecord);
+            }
+        }
+        subCategoryDao.deleteInTx(subCategories);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+    public void changeBoardButton(int type, int pos, String categoryId) {
+            Query<BoardButton> query = boardButtonDao
+                    .queryBuilder()
+                    .where(BoardButtonDao.Properties.Type.eq(type), BoardButtonDao.Properties.Pos.eq(pos))
+                    .build();
+            List<BoardButton> list = query.list();
+            BoardButton boardButton = null;
+            if (!list.isEmpty())
+                boardButton = list.get(0);
+            boardButton.setCategoryId(categoryId);
+            Query<BoardButton> boardButtonQuery = boardButtonDao
+                    .queryBuilder()
+                    .where(BoardButtonDao.Properties.Id.eq(boardButton.getId()))
+                    .build();
+            boardButtonDao.insertOrReplace(boardButton);
+    }
+    public int insertRootCategory(RootCategory rootCategory) {
+        Query<RootCategory> query = rootCategoryDao
+                .queryBuilder()
+                .where(RootCategoryDao.Properties.Name.eq(rootCategory.getName()))
+                .build();
+        if (!query.list().isEmpty())
+            return LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS;
+        rootCategoryDao.insertOrReplace(rootCategory);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deleteRootCategory(RootCategory category) {
+        for (FinanceRecord record : recordDao.loadAll())
+            if (record.getCategory().getId().matches(category.getId()))
+                recordDao.delete(record);
+        for (BoardButton boardButton : boardButtonDao.loadAll())
+            if (boardButton.getCategoryId() != null && boardButton.getCategoryId().matches(category.getId())) {
+                boardButton.setCategoryId(null);
+                boardButtonDao.insertOrReplace(boardButton);
+            }
+        rootCategoryDao.delete(category);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
 }

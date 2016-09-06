@@ -1346,4 +1346,9 @@
     <string name="such_account_name_exists_error">Счет с таким названием уже существует!!!</string>
     <string name="none_zero_account">Не нулевой счет</string>
     <string name="operations">Операции</string>
+    <string name="add_subcategory">Добавить подкатегорию</string>
+    <string name="such_subcat_exist">Подкатекория с таким название уже существует!</string>
+    <string name="purposes">Цели</string>
+    <string name="earn">Копилка</string>
+    <string name="period">Период</string>
 </resources>

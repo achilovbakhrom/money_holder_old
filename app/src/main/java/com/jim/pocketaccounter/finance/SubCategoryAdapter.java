@@ -17,14 +17,15 @@ import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SubCategoryAdapter extends BaseAdapter {
-	private ArrayList<SubCategory> result;
+	private List<SubCategory> result;
 	private LayoutInflater inflater;
 	private int mode=10;
 	private boolean[] selected;
 	private Context context;
-	public SubCategoryAdapter(Context context, ArrayList<SubCategory> result, boolean[] selected, int mode) {
+	public SubCategoryAdapter(Context context, List<SubCategory> result, boolean[] selected, int mode) {
 	    this.result = result;
 		this.context = context;
 	    this.mode = mode;

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -25,6 +26,9 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
@@ -48,7 +52,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
-public class AccountInfoFragment extends Fragment {
+public class CategoryInfoFragment extends Fragment {
 	@Inject
 	WarningDialog warningDialog;
     @Inject
@@ -70,26 +74,28 @@ public class AccountInfoFragment extends Fragment {
 	OperationsListDialog operationsListDialog;
 	@Inject
 	FilterDialog filterDialog;
-	private Account account;
-	private FABIcon fabAccountIcon;
-	private TextView tvAccountNameInfo;
-	private TextView tvAccountConfigurationInfo;
-	private RecyclerView rvAccountDetailsInfo;
-	private ImageView ivAccountInfoOperationsFilter;
+	private RootCategory rootCategory;
+	private FABIcon fabCategoryIcon;
+	private TextView tvCategoryInfoName;
+	private TextView tvCategoryInfoType;
+	private RecyclerView rvCategoryInfoOperations;
+	private ImageView ivCategoryInfoFilter;
+	private TextView tvCategoryInfoTotal;
+	private TextView tvCategoryInfoSubcategories;
 	@SuppressLint("ValidFragment")
-	public AccountInfoFragment(Account account) {
-		this.account = account;
+	public CategoryInfoFragment(RootCategory rootCategory) {
+		this.rootCategory = rootCategory;
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View rootView = inflater.inflate(R.layout.account_info_layout, container, false);
+		final View rootView = inflater.inflate(R.layout.category_info_layout, container, false);
 		((PocketAccounter)getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
 		toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
 		toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
 		toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
-		toolbarManager.setTitle(getResources().getString(R.string.accounts));
-		toolbarManager.setSubtitle(account.getName());
+		toolbarManager.setTitle(getResources().getString(R.string.category));
+		toolbarManager.setSubtitle(rootCategory.getName());
 		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -102,32 +108,24 @@ public class AccountInfoFragment extends Fragment {
 				showOperationsList();
 			}
 		});
-
-
-		fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon);
-		tvAccountNameInfo = (TextView) rootView.findViewById(R.id.tvAccountNameInfo);
-		tvAccountConfigurationInfo = (TextView) rootView.findViewById(R.id.tvAccountConfigurationInfo);
-		rvAccountDetailsInfo = (RecyclerView) rootView.findViewById(R.id.rvAccountDetailsInfo);
-		int resId = getContext().getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
+		fabCategoryIcon = (FABIcon) rootView.findViewById(R.id.fabCategoryIcon);
+		tvCategoryInfoName = (TextView) rootView.findViewById(R.id.tvCategoryInfoName);
+		tvCategoryInfoType = (TextView) rootView.findViewById(R.id.tvCategoryInfoType);
+		rvCategoryInfoOperations = (RecyclerView) rootView.findViewById(R.id.rvAccountDetailsInfo);
+		int resId = getContext().getResources().getIdentifier(rootCategory.getIcon(), "drawable", getContext().getPackageName());
 		Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
 		Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
 				(int) getResources().getDimension(R.dimen.twentyfive_dp), false);
-		fabAccountIcon.setImageBitmap(bitmap);
-		tvAccountNameInfo.setText(account.getName());
-		String info = "";
-		if (account.getAmount() == 0)
-			info += getResources().getString(R.string.start_amount) + ": " + 0 + "\n";
+		fabCategoryIcon.setImageBitmap(bitmap);
+		tvCategoryInfoName.setText(rootCategory.getName());
+		if (rootCategory.getType() == PocketAccounterGeneral.INCOME)
+			tvCategoryInfoType.setText(getResources().getString(R.string.income));
 		else
-			info += getResources().getString(R.string.start_amount) + ": " +account.getAmount() + " "+account.getStartMoneyCurrency().getAbbr() + "\n";
-		if (account.getNoneMinusAccount())
-			info += getResources().getString(R.string.none_minusable_account);
-		else
-			info += getResources().getString(R.string.minusable_account);
-		tvAccountConfigurationInfo.setText(info);
-		rvAccountDetailsInfo = (RecyclerView) rootView.findViewById(R.id.rvAccountDetailsInfo);
-		rvAccountDetailsInfo.setLayoutManager(new LinearLayoutManager(getContext()));
-		ivAccountInfoOperationsFilter = (ImageView) rootView.findViewById(R.id.ivAccountInfoOperationsFilter);
-		ivAccountInfoOperationsFilter.setOnClickListener(new OnClickListener() {
+			tvCategoryInfoType.setText(getResources().getString(R.string.expanse));
+		rvCategoryInfoOperations = (RecyclerView) rootView.findViewById(R.id.rvCategoryInfoOperations);
+		rvCategoryInfoOperations.setLayoutManager(new LinearLayoutManager(getContext()));
+		ivCategoryInfoFilter = (ImageView) rootView.findViewById(R.id.ivCategoryInfoFilter);
+		ivCategoryInfoFilter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				filterDialog.setOnDateSelectedListener(new FilterSelectable() {
@@ -139,7 +137,22 @@ public class AccountInfoFragment extends Fragment {
 				filterDialog.show();
 			}
 		});
-		refreshOperationsList();
+		refreshOperationsList(filterDialog.getBeginDate(), filterDialog.getEndDate());
+		tvCategoryInfoTotal = (TextView) rootView.findViewById(R.id.tvCategoryInfoTotal);
+		tvCategoryInfoTotal.setText(getResources().getString(R.string.total)+": "+Double.toString(
+				reportManager.getTotalAmountByCategory(rootCategory, filterDialog.getBeginDate(), filterDialog.getEndDate()))+
+				commonOperations.getMainCurrency().getAbbr());
+		tvCategoryInfoSubcategories = (TextView) rootView.findViewById(R.id.tvCategoryInfoSubcategories);
+		if (!rootCategory.getSubCategories().isEmpty()) {
+			String subcats = getResources().getString(R.string.sub_cats)+": ";
+			for (int i = 0; i<rootCategory.getSubCategories().size(); i++) {
+				subcats += rootCategory.getSubCategories().get(i).getName();
+				if (i != rootCategory.getSubCategories().size()-1)
+					subcats += ", ";
+			}
+			tvCategoryInfoSubcategories.setVisibility(View.VISIBLE);
+			tvCategoryInfoSubcategories.setText(subcats);
+		}
 		return rootView;
 	}
 
@@ -154,14 +167,26 @@ public class AccountInfoFragment extends Fragment {
 				switch(position) {
 					case 0:
 						paFragmentManager.getFragmentManager().popBackStack();
-						paFragmentManager.displayFragment(new AccountEditFragment(account));
+						paFragmentManager.displayFragment(new RootCategoryEditFragment(rootCategory));
 						break;
 					case 1:
-						List<Account> accounts = new ArrayList<Account>();
-						accounts.add(account);
-						if (LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT == logicManager.deleteAccount(accounts)){
-							Toast.makeText(getContext(), getResources().getString(R.string.must_be_one_currency), Toast.LENGTH_SHORT).show();
-						}
+						warningDialog.setText(getResources().getString(R.string.category_delete_warning));
+						warningDialog.setOnNoButtonClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								warningDialog.dismiss();
+							}
+						});
+						warningDialog.setOnYesButtonListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								logicManager.deleteRootCategory(rootCategory);
+								paFragmentManager.getFragmentManager().popBackStack();
+								paFragmentManager.displayFragment(new CategoryFragment());
+								warningDialog.dismiss();
+							}
+						});
+						warningDialog.show();
 						break;
 				}
 				operationsListDialog.dismiss();
@@ -170,31 +195,28 @@ public class AccountInfoFragment extends Fragment {
 		operationsListDialog.show();
 	}
 
-	private void refreshOperationsList() {
-		List<ReportObject> objects = reportManager.getAccountOperations(account, account.getCalendar(), Calendar.getInstance());
-		AccountOperationsAdapter accountOperationsAdapter = new AccountOperationsAdapter(objects);
-		rvAccountDetailsInfo.setAdapter(accountOperationsAdapter);
-	}
-
 	private void refreshOperationsList(Calendar begin, Calendar end) {
-		List<ReportObject> objects = reportManager.getAccountOperations(account, begin, end);
-		AccountOperationsAdapter accountOperationsAdapter = new AccountOperationsAdapter(objects);
-		rvAccountDetailsInfo.setAdapter(accountOperationsAdapter);
+		List<FinanceRecord> objects = reportManager.getCategoryOperations(rootCategory, begin, end);
+		CategoryOperationsAdapter accountOperationsAdapter = new CategoryOperationsAdapter(objects);
+		rvCategoryInfoOperations.setAdapter(accountOperationsAdapter);
 	}
 
-	private class AccountOperationsAdapter extends RecyclerView.Adapter<AccountInfoFragment.ViewHolder> {
-		private List<ReportObject> result;
-		public AccountOperationsAdapter(List<ReportObject> result) {
+	private class CategoryOperationsAdapter extends RecyclerView.Adapter<CategoryInfoFragment.ViewHolder> {
+		private List<FinanceRecord> result;
+		public CategoryOperationsAdapter(List<FinanceRecord> result) {
 			this.result = result;
 		}
 		public int getItemCount() {
 			return result.size();
 		}
-		public void onBindViewHolder(final AccountInfoFragment.ViewHolder view, final int position) {
+		public void onBindViewHolder(final CategoryInfoFragment.ViewHolder view, final int position) {
 			view.tvAccountInfoDate.setText(dateFormat.format(result.get(position).getDate().getTime()));
-			view.tvAccountInfoName.setText(result.get(position).getDescription());
+			String text = result.get(position).getCategory().getName();
+			if (result.get(position).getSubCategory() != null)
+				text += ", " + result.get(position).getSubCategory().getName();
+			view.tvAccountInfoName.setText(text);
 			String amount = "";
-			if (result.get(position).getType() == PocketAccounterGeneral.INCOME) {
+			if (result.get(position).getCategory().getType() == PocketAccounterGeneral.INCOME) {
 				amount += "+"+result.get(position).getAmount() + result.get(position).getCurrency().getAbbr();
 				view.tvAccountInfoAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.green_just));
 			}
@@ -205,9 +227,9 @@ public class AccountInfoFragment extends Fragment {
 			view.tvAccountInfoAmount.setText(amount);
 		}
 
-		public AccountInfoFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
+		public CategoryInfoFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
 			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.account_info_operations, parent, false);
-			return new AccountInfoFragment.ViewHolder(view);
+			return new CategoryInfoFragment.ViewHolder(view);
 		}
 	}
 

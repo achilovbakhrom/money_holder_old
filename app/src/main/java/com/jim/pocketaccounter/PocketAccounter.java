@@ -32,6 +32,7 @@ import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.CircleImageView;
+import com.jim.pocketaccounter.utils.DataCache;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
 import com.jim.pocketaccounter.utils.password.PasswordWindow;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
@@ -92,6 +93,7 @@ public class PocketAccounter extends AppCompatActivity {
     @Inject SettingsManager settingsManager;
     @Inject @Named(value = "display_formmatter") SimpleDateFormat format;
     @Inject DrawerInitializer drawerInitializer;
+    @Inject DataCache dataCache;
     PocketAccounterActivityComponent component;
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
         if (component == null) {
@@ -115,6 +117,7 @@ public class PocketAccounter extends AppCompatActivity {
         date = Calendar.getInstance();
         treatToolbar();
         paFragmentManager.initialize(date);
+        dataCache.getCategoryEditFragmentDatas().setDate(date);
 
 
 //        mySync = new SyncBase(storageRef, this, "PocketAccounterDatabase");
@@ -229,6 +232,7 @@ public class PocketAccounter extends AppCompatActivity {
                         calendar.set(Calendar.MONTH, dp.getMonth());
                         calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
                         PocketAccounter.this.date = (Calendar) calendar.clone();
+                        dataCache.getCategoryEditFragmentDatas().setDate(date);
                         paFragmentManager.displayMainWindow();
                         dialog.dismiss();
                     }

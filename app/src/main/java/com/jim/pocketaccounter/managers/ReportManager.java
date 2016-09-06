@@ -1,14 +1,12 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
-import com.jim.pocketaccounter.database.AccountOperations;
+import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.AccountOperationsDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
@@ -20,6 +18,7 @@ import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
@@ -94,29 +93,29 @@ public class ReportManager {
                     }
                 }
             }
-            if (cl.getName().matches(AccountOperations.class.getName())) {
-                for (AccountOperations accountOperations : accountOperationsDao.loadAll()) {
+            if (cl.getName().matches(AccountOperation.class.getName())) {
+                for (AccountOperation accountOperations : accountOperationsDao.loadAll()) {
                     if (accountOperations.getDate().compareTo(begin) >= 0 &&
                             accountOperations.getDate().compareTo(end) <= 0) {
                         ReportObject reportObject = new ReportObject();
-                        reportObject.setType(accountOperations.getType());
-                        reportObject.setAccount(accountOperations.getAccount());
-                        reportObject.setDate((Calendar)accountOperations.getDate().clone());
-                        if (toMainCurrency) {
-                            reportObject.setCurrency(commonOperations.getMainCurrency());
-                            reportObject.setAmount(commonOperations.getCost(accountOperations.getDate(), accountOperations.getCurrency(), accountOperations.getAmount()));
-                        }
-                        else {
-                            reportObject.setCurrency(reportObject.getCurrency());
-                            reportObject.setAmount(accountOperations.getAmount());
-                        }
-                        if (accountOperations.getType() == PocketAccounterGeneral.INCOME)
-                            reportObject.setDescription(context.getResources().getString(R.string.income));
-                        else if (accountOperations.getType() == PocketAccounterGeneral.EXPENSE)
-                            reportObject.setDescription(context.getResources().getString(R.string.expanse));
-                        else
-                            reportObject.setDescription(context.getString(R.string.transfer));
-                        result.add(reportObject);
+                        reportObject.setType(PocketAccounterGeneral.TRANSFER);
+//                        reportObject.setAccount(accountOperations.getAccount());
+//                        reportObject.setDate((Calendar)accountOperations.getDate().clone());
+//                        if (toMainCurrency) {
+//                            reportObject.setCurrency(commonOperations.getMainCurrency());
+//                            reportObject.setAmount(commonOperations.getCost(accountOperations.getDate(), accountOperations.getCurrency(), accountOperations.getAmount()));
+//                        }
+//                        else {
+//                            reportObject.setCurrency(reportObject.getCurrency());
+//                            reportObject.setAmount(accountOperations.getAmount());
+//                        }
+//                        if (accountOperations.getType() == PocketAccounterGeneral.INCOME)
+//                            reportObject.setDescription(context.getResources().getString(R.string.income));
+//                        else if (accountOperations.getType() == PocketAccounterGeneral.EXPENSE)
+//                            reportObject.setDescription(context.getResources().getString(R.string.expanse));
+//                        else
+//                            reportObject.setDescription(context.getString(R.string.transfer));
+//                        result.add(reportObject);
                     }
                 }
             }
@@ -267,18 +266,12 @@ public class ReportManager {
 
     public double calculateLimitAccountsAmount(Account account) {
         List<ReportObject> list = null;
-        if (account.getLimitInterval())
-            list = getReportObjects(false, account.getLimitBeginTime(), account.getLimitTime(),
-                                                    Account.class,
-                                                    FinanceRecord.class,
-                                                    DebtBorrow.class,
-                                                    CreditDetials.class);
-        else
-            list = getReportObjects(false, getFirstDay(), Calendar.getInstance(),
-                    Account.class,
-                    FinanceRecord.class,
-                    DebtBorrow.class,
-                    CreditDetials.class);
+
+        list = getReportObjects(false, getFirstDay(), Calendar.getInstance(),
+                                        Account.class,
+                                        FinanceRecord.class,
+                                        DebtBorrow.class,
+                                        CreditDetials.class);
         double result = 0.0d;
         for (ReportObject reportObject : list) {
             if (reportObject.getAccount().getId().matches(account.getId()) &&
@@ -315,7 +308,7 @@ public class ReportManager {
     }
 
     public Map<Currency, Double> getRemain(Account account) {
-        List<ReportObject> list = getReportObjects(false, getFirstDay(), Calendar.getInstance(),
+        List<ReportObject> list = getReportObjects(false, account.getCalendar(), Calendar.getInstance(),
                                                     Account.class,
                                                     FinanceRecord.class,
                                                     DebtBorrow.class,
@@ -347,7 +340,6 @@ public class ReportManager {
                 }
             }
         }
-        Log.d("sss", result.size()+" size");
         return  result;
     }
 
@@ -355,13 +347,37 @@ public class ReportManager {
         List<ReportObject> result = new ArrayList<>();
         List<ReportObject> allObjects = getReportObjects(false, begin, end,
                 Account.class,
-                AccountOperations.class,
+                AccountOperation.class,
                 FinanceRecord.class,
                 DebtBorrow.class,
                 CreditDetials.class);
         for (ReportObject reportObject : allObjects) {
             if (reportObject.getAccount().getId().matches(account.getId()))
                 result.add(reportObject);
+        }
+        return result;
+    }
+
+
+
+    public List<FinanceRecord> getCategoryOperations(RootCategory rootCategory, Calendar begin, Calendar end) {
+        List<FinanceRecord> result = new ArrayList<>();
+        for (FinanceRecord financeRecord : financeRecordDao.loadAll()) {
+            if (financeRecord.getCategory().getId().matches(rootCategory.getId()) &&
+                    financeRecord.getDate().compareTo(begin) >= 0 && financeRecord.getDate().compareTo(end) <= 0)
+                result.add(financeRecord);
+        }
+        return result;
+    }
+
+    public Double getTotalAmountByCategory(RootCategory category, Calendar begin, Calendar end) {
+        Double result = 0.0;
+        List<FinanceRecord> records = getCategoryOperations(category, begin, end);
+        for (FinanceRecord record : records) {
+            if (record.getCategory().getType() == PocketAccounterGeneral.INCOME)
+                result += commonOperations.getCost(record.getDate(), record.getCurrency(), record.getAmount());
+            else
+                result -= commonOperations.getCost(record.getDate(), record.getCurrency(), record.getAmount());
         }
         return result;
     }

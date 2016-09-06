@@ -16,7 +16,6 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
-import com.jim.pocketaccounter.finance.CategoryAdapter;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;

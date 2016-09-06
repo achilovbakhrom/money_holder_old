@@ -991,9 +991,9 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 				values.put("icon", purses.get(i).getIcon());
 				values.put("start_amount", purses.get(i).getAmount());
 				values.put("start_money_currency_id", purses.get(i).getStartMoneyCurrency().getId());
-				values.put("limit_currency_id", purses.get(i).getLimitCurrency().getId());
+//				values.put("limit_currency_id", purses.get(i).getLimitCurrency().getId());
 //				values.put("is_limited", purses.get(i).isLimited());
-				values.put("limit_amount", purses.get(i).getLimitSum());
+//				values.put("limit_amount", purses.get(i).getLimitSum());
 				db.insert("account_table", null, values);
 			}
 			db.setTransactionSuccessful();
@@ -1035,13 +1035,13 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 			if (limitCurrencyId != null) {
 				for (Currency currency:currencies) {
 					if (currency.getId().matches(limitCurrencyId)) {
-						newAccount.setLimitCurrency(currency);
+//						newAccount.setLimitCurrency(currency);
 						break;
 					}
 				}
 			}
-			newAccount.setLimited(cursor.getInt(cursor.getColumnIndex("is_limited")) != 0);
-			newAccount.setLimitSum(cursor.getDouble(cursor.getColumnIndex("limit_amount")));
+//			newAccount.setLimited(cursor.getInt(cursor.getColumnIndex("is_limited")) != 0);
+//			newAccount.setLimitSum(cursor.getDouble(cursor.getColumnIndex("limit_amount")));
 			result.add(newAccount);
 			cursor.moveToNext();
 		}
@@ -1483,11 +1483,11 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 				newAccount.setName(cursor.getString(cursor.getColumnIndex("account_name")));
 				newAccount.setId(cursor.getString(cursor.getColumnIndex("account_id")));
 //				newAccount.setIcon(cursor.getInt(cursor.getColumnIndex("icon")));
-				newAccount.setLimitCurrency(mainCurrency);
+//				newAccount.setLimitCurrency(mainCurrency);
 				newAccount.setStartMoneyCurrency(mainCurrency);
 				newAccount.setAmount(0);
-				newAccount.setLimited(false);
-				newAccount.setLimitSum(0);
+//				newAccount.setLimited(false);
+//				newAccount.setLimitSum(0);
 				result.add(newAccount);
 				cursor.moveToNext();
 			}
@@ -1518,7 +1518,7 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 				values.put("start_money_currency_id", currencies.get(0).getId());
 				values.put("limit_currency_id", currencies.get(0).getId());
 //				values.put("is_limited", account.isLimited());
-				values.put("limit_amount", account.getLimitSum());
+//				values.put("limit_amount", account.getLimitSum());
 				db.insert("account_table", null, values);
 			}
 			Log.d("sss", "in_account_table_put_datas");

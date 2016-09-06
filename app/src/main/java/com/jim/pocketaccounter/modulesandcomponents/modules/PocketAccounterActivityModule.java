@@ -13,7 +13,10 @@ import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.DatePicker;
+import com.jim.pocketaccounter.utils.FilterDialog;
 import com.jim.pocketaccounter.utils.IconChooseDialog;
+import com.jim.pocketaccounter.utils.OperationsListDialog;
+import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
 
 import java.text.SimpleDateFormat;
@@ -99,5 +102,17 @@ public class PocketAccounterActivityModule {
     @Provides
     public DatePicker getDatePicker() {
         return new DatePicker(pocketAccounter);
+    }
+    @Provides
+    public OperationsListDialog operationsListDialog() {
+        return new OperationsListDialog(pocketAccounter);
+    }
+    @Provides
+    public FilterDialog filterDialog() {
+        return new FilterDialog(pocketAccounter);
+    }
+    @Provides
+    public SubCatAddEditDialog subCatAddEditDialog() {
+        return new SubCatAddEditDialog(pocketAccounter);
     }
 }

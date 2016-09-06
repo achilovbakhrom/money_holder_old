@@ -9,6 +9,7 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -66,7 +67,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	}
 	private void initButtons() {
 
-		buttons = new ArrayList<RecordButtonIncome>();
+		buttons = new ArrayList<>();
 		for (int i=0; i<4; i++) {
 			RecordButtonIncome button = null;
 			int type = 0;
@@ -82,17 +83,21 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 					type = RecordButtonIncome.MOST_RIGHT;
 					break;
 			}
-			List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
-			BoardButton brdButton = null;
-			for (BoardButton boardButton : boardButtons) {
-				if (boardButton.getType() == PocketAccounterGeneral.INCOME &&
-						boardButton.getPos() == i) {
-					brdButton = boardButton;
-					break;
+			button = new RecordButtonIncome(getContext(), type, date);
+			BoardButtonDao boardButtonDao = daoSession.getBoardButtonDao();
+			List<BoardButton> boardButtonList = boardButtonDao.loadAll();
+			for (int j=0; j<boardButtonList.size(); j++) {
+				if (boardButtonList.get(j).getType() == PocketAccounterGeneral.INCOME &&
+						boardButtonList.get(j).getPos() == i) {
+					if (boardButtonList.get(j).getCategoryId() == null ||
+							boardButtonList.get(j).getCategoryId().matches("")) {
+						button.setCategory(null);
+						break;
+					}
+					else
+						button.setCategory(boardButtonList.get(j));
 				}
 			}
-			button = new RecordButtonIncome(getContext(), type, date);
-			button.setCategory(brdButton);
 			buttons.add(button);
 		}
 	}

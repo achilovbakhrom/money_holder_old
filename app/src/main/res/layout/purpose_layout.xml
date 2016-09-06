@@ -2,23 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvAccounts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1" >
-    </android.support.v7.widget.RecyclerView>
+        android:id="@+id/rvPurposes"/>
     <com.jim.pocketaccounter.utils.FABIcon
-        android:id="@+id/fabAccountAdd"
         android:layout_width="@dimen/fiftysix_dp"
         android:layout_height="@dimen/fiftysix_dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/sixteen_dp"
         app:fab_colorNormal="@color/green_light"
         app:fab_colorPressed="@color/green_light_darker"
         app:fab_colorRipple="@color/green_light_darker"
-        android:src="@drawable/currency_add" />
+        android:src="@drawable/currency_add"
+        android:id="@+id/fabPurposesAdd"/>
 </RelativeLayout>

@@ -1,21 +1,8 @@
 package com.jim.pocketaccounter.utils;
 
-import android.util.Log;
-
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.database.AccountOperations;
-import com.jim.pocketaccounter.database.CreditDetials;
-import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.DebtBorrow;
-import com.jim.pocketaccounter.database.Recking;
-import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 public class PocketAccounterGeneral {

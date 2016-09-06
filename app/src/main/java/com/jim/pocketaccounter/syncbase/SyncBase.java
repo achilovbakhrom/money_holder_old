@@ -267,11 +267,11 @@ public class SyncBase {
             newAccount.setName(cursor.getString(cursor.getColumnIndex("account_name")));
             newAccount.setId(cursor.getString(cursor.getColumnIndex("account_id")));
 //            newAccount.setIcon(cursor.getInt(cursor.getColumnIndex("icon")));
-            newAccount.setLimitCurrency(null);
+//            newAccount.setLimitCurrency(null);
             newAccount.setStartMoneyCurrency(null);
             newAccount.setAmount(0);
-            newAccount.setLimited(false);
-            newAccount.setLimitSum(0);
+//            newAccount.setLimited(false);
+//            newAccount.setLimitSum(0);
             result.add(newAccount);
             cursor.moveToNext();
         }
@@ -301,7 +301,7 @@ public class SyncBase {
             values.put("start_money_currency_id", currencies.get(0).getId());
             values.put("limit_currency_id", currencies.get(0).getId());
 //            values.put("is_limited", account.isLimited());
-            values.put("limit_amount", account.getLimitSum());
+//            values.put("limit_amount", account.getLimitSum());
             db.insert("account_table", null, values);
         }
 

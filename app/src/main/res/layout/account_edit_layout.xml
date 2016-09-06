@@ -121,119 +121,23 @@
         android:layout_marginTop="@dimen/five_dp"
         android:layout_marginBottom="@dimen/ten_dp">
 
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/chbLimit"
-            android:layout_gravity="center_vertical"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/fourteen_dp"
             android:textColor="@color/black_for_glavniy_text"
-            android:text="@string/scetimeet"
+            android:text="@string/none_zero_account"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
 
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rlAccountLimitContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingRight="@dimen/sixteen_dp"
-        android:paddingLeft="@dimen/sixteen_dp"
-        android:layout_marginBottom="@dimen/sixteen_dp"
-        android:visibility="gone">
-        <EditText
-            android:id="@+id/etLimit"
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:maxLength="25"
-            android:textColor="@color/toolbar_text_color"
-            android:textSize="@dimen/sixteen_sp"
-            android:hint="@string/limit_sum"
-            android:inputType="numberDecimal"
+            android:id="@+id/noneZeroAccount"
             android:layout_gravity="center_vertical"
-            android:visibility="visible"
-            android:layout_toLeftOf="@+id/spLimitCurrency"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spLimitCurrency"
-            android:layout_gravity="center_vertical"
-            android:gravity="right"
-            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignBottom="@+id/etLimit"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentEnd="true" />
     </RelativeLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/llAccountLimitIntervalContainer"
-            android:layout_marginLeft="@dimen/sixteen_dp"
-            android:layout_marginRight="@dimen/sixteen_dp"
-            android:visibility="gone">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/limit_interval"
-                android:layout_weight="1"/>
-            <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginLeft="@dimen/ten_dp"
-                android:id="@+id/chbAccountLimitInterval"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:id="@+id/llAccountLimitInterval"
-            android:layout_marginLeft="@dimen/sixteen_dp"
-            android:layout_marginRight="@dimen/sixteen_dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvAccountLimitBegin"
-                android:background="@drawable/knopka_zeleniy"
-                android:text="begin"
-                android:layout_weight="1"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" : " />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvAccountLimitEnd"
-                android:background="@drawable/knopka_zeleniy"
-                android:text="end"
-                android:layout_weight="1"/>
-        </LinearLayout>
-    </LinearLayout>
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/none_zero_account"
-        android:id="@+id/chbAccountNoneZero"
-        android:layout_marginTop="@dimen/ten_dp"
-        android:layout_marginLeft="@dimen/sixteen_dp"/>
 </LinearLayout>

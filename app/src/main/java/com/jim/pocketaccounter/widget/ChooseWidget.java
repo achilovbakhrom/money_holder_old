@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.finance.CategoryAdapter;
 //import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -88,8 +87,8 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
 //                    categories.add(financeManager.getCategories().get(i));
 //            }
 //        }
-        CategoryAdapter adapter = new CategoryAdapter(this, categories, selected, mode);
-        lvCategories.setAdapter(adapter);
+//        CategoryAdapter adapter = new CategoryAdapter(this, categories, selected, mode);
+//        lvCategories.setAdapter(adapter);
     }
     @Override
     public void onClick(View v) {
@@ -204,9 +203,9 @@ public class ChooseWidget extends AppCompatActivity implements View.OnClickListe
             }
         }
         else {
-            CheckBox chbCatListItem = (CheckBox) view.findViewById(R.id.chbAccountListItem);
-            chbCatListItem.setChecked(!chbCatListItem.isChecked());
-            selected[position] = chbCatListItem.isChecked();
+//            CheckBox chbCatListItem = (CheckBox) view.findViewById(R.id.chbAccountListItem);
+//            chbCatListItem.setChecked(!chbCatListItem.isChecked());
+//            selected[position] = chbCatListItem.isChecked();
         }
     }
     @Override

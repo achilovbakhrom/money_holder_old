@@ -1,26 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tvAccountInfoDate"
+        android:textSize="@dimen/twelve_dp"
         android:layout_weight="1.25"
         android:text="date"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_gravity="center"/>
+    <ImageView
+        android:layout_width="@dimen/one_dp"
+        android:layout_height="match_parent"
+        android:background="@color/toolbar_color"
+        android:layout_marginTop="@dimen/three_dp"
+        android:layout_marginBottom="@dimen/three_dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/twelve_dp"
         android:id="@+id/tvAccountInfoName"
         android:layout_weight="1"
         android:text="name"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_gravity="center"/>
+    <ImageView
+        android:layout_width="@dimen/one_dp"
+        android:layout_height="match_parent"
+        android:background="@color/toolbar_color"
+        android:layout_marginTop="@dimen/three_dp"
+        android:layout_marginBottom="@dimen/three_dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/twelve_dp"
         android:id="@+id/tvAccountInfoAmount"
         android:layout_weight="1.25"
         android:text="date"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_gravity="center"/>
 </LinearLayout>
