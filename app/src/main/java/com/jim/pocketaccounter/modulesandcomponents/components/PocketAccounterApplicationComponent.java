@@ -3,8 +3,12 @@ package com.jim.pocketaccounter.modulesandcomponents.components;
 import android.content.SharedPreferences;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
+import com.jim.pocketaccounter.credit.AdapterCridetArchive;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DatabaseMigration;
+import com.jim.pocketaccounter.debt.AddBorrowFragment;
+import com.jim.pocketaccounter.debt.BorrowFragment;
+import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
 import com.jim.pocketaccounter.finance.CurrencyAdapter;
 import com.jim.pocketaccounter.finance.CurrencyChooseAdapter;
 import com.jim.pocketaccounter.finance.CurrencyExchangeAdapter;

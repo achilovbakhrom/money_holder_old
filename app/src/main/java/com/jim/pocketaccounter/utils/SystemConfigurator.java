@@ -319,7 +319,8 @@ public class SystemConfigurator {
                     reckCursor.moveToNext();
                 }
                 newDebtBorrow.setInfo(dbCursor.getString(dbCursor.getColumnIndex("empty")));
-                newDebtBorrow.setReckings(list);
+//                newDebtBorrow.setReckings(list);
+                newDebtBorrow.getReckings().addAll(list);
                 debtBorrows.add(newDebtBorrow);
                 dbCursor.moveToNext();
             }

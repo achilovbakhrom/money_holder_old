@@ -1,5 +1,7 @@
 package com.jim.pocketaccounter.database;
 
+import android.support.annotation.Keep;
+
 import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 
 import org.greenrobot.greendao.annotation.Convert;
@@ -8,8 +10,11 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 
 import java.util.Calendar;
+import java.util.UUID;
+
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.ToOne;
 
 /**
  * Created by DEV on 06.09.2016.
@@ -28,9 +33,27 @@ public class Purpose {
     private double purpose;
     @Property
     private double accumulated;
+    @Property
+    private String currencyId;
+    @ToOne(joinProperty = "currencyId")
+    private Currency currency;
     @Id
     @Property
     private String id;
+    @Property
+    private int periodPos;
+    @Generated(hash = 1170963677)
+    private transient String currency__resolvedKey;
+    /** Used for active entity operations. */
+    @Generated(hash = 1375959903)
+    private transient PurposeDao myDao;
+    /** Used to resolve relations */
+    @Generated(hash = 2040040024)
+    private transient DaoSession daoSession;
+    @Keep
+    public Purpose() {
+        id = UUID.randomUUID().toString();
+    }
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -65,17 +88,56 @@ public class Purpose {
         myDao.delete(this);
     }
     /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1889019422)
+    public void setCurrency(Currency currency) {
+        synchronized (this) {
+            this.currency = currency;
+            currencyId = currency == null ? null : currency.getId();
+            currency__resolvedKey = currencyId;
+        }
+    }
+    /** To-one relationship, resolved on first access. */
+    @Generated(hash = 376477166)
+    public Currency getCurrency() {
+        String __key = this.currencyId;
+        if (currency__resolvedKey == null || currency__resolvedKey != __key) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            CurrencyDao targetDao = daoSession.getCurrencyDao();
+            Currency currencyNew = targetDao.load(__key);
+            synchronized (this) {
+                currency = currencyNew;
+                currency__resolvedKey = __key;
+            }
+        }
+        return currency;
+    }
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1602104432)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPurposeDao() : null;
     }
-    /** Used for active entity operations. */
-    @Generated(hash = 1375959903)
-    private transient PurposeDao myDao;
-    /** Used to resolve relations */
-    @Generated(hash = 2040040024)
-    private transient DaoSession daoSession;
+    public int getPeriodPos() {
+        return this.periodPos;
+    }
+    public void setPeriodPos(int periodPos) {
+        this.periodPos = periodPos;
+    }
+    public String getId() {
+        return this.id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String getCurrencyId() {
+        return this.currencyId;
+    }
+    public void setCurrencyId(String currencyId) {
+        this.currencyId = currencyId;
+    }
     public double getAccumulated() {
         return this.accumulated;
     }
@@ -112,24 +174,18 @@ public class Purpose {
     public void setIcon(String icon) {
         this.icon = icon;
     }
-    public String getId() {
-        return this.id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    @Generated(hash = 1288017454)
+    @Generated(hash = 1374484397)
     public Purpose(String icon, String description, Calendar begin, Calendar end,
-            double purpose, double accumulated, String id) {
+            double purpose, double accumulated, String currencyId, String id,
+            int periodPos) {
         this.icon = icon;
         this.description = description;
         this.begin = begin;
         this.end = end;
         this.purpose = purpose;
         this.accumulated = accumulated;
+        this.currencyId = currencyId;
         this.id = id;
-    }
-    @Generated(hash = 450982221)
-    public Purpose() {
+        this.periodPos = periodPos;
     }
 }

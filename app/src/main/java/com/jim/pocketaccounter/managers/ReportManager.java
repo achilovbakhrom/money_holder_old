@@ -7,7 +7,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.AccountOperation;
-import com.jim.pocketaccounter.database.AccountOperationsDao;
+import com.jim.pocketaccounter.database.AccountOperationDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.Currency;
@@ -42,7 +42,7 @@ public class ReportManager {
     @Inject
     CommonOperations commonOperations;
     private Context context;
-    private AccountOperationsDao accountOperationsDao;
+    private AccountOperationDao accountOperationsDao;
     private FinanceRecordDao financeRecordDao;
     private DebtBorrowDao debtBorrowDao;
     private CreditDetialsDao creditDetialsDao;
@@ -51,7 +51,7 @@ public class ReportManager {
     public ReportManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         this.context = context;
-        accountOperationsDao = daoSession.getAccountOperationsDao();
+        accountOperationsDao = daoSession.getAccountOperationDao();
         financeRecordDao = daoSession.getFinanceRecordDao();
         debtBorrowDao = daoSession.getDebtBorrowDao();
         creditDetialsDao = daoSession.getCreditDetialsDao();
@@ -142,7 +142,7 @@ public class ReportManager {
             }
             if (cl.getName().matches(DebtBorrow.class.getName())) {
                 for (DebtBorrow debtBorrow : debtBorrowDao.loadAll()) {
-                    if (!debtBorrow.isCalculate()) continue;
+                    if (!debtBorrow.getCalculate()) continue;
                     if (debtBorrow.getTakenDate().compareTo(begin) >= 0 &&
                             debtBorrow.getTakenDate().compareTo(end) <= 0) {
                         ReportObject reportObject = new ReportObject();

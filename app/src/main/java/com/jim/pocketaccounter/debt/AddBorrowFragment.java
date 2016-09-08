@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,22 +30,30 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.CurrencyDao;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.Person;
+import com.jim.pocketaccounter.database.PersonDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.Currency;
-//import com.jim.pocketaccounter.finance.FinanceManager;
+import com.jim.pocketaccounter.managers.LogicManager;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.io.File;
@@ -59,6 +66,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.app.Activity.RESULT_OK;
@@ -68,6 +78,21 @@ import static android.app.Activity.RESULT_OK;
  */
 
 public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+    @Inject
+    ToolbarManager toolbarManager;
+    @Inject
+    PAFragmentManager paFragmentManager;
+    @Inject
+    LogicManager logicManager;
+    @Inject
+    DaoSession daoSession;
+    @Inject
+    @Named(value = "display_formmatter")
+    SimpleDateFormat dateFormat;
+    private DebtBorrowDao debtBorrowDao;
+    private AccountDao accountDao;
+    private CurrencyDao currencyDao;
+
     private FrameLayout contactBtn;
     private CircleImageView imageView;
     private EditText PersonName;
@@ -83,11 +108,9 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private CheckBox calculate;
     private int TYPE = 0;
     private static final int REQUEST_SELECT_CONTACT = 2;
-//    private FinanceManager manager;
     public static int RESULT_LOAD_IMAGE = 1;
     private ImageView ivToolbarMostRight;
     private EditText firstPay;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private final int PERMISSION_REQUEST_CONTACT = 5;
     private int PICK_CONTACT = 10;
     private final int PERMISSION_READ_STORAGE = 6;
@@ -97,8 +120,8 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private FrameLayout btnDetalization;
     private String mode = PocketAccounterGeneral.EVERY_DAY, sequence = "";
 
-    public static Fragment getInstance(int type) {
-        AddBorrowFragment fragment = new AddBorrowFragment();
+    public static Fragment getInstance(int type, DebtBorrow debtBorrow) {
+        AddBorrowFragment fragment = new AddBorrowFragment(debtBorrow);
         Bundle bundle = new Bundle();
         bundle.putInt("type", type);
         fragment.setArguments(bundle);
@@ -108,12 +131,16 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        debtBorrowDao = daoSession.getDebtBorrowDao();
+        accountDao = daoSession.getAccountDao();
+        currencyDao = daoSession.getCurrencyDao();
         TYPE = getArguments().getInt("type", 0);
         adapter = new ArrayList<>();
     }
 
-    public void shareDetialDebtBorrow(DebtBorrow currentDebtBorrow) {
-        this.currentDebtBorrow = currentDebtBorrow;
+    public AddBorrowFragment(DebtBorrow debtBorrow) {
+        this.currentDebtBorrow = debtBorrow;
     }
 
     public DebtBorrow isEdit() {
@@ -121,23 +148,25 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     }
 
     private DatePickerDialog.OnDateSetListener getDatesetListener = new DatePickerDialog.OnDateSetListener() {
-        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
-            getDate.set(arg1, arg2, arg3);
+        @Override
+        public void onDateSet(android.widget.DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            getDate.set(year, monthOfYear, dayOfMonth);
             if (returnDate != null && getDate.compareTo(returnDate) > 0) {
                 returnDate = getDate;
-                PersonDataRepeat.setText(simpleDateFormat.format(returnDate.getTime()));
+                PersonDataRepeat.setText(dateFormat.format(returnDate.getTime()));
             }
-            PersonDataGet.setText(simpleDateFormat.format(getDate.getTime()));
+            PersonDataGet.setText(dateFormat.format(getDate.getTime()));
         }
     };
     private DatePickerDialog.OnDateSetListener returnDatesetListener = new DatePickerDialog.OnDateSetListener() {
-        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
+        @Override
+        public void onDateSet(android.widget.DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             returnDate = (Calendar) getDate.clone();
-            returnDate.set(arg1, arg2, arg3);
+            returnDate.set(year, monthOfYear, dayOfMonth);
             if (returnDate.compareTo(getDate) < 0) {
                 returnDate = getDate;
             }
-            PersonDataRepeat.setText(simpleDateFormat.format(returnDate.getTime()));
+            PersonDataRepeat.setText(dateFormat.format(returnDate.getTime()));
             adapter.clear();
             int countOfDays = (int) Math.ceil((returnDate.getTimeInMillis() - getDate.getTimeInMillis()) / (1000 * 60 * 60 * 24));
             if (countOfDays < 7) {
@@ -213,162 +242,158 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             PersonSumm.setHint(getResources().getString(R.string.enter_borrow_amoount));
             ((TextView) view.findViewById(R.id.summ_zayma)).setText(R.string.amount_borrow);
         }
-//        manager = PocketAccounter.financeManager;
-//
-//        PersonAccount.setOnItemSelectedListener(this);
-//        PersonValyuta.setOnItemSelectedListener(this);
-//        String[] accaounts = new String[manager.getAccounts().size()];
-//        for (int i = 0; i < accaounts.length; i++) {
-//            accaounts[i] = manager.getAccounts().get(i).getName();
-//        }
-//        String[] valyuts = new String[manager.getCurrencies().size()];
-//        for (int i = 0; i < valyuts.length; i++) {
-//            valyuts[i] = manager.getCurrencies().get(i).getAbbr();
-//        }
 
-//        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-//                getContext(), R.layout.spiner_gravity_right, accaounts);
-//
-//        ArrayAdapter<String> arrayValyuAdapter = new ArrayAdapter<>(
-//                getContext(), R.layout.spiner_gravity_right, valyuts);
-//
-//        arrayAdapter.setDropDownViewResource(
-//                android.R.layout.simple_spinner_dropdown_item);
-//        PersonAccount.setAdapter(arrayAdapter);
-//
-//        arrayValyuAdapter.setDropDownViewResource(
-//                android.R.layout.simple_spinner_dropdown_item);
-//        PersonValyuta.setAdapter(arrayValyuAdapter);
-//        PersonDataGet.setText(simpleDateFormat.format(getDate.getTime()));
-//        PersonDataGet.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    Calendar calender = Calendar.getInstance();
-//                    Dialog mDialog = new DatePickerDialog(getContext(),
-//                            getDatesetListener, calender.get(Calendar.YEAR),
-//                            calender.get(Calendar.MONTH), calender
-//                            .get(Calendar.DAY_OF_MONTH));
-//                    mDialog.show();
-//                }
-//                return true;
-//            }
-//        });
-//
-//        PersonDataRepeat.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    Calendar calender = Calendar.getInstance();
-//                    Dialog mDialog = new DatePickerDialog(getContext(),
-//                            returnDatesetListener, calender.get(Calendar.YEAR),
-//                            calender.get(Calendar.MONTH), calender
-//                            .get(Calendar.DAY_OF_MONTH));
-//                    mDialog.show();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//
-//        ivToolbarMostRight = (ImageView) PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight);
-//        ivToolbarMostRight.setImageResource(R.drawable.check_sign);
-//        ivToolbarMostRight.setVisibility(View.VISIBLE);
-//
-//        calculate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (calculate.isChecked()) {
-//                    PersonAccount.setVisibility(View.VISIBLE);
-//                } else {
-//                    PersonAccount.setVisibility(View.GONE);
-//                }
-//            }
-//        });
-//
-//        ivToolbarMostRight.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                saveAndExit();
-//
-//            }
-//        });
-//
-//        contactBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                askForContactPermission();
-//            }
-//        });
-//
-//        imageView.setImageResource(R.drawable.no_photo);
-//
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                int permission = ContextCompat.checkSelfPermission(getContext(),
-//                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//                if (permission != PackageManager.PERMISSION_GRANTED) {
-//                    if (ActivityCompat.shouldShowRequestPermissionRationale(((PocketAccounter) getContext()),
-//                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                        builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
-//                                .setTitle("Permission required");
-//
-//                        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-//                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                                        PERMISSION_READ_STORAGE);
-//                            }
-//                        });
-//                        AlertDialog dialog = builder.create();
-//                        dialog.show();
-//
-//                    } else {
-//                        ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-//                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                                PERMISSION_READ_STORAGE);
-//                    }
-//                } else {
-//                    getPhoto();
-//                }
-//            }
-//        });
-//
-//        if (currentDebtBorrow != null) {
+        PersonAccount.setOnItemSelectedListener(this);
+        PersonValyuta.setOnItemSelectedListener(this);
+        String[] accaounts = new String[accountDao.queryBuilder().list().size()];
+        for (int i = 0; i < accaounts.length; i++) {
+            accaounts[i] = accountDao.queryBuilder().list().get(i).getName();
+        }
+        String[] valyuts = new String[currencyDao.queryBuilder().list().size()];
+        for (int i = 0; i < valyuts.length; i++) {
+            valyuts[i] = currencyDao.queryBuilder().list().get(i).getAbbr();
+        }
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                getContext(), R.layout.spiner_gravity_right, accaounts);
+
+        ArrayAdapter<String> arrayValyuAdapter = new ArrayAdapter<>(
+                getContext(), R.layout.spiner_gravity_right, valyuts);
+
+        arrayAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        PersonAccount.setAdapter(arrayAdapter);
+
+        arrayValyuAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        PersonValyuta.setAdapter(arrayValyuAdapter);
+        PersonDataGet.setText(dateFormat.format(getDate.getTime()));
+        PersonDataGet.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Calendar calender = Calendar.getInstance();
+                    Dialog mDialog = new DatePickerDialog(getContext(),
+                            getDatesetListener, calender.get(Calendar.YEAR),
+                            calender.get(Calendar.MONTH), calender
+                            .get(Calendar.DAY_OF_MONTH));
+                    mDialog.show();
+                }
+                return true;
+            }
+        });
+
+        PersonDataRepeat.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Calendar calender = Calendar.getInstance();
+                    Dialog mDialog = new DatePickerDialog(getContext(),
+                            returnDatesetListener, calender.get(Calendar.YEAR),
+                            calender.get(Calendar.MONTH), calender
+                            .get(Calendar.DAY_OF_MONTH));
+                    mDialog.show();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        toolbarManager.setImageToSecondImage(R.drawable.check_sign);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setSpinnerVisibility(View.GONE);
+
+        calculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (calculate.isChecked()) {
+                    PersonAccount.setVisibility(View.VISIBLE);
+                } else {
+                    PersonAccount.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                saveAndExit();
+            }
+        });
+
+        contactBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                askForContactPermission();
+            }
+        });
+
+        imageView.setImageResource(R.drawable.no_photo);
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int permission = ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(((PocketAccounter) getContext()),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
+                                .setTitle("Permission required");
+                        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        PERMISSION_READ_STORAGE);
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    } else {
+                        ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                PERMISSION_READ_STORAGE);
+                    }
+                } else {
+                    getPhoto();
+                }
+            }
+        });
+
+        if (currentDebtBorrow != null) {
 //            PersonName.setText(currentDebtBorrow.getPerson().getName());
 //            PersonNumber.setText(currentDebtBorrow.getPerson().getPhoneNumber());
-//            for (int i = 0; i < valyuts.length; i++) {
-//                if (valyuts[i].matches(currentDebtBorrow.getCurrency().getAbbr())) {
-//                    PersonValyuta.setSelection(i);
-//                    break;
-//                }
-//            }
-//            if (currentDebtBorrow.isCalculate())
-//                for (int i = 0; i < accaounts.length; i++) {
-//                    if (accaounts[i].matches(currentDebtBorrow.getAccount().getName())) {
-//                        PersonAccount.setSelection(i);
-//                        break;
-//                    }
-//                }
-//            calculate.setChecked(currentDebtBorrow.isCalculate());
-//            PersonSumm.setText(String.valueOf(currentDebtBorrow.getAmount()));
-//            PersonDataGet.setText(simpleDateFormat.format(currentDebtBorrow.getTakenDate().getTime()));
-//            getDate = (Calendar) currentDebtBorrow.getTakenDate().clone();
-//            if (currentDebtBorrow.getReturnDate() != null) {
-//                returnDate = (Calendar) currentDebtBorrow.getReturnDate().clone();
-//                PersonDataRepeat.setText(simpleDateFormat.format(currentDebtBorrow.getReturnDate().getTime()));
-//            }
-//            if (!currentDebtBorrow.getPerson().getPhoto().isEmpty()) {
-//                imageView.setImageBitmap(decodeFile(new File(currentDebtBorrow.getPerson().getPhoto())));
-//                photoPath = currentDebtBorrow.getPerson().getPhoto();
-//            }
-//            if (!currentDebtBorrow.getReckings().isEmpty() && currentDebtBorrow.getReckings().get(0).getPayDate().matches(simpleDateFormat.format(getDate.getTime())))
-//                firstPay.setText("" + currentDebtBorrow.getReckings().get(0).getAmount());
-//        }
+            for (int i = 0; i < valyuts.length; i++) {
+                if (valyuts[i].matches(currentDebtBorrow.getCurrency().getAbbr())) {
+                    PersonValyuta.setSelection(i);
+                    break;
+                }
+            }
+            if (currentDebtBorrow.getCalculate())
+                for (int i = 0; i < accaounts.length; i++) {
+                    if (accaounts[i].matches(currentDebtBorrow.getAccount().getName())) {
+                        PersonAccount.setSelection(i);
+                        break;
+                    }
+                }
+            calculate.setChecked(currentDebtBorrow.getCalculate());
+            PersonSumm.setText(String.valueOf(currentDebtBorrow.getAmount()));
+            PersonDataGet.setText(dateFormat.format(currentDebtBorrow.getTakenDate().getTime()));
+            getDate = (Calendar) currentDebtBorrow.getTakenDate().clone();
+            if (currentDebtBorrow.getReturnDate() != null) {
+                returnDate = (Calendar) currentDebtBorrow.getReturnDate().clone();
+                PersonDataRepeat.setText(dateFormat.format(currentDebtBorrow.getReturnDate().getTime()));
+            }
+            if (!currentDebtBorrow.getPerson().getPhoto().isEmpty()) {
+                imageView.setImageBitmap(decodeFile(new File(currentDebtBorrow.getPerson().getPhoto())));
+                photoPath = currentDebtBorrow.getPerson().getPhoto();
+            }
+            if (!currentDebtBorrow.getReckings().isEmpty() && currentDebtBorrow.getReckings().get(0).getPayDate().matches(dateFormat.format(getDate.getTime())))
+                firstPay.setText("" + currentDebtBorrow.getReckings().get(0).getAmount());
+        }
         return view;
     }
 
@@ -382,119 +407,119 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 if (PersonDataGet.getText().toString().matches("")) {
                     PersonDataGet.setError(getString(R.string.enter_takendate_error));
                 } else {
-//                    ArrayList<DebtBorrow> list = manager.getDebtBorrows();
-//                    Currency currency = manager.getCurrencies().get(PersonValyuta.getSelectedItemPosition());
-//                    ArrayList<Recking> reckings = new ArrayList<Recking>();
-//                    Account account = manager.getAccounts().get(PersonAccount.getSelectedItemPosition());
-//                    File file = null;
-//
-//                    if (!photoPath.matches("")) {
-//                        try {
-//                            Integer.parseInt(photoPath);
-//                        } catch (Exception e) {
-//                            Bitmap bitmap = decodeFile(new File(photoPath));
-//                            Bitmap C;
-//
-//                            if (bitmap.getWidth() >= bitmap.getHeight()) {
-//                                C = Bitmap.createBitmap(
-//                                        bitmap,
-//                                        bitmap.getWidth() / 2 - bitmap.getHeight() / 2,
-//                                        0,
-//                                        bitmap.getHeight(),
-//                                        bitmap.getHeight()
-//                                );
-//                            } else {
-//                                C = Bitmap.createBitmap(
-//                                        bitmap,
-//                                        0,
-//                                        bitmap.getHeight() / 2 - bitmap.getWidth() / 2,
-//                                        bitmap.getWidth(),
-//                                        bitmap.getWidth()
-//                                );
-//                            }
-//                            try {
-//                                file = new File(getContext().getFilesDir(), Uri.parse(photoPath).getLastPathSegment());
-//                                FileOutputStream outputStream = new FileOutputStream(file.getAbsoluteFile());
-//                                C.compress(Bitmap.CompressFormat.JPEG, 30, outputStream);
-//                                outputStream.flush();
-//                                outputStream.close();
-//                            } catch (IOException e1) {
-//                                e1.printStackTrace();
-//                            }
-//                        }
-//                    }
-//
-//                    DebtBorrowFragment fragment = new DebtBorrowFragment();
-//                    if (currentDebtBorrow != null) {
-//                        if (calculate.isChecked())
-//                            currentDebtBorrow.setAccount(account);
-//                        currentDebtBorrow.setPerson(new Person(PersonName.getText().toString(),
-//                                PersonNumber.getText().toString(), file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath));
-//                        currentDebtBorrow.setAmount(Double.parseDouble(PersonSumm.getText().toString()));
-//                        currentDebtBorrow.setCurrency(currency);
-//                        currentDebtBorrow.setCalculate(calculate.isChecked());
-//                        currentDebtBorrow.setInfo(mode + ":" + sequence);
-//                        currentDebtBorrow.setReturnDate(returnDate);
-//                        currentDebtBorrow.setTakenDate(getDate);
-//                        if (!isMumkin(currentDebtBorrow)) {
-//                            return;
-//                        }
-//                        if (!firstPay.getText().toString().isEmpty()) {
-//                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-//                            if (!currentDebtBorrow.getReckings().isEmpty() && currentDebtBorrow.getReckings().get(0)
-//                                    .getPayDate().matches(simpleDateFormat.format(currentDebtBorrow.getTakenDate().getTime()))) {
-//                                currentDebtBorrow.getReckings().get(0).setAmount(Double.parseDouble(firstPay.getText().toString()));
-//                            } else {
-//                                currentDebtBorrow.getReckings().add(0, new Recking(
-//                                        dateFormat.format(Calendar.getInstance().getTime()),
-//                                        Double.parseDouble(firstPay.getText().toString()), currentDebtBorrow.getId(),
-//                                        account.getId(), ""));
-//                            }
-//                        }
-//
-//                        Bundle bundle = new Bundle();
-//                        bundle.putInt("pos", currentDebtBorrow.getType());
-//                        fragment.setArguments(bundle);
-//                    } else {
-//                        final DebtBorrow debtBorrow = new DebtBorrow(new Person(PersonName.getText().toString(),
-//                                PersonNumber.getText().toString(), file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath),
-//                                getDate,
-//                                returnDate,
-//                                "borrow_" + UUID.randomUUID().toString(),
-//                                account,
-//                                currency,
-//                                Double.parseDouble(PersonSumm.getText().toString()),
-//                                TYPE, calculate.isChecked()
-//                        );
-//                        if (!isMumkin(debtBorrow)) {
-//                            return;
-//                        }
-//                        if (!firstPay.getText().toString().isEmpty()) {
-//                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-//                            reckings.add(new Recking(
-//                                    dateFormat.format(Calendar.getInstance().getTime()),
-//                                    Double.parseDouble(firstPay.getText().toString()), debtBorrow.getId(),
-//                                    debtBorrow.getAccount().getId(), ""));
-//                        }
-//                        debtBorrow.setInfo(mode + ":" + sequence);
-//                        Log.d("sss", mode + ":" + sequence);
-////                        debtBorrow.setReckings(reckings);
-//                        list.add(0, debtBorrow);
-//                        Bundle bundle = new Bundle();
-//                        bundle.putInt("pos", debtBorrow.getType());
-//                        fragment.setArguments(bundle);
-//                    }
+                    ArrayList<DebtBorrow> list = (ArrayList<DebtBorrow>) debtBorrowDao.queryBuilder().list();
+                    Currency currency = currencyDao.queryBuilder().list().get(PersonValyuta.getSelectedItemPosition());
+                    ArrayList<Recking> reckings = new ArrayList<>();
+                    Account account = accountDao.queryBuilder().list().get(PersonAccount.getSelectedItemPosition());
+                    File file = null;
+                    if (!photoPath.matches("")) {
+                        try {
+                            Integer.parseInt(photoPath);
+                        } catch (Exception e) {
+                            Bitmap bitmap = decodeFile(new File(photoPath));
+                            Bitmap C;
+
+                            if (bitmap.getWidth() >= bitmap.getHeight()) {
+                                C = Bitmap.createBitmap(
+                                        bitmap,
+                                        bitmap.getWidth() / 2 - bitmap.getHeight() / 2,
+                                        0,
+                                        bitmap.getHeight(),
+                                        bitmap.getHeight()
+                                );
+                            } else {
+                                C = Bitmap.createBitmap(
+                                        bitmap,
+                                        0,
+                                        bitmap.getHeight() / 2 - bitmap.getWidth() / 2,
+                                        bitmap.getWidth(),
+                                        bitmap.getWidth()
+                                );
+                            }
+                            try {
+                                file = new File(getContext().getFilesDir(), Uri.parse(photoPath).getLastPathSegment());
+                                FileOutputStream outputStream = new FileOutputStream(file.getAbsoluteFile());
+                                C.compress(Bitmap.CompressFormat.JPEG, 30, outputStream);
+                                outputStream.flush();
+                                outputStream.close();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }
+
+                    DebtBorrowFragment fragment = new DebtBorrowFragment();
+                    if (currentDebtBorrow != null) {
+                        if (calculate.isChecked())
+                            currentDebtBorrow.setAccount(account);
+                        currentDebtBorrow.setPerson(new Person(PersonName.getText().toString(),
+                                PersonNumber.getText().toString(), file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath));
+                        currentDebtBorrow.setAmount(Double.parseDouble(PersonSumm.getText().toString()));
+                        currentDebtBorrow.setCurrency(currency);
+                        currentDebtBorrow.setCalculate(calculate.isChecked());
+                        currentDebtBorrow.setInfo(mode + ":" + sequence);
+                        currentDebtBorrow.setReturnDate(returnDate);
+                        currentDebtBorrow.setTakenDate(getDate);
+                        currentDebtBorrow.__setDaoSession(daoSession);
+                        if (!isMumkin(currentDebtBorrow)) {
+                            return;
+                        } else {
+                            logicManager.insertDebtBorrow(currentDebtBorrow);
+                        }
+                        if (!firstPay.getText().toString().isEmpty()) {
+                            if (!currentDebtBorrow.getReckings().isEmpty() && currentDebtBorrow.getReckings().get(0)
+                                    .getPayDate().matches(dateFormat.format(currentDebtBorrow.getTakenDate().getTime()))) {
+                                currentDebtBorrow.getReckings().get(0).setAmount(Double.parseDouble(firstPay.getText().toString()));
+                            } else {
+                                currentDebtBorrow.getReckings().add(0, new Recking(
+                                        dateFormat.format(Calendar.getInstance().getTime()),
+                                        Double.parseDouble(firstPay.getText().toString()), currentDebtBorrow.getId(),
+                                        account.getId(), ""));
+                            }
+                        }
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("pos", currentDebtBorrow.getType());
+                        fragment.setArguments(bundle);
+                    } else {
+                        Person person = new Person(PersonName.getText().toString(),
+                                PersonNumber.getText().toString(), file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath);
+                        final DebtBorrow debtBorrow = new DebtBorrow(person,
+                                getDate,
+                                returnDate,
+                                "borrow_" + UUID.randomUUID().toString(),
+                                account,
+                                currency,
+                                Double.parseDouble(PersonSumm.getText().toString()),
+                                TYPE, calculate.isChecked()
+                        );
+                        debtBorrow.__setDaoSession(daoSession);
+                        if (!isMumkin(debtBorrow)) {
+                            return;
+                        } else {
+                            logicManager.insertDebtBorrow(debtBorrow);
+                        }
+                        if (!firstPay.getText().toString().isEmpty()) {
+                            reckings.add(new Recking(
+                                    dateFormat.format(Calendar.getInstance().getTime()),
+                                    Double.parseDouble(firstPay.getText().toString()), debtBorrow.getId(),
+                                    debtBorrow.getAccount().getId(), ""));
+                        }
+                        debtBorrow.setInfo(mode + ":" + sequence);
+                        list.add(0, debtBorrow);
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("pos", debtBorrow.getType());
+                        fragment.setArguments(bundle);
+                    }
 //                    ivToolbarMostRight.setVisibility(View.INVISIBLE);
-//                    manager.setDebtBorrows(list);
-//                    manager.saveDebtBorrows();
-//                    ((PocketAccounter) getContext()).replaceFragment(fragment, PockerTag.DEBTS);
+                    paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.displayFragment(new DebtBorrowFragment());
                 }
             }
         }
     }
 
     private boolean isMumkin(DebtBorrow debt) {
-//        Account account = manager.getAccounts().get(PersonAccount.getSelectedItemPosition());
+//        Account account = accountDao.queryBuilder().list().get(PersonAccount.getSelectedItemPosition());
 //        if (account.isLimited() && calculate.isChecked()) {
 //            double limit =  account.getLimitSum();
 //            double accounted = PocketAccounterGeneral.getCost(debt.getTakenDate(),account.getStartMoneyCurrency(),account.getLimitCurrency(),account.getAmount());
@@ -508,7 +533,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 //                }
 //            }
 //            for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
-//                if (debtBorrow.isCalculate() && (currentDebtBorrow != null && !debtBorrow.getId().matches(currentDebtBorrow.getId()) || currentDebtBorrow == null)) {
+//                if (debtBorrow.getCalculate() && (currentDebtBorrow != null && !debtBorrow.getId().matches(currentDebtBorrow.getId()) || currentDebtBorrow == null)) {
 //                    if (debtBorrow.getAccount().getId().matches(account.getId())) {
 //                        if (debtBorrow.getType() == DebtBorrow.BORROW) {
 //                            accounted = accounted - PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getLimitCurrency(), debtBorrow.getAmount());
@@ -661,9 +686,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                                   }
         );
         ImageView btnNo = (ImageView) dialogView.findViewById(R.id.ivAccountClose);
-        btnNo.setOnClickListener(new View.OnClickListener()
-
-                                 {
+        btnNo.setOnClickListener(new View.OnClickListener() {
                                      @Override
                                      public void onClick(View v) {
                                          dialog.dismiss();

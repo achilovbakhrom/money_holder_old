@@ -5,16 +5,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.credit.LinearManagerWithOutEx;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
@@ -61,6 +64,8 @@ public class PurposeFragment extends Fragment {
             }
         });
         rvPurposes = (RecyclerView) rootView.findViewById(R.id.rvPurposes);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        rvPurposes.setLayoutManager(layoutManager);
         fabPurposesAdd = (FABIcon) rootView.findViewById(R.id.fabPurposesAdd);
         fabPurposesAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +84,7 @@ public class PurposeFragment extends Fragment {
     private class PurposeAdapter extends RecyclerView.Adapter<PurposeFragment.ViewHolder> {
         private List<Purpose> result;
         public PurposeAdapter(List<Purpose> result) {
+            Toast.makeText(getContext(), "" + result.size(), Toast.LENGTH_SHORT).show();
             this.result = result;
         }
         public int getItemCount() {
@@ -89,7 +95,13 @@ public class PurposeFragment extends Fragment {
             int resId = getResources().getIdentifier(result.get(position).getIcon(), "drawable", getContext().getPackageName());
             view.ivPurposeItem.setImageResource(resId);
             view.tvPurposeName.setText(result.get(position).getDescription());
-
+            view.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.displayFragment(new PurposeInfoFragment(result.get(position)));
+                }
+            });
         }
 
         public PurposeFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {

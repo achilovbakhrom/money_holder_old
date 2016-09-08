@@ -1,34 +1,31 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.managers.LogicManager;
@@ -38,12 +35,13 @@ import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.DatePicker;
 import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.IconChooseDialog;
+import com.jim.pocketaccounter.utils.OnDatePickListener;
 import com.jim.pocketaccounter.utils.OnIconPickListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,176 +54,266 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     ToolbarManager toolbarManager;
     @Inject
     DaoSession daoSession;
-	@Inject
-	@Named(value = "display_formmatter")
-	SimpleDateFormat dateFormat;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	IconChooseDialog iconChooseDialog;
-	@Inject
-	DatePicker datePicker;
+    @Inject
+    @Named(value = "display_formmatter")
+    SimpleDateFormat dateFormat;
+    @Inject
+    PAFragmentManager paFragmentManager;
+    @Inject
+    IconChooseDialog iconChooseDialog;
 
-	private String choosenIcon = "icons_1";
-	private Purpose purpose;
-	private EditText etPurposeEditName;
-	private FABIcon fabPurposeIcon;
-	private CheckBox chbPurposeEarn;
-	private EditText etPurposeTotal;
-	private Spinner spPurposeCurrency;
-	private LinearLayout llPurposePeriod;
-	private Spinner spPurposePeriod;
-	private TextView tvPurposeBeginDate;
-	private TextView tvPurposeEndDate;
-	private Calendar begin = null;
-	private Calendar end = null;
-	@SuppressLint("ValidFragment")
-	public PurposeEditFragment(Purpose purpose) {
-		this.purpose = purpose;
-	}
+    @Inject
+    DatePicker datePicker;
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View rootView = inflater.inflate(R.layout.account_edit_layout, container, false);
-		rootView.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if(PocketAccounter.keyboardVisible){
-					InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);}
-			}
-		},100);
+    private String choosenIcon = "icons_1";
+    private Purpose purpose;
+    private EditText purposeName;
+    private FABIcon iconPurpose;
+    private EditText amountPurpose;
+    private Spinner curPurpose;
+    private Spinner periodPurpose;
+    private TextView beginDate;
+    private TextView endDate;
+
+    private Calendar begCalendar;
+    private Calendar endCalendar;
+
+    public PurposeEditFragment(Purpose purpose) {
+        this.purpose = purpose;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-		toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
-		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				paFragmentManager.getFragmentManager().popBackStack();
-			}
-		});
-        toolbarManager.setTitle(getResources().getString(R.string.addedit));
-        toolbarManager.setSubtitle("");
+        begCalendar = (Calendar) Calendar.getInstance().clone();
+        endCalendar = (Calendar) Calendar.getInstance().clone();
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.purpose_edit_layout, container, false);
+        purposeName = (EditText) rootView.findViewById(R.id.etPurposeEditName);
+        iconPurpose = (FABIcon) rootView.findViewById(R.id.fabPurposeIcon);
+        amountPurpose = (EditText) rootView.findViewById(R.id.etPurposeTotal);
+        curPurpose = (Spinner) rootView.findViewById(R.id.spPurposeCurrency);
+        periodPurpose = (Spinner) rootView.findViewById(R.id.spPurposePeriod);
+        beginDate = (TextView) rootView.findViewById(R.id.tvPurposeBeginDate);
+        endDate = (TextView) rootView.findViewById(R.id.tvPurposeEndDate);
+        // ------------ Toolbar setting ----------
+        toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
-        toolbarManager.setSpinnerVisibility(View.GONE);
-		toolbarManager.setImageToSecondImage(R.drawable.check_sign);
-		toolbarManager.setOnSecondImageClickListener(this);
-		List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
-		String[] items = new String[currencies.size()];
-		int mainCurrencyPos = 0;
-		for (int i=0; i<currencies.size(); i++) {
-			if (currencies.get(i).getMain())
-				mainCurrencyPos = i;
-			items[i] = currencies.get(i).getAbbr();
-		}
-		ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, items);
+        toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (purpose == null)
+                    purpose = new Purpose();
+                purpose.setDescription(purposeName.getText().toString());
+                purpose.setIcon(choosenIcon);
+                purpose.setPeriodPos(periodPurpose.getSelectedItemPosition());
+                purpose.setPurpose(Double.parseDouble(amountPurpose.getText().toString()));
+                purpose.setBegin(begCalendar);
+                purpose.setEnd(endCalendar);
+                switch (logicManager.insertPurpose(purpose)) {
+                    case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
+                        Toast.makeText(getContext(), "such name have", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    case LogicManagerConstants.SAVED_SUCCESSFULL: {
+                        Toast.makeText(getContext(), "saved success", Toast.LENGTH_SHORT).show();
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayFragment(new PurposeFragment());
+                        break;
+                    }
+                }
+            }
+        });
+        // ------------ end toolbar setting ------
+        // ------------ icon set ----------
+        int resId = getResources().getIdentifier(purpose != null ? purpose.getIcon() : choosenIcon, "drawable", getContext().getPackageName());
+        Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
+        Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
+                (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+        iconPurpose.setImageBitmap(bitmap);
+        iconPurpose.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
+                    @Override
+                    public void OnIconPick(String icon) {
+                        choosenIcon = icon;
+                        int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+                        Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
+                        Bitmap b = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
+                                (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+                        iconPurpose.setImageBitmap(b);
+                        iconChooseDialog.setSelectedIcon(icon);
+                        iconChooseDialog.dismiss();
+                    }
+                });
+                iconChooseDialog.show();
+            }
+        });
+        // ------------ end icon set ---------
+        // ------------ spinner currency --------
+        CurrencyDao currencyDao = daoSession.getCurrencyDao();
+        List<String> curList = new ArrayList<>();
+        for (Currency c : currencyDao.queryBuilder().list()) {
+            curList.add(c.getAbbr());
+        }
+        ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_1, curList);
+        curPurpose.setAdapter(curAdapter);
+        // ------------ end spinner currency -------
+        // ------------ period purpose spinner ------
+        String periodList[] = getResources().getStringArray(R.array.period_purpose);
+        ArrayAdapter<String> periodAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_list_item_1, periodList);
+        periodPurpose.setAdapter(periodAdapter);
+        periodPurpose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                final Dialog dialog = new Dialog(getActivity());
+                View dialogView = getActivity().getLayoutInflater().inflate(R.layout.purpose_dialog_layout, null);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(dialogView);
+                final EditText editText = (EditText) dialogView.findViewById(R.id.etDialogPurpose);
+                final EditText editTextSecond = (EditText) dialogView.findViewById(R.id.etDialogPurposeSecond);
+                final TextView textView = (TextView) dialogView.findViewById(R.id.tvDialogPurposeTitle);
+                begCalendar = (Calendar) Calendar.getInstance().clone();
+                endCalendar = (Calendar) Calendar.getInstance().clone();
+                switch (position) {
+                    case 0: {
+                        beginDate.setText("----");
+                        endDate.setText("----");
+                        begCalendar = null;
+                        endCalendar = null;
+                        break;
+                    }
+                    case 1: {
+                        textView.setText("Enter count week");
+                        editText.setHint("Enter week");
+                        editTextSecond.setVisibility(View.GONE);
+                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+                        save.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                endCalendar.add(Calendar.WEEK_OF_YEAR, Integer.parseInt(editText.getText().toString()));
+                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    }
+                    case 2: {
+                        textView.setText("Enter count month");
+                        editText.setHint("Enter month");
+                        editTextSecond.setVisibility(View.GONE);
+                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+                        save.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                endCalendar.add(Calendar.WEEK_OF_MONTH, Integer.parseInt(editText.getText().toString()));
+                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    }
+                    case 3: {
+                        textView.setText("Enter count year");
+                        editText.setHint("Enter year");
+                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+                        editTextSecond.setVisibility(View.GONE);
+                        save.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                endCalendar.add(Calendar.YEAR, Integer.parseInt(editText.getText().toString()));
+                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    }
+                    case 4: {
+                        textView.setText("Enter between date");
+                        editTextSecond.setVisibility(View.VISIBLE);
+                        editText.setHint("Enter start");
+                        editTextSecond.setHint("Enter end");
+                        editText.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                datePicker.setOnDatePickListener(new OnDatePickListener() {
+                                    @Override
+                                    public void OnDatePick(Calendar pickedDate) {
+                                        begCalendar = pickedDate;
+                                        editText.setText(dateFormat.format(begCalendar.getTime()));
+                                    }
+                                });
+                                datePicker.show();
+                                return true;
+                            }
+                        });
+                        editTextSecond.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                datePicker.setOnDatePickListener(new OnDatePickListener() {
+                                    @Override
+                                    public void OnDatePick(Calendar pickedDate) {
+                                        endCalendar = pickedDate;
+                                        editTextSecond.setText(dateFormat.format(endCalendar.getTime()));
+                                    }
+                                });
+                                datePicker.show();
+                                return true;
+                            }
+                        });
+                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+                        save.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+                            }
+                        });
+                        dialog.show();
+                        break;
+                    }
+                }
+            }
 
-		//1 account name
-		etPurposeEditName = (EditText) rootView.findViewById(R.id.etPurposeEditName);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-		etPurposeTotal = (EditText) rootView.findViewById(R.id.etPurposeTotal);
-		spPurposeCurrency = (Spinner) rootView.findViewById(R.id.spPurposeCurrency);
+            }
+        });
+        // ------------ end period spinner ---------
+        if (purpose != null) {
+            purposeName.setText(purpose.getDescription());
+            amountPurpose.setText("" + purpose.getPurpose());
+//            for (int i = 0; i < curList.size(); i++) {
+//                if (curList.get(i).equals(purpose.getCurrency().getAbbr())) {
+//                    curPurpose.setSelection(i);
+//                    break;
+//                }
+//            }
+            begCalendar = purpose.getBegin();
+            endCalendar = purpose.getEnd();
+            periodPurpose.setSelection(purpose.getPeriodPos());
+            beginDate.setText(dateFormat.format(purpose.getBegin().getTime()));
+            endDate.setText(dateFormat.format(purpose.getEnd().getTime()));
+        }
+        return rootView;
+    }
 
-		//2 account icon
-		fabPurposeIcon = (FABIcon) rootView.findViewById(R.id.fabPurposeIcon);
-		int resId = getResources().getIdentifier(choosenIcon, "drawable", getContext().getPackageName());
-		Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-		Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.twentyfive_dp),
-				(int)getResources().getDimension(R.dimen.twentyfive_dp), false);
-		fabPurposeIcon.setImageBitmap(bitmap);
-		fabPurposeIcon.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
-					@Override
-					public void OnIconPick(String icon) {
-						choosenIcon = icon;
-						int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
-						Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-						Bitmap b = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
-								(int) getResources().getDimension(R.dimen.twentyfive_dp), false);
-						fabPurposeIcon.setImageBitmap(b);
-						iconChooseDialog.setSelectedIcon(icon);
-						iconChooseDialog.dismiss();
-					}
-				});
-				iconChooseDialog.show();
-			}
-		});
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        paFragmentManager.getFragmentManager().popBackStack();
+    }
 
-		//3 account start sum
-		chbPurposeEarn = (CheckBox) rootView.findViewById(R.id.chbPurposeEarn);
-		chbPurposeEarn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-			}
-		});
-		llPurposePeriod = (LinearLayout) rootView.findViewById(R.id.llPurposePeriod);
-		spPurposePeriod = (Spinner) rootView.findViewById(R.id.spPurposePeriod);
-		tvPurposeBeginDate = (TextView) rootView.findViewById(R.id.tvPurposeBeginDate);
-		tvPurposeEndDate = (TextView) rootView.findViewById(R.id.tvPurposeEndDate);
-
-		if (purpose != null) {
-			etAccountEditName.setText(account.getName());
-			resId = getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
-			temp = BitmapFactory.decodeResource(getResources(), resId);
-			bitmap = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.twentyfive_dp),
-					(int)getResources().getDimension(R.dimen.twentyfive_dp), false);
-			fabAccountIcon.setImageBitmap(bitmap);
-			chbAccountNoneZero.setChecked(account.getNoneMinusAccount());
-			iconChooseDialog.setSelectedIcon(account.getIcon());
-			if (account.getAmount()!=0) {
-				chbAccountStartSumEnabled.setChecked(true);
-				rlStartSumContainer.setVisibility(View.VISIBLE);
-				etStartMoney.setText(Double.toString(account.getAmount()));
-				for (int i=0; i<currencies.size(); i++)
-					if (currencies.get(i).getId().matches(account.getStartMoneyCurrency().getId())) {
-						spStartMoneyCurrency.setSelection(i);
-						break;
-					}
-			}
-		}
-		return rootView;
-	}
-
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		paFragmentManager.getFragmentManager().popBackStack();
-	}
-
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()) {
-			case R.id.ivToolbarMostRight:
-				if (etAccountEditName.getText().toString().matches("")) {
-					etAccountEditName.setError(getString(R.string.enter_name_error));
-					return;
-				}
-				Account account = null;
-				if (account == null)
-					account = new Account();
-				else
-					account = this.account;
-				account.setName(etAccountEditName.getText().toString());
-
-				if (!etStartMoney.getText().toString().matches("") && Double.parseDouble(etStartMoney.getText().toString()) != 0)
-					account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
-				else
-					account.setAmount(0);
-				account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
-						.get(spStartMoneyCurrency.getSelectedItemPosition()));
-				account.setId(UUID.randomUUID().toString());
-				account.setCalendar(Calendar.getInstance());
-				account.setIcon(choosenIcon);
-				account.setNoneMinusAccount(chbAccountNoneZero.isChecked());
-				if (logicManager.insertAccount(account) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
-					etAccountEditName.setError(getString(R.string.such_account_name_exists_error));
-					return;
-				}
-				else
-					paFragmentManager.getFragmentManager().popBackStack();
-				break;
-		}
-	}
+    @Override
+    public void onClick(View v) {
+    }
 }

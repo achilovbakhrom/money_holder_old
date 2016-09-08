@@ -1,6 +1,11 @@
 package com.jim.pocketaccounter.modulesandcomponents.components;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.credit.AdapterCridetArchive;
+import com.jim.pocketaccounter.debt.AddBorrowFragment;
+import com.jim.pocketaccounter.debt.BorrowFragment;
+import com.jim.pocketaccounter.debt.DebtBorrowFragment;
+import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
 import com.jim.pocketaccounter.finance.CurrencyAdapter;
 import com.jim.pocketaccounter.finance.CurrencyExchangeAdapter;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
@@ -12,7 +17,9 @@ import com.jim.pocketaccounter.fragments.CategoryInfoFragment;
 import com.jim.pocketaccounter.fragments.CurrencyChooseFragment;
 import com.jim.pocketaccounter.fragments.CurrencyEditFragment;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
+import com.jim.pocketaccounter.fragments.PurposeEditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
+import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
@@ -48,4 +55,11 @@ public interface PocketAccounterActivityComponent {
     void inject(PurposeFragment purposeFragment);
     void inject(TransferDialog transferDialog);
     void inject(TransferAccountAdapter transferAccountAdapter);
+    void inject(PurposeEditFragment purposeEditFragment);
+    void inject(PurposeInfoFragment purposeInfoFragment);
+    void inject(DebtBorrowFragment debtBorrowFragment);
+    void inject(InfoDebtBorrowFragment infoDebtBorrowFragment);
+    void inject(BorrowFragment borrowFragment);
+    void inject(AddBorrowFragment addBorrowFragment);
+    void inject(AdapterCridetArchive adapterCridetArchive);
 }

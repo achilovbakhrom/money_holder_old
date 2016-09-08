@@ -19,6 +19,7 @@
         <item>Rate app</item>
         <item>Share app</item>
         <item>Feedback</item>
+        <item>Purpose</item>
     </string-array>
     <string-array name="cat_ids">
         <item>0</item>
@@ -1353,4 +1354,11 @@
     <string name="purposes">Цели</string>
     <string name="earn">Копилка</string>
     <string name="period">Период</string>
+    <string-array name="period_purpose">
+        <item>no period</item>
+        <item>week</item>
+        <item>mounth</item>
+        <item>year</item>
+        <item>beetwen date</item>
+    </string-array>
 </resources>

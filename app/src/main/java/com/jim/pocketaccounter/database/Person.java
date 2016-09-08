@@ -1,14 +1,19 @@
 package com.jim.pocketaccounter.database;
 
+import android.support.annotation.Keep;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+
+import java.util.UUID;
+
 @Entity(nameInDb = "PERSONS", active = true)
 public class Person {
-    @Id(autoincrement = true)
-    private Long id;
+    @Id
+    private String id;
     @Property
     private String name;
     @Property
@@ -21,25 +26,16 @@ public class Person {
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    public Person(String name, String phoneNumber, String photo) {
+    @Keep
+    public Person (){
+        id = UUID.randomUUID().toString();
+    }
+    @Keep
+    public Person (String name, String phoneNumber, String photo) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.photo = photo;
     }
-    public Person() {}
-    @Generated(hash = 2072197380)
-    public Person(Long id, String name, String phoneNumber, String photo) {
-        this.id = id;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.photo = photo;
-    }
-    public String getName() {return name;}
-    public void setName(String name) {this.name = name;}
-    public String getPhoneNumber() {return phoneNumber;}
-    public void setPhoneNumber(String phoneNumber) {this.phoneNumber = phoneNumber;}
-    public String getPhoto() {return photo;}
-    public void setPhoto(String photo) {this.photo = photo;}
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -79,10 +75,35 @@ public class Person {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPersonDao() : null;
     }
-    public Long getId() {
+    public String getPhoto() {
+        return this.photo;
+    }
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+    public String getPhoneNumber() {
+        return this.phoneNumber;
+    }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    public String getName() {
+        return this.name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getId() {
         return this.id;
     }
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
+    }
+    @Generated(hash = 1714063126)
+    public Person(String id, String name, String phoneNumber, String photo) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.photo = photo;
     }
 }

@@ -100,7 +100,7 @@ public class TransferDialog extends Dialog {
                     }
 
                     TransferAccountAdapter secondAdapter = new TransferAccountAdapter(getContext(), second);
-                    spTransferSecond.setAdapter(secondAdapter);
+//                    spTransferSecond.setAdapter(secondAdapter);
                 }
 
                 @Override
@@ -116,7 +116,6 @@ public class TransferDialog extends Dialog {
         ivYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (onTransferDialogSaveListener != null)
                     onTransferDialogSaveListener.OnTransferDialogSave();
                 dismiss();

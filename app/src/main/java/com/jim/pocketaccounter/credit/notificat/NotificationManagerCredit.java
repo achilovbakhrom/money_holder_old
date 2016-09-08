@@ -272,7 +272,7 @@ public class NotificationManagerCredit {
 		cal.set(Calendar.MINUTE, morning_time.get(Calendar.MINUTE));
 		cal.set(Calendar.SECOND, 0);
 		for (DebtBorrow item : myDebdbor) {
-			if (item.isTo_archive()) continue;
+			if (item.getTo_archive()) continue;
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 			boolean isNotify = preferences.getBoolean("general_notif", true);
 			if (isNotify) {

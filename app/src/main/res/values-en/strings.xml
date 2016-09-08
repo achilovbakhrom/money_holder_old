@@ -19,6 +19,7 @@
         <item>Rate app</item>
         <item>Share app</item>
         <item>Feedback</item>
+        <item>Purpose</item>
     </string-array>
     <string-array name="cat_ids">
         <item>0</item>

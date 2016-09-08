@@ -344,8 +344,8 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 				values.put("currency_id", debtBorrow.getCurrency().getId());
 				values.put("amount", debtBorrow.getAmount());
 				values.put("id", debtBorrow.getId());
-				values.put("calculate", debtBorrow.isCalculate());
-				values.put("to_archive", debtBorrow.isTo_archive());
+				values.put("calculate", debtBorrow.getCalculate());
+				values.put("to_archive", debtBorrow.getTo_archive());
 				values.put("empty", debtBorrow.getInfo());
 				db.insert("debt_borrow_table", null, values);
 				values.clear();

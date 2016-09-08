@@ -20,6 +20,8 @@ import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.database.Purpose;
+import com.jim.pocketaccounter.database.PurposeDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
@@ -32,8 +34,10 @@ import com.jim.pocketaccounter.database.SubCategoryDao;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
 import org.greenrobot.greendao.query.WhereCondition;
 
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.List;
 
@@ -57,6 +61,8 @@ public class LogicManager {
     private SubCategoryDao subCategoryDao;
     private BoardButtonDao boardButtonDao;
     private RootCategoryDao rootCategoryDao;
+    private PurposeDao purposeDao;
+
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         currencyDao = daoSession.getCurrencyDao();
@@ -70,6 +76,7 @@ public class LogicManager {
         subCategoryDao = daoSession.getSubCategoryDao();
         boardButtonDao = daoSession.getBoardButtonDao();
         rootCategoryDao = daoSession.getRootCategoryDao();
+        purposeDao = daoSession.getPurposeDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -114,7 +121,7 @@ public class LogicManager {
         List<Account> allAccounts = accountDao.loadAll();
         if (allAccounts.size() < 2 || accounts.size() == accounts.size())
             return LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT;
-        for (Account account: accounts) {
+        for (Account account : accounts) {
             for (FinanceRecord record : recordDao.loadAll()) {
                 if (record.getAccount().getId().matches(account.getId())) {
                     recordDao.delete(record);
@@ -143,26 +150,24 @@ public class LogicManager {
         Currency mainCurrency = null;
         if (currency == null) {
             int pos = 0;
-            for (int i=0; i<currencies.size(); i++) {
+            for (int i = 0; i < currencies.size(); i++) {
                 if (currencies.get(i).getMain()) {
                     pos = i;
                     break;
                 }
             }
             currencies.get(pos).setMain(false);
-            if (pos == currencies.size()-1) {
+            if (pos == currencies.size() - 1) {
                 currencies.get(0).setMain(true);
                 mainCurrency = currencies.get(0);
+            } else {
+                currencies.get(pos + 1).setMain(true);
+                mainCurrency = currencies.get(pos + 1);
             }
-            else {
-                currencies.get(pos+1).setMain(true);
-                mainCurrency = currencies.get(pos+1);
-            }
-        }
-        else {
+        } else {
             int oldMainPos = 0;
             int currMainPos = 0;
-            for (int i= 0; i<currencies.size(); i++) {
+            for (int i = 0; i < currencies.size(); i++) {
                 if (currencies.get(i).getMain()) {
                     oldMainPos = i;
                 }
@@ -174,24 +179,24 @@ public class LogicManager {
             currencies.get(currMainPos).setMain(true);
             mainCurrency = currencies.get(currMainPos);
         }
-        double koeff = mainCurrency.getCosts().get(mainCurrency.getCosts().size()-1).getCost();
-        for (int i=0; i<mainCurrency.getCosts().size(); i++) {
+        double koeff = mainCurrency.getCosts().get(mainCurrency.getCosts().size() - 1).getCost();
+        for (int i = 0; i < mainCurrency.getCosts().size(); i++) {
             CurrencyCost current = mainCurrency.getCosts().get(i);
-            Calendar currDay = (Calendar)current.getDay().clone();
+            Calendar currDay = (Calendar) current.getDay().clone();
             currDay.set(Calendar.HOUR_OF_DAY, 0);
             currDay.set(Calendar.MINUTE, 0);
             currDay.set(Calendar.SECOND, 0);
             currDay.set(Calendar.MILLISECOND, 0);
-            for (int j=0; j<currencies.size(); j++) {
+            for (int j = 0; j < currencies.size(); j++) {
                 if (currencies.get(j).getMain()) continue;
-                for (int k=0; k<currencies.get(j).getCosts().size(); k++) {
+                for (int k = 0; k < currencies.get(j).getCosts().size(); k++) {
                     CurrencyCost currencyCost = currencies.get(j).getCosts().get(k);
                     if (currencyCost.getDay().compareTo(currDay) >= 0)
-                        currencyCost.setCost(currencyCost.getCost()/current.getCost());
+                        currencyCost.setCost(currencyCost.getCost() / current.getCost());
                     currencyCostDao.insertOrReplace(currencyCost);
                 }
             }
-            mainCurrency.getCosts().get(i).setCost(mainCurrency.getCosts().get(i).getCost()/koeff);
+            mainCurrency.getCosts().get(i).setCost(mainCurrency.getCosts().get(i).getCost() / koeff);
             currencyCostDao.insertOrReplaceInTx(mainCurrency.getCosts().get(i));
         }
         currencyDao.insertOrReplaceInTx(currencies);
@@ -210,14 +215,13 @@ public class LogicManager {
             }
         }
         if (currencyCost.size() == costsCurrency.getCosts().size()) {
-            for (int i=0; i<costsCurrency.getCosts().size(); i++) {
-                if (i==0) continue;
+            for (int i = 0; i < costsCurrency.getCosts().size(); i++) {
+                if (i == 0) continue;
                 currencyCostDao.delete(costsCurrency.getCosts().get(i));
                 costsCurrency.getCosts().remove(i);
                 i--;
             }
-        }
-        else {
+        } else {
             for (CurrencyCost cc : currencyCost) {
                 for (CurrencyCost currcc : costsCurrency.getCosts()) {
                     if (cc.getCurrencyId().matches(costsCurrency.getId()) &&
@@ -246,22 +250,24 @@ public class LogicManager {
         subCategoryDao.deleteInTx(subCategories);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
+
     public void changeBoardButton(int type, int pos, String categoryId) {
-            Query<BoardButton> query = boardButtonDao
-                    .queryBuilder()
-                    .where(BoardButtonDao.Properties.Type.eq(type), BoardButtonDao.Properties.Pos.eq(pos))
-                    .build();
-            List<BoardButton> list = query.list();
-            BoardButton boardButton = null;
-            if (!list.isEmpty())
-                boardButton = list.get(0);
-            boardButton.setCategoryId(categoryId);
-            Query<BoardButton> boardButtonQuery = boardButtonDao
-                    .queryBuilder()
-                    .where(BoardButtonDao.Properties.Id.eq(boardButton.getId()))
-                    .build();
-            boardButtonDao.insertOrReplace(boardButton);
+        Query<BoardButton> query = boardButtonDao
+                .queryBuilder()
+                .where(BoardButtonDao.Properties.Type.eq(type), BoardButtonDao.Properties.Pos.eq(pos))
+                .build();
+        List<BoardButton> list = query.list();
+        BoardButton boardButton = null;
+        if (!list.isEmpty())
+            boardButton = list.get(0);
+        boardButton.setCategoryId(categoryId);
+        Query<BoardButton> boardButtonQuery = boardButtonDao
+                .queryBuilder()
+                .where(BoardButtonDao.Properties.Id.eq(boardButton.getId()))
+                .build();
+        boardButtonDao.insertOrReplace(boardButton);
     }
+
     public int insertRootCategory(RootCategory rootCategory) {
         Query<RootCategory> query = rootCategoryDao
                 .queryBuilder()
@@ -283,6 +289,55 @@ public class LogicManager {
                 boardButtonDao.insertOrReplace(boardButton);
             }
         rootCategoryDao.delete(category);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int insertPurpose(Purpose purpose) {
+        Query<Purpose> query = purposeDao
+                .queryBuilder()
+                .where(PurposeDao.Properties.Id.eq(purpose.getId()))
+                .build();
+        if (query.list().isEmpty()) {
+            query = purposeDao
+                    .queryBuilder()
+                    .where(PurposeDao.Properties.Description.eq(purpose.getDescription()))
+                    .build();
+            if (!query.list().isEmpty())
+                return LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS;
+        }
+        purposeDao.insertOrReplace(purpose);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deletePurpose(Purpose purpose) {
+        Query<Purpose> query = purposeDao
+                .queryBuilder()
+                .where(PurposeDao.Properties.Id.eq(purpose.getId()))
+                .build();
+        if (query.list().isEmpty()) {
+            return LogicManagerConstants.REQUESTED_OBJECT_NOT_FOUND;
+        }
+        purposeDao.delete(purpose);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int insertDebtBorrow(DebtBorrow debtBorrow) {
+        Query<DebtBorrow> query = debtBorrowDao
+                .queryBuilder()
+                .where(DebtBorrowDao.Properties.Id.eq(debtBorrow.getId()))
+                .build();
+        debtBorrowDao.insertOrReplace(debtBorrow);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deleteDebtBorrow(DebtBorrow debtBorrow) {
+        Query<DebtBorrow> query = debtBorrowDao.queryBuilder()
+                .where(DebtBorrowDao.Properties.Id.eq(debtBorrow.getId()))
+                .build();
+        if (query.list().isEmpty()) {
+            return LogicManagerConstants.REQUESTED_OBJECT_NOT_FOUND;
+        }
+        debtBorrowDao.delete(debtBorrow);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 }

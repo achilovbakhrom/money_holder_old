@@ -2,120 +2,133 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white" 
+    android:background="@color/white"
+    android:clickable="true"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/ten_dp"
-    android:clickable="true">
+    android:paddingBottom="@dimen/ten_dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/five_dp"
         android:layout_marginTop="@dimen/twenty_dp"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/etPurposeEditName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:maxLength="25"
-            android:layout_marginLeft="@dimen/sixteen_dp"
-            android:textColor="@color/toolbar_text_color"
-            android:textSize="@dimen/sixteen_sp"
-            android:hint="@string/cat_name"
-
-            android:layout_marginRight="@dimen/ten_dp"
-            android:layout_gravity="center_vertical"
+            android:layout_alignBottom="@+id/fabPurposeIcon"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/fabPurposeIcon"
             android:layout_alignTop="@+id/fabAccountIcon"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_marginRight="@dimen/ten_dp"
+
             android:layout_toLeftOf="@+id/fabAccountIcon"
             android:layout_toStartOf="@+id/fabAccountIcon"
-            />
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/cat_name"
+            android:maxLength="25"
+            android:textColor="@color/toolbar_text_color"
+            android:textSize="@dimen/sixteen_sp" />
 
         <com.jim.pocketaccounter.utils.FABIcon
             android:id="@+id/fabPurposeIcon"
             android:layout_width="@dimen/fiftysix_dp"
             android:layout_height="@dimen/fiftysix_dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="@dimen/twelve_dp"
-            android:layout_centerVertical="true"
-            android:layout_marginBottom="@dimen/twelve_dp"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="@dimen/sixteen_dp"/>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/twelve_dp"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:layout_marginTop="@dimen/twelve_dp" />
     </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/sixteen_dp"
         android:layout_marginLeft="@dimen/sixteen_dp"
         android:layout_marginRight="@dimen/sixteen_dp"
         android:layout_marginTop="@dimen/ten_dp"
-        android:layout_marginBottom="@dimen/sixteen_dp"
         android:orientation="horizontal">
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/earn"
-            android:id="@+id/chbPurposeEarn"
-            android:layout_gravity="center"/>
+
         <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/enter_amount"
-            android:layout_gravity="center"
             android:id="@+id/etPurposeTotal"
-            android:layout_marginLeft="@dimen/ten_dp"/>
-        <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/ten_dp"
-            android:id="@+id/spPurposeCurrency"/>
+            android:hint="@string/enter_amount" />
+
+        <Spinner
+            android:id="@+id/spPurposeCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/ten_dp" />
     </LinearLayout>
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:id="@+id/llPurposePeriod"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/sixteen_dp"
         android:layout_marginLeft="@dimen/sixteen_dp"
         android:layout_marginRight="@dimen/sixteen_dp"
-        android:layout_marginBottom="@dimen/sixteen_dp">
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/period"
                 android:layout_marginRight="@dimen/ten_dp"
-                android:textSize="@dimen/sixteen_dp"/>
+                android:text="@string/period"
+                android:textSize="@dimen/sixteen_dp" />
+
             <Spinner
+                android:id="@+id/spPurposePeriod"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/spPurposePeriod"/>
+                android:layout_height="wrap_content" />
         </LinearLayout>
-        <TextView
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ten_dp"
-            android:text="@string/begin_date"
-            android:textSize="@dimen/sixteen_dp"
-            android:id="@+id/tvPurposeBeginDate"
-            android:background="@drawable/knopka_zeleniy"
-            android:textColor="@color/green_just"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ten_dp"
-            android:text="@string/begin_date"
-            android:textSize="@dimen/sixteen_dp"
-            android:id="@+id/tvPurposeEndDate"
-            android:background="@drawable/knopka_zeleniy"
-            android:textColor="@color/green_just"/>
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPurposeBeginDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ten_dp"
+                android:background="@drawable/knopka_zeleniy"
+                android:text="@string/begin_date"
+                android:textColor="@color/green_just"
+                android:textSize="@dimen/sixteen_dp" />
+
+            <TextView
+                android:id="@+id/tvPurposeEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ten_dp"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/knopka_zeleniy"
+                android:text="@string/begin_date"
+                android:textColor="@color/green_just"
+                android:textSize="@dimen/sixteen_dp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>
