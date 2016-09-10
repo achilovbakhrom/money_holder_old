@@ -390,7 +390,7 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 				values.put("key_for_archive", credits.get(i).isKey_for_archive());
 				values.put("taken_date", format.format(credits.get(i).getTake_time().getTime()));
 				values.put("percent", credits.get(i).getProcent());
-				values.put("percent_interval", Long.toString(credits.get(i).getProcent_interval()));
+//				values.put("percent_interval", Long.toString(credits.get(i).getProcent_interval()));
 				values.put("period_time", Long.toString(credits.get(i).getPeriod_time()));
 				values.put("period_time_tip", Long.toString(credits.get(i).getPeriod_time_tip())); //ps Sardor
 				values.put("credit_id", credits.get(i).getMyCredit_id());
@@ -463,7 +463,7 @@ public class PocketAccounterDatabase extends SQLiteOpenHelper {
 				values.put("key_for_archive", credits.get(i).isKey_for_archive());
 				values.put("taken_date", format.format(credits.get(i).getTake_time().getTime()));
 				values.put("percent", credits.get(i).getProcent());
-				values.put("percent_interval", Long.toString(credits.get(i).getProcent_interval()));
+//				values.put("percent_interval", Long.toString(credits.get(i).getProcent_interval()));
 				values.put("period_time", Long.toString(credits.get(i).getPeriod_time()));
 				values.put("period_time_tip", Long.toString(credits.get(i).getPeriod_time_tip())); //ps Sardor
 				values.put("credit_id", credits.get(i).getMyCredit_id());

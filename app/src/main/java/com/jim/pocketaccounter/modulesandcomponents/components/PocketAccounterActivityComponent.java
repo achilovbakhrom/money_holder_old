@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.modulesandcomponents.components;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.credit.AdapterCridet;
 import com.jim.pocketaccounter.credit.AdapterCridetArchive;
 import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.BorrowFragment;
@@ -12,11 +13,16 @@ import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.fragments.AccountEditFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
 import com.jim.pocketaccounter.fragments.AccountInfoFragment;
+import com.jim.pocketaccounter.fragments.AddCreditFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CategoryInfoFragment;
+import com.jim.pocketaccounter.fragments.CreditFragment;
+import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyChooseFragment;
 import com.jim.pocketaccounter.fragments.CurrencyEditFragment;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
+import com.jim.pocketaccounter.fragments.InfoCreditFragment;
+import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
 import com.jim.pocketaccounter.fragments.PurposeEditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
@@ -62,4 +68,11 @@ public interface PocketAccounterActivityComponent {
     void inject(BorrowFragment borrowFragment);
     void inject(AddBorrowFragment addBorrowFragment);
     void inject(AdapterCridetArchive adapterCridetArchive);
+    void inject(AdapterCridet adapterCridet);
+    void inject(CreditTabLay creditTabLay);
+    void inject(CreditFragment creditFragment);
+    void inject(InfoCreditFragment infoCreditFragment);
+    void inject(InfoCreditFragmentForArchive infoCreditFragmentForArchive);
+    void inject(AddCreditFragment addCreditFragment);
+//    void inject(LogicManager logicManager);
 }

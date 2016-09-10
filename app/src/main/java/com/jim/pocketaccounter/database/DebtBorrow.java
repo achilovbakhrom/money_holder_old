@@ -7,6 +7,7 @@ import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.JoinProperty;
+import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToMany;
 import org.greenrobot.greendao.annotation.ToOne;
@@ -50,6 +51,8 @@ public class DebtBorrow {
     private List<Recking> reckings;
     public static final int DEBT = 1, BORROW = 0;
     private String info = "";
+    @Property
+    @NotNull
     private String id; //"debt_"+UUID.randowUUID().toString();
     @Generated(hash = 1170963677)
     private transient String currency__resolvedKey;
@@ -351,10 +354,10 @@ public class DebtBorrow {
         this.perId = perId;
     }
 
-    @Generated(hash = 439704250)
-    public DebtBorrow(String perId, Calendar takenDate, Calendar returnDate,
-                      int type, String accountId, String currencyId, boolean calculate,
-                      boolean to_archive, double amount, String info, String id) {
+    @Generated(hash = 591064491)
+    public DebtBorrow(String perId, Calendar takenDate, Calendar returnDate, int type,
+            String accountId, String currencyId, boolean calculate, boolean to_archive,
+            double amount, String info, @NotNull String id) {
         this.perId = perId;
         this.takenDate = takenDate;
         this.returnDate = returnDate;

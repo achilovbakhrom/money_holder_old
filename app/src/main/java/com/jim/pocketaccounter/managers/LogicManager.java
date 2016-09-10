@@ -2,9 +2,11 @@ package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
+import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.BoardButton;
@@ -20,6 +22,8 @@ import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.database.Person;
+import com.jim.pocketaccounter.database.PersonDao;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.database.PurposeDao;
 import com.jim.pocketaccounter.database.Recking;
@@ -38,10 +42,13 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import org.greenrobot.greendao.query.WhereCondition;
 
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by DEV on 28.08.2016.
@@ -50,6 +57,8 @@ import javax.inject.Inject;
 public class LogicManager {
     @Inject
     DaoSession daoSession;
+    @Inject
+    CommonOperations commonOperations;
     private CurrencyDao currencyDao;
     private CurrencyCostDao currencyCostDao;
     private FinanceRecordDao recordDao;
@@ -62,9 +71,11 @@ public class LogicManager {
     private BoardButtonDao boardButtonDao;
     private RootCategoryDao rootCategoryDao;
     private PurposeDao purposeDao;
+    private PersonDao personDao;
 
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
+//        ((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
         currencyDao = daoSession.getCurrencyDao();
         currencyCostDao = daoSession.getCurrencyCostDao();
         recordDao = daoSession.getFinanceRecordDao();
@@ -77,6 +88,7 @@ public class LogicManager {
         boardButtonDao = daoSession.getBoardButtonDao();
         rootCategoryDao = daoSession.getRootCategoryDao();
         purposeDao = daoSession.getPurposeDao();
+        personDao = daoSession.getPersonDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -339,5 +351,96 @@ public class LogicManager {
         }
         debtBorrowDao.delete(debtBorrow);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int insertPerson (Person person) {
+        Query<Person> query = personDao
+                .queryBuilder()
+                .where(PersonDao.Properties.Id.eq(person.getId()))
+                .build();
+        personDao.insertOrReplace(person);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int insertCredit (CreditDetials creditDetials) {
+        creditDetialsDao.insertOrReplace(creditDetials);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deleteCredit (CreditDetials creditDetials) {
+        Query<CreditDetials> query = creditDetialsDao.queryBuilder()
+                .where(CreditDetialsDao.Properties.MyCredit_id.eq(creditDetials.getMyCredit_id()))
+                .build();
+        if (query.list().isEmpty()) {
+            return LogicManagerConstants.REQUESTED_OBJECT_NOT_FOUND;
+        }
+        creditDetialsDao.delete(creditDetials);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public double isLimitAccess (Account account, Calendar date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getCurrency(), account.getAmount());
+        for (int i = 0; i < recordDao.queryBuilder().list().size(); i++) {
+            FinanceRecord tempac = recordDao.queryBuilder().list().get(i);
+            if (tempac.getAccount().getId().matches(account.getId())) {
+                if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
+                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
+                else
+                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
+            }
+        }
+        for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
+            if (debtBorrow.getCalculate()) {
+                if (debtBorrow.getAccount().getId().matches(account.getId())) {
+                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
+                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
+                    } else {
+                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
+                    }
+                    for (Recking recking : debtBorrow.getReckings()) {
+                        Calendar cal = Calendar.getInstance();
+                        try {
+                            cal.setTime(simpleDateFormat.parse(recking.getPayDate()));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        if (debtBorrow.getType() == DebtBorrow.DEBT) {
+                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                        } else {
+                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                        }
+                    }
+                } else {
+                    for (Recking recking : debtBorrow.getReckings()) {
+                        Calendar cal = Calendar.getInstance();
+                        if (recking.getAccountId().matches(account.getId())) {
+                            try {
+                                cal.setTime(simpleDateFormat.parse(recking.getPayDate()));
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
+                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                            } else {
+                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
+            if (creditDetials.isKey_for_include()) {
+                for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+                    if (reckingCredit.getAccountId().matches(account.getId())) {
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(reckingCredit.getPayDate());
+                        accounted = accounted - commonOperations.getCost(cal, creditDetials.getValyute_currency(), account.getCurrency(), reckingCredit.getAmount());
+                    }
+                }
+            }
+        }
+        return accounted;
     }
 }

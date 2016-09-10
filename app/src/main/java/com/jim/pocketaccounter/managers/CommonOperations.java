@@ -76,6 +76,7 @@ public class CommonOperations {
 
     public double getCost(Calendar date, Currency fromCurrency, Currency toCurrency, double amount) {
         //TODO tekwir bir yana
+
         if (fromCurrency.getId().matches(toCurrency.getId())) return amount;
         double tokoeff = 1.0;
         double fromkoeff2 = 1.0;

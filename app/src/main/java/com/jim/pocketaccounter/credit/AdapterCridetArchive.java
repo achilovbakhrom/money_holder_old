@@ -16,6 +16,7 @@ import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 
 import java.text.DecimalFormat;
@@ -26,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by developer on 02.06.2016.
@@ -33,13 +35,15 @@ import javax.inject.Inject;
 
 public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArchive.myViewHolder> {
     @Inject
+    @Named(value = "display_formmatter")
+    SimpleDateFormat dateFormat;
+    @Inject
     PAFragmentManager paFragmentManager;
     @Inject
     DaoSession daoSession;
     CreditDetialsDao creditDetialsDao;
     List<CreditDetials> cardDetials;
 
-    SimpleDateFormat dateformarter;
     Context context;
     long forDay = 1000L * 60L * 60L * 24L;
     long forMoth = 1000L * 60L * 60L * 24L * 30L;
@@ -58,7 +62,6 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
             }
         }
         this.context = This;
-        dateformarter = new SimpleDateFormat("dd.MM.yyyy");
         formater = new DecimalFormat("0.##");
     }
 
@@ -91,7 +94,7 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
 
         Date AAa = (new Date());
         AAa.setTime(itemCr.getTake_time().getTimeInMillis());
-        holder.taken_credit_date.setText(dateformarter.format(AAa));
+        holder.taken_credit_date.setText(dateFormat.format(AAa));
         holder.iconn.setImageResource(itemCr.getIcon_ID());
 
         Calendar to = (Calendar) itemCr.getTake_time().clone();
@@ -150,34 +153,31 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         }
 
         AAa.setTime(itemCr.getMyCredit_id());
-        holder.overall_amount.setText(dateformarter.format(AAa));
-
+        holder.overall_amount.setText(dateFormat.format(AAa));
         holder.glav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
-//                int pos = cardDetials.indexOf(itemCr);
-//                temp.setConteent(itemCr, pos, new ListnerDel() {
-//                    @Override
-//                    public void delete_item(int position) {
-//                        CreditDetials Az = cardDetials.get(position);
-//                        if (Az.isKey_for_include()) {
-//                            ArrayList<CreditDetials> credList = PocketAccounter.financeManager.getCredits();
-//                            for (CreditDetials creditDetials : credList) {
-//                                if (creditDetials.getTake_time().getTimeInMillis() == Az.getTake_time().getTimeInMillis()) {
-//                                    credList.remove(creditDetials);
-//                                    PocketAccounter.financeManager.saveCredits();
-//                                    svyazForNotifyFromArchAdap.notifyCredFrag();
-//                                    break;
-//                                }
-//                            }
-//                        }
-//                        cardDetials.remove(position);
-//                        PocketAccounter.financeManager.saveArchiveCredits();
-//                        notifyItemRemoved(position);
-//                    }
-//                });
-//                openFragment(temp, "InfoFragment");
+                InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
+                int pos = cardDetials.indexOf(itemCr);
+                temp.setConteent(itemCr, pos, new ListnerDel() {
+                    @Override
+                    public void delete_item(int position) {
+                        CreditDetials Az = cardDetials.get(position);
+                        if (Az.isKey_for_include()) {
+                            ArrayList<CreditDetials> credList = (ArrayList<CreditDetials>) creditDetialsDao.queryBuilder().list();
+                            for (CreditDetials creditDetials : credList) {
+                                if (creditDetials.getTake_time().getTimeInMillis() == Az.getTake_time().getTimeInMillis()) {
+                                    credList.remove(creditDetials);
+                                    svyazForNotifyFromArchAdap.notifyCredFrag();
+                                    break;
+                                }
+                            }
+                        }
+                        cardDetials.remove(position);
+                        notifyItemRemoved(position);
+                    }
+                });
+                openFragment(temp, "InfoFragment");
             }
         });
     }
@@ -259,14 +259,10 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         }
     }
 
-
     public void openFragment(Fragment fragment, String tag) {
         if (fragment != null) {
-            final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter) context).getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.add(R.id.flMain, fragment, tag);
-            ft.commit();
+            paFragmentManager.getFragmentManager().popBackStack();
+            paFragmentManager.displayFragment(fragment);
         }
     }
-
-
 }

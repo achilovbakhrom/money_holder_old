@@ -25,6 +25,7 @@ public class PocketAccounterApplicationModule {
     private DaoSession daoSession;
     private DataCache dataCache;
     private SharedPreferences preferences;
+
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
 //        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, "notes-db-encrypted");
@@ -34,10 +35,12 @@ public class PocketAccounterApplicationModule {
         preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
 
     }
+
     @Provides
     public PocketAccounterApplication getPocketAccounterApplication() {
         return pocketAccounterApplication;
     }
+
     @Provides
     public DaoSession getDaoSession() {
         if (daoSession == null) {
@@ -49,22 +52,26 @@ public class PocketAccounterApplicationModule {
         }
         return daoSession;
     }
+
     @Provides
     public DataCache getDataCache() {
         if (dataCache == null)
             dataCache = new DataCache();
         return dataCache;
     }
+
     @Provides
     public SharedPreferences getSharedPreferences() {
         if (preferences == null)
             preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
         return preferences;
     }
+
     @Provides
     public ReportManager reportManager() {
         return new ReportManager(pocketAccounterApplication);
     }
+
     @Provides
     public CommonOperations getCommonOperations() {
         return new CommonOperations(pocketAccounterApplication);

@@ -10,10 +10,9 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Calendar;
+import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-
-import dagger.Provides;
 
 @Entity(nameInDb = "ACCOUNTS", active = true)
 public class Account {
@@ -34,6 +33,28 @@ public class Account {
 	private Calendar calendar;
 	@Property
 	private boolean noneMinusAccount;
+	@Property
+	private double limite;
+	@Property
+	private boolean isLimited;
+	@Property
+	private String limitCurId;
+	@ToOne (joinProperty = "limitCurId")
+	private Currency currency;
+	@Generated(hash = 1170963677)
+	private transient String currency__resolvedKey;
+	@Generated(hash = 1719102162)
+	private transient String startMoneyCurrency__resolvedKey;
+	/** Used for active entity operations. */
+	@Generated(hash = 335469827)
+	private transient AccountDao myDao;
+	/** Used to resolve relations */
+	@Generated(hash = 2040040024)
+	private transient DaoSession daoSession;
+	@Keep
+	public Account () {
+		id = UUID.randomUUID().toString();
+	}
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
 	 * Entity must attached to an entity context.
@@ -68,6 +89,33 @@ public class Account {
 		myDao.delete(this);
 	}
 	/** called by internal mechanisms, do not call yourself. */
+	@Generated(hash = 2026330276)
+	public void setCurrency(Currency currency) {
+		synchronized (this) {
+			this.currency = currency;
+			limitCurId = currency == null ? null : currency.getId();
+			currency__resolvedKey = limitCurId;
+		}
+	}
+	/** To-one relationship, resolved on first access. */
+	@Generated(hash = 560884125)
+	public Currency getCurrency() {
+		String __key = this.limitCurId;
+		if (currency__resolvedKey == null || currency__resolvedKey != __key) {
+			final DaoSession daoSession = this.daoSession;
+			if (daoSession == null) {
+				throw new DaoException("Entity is detached from DAO context");
+			}
+			CurrencyDao targetDao = daoSession.getCurrencyDao();
+			Currency currencyNew = targetDao.load(__key);
+			synchronized (this) {
+				currency = currencyNew;
+				currency__resolvedKey = __key;
+			}
+		}
+		return currency;
+	}
+	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 1165649871)
 	public void setStartMoneyCurrency(Currency startMoneyCurrency) {
 		synchronized (this) {
@@ -96,20 +144,36 @@ public class Account {
 		}
 		return startMoneyCurrency;
 	}
-	@Generated(hash = 1719102162)
-	private transient String startMoneyCurrency__resolvedKey;
 	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 1812283172)
 	public void __setDaoSession(DaoSession daoSession) {
 		this.daoSession = daoSession;
 		myDao = daoSession != null ? daoSession.getAccountDao() : null;
 	}
-	/** Used for active entity operations. */
-	@Generated(hash = 335469827)
-	private transient AccountDao myDao;
-	/** Used to resolve relations */
-	@Generated(hash = 2040040024)
-	private transient DaoSession daoSession;
+	public String getLimitCurId() {
+		return this.limitCurId;
+	}
+	public void setLimitCurId(String limitCurId) {
+		this.limitCurId = limitCurId;
+	}
+	public boolean getIsLimited() {
+		return this.isLimited;
+	}
+	public void setIsLimited(boolean isLimited) {
+		this.isLimited = isLimited;
+	}
+	public double getLimite() {
+		return this.limite;
+	}
+	public void setLimite(double limite) {
+		this.limite = limite;
+	}
+	public boolean getNoneMinusAccount() {
+		return this.noneMinusAccount;
+	}
+	public void setNoneMinusAccount(boolean noneMinusAccount) {
+		this.noneMinusAccount = noneMinusAccount;
+	}
 	public Calendar getCalendar() {
 		return this.calendar;
 	}
@@ -146,15 +210,10 @@ public class Account {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public boolean getNoneMinusAccount() {
-		return this.noneMinusAccount;
-	}
-	public void setNoneMinusAccount(boolean noneMinusAccount) {
-		this.noneMinusAccount = noneMinusAccount;
-	}
-	@Generated(hash = 816046675)
+	@Generated(hash = 984441795)
 	public Account(String name, String id, String icon, double amount,
-			String startMoneyCurrencyId, Calendar calendar, boolean noneMinusAccount) {
+			String startMoneyCurrencyId, Calendar calendar, boolean noneMinusAccount,
+			double limite, boolean isLimited, String limitCurId) {
 		this.name = name;
 		this.id = id;
 		this.icon = icon;
@@ -162,9 +221,8 @@ public class Account {
 		this.startMoneyCurrencyId = startMoneyCurrencyId;
 		this.calendar = calendar;
 		this.noneMinusAccount = noneMinusAccount;
+		this.limite = limite;
+		this.isLimited = isLimited;
+		this.limitCurId = limitCurId;
 	}
-	@Generated(hash = 882125521)
-	public Account() {
-	}
-
 }

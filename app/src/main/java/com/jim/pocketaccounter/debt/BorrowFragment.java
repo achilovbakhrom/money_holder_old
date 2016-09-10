@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -38,6 +39,7 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.DatePicker;
@@ -65,6 +67,8 @@ public class BorrowFragment extends Fragment {
     PAFragmentManager paFragmentManager;
     @Inject
     LogicManager logicManager;
+    @Inject
+    CommonOperations commonOperations;
     @Inject
     DaoSession daoSession;
     DebtBorrowDao debtBorrowDao;
@@ -164,8 +168,8 @@ public class BorrowFragment extends Fragment {
                 view.rl.setBackgroundResource(R.color.grey_light_red);
                 view.fl.setBackgroundResource(R.color.grey_light_red);
             }
-//            view.BorrowPersonName.setText(person.getPerson().getName());
-//            view.BorrowPersonNumber.setText(person.getPerson().getPhoneNumber());
+            view.BorrowPersonName.setText(person.getPerson().getName());
+            view.BorrowPersonNumber.setText(person.getPerson().getPhoneNumber());
             view.BorrowPersonDateGet.setText(dateFormat.format(person.getTakenDate().getTime()));
             if (person.getReturnDate() == null) {
                 view.BorrowPersonDateRepeat.setText(R.string.no_date_selected);
@@ -183,16 +187,16 @@ public class BorrowFragment extends Fragment {
                 view.BorrowPersonSumm.setText(getResources().getString(R.string.repaid));
             } else
                 view.BorrowPersonSumm.setText(ss + person.getCurrency().getAbbr());
-//            if (person.getPerson().getPhoto().matches("") || person.getPerson().getPhoto().matches("0")) {
-//                view.BorrowPersonPhotoPath.setImageResource(R.drawable.no_photo);
-//            } else {
-//                try {
-//                    view.BorrowPersonPhotoPath.setImageBitmap(queryContactImage(Integer.parseInt(person.getPerson().getPhoto())));
-//                } catch (Exception e) {
-//                    Bitmap bit = BitmapFactory.decodeFile(person.getPerson().getPhoto());
-//                    view.BorrowPersonPhotoPath.setImageBitmap(bit);
-//                }
-//            }
+            if (person.getPerson().getPhoto().matches("") || person.getPerson().getPhoto().matches("0")) {
+                view.BorrowPersonPhotoPath.setImageResource(R.drawable.no_photo);
+            } else {
+                try {
+                    view.BorrowPersonPhotoPath.setImageBitmap(queryContactImage(Integer.parseInt(person.getPerson().getPhoto())));
+                } catch (Exception e) {
+                    Bitmap bit = BitmapFactory.decodeFile(person.getPerson().getPhoto());
+                    view.BorrowPersonPhotoPath.setImageBitmap(bit);
+                }
+            }
 
             view.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -216,9 +220,9 @@ public class BorrowFragment extends Fragment {
                 } else view.pay.setText(getString(R.string.payy));
             }
 
-//            if (person.getPerson().getPhoneNumber().matches("")) {
-//                view.call.setVisibility(View.INVISIBLE);
-//            }
+            if (person.getPerson().getPhoneNumber().matches("")) {
+                view.call.setVisibility(View.INVISIBLE);
+            }
 
             view.call.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -438,6 +442,9 @@ public class BorrowFragment extends Fragment {
                     break;
                 }
             }
+            if (account != null && account.getIsLimited()) {
+                double limit = account.getLimite();
+                double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
 //            if (account.isLimited() && debt.getCalculate()) {
 //                double limit = account.getLimitSum();
 //                double accounted = PocketAccounterGeneral.getCost(debt.getTakenDate(),account.getStartMoneyCurrency(),account.getLimitCurrency(),account.getAmount());
@@ -504,18 +511,16 @@ public class BorrowFragment extends Fragment {
 //                        }
 //                    }
 //                }
-//                if (debt.getType() == DebtBorrow.DEBT) {
-//                    accounted = accounted - PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(), summ);
-//                } else {
-//                    accounted = accounted + PocketAccounterGeneral.getCost(Calendar.getInstance(), debt.getCurrency(),account.getLimitCurrency(), summ);
-//                }
-//
-//                if (-limit > accounted) {
-//                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-//                    return false;
-//                }
-//                return true;
-//            }
+                if (debt.getType() == DebtBorrow.DEBT) {
+                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(), summ);
+                } else {
+                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(), summ);
+                }
+                if (-limit > accounted) {
+                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            }
             return true;
         }
 

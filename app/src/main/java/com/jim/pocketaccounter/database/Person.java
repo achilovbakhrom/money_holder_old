@@ -4,6 +4,7 @@ import android.support.annotation.Keep;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Entity(nameInDb = "PERSONS", active = true)
 public class Person {
     @Id
+    @NotNull
     private String id;
     @Property
     private String name;
@@ -32,6 +34,7 @@ public class Person {
     }
     @Keep
     public Person (String name, String phoneNumber, String photo) {
+        id = UUID.randomUUID().toString();
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.photo = photo;
@@ -99,8 +102,8 @@ public class Person {
     public void setId(String id) {
         this.id = id;
     }
-    @Generated(hash = 1714063126)
-    public Person(String id, String name, String phoneNumber, String photo) {
+    @Generated(hash = 2109086809)
+    public Person(@NotNull String id, String name, String phoneNumber, String photo) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;

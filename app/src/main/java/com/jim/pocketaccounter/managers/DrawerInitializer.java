@@ -15,6 +15,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
+import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.utils.navdrawer.LeftMenuAdapter;
@@ -307,7 +308,7 @@ public class DrawerInitializer {
                             case 5:
                                 fragmentManager.displayFragment(new PurposeFragment());
                             case 6:
-//                                fragmentManager.displayFragment(new CreditTabLay());
+                                fragmentManager.displayFragment(new CreditTabLay());
                                 break;
                             case 7:
                                 fragmentManager.displayFragment(new DebtBorrowFragment());

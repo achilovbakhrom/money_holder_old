@@ -374,7 +374,7 @@ public class SystemConfigurator {
                     }
                     curCreditRecking.moveToNext();
                 }
-                credit.setReckings(reckings);
+                credit.getReckings().addAll(reckings);
                 credit.setInfo(curCreditTable.getString(curCreditTable.getColumnIndex("empty")));
                 creditDetialses.add(credit);
                 curCreditTable.moveToNext();
