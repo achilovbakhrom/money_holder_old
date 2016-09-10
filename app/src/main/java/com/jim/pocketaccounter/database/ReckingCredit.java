@@ -4,9 +4,12 @@ import android.support.annotation.Keep;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+
+import java.util.UUID;
 
 /**
  * Created by DEV on 11.06.2016.
@@ -22,6 +25,7 @@ public class ReckingCredit {
     @Property
     private String accountId;
     @Property
+    @NotNull
     private long myCredit_id;
     @Property
     private String comment;
@@ -38,6 +42,7 @@ public class ReckingCredit {
         this.accountId = accountId;
         this.myCredit_id = myCredit_id;
         this.comment = comment;
+        this.id = System.currentTimeMillis();
     }
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
@@ -123,7 +128,8 @@ public class ReckingCredit {
         this.myCredit_id = myCredit_id;
         this.comment = comment;
     }
-    @Generated(hash = 277218453)
+    @Keep
     public ReckingCredit() {
+        this.id = System.currentTimeMillis();
     }
 }

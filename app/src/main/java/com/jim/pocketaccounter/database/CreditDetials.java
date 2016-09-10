@@ -48,7 +48,7 @@ public class CreditDetials {
     @ToOne(joinProperty = "currencyId")
     private Currency valyute_currency;
     @ToMany(joinProperties = {
-            @JoinProperty(name = "myCredit_id", referencedName = "id")
+            @JoinProperty(name = "myCredit_id", referencedName = "myCredit_id")
     })
     private List<ReckingCredit> reckings;
     @Property

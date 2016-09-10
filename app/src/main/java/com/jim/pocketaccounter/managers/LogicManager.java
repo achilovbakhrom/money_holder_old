@@ -386,6 +386,11 @@ public class LogicManager {
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
+    public int insertReckingCredit(ReckingCredit reckingCredit) {
+        reckingCreditDao.insertOrReplace(reckingCredit);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
     public double isLimitAccess (Account account, Calendar date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getCurrency(), account.getAmount());

@@ -972,7 +972,6 @@ public class AddCreditFragment extends Fragment {
                         if (iskeeeep) {
                             tempiker.add(0, first_pay);
                         }
-
                         A1.getReckings().addAll(tempiker);
 
                     } else {

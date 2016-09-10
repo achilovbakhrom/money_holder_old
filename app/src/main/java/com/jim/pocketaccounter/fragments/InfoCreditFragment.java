@@ -74,6 +74,8 @@ public class InfoCreditFragment extends Fragment {
     @Inject
     CommonOperations commonOperations;
     @Inject
+    LogicManager logicManager;
+    @Inject
     LogicManager financeManager;
     CreditDetialsDao creditDetialsDao;
     ReckingCreditDao reckingCreditDao;
@@ -160,7 +162,7 @@ public class InfoCreditFragment extends Fragment {
         tranact_recyc=(RecyclerView) V.findViewById(R.id.recycler_for_transactions);
         icon_credit=(ImageView) V.findViewById(R.id.icon_creditt);
 
-        rcList= (ArrayList<ReckingCredit>) reckingCreditDao.queryBuilder().list();
+        rcList= (ArrayList<ReckingCredit>) currentCredit.getReckings();
 
         adapRecyc=new PaysCreditAdapter(rcList);
         myPay=(TextView)  V.findViewById(R.id.paybut);
@@ -581,7 +583,7 @@ public class InfoCreditFragment extends Fragment {
                                                     currentCredit.getMyCredit_id(),comment.getText().toString());
                                         rcList.add(rec);
                                         currentCredit.getReckings().addAll(rcList);
-
+                                        logicManager.insertReckingCredit(rec);
                                         A1.change_item(currentCredit,currentPOS);
                                         updateDate();
                                         isCheks = new boolean[rcList.size()];
@@ -701,9 +703,6 @@ public class InfoCreditFragment extends Fragment {
     public void onDetach(){
         super.onDetach();
 
-    }
-    public void iconTOGONE(){
-        ivToolbarMostRight.setVisibility(View.GONE);
     }
     private class PaysCreditAdapter extends RecyclerView.Adapter<ViewHolder> {
         private ArrayList<ReckingCredit> list;
