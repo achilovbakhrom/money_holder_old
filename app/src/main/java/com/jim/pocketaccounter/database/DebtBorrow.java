@@ -46,7 +46,7 @@ public class DebtBorrow {
     @Property
     private double amount;
     @ToMany(joinProperties = {
-            @JoinProperty(name = "id", referencedName = "debtBorrowsId")
+            @JoinProperty(name = "id", referencedName = "id")
     })
     private List<Recking> reckings;
     public static final int DEBT = 1, BORROW = 0;

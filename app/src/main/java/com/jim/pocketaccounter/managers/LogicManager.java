@@ -29,6 +29,7 @@ import com.jim.pocketaccounter.database.PurposeDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
+import com.jim.pocketaccounter.database.ReckingDao;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.SmsParseObject;
@@ -72,6 +73,7 @@ public class LogicManager {
     private RootCategoryDao rootCategoryDao;
     private PurposeDao purposeDao;
     private PersonDao personDao;
+    private ReckingDao reckingDao;
 
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
@@ -89,6 +91,7 @@ public class LogicManager {
         rootCategoryDao = daoSession.getRootCategoryDao();
         purposeDao = daoSession.getPurposeDao();
         personDao = daoSession.getPersonDao();
+        reckingDao = daoSession.getReckingDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -376,6 +379,11 @@ public class LogicManager {
         }
         creditDetialsDao.delete(creditDetials);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int insertReckingDebt (Recking recking) {
+        reckingDao.insertOrReplace(recking);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
     public double isLimitAccess (Account account, Calendar date) {

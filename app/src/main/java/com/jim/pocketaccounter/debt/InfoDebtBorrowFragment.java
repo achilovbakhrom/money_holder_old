@@ -295,7 +295,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             isHaveReking.setVisibility(View.GONE);
         }
 
-        //        peysAdapter = new PeysAdapter(debtBorrow.getReckings());
+        peysAdapter = new PeysAdapter((ArrayList<Recking>) debtBorrow.getReckings());
         Calendar currentDate = Calendar.getInstance();
         int day = 0;
         int mounth = 0;
@@ -571,9 +571,6 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                             }
                         } else {
                             if (tek) {
-                                Log.d("sss", "" + (date == null));
-                                Log.d("sss", "" + (enterPay.getText().toString().isEmpty()));
-                                Log.d("sss", "" + (accountSp == null));
                                 peysAdapter.setDataChanged(dateFormat.format(date.getTime()), Double.parseDouble(enterPay.getText().toString()),
                                         "" + accountSp.getSelectedItem(), comment.getText().toString());
                                 dialog.dismiss();
@@ -589,6 +586,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             dialog.getWindow().setLayout(7 * width / 8, RelativeLayout.LayoutParams.WRAP_CONTENT);
             dialog.show();
         } else {
+            debtBorrow.setTo_archive(true);
 //            for (int i = 0; i < manager.getDebtBorrows().size(); i++) {
 //                if (manager.getDebtBorrows().get(i).getId().matches(debtBorrow.getId())) {
 //                    manager.getDebtBorrows().get(i).setTo_archive(true);
@@ -716,6 +714,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                 }
             }
             Recking recking = new Recking(clDate, value, debtBorrow.getId(), accountId, comment);
+            debtBorrow.getReckings().add(recking);
             list.add(0, recking);
             double qoldiq = 0;
             for (int i = 0; i < list.size(); i++) {
@@ -732,8 +731,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                 deleteFrame.setVisibility(View.GONE);
                 leftAmount.setText(getResources().getString(R.string.repaid));
             }
-
-            debtBorrow.getReckings().addAll(list);
+            logicManager.insertReckingDebt(recking);
             isHaveReking.setVisibility(View.VISIBLE);
             notifyItemInserted(0);
             isCheks = new boolean[list.size()];

@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.database;
 
 import android.support.annotation.Keep;
+import android.util.Log;
 
 import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 
@@ -42,7 +43,9 @@ public class CreditDetials {
     private double value_of_credit;
     @Property
     private double value_of_credit_with_procent;
-    @ToOne
+    @Property
+    private String currencyId;
+    @ToOne(joinProperty = "currencyId")
     private Currency valyute_currency;
     @ToMany(joinProperties = {
             @JoinProperty(name = "myCredit_id", referencedName = "id")
@@ -54,8 +57,6 @@ public class CreditDetials {
     private boolean key_for_archive;
     @Property
     private String info = "";
-    @Generated(hash = 330245755)
-    private transient boolean valyute_currency__refreshed;
     /**
      * Used for active entity operations.
      */
@@ -66,6 +67,8 @@ public class CreditDetials {
      */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
+    @Generated(hash = 1263646081)
+    private transient String valyute_currency__resolvedKey;
 
     @Keep
     public CreditDetials(int icon_ID, String credit_name, Calendar take_time, double value_of_credit,
@@ -80,7 +83,8 @@ public class CreditDetials {
         this.period_time = period_time;
         this.period_time_tip = period_time_tip;
         this.key_for_include = key_for_include;
-        this.valyute_currency = valyute_currency;
+//        this.valyute_currency = valyute_currency;
+        this.currencyId = valyute_currency.getId();
         this.value_of_credit_with_procent = value_of_credit_with_procent;
         this.myCredit_id = myCredit_id;
     }
@@ -151,37 +155,31 @@ public class CreditDetials {
         return reckings;
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Generated(hash = 215703177)
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1639843815)
     public void setValyute_currency(Currency valyute_currency) {
         synchronized (this) {
             this.valyute_currency = valyute_currency;
-            valyute_currency__refreshed = true;
+            currencyId = valyute_currency == null ? null : valyute_currency.getId();
+            valyute_currency__resolvedKey = currencyId;
         }
     }
 
-    /**
-     * To-one relationship, returned entity is not refreshed and may carry only the PK property.
-     */
-    @Generated(hash = 6866301)
-    public Currency peakValyute_currency() {
-        return valyute_currency;
-    }
-
-    /**
-     * To-one relationship, resolved on first access.
-     */
-    @Generated(hash = 512408870)
+    /** To-one relationship, resolved on first access. */
+    @Generated(hash = 1945576944)
     public Currency getValyute_currency() {
-        if (valyute_currency != null || !valyute_currency__refreshed) {
+        String __key = this.currencyId;
+        if (valyute_currency__resolvedKey == null || valyute_currency__resolvedKey != __key) {
+            final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             CurrencyDao targetDao = daoSession.getCurrencyDao();
-            targetDao.refresh(valyute_currency);
-            valyute_currency__refreshed = true;
+            Currency valyute_currencyNew = targetDao.load(__key);
+            synchronized (this) {
+                valyute_currency = valyute_currencyNew;
+                valyute_currency__resolvedKey = __key;
+            }
         }
         return valyute_currency;
     }
@@ -307,10 +305,18 @@ public class CreditDetials {
         return this.key_for_include;
     }
 
-    @Generated(hash = 4952736)
-    public CreditDetials(String credit_name, int icon_ID, Calendar take_time, double procent, double procent_interval,
-                         long period_time, long period_time_tip, long myCredit_id, double value_of_credit, double value_of_credit_with_procent,
-                         boolean key_for_include, boolean key_for_archive, String info) {
+    public String getCurrencyId() {
+        return this.currencyId;
+    }
+
+    public void setCurrencyId(String currencyId) {
+        this.currencyId = currencyId;
+    }
+
+    @Generated(hash = 167629024)
+    public CreditDetials(String credit_name, int icon_ID, Calendar take_time, double procent, double procent_interval, long period_time,
+            long period_time_tip, long myCredit_id, double value_of_credit, double value_of_credit_with_procent, String currencyId,
+            boolean key_for_include, boolean key_for_archive, String info) {
         this.credit_name = credit_name;
         this.icon_ID = icon_ID;
         this.take_time = take_time;
@@ -321,6 +327,7 @@ public class CreditDetials {
         this.myCredit_id = myCredit_id;
         this.value_of_credit = value_of_credit;
         this.value_of_credit_with_procent = value_of_credit_with_procent;
+        this.currencyId = currencyId;
         this.key_for_include = key_for_include;
         this.key_for_archive = key_for_archive;
         this.info = info;

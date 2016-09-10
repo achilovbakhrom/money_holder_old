@@ -8,8 +8,6 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
-import java.util.UUID;
-
 /**
  * Created by DEV on 11.06.2016.
  */
