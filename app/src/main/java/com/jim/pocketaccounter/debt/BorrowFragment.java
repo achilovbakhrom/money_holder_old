@@ -332,6 +332,7 @@ public class BorrowFragment extends Fragment {
                                                             comment.getText().toString());
 
                                                     persons.get(position).getReckings().add(0, recking);
+                                                    logicManager.insertReckingDebt(recking);
                                                     double total = 0;
                                                     for (Recking recking1 : persons.get(position).getReckings()) {
                                                         total += recking1.getAmount();
@@ -345,7 +346,7 @@ public class BorrowFragment extends Fragment {
                                                     Recking recking = new Recking(dateFormat.format(date.getTime()),
                                                             Double.parseDouble(enterPay.getText().toString()),
                                                             persons.get(position).getId(), comment.getText().toString());
-
+                                                    logicManager.insertReckingDebt(recking);
                                                     persons.get(position).getReckings().add(0, recking);
                                                     double total = 0;
                                                     for (Recking recking1 : persons.get(position).getReckings()) {
@@ -377,6 +378,7 @@ public class BorrowFragment extends Fragment {
                                             if (persons.get(position).getAmount() <= total) {
                                                 view.pay.setText(getString(R.string.archive));
                                             }
+                                            logicManager.insertReckingDebt(recking);
                                             view.BorrowPersonSumm.setText("" + ((persons.get(position).getAmount() - total) ==
                                                     ((int) (persons.get(position).getAmount() - total)) ?
                                                     ("" + (int) (persons.get(position).getAmount() - total)) :
@@ -396,6 +398,7 @@ public class BorrowFragment extends Fragment {
                                                 if (persons.get(position).getAmount() <= total) {
                                                     view.pay.setText(getString(R.string.archive));
                                                 }
+                                                logicManager.insertReckingDebt(recking);
                                                 view.BorrowPersonSumm.setText("" + ((persons.get(position).getAmount() - total) ==
                                                         ((int) (persons.get(position).getAmount() - total)) ?
                                                         ("" + (int) (persons.get(position).getAmount() - total)) :

@@ -340,12 +340,7 @@ public class LogicManager {
                 .queryBuilder()
                 .where(DebtBorrowDao.Properties.Id.eq(debtBorrow.getId()))
                 .build();
-//        if (!query.list().isEmpty()) {
-//            daoSession.clear();
-//            debtBorrowDao.update(debtBorrow);
-//            return LogicManagerConstants.SAVED_SUCCESSFULL;
-//        }
-        debtBorrowDao.save(debtBorrow);
+        debtBorrowDao.insertOrReplace(debtBorrow);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
@@ -360,7 +355,7 @@ public class LogicManager {
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
-    public int insertPerson (Person person) {
+    public int insertPerson(Person person) {
         Query<Person> query = personDao
                 .queryBuilder()
                 .where(PersonDao.Properties.Id.eq(person.getId()))
@@ -369,12 +364,12 @@ public class LogicManager {
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
-    public int insertCredit (CreditDetials creditDetials) {
+    public int insertCredit(CreditDetials creditDetials) {
         creditDetialsDao.insertOrReplace(creditDetials);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
-    public int deleteCredit (CreditDetials creditDetials) {
+    public int deleteCredit(CreditDetials creditDetials) {
         Query<CreditDetials> query = creditDetialsDao.queryBuilder()
                 .where(CreditDetialsDao.Properties.MyCredit_id.eq(creditDetials.getMyCredit_id()))
                 .build();
@@ -385,7 +380,7 @@ public class LogicManager {
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
-    public int insertReckingDebt (Recking recking) {
+    public int insertReckingDebt(Recking recking) {
         reckingDao.insertOrReplace(recking);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
@@ -395,7 +390,7 @@ public class LogicManager {
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
-    public double isLimitAccess (Account account, Calendar date) {
+    public double isLimitAccess(Account account, Calendar date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getCurrency(), account.getAmount());
         for (int i = 0; i < recordDao.queryBuilder().list().size(); i++) {

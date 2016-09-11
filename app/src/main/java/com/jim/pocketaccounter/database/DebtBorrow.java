@@ -53,7 +53,6 @@ public class DebtBorrow {
     public static final int DEBT = 1, BORROW = 0;
     private String info = "";
     @Property
-    @NotNull
     @Id
     private String id; //"debt_"+UUID.randowUUID().toString();
     @Generated(hash = 1170963677)
@@ -356,10 +355,10 @@ public class DebtBorrow {
         this.perId = perId;
     }
 
-    @Generated(hash = 591064491)
+    @Generated(hash = 439704250)
     public DebtBorrow(String perId, Calendar takenDate, Calendar returnDate, int type,
             String accountId, String currencyId, boolean calculate, boolean to_archive,
-            double amount, String info, @NotNull String id) {
+            double amount, String info, String id) {
         this.perId = perId;
         this.takenDate = takenDate;
         this.returnDate = returnDate;

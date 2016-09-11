@@ -19,6 +19,9 @@ import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 
+import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
     PAFragmentManager paFragmentManager;
     @Inject
     DaoSession daoSession;
+
     CreditDetialsDao creditDetialsDao;
     List<CreditDetials> cardDetials;
 
@@ -56,7 +60,8 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         cardDetials = new ArrayList<>();
-        for (CreditDetials cr : creditDetialsDao.queryBuilder().list()) {
+//        cardDetials =
+        for (CreditDetials cr : creditDetialsDao.loadAll()) {
             if (cr.isKey_for_archive()) {
                 cardDetials.add(cr);
             }

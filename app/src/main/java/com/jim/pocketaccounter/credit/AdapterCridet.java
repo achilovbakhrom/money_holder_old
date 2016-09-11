@@ -294,7 +294,6 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewType == VIEW_NULL) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.null_lay, parent, false);
-            ;
             vh = new Fornull(v);
         } else if (viewType == VIEW_NOT_NULL) {
             View v = LayoutInflater.from(parent.getContext())
@@ -427,57 +426,6 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (!amount.matches("")) {
                     Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
                     if (account.getIsLimited()&& current.isKey_for_include()) {
-//                        double limit = account.getLimitSum();
-//                        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getLimitCurrency(), account.getAmount());
-//                        for (int i = 0; i < PocketAccounter.financeManager.getRecords().size(); i++) {
-//                            FinanceRecord tempac = PocketAccounter.financeManager.getRecords().get(i);
-//                            if (tempac.getAccount().getDebtBorrowsId().matches(account.getDebtBorrowsId())) {
-//                                if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-//                                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getLimitCurrency(), tempac.getAmount());
-//                                else
-//                                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getLimitCurrency(), tempac.getAmount());
-//                            }
-//                        }
-//                        for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
-//                            if (debtBorrow.isCalculate()) {
-//                                if (debtBorrow.getAccount().getDebtBorrowsId().matches(account.getDebtBorrowsId())) {
-//                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getLimitCurrency(), debtBorrow.getAmount());
-//                                    } else {
-//                                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getLimitCurrency(), debtBorrow.getAmount());
-//                                    }
-//                                    for (Recking recking : debtBorrow.getReckings()) {
-//                                        Calendar cal = Calendar.getInstance();
-//                                        try {
-//                                            cal.setTime(dateFormat.parse(recking.getPayDate()));
-//                                        } catch (ParseException e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        if (debtBorrow.getType() == DebtBorrow.DEBT) {
-//                                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                        } else {
-//                                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                        }
-//                                    }
-//                                } else {
-//                                    for (Recking recking : debtBorrow.getReckings()) {
-//                                        Calendar cal = Calendar.getInstance();
-//                                        if (recking.getAccountId().matches(account.getDebtBorrowsId())) {
-//                                            try {
-//                                                cal.setTime(dateFormat.parse(recking.getPayDate()));
-//                                            } catch (ParseException e) {
-//                                                e.printStackTrace();
-//                                            }
-//                                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                            } else {
-//                                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
                         //TODO editda tekwir ozini hisoblamaslini
                         double limit = account.getLimite();
                         double accounted =  logicManager.isLimitAccess(account, date);
@@ -505,6 +453,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                         int pos = cardDetials.indexOf(current);
                                         current.getReckings().add(rec);
                                         notifyItemChanged(position);
+                                        logicManager.insertReckingCredit(rec);
                                         dialog.dismiss();
                                     }
                                 }).setNegativeButton(context.getString(R.string.cancel1), new DialogInterface.OnClickListener() {
@@ -522,6 +471,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
                         int pos = cardDetials.indexOf(current);
                         current.getReckings().add(rec);
+                        logicManager.insertReckingCredit(rec);
                         notifyItemChanged(position);
                         dialog.dismiss();
                     }
