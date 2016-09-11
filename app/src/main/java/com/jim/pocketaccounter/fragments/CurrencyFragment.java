@@ -85,7 +85,7 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 				drawerInitializer.getDrawer().openLeftSide();
 			}
 		});
-		toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
 		toolbarManager.setSpinnerVisibility(View.GONE);
 		toolbarManager.setImageToSecondImage(R.drawable.pencil);
 		toolbarManager.setOnSecondImageClickListener(this);

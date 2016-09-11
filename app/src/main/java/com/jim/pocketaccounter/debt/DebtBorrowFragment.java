@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -46,6 +47,7 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
     private ViewPager viewPager;
     private FloatingActionButton fb;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
         viewPager = (ViewPager) view.findViewById(R.id.vpDebtBorrowFragment);
         toolbarManager.setTitle(getResources().getString(R.string.debts_title));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
         toolbarManager.setSpinnerVisibility(View.GONE);
         fb = (FloatingActionButton) view.findViewById(R.id.fbDebtBorrowFragment);
         fb.setOnClickListener(this);

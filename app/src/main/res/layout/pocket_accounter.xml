@@ -19,6 +19,11 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true">
             <ImageView
+                android:id="@+id/ivToolbarSearch"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="gone"/>
+            <ImageView
                 android:id="@+id/ivToolbarExcel"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -32,6 +37,12 @@
                 android:layout_height="30dp"
                 android:visibility="gone"/>
         </LinearLayout>
+        <EditText
+            android:id="@+id/editToolbar"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search"/>
         <Spinner
             android:id="@+id/spToolbar"
             android:layout_width="match_parent"

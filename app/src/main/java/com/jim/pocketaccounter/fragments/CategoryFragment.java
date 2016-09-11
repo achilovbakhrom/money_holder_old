@@ -37,6 +37,7 @@ import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.DataCache;
 import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.OnSubcategorySavingListener;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -63,6 +64,8 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	DaoSession daoSession;
 	@Inject
 	PAFragmentManager paFragmentManager;
+	@Inject
+	DataCache dataCache;
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_layout, container, false);
@@ -84,7 +87,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 				drawerInitializer.getDrawer().openLeftSide();
 			}
 		});
-		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE);
+		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
 		toolbarManager.setSpinnerVisibility(View.GONE);
 		fabCategoryAdd = (FABIcon) rootView.findViewById(R.id.fabAccountAdd);
 		fabCategoryAdd.setOnClickListener(this);
@@ -138,7 +141,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 		}
 		public void onBindViewHolder(final CategoryFragment.ViewHolder view, final int position) {
 			view.tvCategoryListItemName.setText(result.get(position).getName());
-			int resId = getResources().getIdentifier(result.get(position).getIcon(),"drawable", getContext().getPackageName());
+			final int resId = getResources().getIdentifier(result.get(position).getIcon(),"drawable", getContext().getPackageName());
 			view.ivCategoryItem.setImageResource(resId);
 			view.tvCategoryMainSubCatAdd.setOnClickListener(new OnClickListener() {
 				@Override
@@ -154,8 +157,14 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 										Toast.LENGTH_SHORT).show();
 						}
 					});
-
 					subCatAddEditDialog.show();
+				}
+			});
+			view.tvCategoryMainEdit.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dataCache.getCategoryEditFragmentDatas().setMode(PocketAccounterGeneral.NO_MODE);
+					paFragmentManager.displayFragment(new RootCategoryEditFragment(result.get(position)));
 				}
 			});
 			view.view.setOnClickListener(new OnClickListener() {
@@ -175,12 +184,14 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 		ImageView ivCategoryItem;
 		TextView tvCategoryListItemName;
 		TextView tvCategoryMainSubCatAdd;
+		TextView tvCategoryMainEdit;
 		View view;
 		public ViewHolder(View view) {
 			super(view);
 			ivCategoryItem = (ImageView) view.findViewById(R.id.ivCategoryItem);
 			tvCategoryListItemName = (TextView) view.findViewById(R.id.tvCategoryListItemName);
 			tvCategoryMainSubCatAdd = (TextView) view.findViewById(R.id.tvCategoryMainSubCatAdd);
+			tvCategoryMainEdit = (TextView) view.findViewById(R.id.tvCategoryMainEdit);
 			this.view = view;
 		}
 	}

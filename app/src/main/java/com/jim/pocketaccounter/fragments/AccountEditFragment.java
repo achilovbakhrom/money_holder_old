@@ -109,7 +109,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 		});
         toolbarManager.setTitle(getResources().getString(R.string.addedit));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setSpinnerVisibility(View.GONE);
 		toolbarManager.setImageToSecondImage(R.drawable.check_sign);
 		toolbarManager.setOnSecondImageClickListener(this);

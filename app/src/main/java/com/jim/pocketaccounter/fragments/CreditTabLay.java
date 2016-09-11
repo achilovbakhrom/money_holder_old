@@ -58,7 +58,7 @@ public class CreditTabLay extends Fragment  implements View.OnClickListener, Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View V=inflater.inflate(R.layout.fragment_credit_tab_lay, container, false);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
         V.postDelayed(new Runnable() {
             @Override
             public void run() {

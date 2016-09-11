@@ -91,7 +91,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
 		});
 		toolbarManager.setTitle(currency.getName());
 		toolbarManager.setSubtitle(getResources().getString(R.string.edit));
-		toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
 		toolbarManager.setImageToSecondImage(R.drawable.check_sign);
 		toolbarManager.setSpinnerVisibility(View.GONE);
 		toolbarManager.setOnSecondImageClickListener(this);

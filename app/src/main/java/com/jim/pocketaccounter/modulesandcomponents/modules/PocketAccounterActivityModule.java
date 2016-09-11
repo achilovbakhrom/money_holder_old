@@ -99,6 +99,7 @@ public class PocketAccounterActivityModule {
     public IconChooseDialog getIconsChooseDialog() {
         return new IconChooseDialog(pocketAccounter);
     }
+
     @Provides
     public DatePicker getDatePicker() {
         return new DatePicker(pocketAccounter);
@@ -115,4 +116,7 @@ public class PocketAccounterActivityModule {
     public SubCatAddEditDialog subCatAddEditDialog() {
         return new SubCatAddEditDialog(pocketAccounter);
     }
+
+
+
 }

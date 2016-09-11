@@ -223,7 +223,7 @@ public class AddCreditFragment extends Fragment {
         });
 
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

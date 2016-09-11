@@ -101,7 +101,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         endDate = (TextView) rootView.findViewById(R.id.tvPurposeEndDate);
         // ------------ Toolbar setting ----------
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

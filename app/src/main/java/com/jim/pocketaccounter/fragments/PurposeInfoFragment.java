@@ -63,7 +63,7 @@ public class PurposeInfoFragment extends Fragment {
         View rooView = inflater.inflate(R.layout.purpose_info_layout, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

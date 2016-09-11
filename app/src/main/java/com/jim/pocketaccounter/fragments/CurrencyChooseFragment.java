@@ -57,7 +57,7 @@ public class CurrencyChooseFragment extends Fragment {
                 paFragmentManager.displayFragment(new CurrencyFragment());
             }
         });
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setSpinnerVisibility(View.GONE);
         gvCurrencyChoose = (GridView) view.findViewById(R.id.gvCurrencyChoose);

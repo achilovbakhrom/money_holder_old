@@ -97,7 +97,7 @@ public class AccountFragment extends Fragment {
 		});
         toolbarManager.setTitle(getResources().getString(R.string.accounts));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
 		toolbarManager.setImageToSecondImage(R.drawable.transfer_money);
 		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
 			@Override

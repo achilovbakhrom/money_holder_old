@@ -303,7 +303,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         });
 
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setSpinnerVisibility(View.GONE);
 
         calculate.setOnClickListener(new View.OnClickListener() {

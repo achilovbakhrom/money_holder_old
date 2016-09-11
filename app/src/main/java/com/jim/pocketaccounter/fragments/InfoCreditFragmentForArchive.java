@@ -150,7 +150,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
         adapRecyc.notifyDataSetChanged();
 
         toolbarManager.setImageToSecondImage(R.drawable.ic_delete_black);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

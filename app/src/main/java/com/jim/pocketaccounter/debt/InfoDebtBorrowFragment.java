@@ -159,7 +159,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
         }
         toolbarManager.setImageToSecondImage(R.drawable.ic_delete_black);
         toolbarManager.setSpinnerVisibility(View.GONE);
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         if (!debtBorrow.getTo_archive()) {
             toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
             toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {

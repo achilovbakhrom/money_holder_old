@@ -1355,6 +1355,9 @@
     <string name="purposes">Цели</string>
     <string name="earn">Копилка</string>
     <string name="period">Период</string>
+    <string name="export_exel">Export Exel</string>
+    <string name="filter">Filter</string>
+    <string name="search">Search</string>
     <string-array name="period_purpose">
         <item>no period</item>
         <item>week</item>

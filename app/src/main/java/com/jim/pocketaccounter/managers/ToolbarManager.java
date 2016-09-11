@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -22,13 +24,16 @@ import static com.jim.pocketaccounter.R.color.toolbar_text_color;
 public class ToolbarManager {
     private Toolbar toolbar;
     private Context context;
-    private ImageView ivToolbarFirst, ivToolbarSecond;
+    private ImageView ivToolbarFirst, ivToolbarSecond, ivToolbarStart;
     private Spinner spinner;
+    private EditText searchEditToolbar;
     public ToolbarManager(Context context, Toolbar toolbar) {
         this.context = context;
         this.toolbar = toolbar;
         ivToolbarFirst = (ImageView) toolbar.findViewById(R.id.ivToolbarExcel);
         ivToolbarSecond = (ImageView) toolbar.findViewById(R.id.ivToolbarMostRight);
+        ivToolbarStart = (ImageView) toolbar.findViewById(R.id.ivToolbarSearch);
+        searchEditToolbar = (EditText) toolbar.findViewById(R.id.editToolbar);
         spinner = (Spinner) toolbar.findViewById(R.id.spToolbar);
     }
     public void init() {
@@ -45,6 +50,11 @@ public class ToolbarManager {
     public void setOnSecondImageClickListener(View.OnClickListener listener) {
         ivToolbarSecond.setOnClickListener(listener);
     }
+
+    public void setOnStartImageClickListener(View.OnClickListener listener) {
+        ivToolbarStart.setOnClickListener(listener);
+    }
+
     public void setOnHomeButtonClickListener(View.OnClickListener listener) {
         toolbar.setNavigationOnClickListener(listener);
     }
@@ -57,9 +67,21 @@ public class ToolbarManager {
     public void setSubtitle(String subtitle) {
         toolbar.setSubtitle(subtitle);
     }
-    public void setToolbarIconsVisibility(int first, int second) {
+    public void setToolbarIconsVisibility(int start, int first, int second) {
         ivToolbarFirst.setVisibility(first);
         ivToolbarSecond.setVisibility(second);
+        ivToolbarStart.setVisibility(start);
+    }
+    public void openSearchTools(){
+        setImageToHomeButton(R.drawable.ic_back_button);
+        SearchView
+        toolbar.setTitle(null);
+        toolbar.setSubtitle(null);
+
+     }
+    public void setImageToStartImage(int resId) {
+        ivToolbarStart.setImageDrawable(null);
+        ivToolbarStart.setImageResource(resId);
     }
     public void setImageToFirstImage(int resId) {
         ivToolbarFirst.setImageDrawable(null);
