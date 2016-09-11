@@ -22,14 +22,15 @@
                 android:id="@+id/ivToolbarSearch"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:layout_marginLeft="@dimen/sixteen_dp"/>
             <ImageView
                 android:id="@+id/ivToolbarExcel"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginRight="@dimen/sixteen_dp"
                 android:src="@drawable/ic_excel"
-                android:layout_marginLeft="@dimen/ten_dp"
+                android:layout_marginLeft="@dimen/sixteen_dp"
                 android:visibility="gone"/>
             <ImageView
                 android:id="@+id/ivToolbarMostRight"
@@ -42,7 +43,9 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/search"/>
+            android:background="@color/empty"
+            android:hint="@string/search"
+            android:textSize="@dimen/eightteen_dp"/>
         <Spinner
             android:id="@+id/spToolbar"
             android:layout_width="match_parent"

@@ -29,6 +29,7 @@ import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
+import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
@@ -74,5 +75,6 @@ public interface PocketAccounterActivityComponent {
     void inject(InfoCreditFragment infoCreditFragment);
     void inject(InfoCreditFragmentForArchive infoCreditFragmentForArchive);
     void inject(AddCreditFragment addCreditFragment);
-//    void inject(LogicManager logicManager);
+    void inject(ToolbarManager toolbarManager);
+    //    void inject(LogicManager logicManager);
 }
