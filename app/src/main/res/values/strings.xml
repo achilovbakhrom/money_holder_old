@@ -19,7 +19,6 @@
         <item>Rate app</item>
         <item>Share app</item>
         <item>Feedback</item>
-        <item>Purpose</item>
     </string-array>
     <string-array name="cat_ids">
         <item>0</item>
@@ -46,11 +45,13 @@
         <item>Currencies</item>
         <item>Categories</item>
         <item>Accounts</item>
+        <item>Purpose</item>
     </string-array>
     <string-array name="finance_subitem_icons">
         <item>drawer_currency</item>
         <item>drawer_category</item>
         <item>drawer_account</item>
+        <item>drawer_purpose</item>
     </string-array>
     <string-array name="debts_subitems">
         <item>Credits</item>

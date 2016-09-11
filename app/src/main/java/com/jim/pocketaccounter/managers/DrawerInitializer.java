@@ -307,13 +307,13 @@ public class DrawerInitializer {
                                 break;
                             case 5:
                                 fragmentManager.displayFragment(new PurposeFragment());
+                                break;
                             case 6:
+                            case 7:
                                 fragmentManager.displayFragment(new CreditTabLay());
                                 break;
-                            case 7:
-                                fragmentManager.displayFragment(new DebtBorrowFragment());
-                                break;
                             case 8:
+                                fragmentManager.displayFragment(new DebtBorrowFragment());
                             case 9:
 //                                fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;

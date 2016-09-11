@@ -472,7 +472,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         int pos = cardDetials.indexOf(current);
                         current.getReckings().add(rec);
                         logicManager.insertReckingCredit(rec);
-                        notifyItemChanged(position);
+                        notifyItemChanged(pos);
                         dialog.dismiss();
                     }
                 }

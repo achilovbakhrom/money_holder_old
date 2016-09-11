@@ -46,11 +46,13 @@
         <item>Валюты</item>
         <item>Категории</item>
         <item>Счета</item>
+        <item>Цель</item>
     </string-array>
     <string-array name="finance_subitem_icons">
         <item>drawer_currency</item>
         <item>drawer_category</item>
         <item>drawer_account</item>
+        <item>drawer_purpose</item>
     </string-array>
     <string-array name="debts_subitems">
         <item>Кредиты</item>
