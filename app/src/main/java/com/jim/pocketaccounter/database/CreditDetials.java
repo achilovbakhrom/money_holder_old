@@ -36,7 +36,7 @@ public class CreditDetials {
     private long period_time;
     @Property
     private long period_time_tip;
-    @Id(autoincrement = true)
+    @Id
     @Property
     private long myCredit_id;
     @Property
@@ -50,6 +50,7 @@ public class CreditDetials {
     @ToMany(joinProperties = {
             @JoinProperty(name = "myCredit_id", referencedName = "myCredit_id")
     })
+    @Property
     private List<ReckingCredit> reckings;
     @Property
     private boolean key_for_include;

@@ -606,6 +606,7 @@ public class InfoCreditFragment extends Fragment {
                         else
                             rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), "", currentCredit.getMyCredit_id(), comment.getText().toString());
                         currentCredit.getReckings().add(rec);
+                        logicManager.insertReckingCredit(rec);
                         isCheks = new boolean[rcList.size()];
                         for (int i = 0; i < isCheks.length; i++) {
                             isCheks[i] = false;

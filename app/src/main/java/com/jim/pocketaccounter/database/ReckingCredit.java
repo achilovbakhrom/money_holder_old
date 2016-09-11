@@ -16,7 +16,8 @@ import java.util.UUID;
  */
 @Entity(nameInDb = "RECKING_CREDITS", active = true)
 public class ReckingCredit {
-    @Id(autoincrement = true)
+    @Id
+    @NotNull
     private long id;
     @Property
     private long payDate;

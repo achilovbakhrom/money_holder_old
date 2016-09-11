@@ -6,6 +6,7 @@ import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.JoinProperty;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
@@ -46,13 +47,14 @@ public class DebtBorrow {
     @Property
     private double amount;
     @ToMany(joinProperties = {
-            @JoinProperty(name = "id", referencedName = "id")
+            @JoinProperty(name = "id", referencedName = "debtBorrowsId")
     })
     private List<Recking> reckings;
     public static final int DEBT = 1, BORROW = 0;
     private String info = "";
     @Property
     @NotNull
+    @Id
     private String id; //"debt_"+UUID.randowUUID().toString();
     @Generated(hash = 1170963677)
     private transient String currency__resolvedKey;

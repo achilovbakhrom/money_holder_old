@@ -77,7 +77,6 @@ public class LogicManager {
 
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
-//        ((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
         currencyDao = daoSession.getCurrencyDao();
         currencyCostDao = daoSession.getCurrencyCostDao();
         recordDao = daoSession.getFinanceRecordDao();
@@ -341,7 +340,12 @@ public class LogicManager {
                 .queryBuilder()
                 .where(DebtBorrowDao.Properties.Id.eq(debtBorrow.getId()))
                 .build();
-        debtBorrowDao.insertOrReplace(debtBorrow);
+//        if (!query.list().isEmpty()) {
+//            daoSession.clear();
+//            debtBorrowDao.update(debtBorrow);
+//            return LogicManagerConstants.SAVED_SUCCESSFULL;
+//        }
+        debtBorrowDao.save(debtBorrow);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 

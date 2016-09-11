@@ -141,12 +141,10 @@ public class BorrowFragment extends Fragment {
 
     private class MyAdapter extends RecyclerView.Adapter<ViewHolder> {
         private ArrayList<DebtBorrow> persons;
-        private ArrayList<DebtBorrow> allPersons;
 
         public MyAdapter() {
-            allPersons = (ArrayList<DebtBorrow>) debtBorrowDao.queryBuilder().list();
             persons = new ArrayList<>();
-            for (DebtBorrow person : debtBorrowDao.queryBuilder().list()) {
+            for (DebtBorrow person : debtBorrowDao.loadAll()) {
                 if (!person.getTo_archive() && person.getType() == TYPE) {
                     persons.add(person);
                 } else {
@@ -416,10 +414,11 @@ public class BorrowFragment extends Fragment {
                         dialog.getWindow().setLayout(7 * width / 8, RelativeLayout.LayoutParams.WRAP_CONTENT);
                         dialog.show();
                     } else {
-                        for (int i = 0; i < debtBorrowDao.queryBuilder().list().size(); i++) {
-                            if (debtBorrowDao.queryBuilder().list().get(i).getId().matches(person.getId())) {
+                        for (int i = 0; i < debtBorrowDao.loadAll().size(); i++) {
+                            if (debtBorrowDao.loadAll().get(i).getId().matches(person.getId())) {
                                 debtBorrowDao.queryBuilder().list().get(i).setTo_archive(true);
-                                allPersons.get(i).setTo_archive(true);
+                                person.setTo_archive(true);
+                                logicManager.insertDebtBorrow(person);
                                 try {
                                     persons.remove(position);
                                 } catch (IndexOutOfBoundsException e) {
@@ -445,72 +444,6 @@ public class BorrowFragment extends Fragment {
             if (account != null && account.getIsLimited()) {
                 double limit = account.getLimite();
                 double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
-//            if (account.isLimited() && debt.getCalculate()) {
-//                double limit = account.getLimitSum();
-//                double accounted = PocketAccounterGeneral.getCost(debt.getTakenDate(),account.getStartMoneyCurrency(),account.getLimitCurrency(),account.getAmount());
-//                for (int i = 0; i < PocketAccounter.financeManager.getRecords().size(); i++) {
-//                    FinanceRecord tempac=PocketAccounter.financeManager.getRecords().get(i);
-//                    if (tempac.getAccount().getId().matches(account.getId())) {
-//                        if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-//                            accounted = accounted + PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
-//                        else
-//                            accounted = accounted - PocketAccounterGeneral.getCost(tempac.getDate(),tempac.getCurrency(),account.getLimitCurrency(),tempac.getAmount());
-//                    }
-//                }
-//                for (DebtBorrow debtBorrow : PocketAccounter.financeManager.getDebtBorrows()) {
-//                    if (debtBorrow.getCalculate()) {
-//                        if (debtBorrow.getAccount().getId().matches(account.getId())) {
-//                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                accounted = accounted - PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getLimitCurrency(),debtBorrow.getAmount());
-//                            } else {
-//                                accounted = accounted + PocketAccounterGeneral.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getLimitCurrency(),debtBorrow.getAmount());
-//                            }
-//                            for (Recking recking : debtBorrow.getReckings()) {
-//                                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-//                                Calendar cal = Calendar.getInstance();
-//                                try {
-//                                    cal.setTime(format.parse(recking.getPayDate()));
-//                                } catch (ParseException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                    accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(),recking.getAmount());
-//                                } else {
-//                                    accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-//                                }
-//                            }
-//                        } else {
-//                            for (Recking recking : debtBorrow.getReckings()) {
-//                                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-//                                Calendar cal = Calendar.getInstance();
-//                                if (recking.getAccountId().matches(account.getId())) {
-//                                    try {
-//                                        cal.setTime(format.parse(recking.getPayDate()));
-//                                    } catch (ParseException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                        accounted = accounted + PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(),recking.getAmount());
-//                                    } else {
-//                                        accounted = accounted - PocketAccounterGeneral.getCost(cal, debtBorrow.getCurrency(),account.getLimitCurrency(), recking.getAmount());
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-//                    if (creditDetials.isKey_for_include()) {
-//                        for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-//                            if (reckingCredit.getAccountId().matches(account.getId())) {
-//                                Calendar cal = Calendar.getInstance();
-//                                cal.setTimeInMillis(reckingCredit.getPayDate());
-//                                accounted = accounted - PocketAccounterGeneral.getCost(cal, creditDetials.getValyute_currency(),account.getLimitCurrency(), reckingCredit.getAmount());
-//                            }
-//                        }
-//                    }
-//                }
                 if (debt.getType() == DebtBorrow.DEBT) {
                     accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(), summ);
                 } else {
