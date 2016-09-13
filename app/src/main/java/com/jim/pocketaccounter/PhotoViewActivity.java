@@ -18,22 +18,11 @@
 //import android.view.WindowManager;
 //
 //import com.jim.pocketaccounter.photocalc.DepthPageTransformer;
-//import com.jim.pocketaccounter.photocalc.PhotoAdapter;
 //import com.jim.pocketaccounter.photocalc.PhotoDetails;
 //import com.jim.pocketaccounter.photocalc.TicketItemViewFragment;
 //import com.jim.pocketaccounter.photocalc.ViewPagerFixed;
 //
 //import java.util.ArrayList;
-//
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_TICKKETS_PATH;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_TICKKETS_UID;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_TICKKETS;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_TICKKETS_CACHE;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.CURRENT_PHOTO_ID;
-//import static com.jim.pocketaccounter.photocalc.PhotoAdapter.FROM_ADAPTER_WITHOUT_DELETE;
 //
 //public class PhotoViewActivity extends AppCompatActivity {
 //    private ViewPagerFixed ticketChangeViewPager;

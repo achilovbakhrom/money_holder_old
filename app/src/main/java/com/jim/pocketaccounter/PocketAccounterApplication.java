@@ -27,7 +27,6 @@ public class PocketAccounterApplication extends Application {
     @Override
     public void onCreate() {
         TypefaceUtil.overrideFont(getApplicationContext(), "SERIF", "robotoRegular.ttf");
-
         pocketAccounterApplicationComponent = DaggerPocketAccounterApplicationComponent
                 .builder()
                 .pocketAccounterApplicationModule(new PocketAccounterApplicationModule(this))

@@ -26,6 +26,7 @@ import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FABIcon;
+import com.jim.pocketaccounter.utils.TransferDialog;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ import javax.inject.Inject;
  */
 
 public class PurposeFragment extends Fragment {
-
     private RecyclerView rvPurposes;
     private FABIcon fabPurposesAdd;
     @Inject
@@ -48,6 +48,9 @@ public class PurposeFragment extends Fragment {
     DaoSession daoSession;
     @Inject
     PAFragmentManager paFragmentManager;
+    @Inject
+    TransferDialog transferDialog;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,6 +103,20 @@ public class PurposeFragment extends Fragment {
                 public void onClick(View v) {
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new PurposeInfoFragment(result.get(position)));
+                }
+            });
+            view.tvPutMoney.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    transferDialog.show();
+                    transferDialog.setAccountOrPurpose(result.get(position).getId());
+                    transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+                        @Override
+                        public void OnTransferDialogSave() {
+                            Toast.makeText(getContext(), " saved ", Toast.LENGTH_SHORT).show();
+                            transferDialog.dismiss();
+                        }
+                    });
                 }
             });
         }

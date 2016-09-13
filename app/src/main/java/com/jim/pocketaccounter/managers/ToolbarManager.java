@@ -54,8 +54,6 @@ public class ToolbarManager {
     public ToolbarManager(Context context, Toolbar toolbar) {
         this.context = context;
         this.toolbar = toolbar;
-
-        Log.d("nimadir", "ToolbarManager: ");
         ivToolbarFirst = (ImageView) toolbar.findViewById(R.id.ivToolbarExcel);
         ivToolbarSecond = (ImageView) toolbar.findViewById(R.id.ivToolbarMostRight);
         ivToolbarStart = (ImageView) toolbar.findViewById(R.id.ivToolbarSearch);
@@ -242,9 +240,10 @@ public class ToolbarManager {
         ivToolbarFirst.setImageDrawable(null);
         ivToolbarFirst.setImageResource(resId);
     }
-    public void setImageToSecondImage(int resId) {
+    public ImageView setImageToSecondImage(int resId) {
         ivToolbarSecond.setImageDrawable(null);
         ivToolbarSecond.setImageResource(resId);
+        return null;
     }
     public void setImageToHomeButton(int resId) {
         ((PocketAccounter) context).getSupportActionBar().setHomeAsUpIndicator(resId);

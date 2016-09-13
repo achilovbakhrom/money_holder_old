@@ -200,6 +200,7 @@ public class PocketAccounter extends AppCompatActivity {
         return date;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
@@ -214,6 +215,12 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
         toolbarManager.setSearchView(drawerInitializer,format,paFragmentManager,findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
+//        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
+        toolbarManager.setOnStartImageClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
 
 
@@ -252,6 +259,7 @@ public class PocketAccounter extends AppCompatActivity {
     }
 
 
+//
 //    public Calendar getDate() {
 //        return date;
 //    }

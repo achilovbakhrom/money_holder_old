@@ -1,5 +1,7 @@
 package com.jim.pocketaccounter.database;
 
+import android.support.annotation.Keep;
+
 import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 
 import org.greenrobot.greendao.annotation.Convert;
@@ -9,6 +11,8 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToOne;
 
 import java.util.Calendar;
+import java.util.UUID;
+
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
@@ -19,7 +23,7 @@ import org.greenrobot.greendao.DaoException;
 public class AccountOperation {
     @Id
     @Property
-    private Long id;
+    private String id;
     @Convert(converter = CalendarConvertor.class, columnType = Long.class)
     private Calendar date;
     @Property
@@ -136,14 +140,14 @@ public class AccountOperation {
     public void setDate(Calendar date) {
         this.date = date;
     }
-    public Long getId() {
+    public String getId() {
         return this.id;
     }
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
-    @Generated(hash = 273644403)
-    public AccountOperation(Long id, Calendar date, String sourceId,
+    @Generated(hash = 682025703)
+    public AccountOperation(String id, Calendar date, String sourceId,
             String targetId, String currencyId, double amount) {
         this.id = id;
         this.date = date;
@@ -152,8 +156,8 @@ public class AccountOperation {
         this.currencyId = currencyId;
         this.amount = amount;
     }
-    @Generated(hash = 809377825)
+    @Keep
     public AccountOperation() {
+        id = UUID.randomUUID().toString();
     }
-    
 }

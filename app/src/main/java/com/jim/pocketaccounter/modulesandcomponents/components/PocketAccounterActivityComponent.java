@@ -61,7 +61,6 @@ public interface PocketAccounterActivityComponent {
     void inject(CategoryInfoFragment categoryInfoFragment);
     void inject(PurposeFragment purposeFragment);
     void inject(TransferDialog transferDialog);
-    void inject(TransferAccountAdapter transferAccountAdapter);
     void inject(PurposeEditFragment purposeEditFragment);
     void inject(PurposeInfoFragment purposeInfoFragment);
     void inject(DebtBorrowFragment debtBorrowFragment);
@@ -75,6 +74,7 @@ public interface PocketAccounterActivityComponent {
     void inject(InfoCreditFragment infoCreditFragment);
     void inject(InfoCreditFragmentForArchive infoCreditFragmentForArchive);
     void inject(AddCreditFragment addCreditFragment);
+    void inject(NotificationManagerCredit notificationManagerCredit);
     void inject(ToolbarManager toolbarManager);
     //    void inject(LogicManager logicManager);
 }

@@ -226,9 +226,9 @@ public class InfoCreditFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(toArcive&&!delete_flag){
-
                     A1.to_Archive(currentPOS);
-                    ((PocketAccounter)context).getSupportFragmentManager().popBackStack ();
+                    ((PocketAccounter)context).getSupportFragmentManager().popBackStack();
+                    paFragmentManager.displayFragment(new CreditTabLay());
                 }
                 else if(!delete_flag)
                 {
@@ -286,7 +286,6 @@ public class InfoCreditFragment extends Fragment {
             public void onClick(View v) {
                 if(delete_flag){
                     delete_checked_items();
-
                 }
                 else{
                     delete_flag=true;
@@ -313,7 +312,6 @@ public class InfoCreditFragment extends Fragment {
         else if(period_tip==forMoth){
             suffix=getString(R.string.mont);
             to.add(Calendar.MONTH, (int) voqt_soni);
-
         }
         else {
             suffix=getString(R.string.yearr);

@@ -6,6 +6,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.finance.CurrencyChooseAdapter;
+import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.ReportManager;
@@ -42,4 +43,5 @@ public interface PocketAccounterApplicationComponent {
     void inject(ReportManager reportManager);
     void inject(CommonOperations commonOperations);
     void inject(LogicManager logicManager);
+    void inject(TransferAccountAdapter transferAccountAdapter);
 }

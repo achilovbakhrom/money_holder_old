@@ -1,11 +1,20 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +26,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,13 +35,20 @@ import android.widget.Toast;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountOperation;
+import com.jim.pocketaccounter.database.AccountOperationDao;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.Purpose;
+import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.DatePicker;
 import com.jim.pocketaccounter.utils.FABIcon;
@@ -45,6 +63,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class PurposeEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
@@ -61,7 +81,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     PAFragmentManager paFragmentManager;
     @Inject
     IconChooseDialog iconChooseDialog;
-
     @Inject
     DatePicker datePicker;
 
@@ -293,12 +312,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         if (purpose != null) {
             purposeName.setText(purpose.getDescription());
             amountPurpose.setText("" + purpose.getPurpose());
-//            for (int i = 0; i < curList.size(); i++) {
-//                if (curList.get(i).equals(purpose.getCurrency().getAbbr())) {
-//                    curPurpose.setSelection(i);
-//                    break;
-//                }
-//            }
             begCalendar = purpose.getBegin();
             endCalendar = purpose.getEnd();
             periodPurpose.setSelection(purpose.getPeriodPos());
@@ -315,5 +328,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
     @Override
     public void onClick(View v) {
+
     }
+
 }
+

@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -86,7 +84,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
-        this.cardDetials=creditDetialsDao.queryBuilder().list();
+        this.cardDetials=creditDetialsDao.queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).build().list();
         this.context = This;
         formater = new DecimalFormat("0.##");
         this.svyaz = svyaz;
@@ -183,17 +182,11 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     public void to_Archive(int position) {
                         CreditDetials toArc = cardDetials.get(position);
                         toArc.setKey_for_archive(true);
-//                        toArc = toArc.getObj();
                         if (toArc.isKey_for_include()) {
                             notifyItemChanged(position);
                         } else {
                             cardDetials.remove(position);
                             notifyItemRemoved(position);
-                        }
-                        long toArchiveID = System.currentTimeMillis();
-                        toArc.setMyCredit_id(toArchiveID);
-                        for (ReckingCredit mycr : toArc.getReckings()) {
-                            mycr.setMyCredit_id(toArchiveID);
                         }
                         svyaz.itemInsertedToArchive();
                     }
@@ -215,24 +208,16 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (toArcive) {
                     CreditDetials toArc = cardDetials.get(position);
                     toArc.setKey_for_archive(true);
-
-//                    toArc = toArc.getObj();
-
                     if (toArc.isKey_for_include()) {
                         notifyItemChanged(position);
                     } else {
                         cardDetials.remove(position);
                         notifyItemRemoved(position);
                     }
-                    long toArchiveID = System.currentTimeMillis();
-                    toArc.setMyCredit_id(toArchiveID);
-                    for (ReckingCredit mycr : toArc.getReckings()) {
-                        mycr.setMyCredit_id(toArchiveID);
-                    }
                     logicManager.insertCredit(toArc);
                     svyaz.itemInsertedToArchive();
                 } else
-                    openDialog(itemCr, pos);
+                    openDialog(itemCr, position);
             }
         });
     }
@@ -285,11 +270,9 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             return formater.format(A);
     }
 
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Razvetleniya na dve view. odin pustoy odin realniy
-
         RecyclerView.ViewHolder vh = null;
         if (viewType == VIEW_NULL) {
             View v = LayoutInflater.from(parent.getContext())
@@ -304,10 +287,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public static class Fornull extends RecyclerView.ViewHolder {
-
         public Fornull(View v) {
             super(v);
-
         }
     }
 
@@ -345,13 +326,9 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     @Override
                     public void addedCredit() {
                         notifyItemInserted(0);
-                        Log.d("gogogo", "XXX: ");
                     }
-
                     @Override
-                    public void canceledAdding() {
-                        //some think when canceled
-                    }
+                    public void canceledAdding() {}
                 });
             final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter) context).getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.add(R.id.flMain, fragment, tag);
