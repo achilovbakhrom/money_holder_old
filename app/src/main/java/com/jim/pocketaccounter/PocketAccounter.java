@@ -221,6 +221,9 @@ public class PocketAccounter extends AppCompatActivity {
             public void onClick(View v) {
             }
         });
+        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
+
+
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

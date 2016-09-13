@@ -3,7 +3,6 @@ package com.jim.pocketaccounter.modulesandcomponents.components;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.credit.AdapterCridet;
 import com.jim.pocketaccounter.credit.AdapterCridetArchive;
-import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
 import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.BorrowFragment;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
@@ -30,6 +29,7 @@ import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
+import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
@@ -75,4 +75,6 @@ public interface PocketAccounterActivityComponent {
     void inject(InfoCreditFragmentForArchive infoCreditFragmentForArchive);
     void inject(AddCreditFragment addCreditFragment);
     void inject(NotificationManagerCredit notificationManagerCredit);
+    void inject(ToolbarManager toolbarManager);
+    //    void inject(LogicManager logicManager);
 }

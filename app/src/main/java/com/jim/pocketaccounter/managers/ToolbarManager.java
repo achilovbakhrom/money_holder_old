@@ -51,9 +51,7 @@ public class ToolbarManager {
         ivToolbarSecond.setOnClickListener(listener);
     }
 
-    public void setOnStartImageClickListener(View.OnClickListener listener) {
-        ivToolbarStart.setOnClickListener(listener);
-    }
+
 
     public void setOnHomeButtonClickListener(View.OnClickListener listener) {
         toolbar.setNavigationOnClickListener(listener);
@@ -72,13 +70,86 @@ public class ToolbarManager {
         ivToolbarSecond.setVisibility(second);
         ivToolbarStart.setVisibility(start);
     }
-    public void openSearchTools(){
+    boolean firstIconActive,secondIconActive;
+    DrawerInitializer  drawerInitializer;
+    SimpleDateFormat format;
+    public void setSearchView(DrawerInitializer  drawerInitializer,SimpleDateFormat format){
+        ivToolbarStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSearchTools();
+            }
+        });
+
+
+        this.drawerInitializer=drawerInitializer;
+        this.format=format;
+    }
+
+    public void openSearchTools( ){
         setImageToHomeButton(R.drawable.ic_back_button);
-//        SearchView
+        searchEditToolbar.setVisibility(View.VISIBLE);
+        searchEditToolbar.setFocusableInTouchMode(true);
+        searchEditToolbar.requestFocus();
+
+        final InputMethodManager inputMethodManager = (InputMethodManager) context
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(inputMethodManager==null)
+            return;
+        inputMethodManager.showSoftInput(searchEditToolbar, InputMethodManager.SHOW_IMPLICIT);
+        ivToolbarStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchEditToolbar.setText("");
+            }
+        });
+        firstIconActive = ivToolbarFirst.getVisibility()==View.VISIBLE;
+        secondIconActive = ivToolbarSecond.getVisibility()==View.VISIBLE;
+        setOnHomeButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeSearchTools(firstIconActive,secondIconActive);
+            }
+        });
+        setToolbarIconsVisibility(View.VISIBLE,View.GONE,View.GONE);
+        ivToolbarStart.setImageResource(R.drawable.ic_close_black_24dp);
         toolbar.setTitle(null);
         toolbar.setSubtitle(null);
 
      }
+
+    public void closeSearchTools( boolean firstIconActive, final boolean secondIconActive){
+        setImageToHomeButton(R.drawable.ic_back_button);
+        searchEditToolbar.setVisibility(View.GONE);
+
+        InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(imm==null)
+            return;
+        imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+
+        ivToolbarStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSearchTools();
+            }
+        });
+
+        if(firstIconActive)  ivToolbarFirst.setVisibility(View.VISIBLE);
+        else ivToolbarFirst.setVisibility(View.GONE);
+        if(secondIconActive) ivToolbarSecond.setVisibility(View.VISIBLE);
+        else ivToolbarSecond.setVisibility(View.GONE);
+
+        ivToolbarStart.setImageResource(R.drawable.ic_search_black_24dp);
+        setImageToHomeButton(R.drawable.ic_drawer);
+        toolbar.setTitle(context.getResources().getString(R.string.app_name));
+        toolbar.setSubtitle(format.format(Calendar.getInstance().getTime()));
+        setOnHomeButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerInitializer.getDrawer().openLeftSide();
+            }
+        });
+    }
     public void setImageToStartImage(int resId) {
         ivToolbarStart.setImageDrawable(null);
         ivToolbarStart.setImageResource(resId);
