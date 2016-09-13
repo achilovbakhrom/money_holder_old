@@ -73,7 +73,6 @@ public class TransferAccountAdapter extends BaseAdapter {
             if (id.matches(purpose.getId())) {
                 name = purpose.getDescription();
                 resId = context.getResources().getIdentifier(purpose.getIcon(), "drawable", context.getPackageName());
-                Log.d("sss", name);
                 break;
             }
         }

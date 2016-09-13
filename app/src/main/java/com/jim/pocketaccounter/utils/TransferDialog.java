@@ -135,8 +135,6 @@ public class TransferDialog extends Dialog {
                         firstPos = i;
                     }
                 }
-
-                @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {}
             });
             secondAdapter = new TransferAccountAdapter(getContext(), first);
@@ -160,18 +158,30 @@ public class TransferDialog extends Dialog {
         ivYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (onTransferDialogSaveListener != null) {
+                if (onTransferDialogSaveListener != null && !etAccountEditName.getText().toString().isEmpty()) {
                     onTransferDialogSaveListener.OnTransferDialogSave();
                     AccountOperation accountOperation = new AccountOperation();
                     accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
                     accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
                     accountOperation.setDate(calendar);
-                    accountOperation.setSourceId(daoSession.getAccountDao().loadAll().get(spTransferFirst.getSelectedItemPosition()).getId());
-                    accountOperation.setTargetId(daoSession.getAccountDao().loadAll().get(spTransferSecond.getSelectedItemPosition()).getId());
+                    if (spTransferFirst.getSelectedItemPosition() < daoSession.getAccountDao().loadAll().size()) {
+                        accountOperation.setSourceId(daoSession.getAccountDao().loadAll()
+                                .get(spTransferFirst.getSelectedItemPosition()).getId());
+                    } else {
+                        accountOperation.setSourceId(daoSession.getPurposeDao().loadAll()
+                                .get(spTransferFirst.getSelectedItemPosition() - daoSession.getAccountDao().loadAll().size()).getId());
+                    }
+                    if (spTransferSecond.getSelectedItemPosition() < daoSession.getAccountDao().loadAll().size()) {
+                        accountOperation.setTargetId(daoSession.getAccountDao().loadAll()
+                                .get(spTransferSecond.getSelectedItemPosition()).getId());
+                    } else {
+                        accountOperation.setTargetId(daoSession.getPurposeDao().loadAll()
+                                .get(spTransferFirst.getSelectedItemPosition() - daoSession.getAccountDao().loadAll().size()).getId());
+                    }
                     accountOperation.__setDaoSession(daoSession);
                     logicManager.insertAccountOperation(accountOperation);
+                    dismiss();
                 }
-                dismiss();
             }
         });
         ImageView ivClose = (ImageView) dialogView.findViewById(R.id.ivAccountManClose);
