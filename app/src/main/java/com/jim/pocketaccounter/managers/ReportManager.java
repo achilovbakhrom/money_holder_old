@@ -16,11 +16,14 @@ import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+
+import org.greenrobot.greendao.query.Query;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -309,10 +312,10 @@ public class ReportManager {
 
     public Map<Currency, Double> getRemain(Account account) {
         List<ReportObject> list = getReportObjects(false, account.getCalendar(), Calendar.getInstance(),
-                                                    Account.class,
-                                                    FinanceRecord.class,
-                                                    DebtBorrow.class,
-                                                    CreditDetials.class);
+                Account.class,
+                FinanceRecord.class,
+                DebtBorrow.class,
+                CreditDetials.class);
         Map<Currency, Double> result = new HashMap<>();
         for(ReportObject reportObject : list) {
             if (reportObject.getAccount().getId().matches(account.getId())) {
@@ -380,5 +383,18 @@ public class ReportManager {
                 result -= commonOperations.getCost(record.getDate(), record.getCurrency(), record.getAmount());
         }
         return result;
+    }
+
+    public List<AccountOperation> getAccountOpertions (Object object) {
+        String id = "";
+        if (object.getClass().getName().matches(Purpose.class.getName())) {
+            id = ((Purpose) object).getId();
+        } else {
+            id = ((Account) object).getId();
+        }
+        return daoSession.getAccountOperationDao().queryBuilder()
+                .whereOr(AccountOperationDao.Properties.SourceId.eq(id),
+                        AccountOperationDao.Properties.TargetId.eq(id))
+                .list();
     }
 }

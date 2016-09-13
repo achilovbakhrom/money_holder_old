@@ -9,6 +9,8 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.AccountOperation;
+import com.jim.pocketaccounter.database.AccountOperationDao;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
@@ -74,6 +76,7 @@ public class LogicManager {
     private PurposeDao purposeDao;
     private PersonDao personDao;
     private ReckingDao reckingDao;
+    private AccountOperationDao accountOperationDao;
 
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
@@ -91,6 +94,7 @@ public class LogicManager {
         purposeDao = daoSession.getPurposeDao();
         personDao = daoSession.getPersonDao();
         reckingDao = daoSession.getReckingDao();
+        accountOperationDao = daoSession.getAccountOperationDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -387,6 +391,11 @@ public class LogicManager {
 
     public int insertReckingCredit(ReckingCredit reckingCredit) {
         reckingCreditDao.insertOrReplace(reckingCredit);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int insertAccountOperation (AccountOperation accountOperation) {
+        accountOperationDao.insertOrReplace(accountOperation);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 

@@ -61,7 +61,6 @@ public class CreditFragment extends Fragment {
         creditDetialsDao = daoSession.getCreditDetialsDao();
         crList= (ArrayList<CreditDetials>) creditDetialsDao.queryBuilder().list();
         This=getActivity();
-        Log.d("gogogo", "onCreate: ");
     }
     public  CreditTabLay.ForFab getEvent(){
         return new CreditTabLay.ForFab() {
@@ -81,7 +80,7 @@ public class CreditFragment extends Fragment {
         toolbarManager.setTitle(getResources().getString(R.string.cred_managment));
         toolbarManager.setSubtitle("");
         toolbarManager.setSpinnerVisibility(View.GONE);
-
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
         View V=inflater.inflate(R.layout.fragment_credit, container, false);
         crRV=(RecyclerView) V.findViewById(R.id.my_recycler_view);
         LinearManagerWithOutEx llm = new LinearManagerWithOutEx(This);
@@ -126,7 +125,6 @@ public class CreditFragment extends Fragment {
         }
     }
     public void updateToFirst(){
-        Log.d("gogogo", "updateToFirst: ");
         try{
             (new Handler()).postDelayed(new Runnable() {
                 @Override
@@ -134,7 +132,6 @@ public class CreditFragment extends Fragment {
                    crAdap.notifyItemInserted(0);
                 }
             }, 50);
-
             try {
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
@@ -143,14 +140,9 @@ public class CreditFragment extends Fragment {
                     }
                 }, 100);
             }
-            catch (Exception o){
-                Log.d("gogogo", "scrollToPosition error: ");
-            }
-
+            catch (Exception o){}
         }
-        catch (Exception o){
-            Log.d("gogogo", "notifyItemInserted error: ");
-        }
+        catch (Exception o){}
     }
 
     @Override

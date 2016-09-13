@@ -79,7 +79,6 @@ public class InfoCreditFragmentForArchive extends Fragment {
     final static long forYear=1000L*60L*60L*24L*365L;
     final static String CALCULATED="Calculeted";
     final static String NOT_CALCULATED="Not calculeted";
-    SimpleDateFormat dateformarter;
     boolean isExpandOpen=false;
     private Context context;
     TextView myPay,myDelete;
@@ -191,7 +190,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
         myReturnValue.setText(parseToWithoutNull(currentCredit.getValue_of_credit_with_procent())+currentCredit.getValyute_currency().getAbbr());
         icon_credit.setImageResource(currentCredit.getIcon_ID());
         dateForSimpleDate.setTime(currentCredit.getTake_time().getTimeInMillis());
-        myTakedCredTime.setText(dateformarter.format(dateForSimpleDate));
+        myTakedCredTime.setText(dateFormat.format(dateForSimpleDate));
         calculeted.setText((currentCredit.isKey_for_include())?CALCULATED:NOT_CALCULATED);
         myCreditName.setText(currentCredit.getCredit_name());
 
@@ -366,7 +365,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
 
         public void onBindViewHolder(final ViewHolder view, int position) {
             ReckingCredit item=list.get(position);
-            view.infoDate.setText(getString(R.string.date_of_pay)+": "+dateformarter.format(item.getPayDate()));
+            view.infoDate.setText(getString(R.string.date_of_pay)+": "+dateFormat.format(item.getPayDate()));
             view.infoSumm.setText(parseToWithoutNull(item.getAmount())+currentCredit.getValyute_currency().getAbbr());
             if(currentCredit.isKey_for_include()){
                 ArrayList<Account> accounts = (ArrayList<Account>) accountDao.queryBuilder().list();

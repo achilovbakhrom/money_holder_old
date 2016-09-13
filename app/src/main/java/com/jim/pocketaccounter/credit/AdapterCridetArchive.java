@@ -17,10 +17,8 @@ import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
-
-import org.greenrobot.greendao.query.Query;
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -44,7 +42,8 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
     PAFragmentManager paFragmentManager;
     @Inject
     DaoSession daoSession;
-
+    @Inject
+    LogicManager logicManager;
     CreditDetialsDao creditDetialsDao;
     List<CreditDetials> cardDetials;
 
@@ -60,12 +59,7 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         cardDetials = new ArrayList<>();
-//        cardDetials =
-        for (CreditDetials cr : creditDetialsDao.loadAll()) {
-            if (cr.isKey_for_archive()) {
-                cardDetials.add(cr);
-            }
-        }
+        cardDetials = creditDetialsDao.queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).build().list();
         this.context = This;
         formater = new DecimalFormat("0.##");
     }
@@ -113,10 +107,8 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
             to.add(Calendar.WEEK_OF_YEAR, (int) voqt_soni);
         } else if (period_tip == forMoth) {
             to.add(Calendar.MONTH, (int) voqt_soni);
-
         } else {
             to.add(Calendar.YEAR, (int) voqt_soni);
-
         }
 
         Date from = new Date();
@@ -173,7 +165,7 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
                             for (CreditDetials creditDetials : credList) {
                                 if (creditDetials.getTake_time().getTimeInMillis() == Az.getTake_time().getTimeInMillis()) {
                                     credList.remove(creditDetials);
-                                    svyazForNotifyFromArchAdap.notifyCredFrag();
+                                    logicManager.deleteCredit(creditDetials);
                                     break;
                                 }
                             }
@@ -225,7 +217,6 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
             return Integer.toString((int) A);
         else
             return formater.format(A);
-
     }
 
     @Override
@@ -234,7 +225,6 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.moder_titem_arch, parent, false);
         // set the view's size, margins, paddings and layout parameters
-
         myViewHolder vh = new myViewHolder(v);
         return vh;
     }

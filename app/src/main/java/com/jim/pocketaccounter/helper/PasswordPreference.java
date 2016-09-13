@@ -31,12 +31,10 @@ public class PasswordPreference extends DialogPreference  {
     private TextView myFourNumbers,myRepiatPassword;
     private boolean comfirm=false;
 
-
     public PasswordPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setPersistent (false);
         setDialogLayoutResource(R.layout.password_layout_edit);
-
 //        setTitle(getContext().getString(R.string.enter_password));
     }
     boolean isok=false;
@@ -104,11 +102,9 @@ public class PasswordPreference extends DialogPreference  {
                         myRepiatPassword.setText(R.string.please_repait_correct);
                         myRepiatPassword.setTextColor(RED);
                         return;
-
                     }
                 }
                 else {
-
                     if(myPassword1.getText().toString().length()!=4){
                         myPassword1.setText("");
                         myFourNumbers.setText(R.string.was_four_numbers);
@@ -127,15 +123,12 @@ public class PasswordPreference extends DialogPreference  {
                         myRepiatPassword.setVisibility(View.VISIBLE);
                         myFourNumbers.setText(R.string.password_should_be_4_numbers);
                         myFourNumbers.setTextColor(ContextCompat.getColor(getContext(),R.color.black_for_secondary_text));
-
-
                     }
                     else  {
                         myPassword1.setText("");
                         myFourNumbers.setText(R.string.try_one_more);
                         myFourNumbers.setTextColor(RED);
                         return;
-
                     }
                 }
             }

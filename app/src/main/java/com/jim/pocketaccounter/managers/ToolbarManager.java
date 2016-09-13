@@ -74,7 +74,7 @@ public class ToolbarManager {
     }
     public void openSearchTools(){
         setImageToHomeButton(R.drawable.ic_back_button);
-        SearchView
+//        SearchView
         toolbar.setTitle(null);
         toolbar.setSubtitle(null);
 
@@ -87,9 +87,10 @@ public class ToolbarManager {
         ivToolbarFirst.setImageDrawable(null);
         ivToolbarFirst.setImageResource(resId);
     }
-    public void setImageToSecondImage(int resId) {
+    public ImageView setImageToSecondImage(int resId) {
         ivToolbarSecond.setImageDrawable(null);
         ivToolbarSecond.setImageResource(resId);
+        return null;
     }
     public void setImageToHomeButton(int resId) {
         ((PocketAccounter) context).getSupportActionBar().setHomeAsUpIndicator(resId);

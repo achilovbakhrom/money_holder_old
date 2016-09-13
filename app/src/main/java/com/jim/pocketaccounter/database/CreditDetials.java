@@ -84,7 +84,6 @@ public class CreditDetials {
         this.period_time = period_time;
         this.period_time_tip = period_time_tip;
         this.key_for_include = key_for_include;
-//        this.valyute_currency = valyute_currency;
         this.currencyId = valyute_currency.getId();
         this.value_of_credit_with_procent = value_of_credit_with_procent;
         this.myCredit_id = myCredit_id;

@@ -36,12 +36,23 @@
             android:src="@drawable/check_sign" />
 
     </LinearLayout>
-    
+
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
         android:background="@color/message_color" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="12.02.2016"
+        android:gravity="center"
+        android:textSize="@dimen/twenty_sp"
+        android:id="@+id/tvAccountDialogDate"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -61,13 +72,14 @@
                 android:textColor="@color/black_for_glavniy_text"
                 android:textStyle="bold"
                 android:textSize="@dimen/sixteen_dp"/>
-            <Spinner
 
+            <Spinner
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/five_dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/spTransferFirst"
                 android:layout_weight="1"/>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

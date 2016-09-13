@@ -30,10 +30,9 @@ public class PasswordPreference extends DialogPreference  {
         super(context, attrs);
         setPersistent (false);
         setDialogLayoutResource(R.layout.password_layout_edit);
-
-//        setTitle(getContext().getString(R.string.enter_password));
     }
     boolean isok=false;
+
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
@@ -75,16 +74,13 @@ public class PasswordPreference extends DialogPreference  {
                     }
                     else
                         myFourNumbers.setTextColor(ContextCompat.getColor(getContext(),R.color.black_for_secondary_text));
-
                     if (myPassword2.getText().toString().length()!=4){
                         myPassword2.setText("");
                         myRepiatPassword.setTextColor(RED);
                         return;
-
                     }
                     else
                         myRepiatPassword.setTextColor(ContextCompat.getColor(getContext(),R.color.black_for_secondary_text));
-
                     if (myPassword1.getText().toString().matches(myPassword2.getText().toString())){
                         SharedPreferences.Editor editor = getEditor();
                         editor.putString("password",myPassword2.getText().toString()  );
@@ -102,7 +98,6 @@ public class PasswordPreference extends DialogPreference  {
                     }
                 }
                 else {
-
                     if(myPassword1.getText().toString().length()!=4){
                         myPassword1.setText("");
                         myFourNumbers.setText(R.string.was_four_numbers);
@@ -121,21 +116,17 @@ public class PasswordPreference extends DialogPreference  {
                         myRepiatPassword.setVisibility(View.VISIBLE);
                         myFourNumbers.setText(R.string.password_should_be_4_numbers);
                         myFourNumbers.setTextColor(ContextCompat.getColor(getContext(),R.color.black_for_secondary_text));
-
-
                     }
                     else  {
                         myPassword1.setText("");
                         myFourNumbers.setText(R.string.try_one_more);
                         myFourNumbers.setTextColor(RED);
                         return;
-
                     }
                 }
             }
         });
     }
-
 
     @Override
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
@@ -149,6 +140,4 @@ public class PasswordPreference extends DialogPreference  {
     {
         showDialog(null);
     }
-
-
 }

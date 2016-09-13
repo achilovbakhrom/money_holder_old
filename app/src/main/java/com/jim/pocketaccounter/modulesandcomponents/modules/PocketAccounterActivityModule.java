@@ -12,11 +12,13 @@ import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.CashDialog;
 import com.jim.pocketaccounter.utils.DatePicker;
 import com.jim.pocketaccounter.utils.FilterDialog;
 import com.jim.pocketaccounter.utils.IconChooseDialog;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
+import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
 
 import java.text.SimpleDateFormat;
@@ -37,6 +39,7 @@ public class PocketAccounterActivityModule {
     private DrawerInitializer drawerInitializer;
     private Toolbar toolbar;
     private LogicManager logicManager;
+
     public PocketAccounterActivityModule(PocketAccounter pocketAccounter, Toolbar toolbar) {
         this.pocketAccounter = pocketAccounter;
         paFragmentManager = new PAFragmentManager(pocketAccounter);
@@ -117,6 +120,9 @@ public class PocketAccounterActivityModule {
         return new SubCatAddEditDialog(pocketAccounter);
     }
 
-
+    @Provides
+    public TransferDialog transferDialog() {
+        return new TransferDialog(pocketAccounter);
+    }
 
 }
