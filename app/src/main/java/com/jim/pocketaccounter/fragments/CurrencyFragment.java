@@ -62,7 +62,6 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 	LogicManager logicManager;
 	@Inject
 	CommonOperations commonOperations;
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.currency_fragment, container, false);
 		rootView.postDelayed(new Runnable() {

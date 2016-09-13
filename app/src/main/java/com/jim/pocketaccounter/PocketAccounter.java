@@ -200,21 +200,19 @@ public class PocketAccounter extends AppCompatActivity {
         return date;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
         toolbarManager.setSubtitle(format.format(date.getTime()));
+
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                drawerInitializer.getDrawer().openLeftSide();
-            }
+            public void onClick(View v) {    drawerInitializer.getDrawer().openLeftSide();         }
         });
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
-        toolbarManager.setSearchView(drawerInitializer,format);
+        toolbarManager.setSearchView(drawerInitializer,format,paFragmentManager,findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
 
@@ -254,7 +252,6 @@ public class PocketAccounter extends AppCompatActivity {
     }
 
 
-//
 //    public Calendar getDate() {
 //        return date;
 //    }

@@ -2,12 +2,18 @@ package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -17,6 +23,7 @@ import android.widget.Spinner;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.fragments.SearchFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,6 +31,7 @@ import java.util.Calendar;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static com.jim.pocketaccounter.R.color.toolbar_text_color;
 
 /**
@@ -36,7 +44,13 @@ public class ToolbarManager {
     private ImageView ivToolbarFirst, ivToolbarSecond, ivToolbarStart;
     private Spinner spinner;
     private EditText searchEditToolbar;
-
+    Handler whenKeyboardClosed;
+    public void setTitle(String title){
+        toolbar.setTitle(title);
+    }
+    public void setSubtitle(String title){
+        toolbar.setSubtitle(title);
+    }
     public ToolbarManager(Context context, Toolbar toolbar) {
         this.context = context;
         this.toolbar = toolbar;
@@ -68,15 +82,6 @@ public class ToolbarManager {
     public void setOnHomeButtonClickListener(View.OnClickListener listener) {
         toolbar.setNavigationOnClickListener(listener);
     }
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void setTitle(String title) {
-        toolbar.setTitle(title);
-
-    }
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void setSubtitle(String subtitle) {
-        toolbar.setSubtitle(subtitle);
-    }
     public void setToolbarIconsVisibility(int start, int first, int second) {
         ivToolbarFirst.setVisibility(first);
         ivToolbarSecond.setVisibility(second);
@@ -85,30 +90,72 @@ public class ToolbarManager {
     boolean firstIconActive,secondIconActive;
     DrawerInitializer  drawerInitializer;
     SimpleDateFormat format;
-    public void setSearchView(DrawerInitializer  drawerInitializer,SimpleDateFormat format){
+    PAFragmentManager fragmentManager;
+    boolean keyboardIsOpen=true;
+
+    public static float dpToPx(Context context, float valueInDp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(COMPLEX_UNIT_DIP, valueInDp, metrics);
+    }
+    View main;
+    public void setSearchView(DrawerInitializer  drawerInitializer,SimpleDateFormat format, PAFragmentManager fragmentManager,final View main){
         ivToolbarStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openSearchTools();
             }
         });
-
-
+        this.fragmentManager=fragmentManager;
         this.drawerInitializer=drawerInitializer;
         this.format=format;
+        this.main=main;
+        main.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int heightDiff = main.getRootView().getHeight() - main.getHeight();
+                if (heightDiff > dpToPx(context, 200)) { // if more than 200 dp, it's probably a keyboard...
+                    keyboardIsOpen = true;
+                } else {
+                    keyboardIsOpen = false;
+                }
+            }
+        });
     }
-
-    public void openSearchTools( ){
+    SearchFragment.TextChangeListnerW textChangeListnerW;
+     public void openSearchTools( ){
         setImageToHomeButton(R.drawable.ic_back_button);
         searchEditToolbar.setVisibility(View.VISIBLE);
         searchEditToolbar.setFocusableInTouchMode(true);
         searchEditToolbar.requestFocus();
+        SearchFragment searchFragment=new SearchFragment();
+        textChangeListnerW=searchFragment.getListnerChange();
+
+         searchEditToolbar.addTextChangedListener(new TextWatcher() {
+             @Override
+             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+             }
+
+             @Override
+             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                 textChangeListnerW.onTextChange(s.toString());
+             }
+
+             @Override
+             public void afterTextChanged(Editable s) {
+
+             }
+         });
+
+
+        fragmentManager.displayFragment(new SearchFragment());
 
         final InputMethodManager inputMethodManager = (InputMethodManager) context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         if(inputMethodManager==null)
             return;
         inputMethodManager.showSoftInput(searchEditToolbar, InputMethodManager.SHOW_IMPLICIT);
+
         ivToolbarStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,38 +176,63 @@ public class ToolbarManager {
         toolbar.setSubtitle(null);
 
      }
+    Runnable runForItClose;
+    public void closeSearchTools(final boolean firstIconActive, final boolean secondIconActive){
 
-    public void closeSearchTools( boolean firstIconActive, final boolean secondIconActive){
-        setImageToHomeButton(R.drawable.ic_back_button);
-        searchEditToolbar.setVisibility(View.GONE);
-
-        InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm==null)
-            return;
-        imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-        ivToolbarStart.setOnClickListener(new View.OnClickListener() {
+        whenKeyboardClosed=new Handler();
+        runForItClose=new Runnable() {
             @Override
-            public void onClick(View v) {
-                openSearchTools();
-            }
-        });
+            public void run() {
+                if(!keyboardIsOpen){
+                    setImageToHomeButton(R.drawable.ic_back_button);
+                    searchEditToolbar.setVisibility(View.GONE);
+                    ivToolbarStart.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openSearchTools();
+                        }
+                    });
 
-        if(firstIconActive)  ivToolbarFirst.setVisibility(View.VISIBLE);
-        else ivToolbarFirst.setVisibility(View.GONE);
-        if(secondIconActive) ivToolbarSecond.setVisibility(View.VISIBLE);
-        else ivToolbarSecond.setVisibility(View.GONE);
+                    if(firstIconActive)  ivToolbarFirst.setVisibility(View.VISIBLE);
+                    else ivToolbarFirst.setVisibility(View.GONE);
+                    if(secondIconActive) ivToolbarSecond.setVisibility(View.VISIBLE);
+                    else ivToolbarSecond.setVisibility(View.GONE);
 
-        ivToolbarStart.setImageResource(R.drawable.ic_search_black_24dp);
-        setImageToHomeButton(R.drawable.ic_drawer);
-        toolbar.setTitle(context.getResources().getString(R.string.app_name));
-        toolbar.setSubtitle(format.format(Calendar.getInstance().getTime()));
-        setOnHomeButtonClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerInitializer.getDrawer().openLeftSide();
+                    ivToolbarStart.setImageResource(R.drawable.ic_search_black_24dp);
+                    setImageToHomeButton(R.drawable.ic_drawer);
+                    toolbar.setTitle(context.getResources().getString(R.string.app_name));
+                    toolbar.setSubtitle(format.format(Calendar.getInstance().getTime()));
+                    setOnHomeButtonClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            drawerInitializer.getDrawer().openLeftSide();
+                        }
+                    });
+
+                    fragmentManager.getFragmentManager().popBackStack();
+                    fragmentManager.displayMainWindow();
+                }
+                else{
+                    InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if(imm==null)
+                        return;
+                    imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    whenKeyboardClosed.postDelayed(runForItClose,100);
+                }
             }
-        });
+        };
+
+        if(keyboardIsOpen){
+            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if(imm==null)
+                return;
+            imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
+
+        whenKeyboardClosed.postDelayed(runForItClose,200);
+
+
+
     }
     public void setImageToStartImage(int resId) {
         ivToolbarStart.setImageDrawable(null);

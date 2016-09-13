@@ -48,7 +48,6 @@ public class PAFragmentManager {
         return fragmentManager;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void initialize(Calendar date) {
         activity.treatToolbar();
         main.setVisibility(View.VISIBLE);
@@ -100,7 +99,6 @@ public class PAFragmentManager {
         ((RelativeLayout) activity.findViewById(R.id.rlRecordIncomes)).addView(incomeView);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void displayMainWindow() {
         main.setVisibility(View.VISIBLE);
         PRESSED = false;
