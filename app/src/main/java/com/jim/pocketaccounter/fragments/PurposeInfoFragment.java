@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.jim.pocketaccounter.report.FilterSelectable;
 import com.jim.pocketaccounter.utils.FilterDialog;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.TransferDialog;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -66,6 +68,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     DaoSession daoSession;
     @Inject
     FilterDialog filterDialog;
+    @Inject
+    TransferDialog transferDialog;
 
     private MyAdapter myAdapter;
     private Purpose purpose;
@@ -98,8 +102,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         endDate = null;
         deleteOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoDelete);
         filterOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoFilter);
-        cashAdd = (TextView) rooView.findViewById(R.id.tvPurposeInfoReplanish);
-        cashSend = (TextView) rooView.findViewById(R.id.tvPurposeInfoRemained);
+        cashAdd = (TextView) rooView.findViewById(R.id.tvPurposeInfoToCash);
+        cashSend = (TextView) rooView.findViewById(R.id.tvPurposeInfoReplanish);
         toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
@@ -153,6 +157,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         filterOpertions.setOnClickListener(this);
         cashAdd.setOnClickListener(this);
         cashSend.setOnClickListener(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
         myAdapter = new MyAdapter();
         recyclerView.setAdapter(myAdapter);
         return rooView;
@@ -181,12 +187,29 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 });
                 break;
             }
-            case R.id.tvPurposeInfoRemained: {
-
+            case R.id.tvPurposeInfoToCash: {
+                transferDialog.show();
+                transferDialog.setAccountOrPurpose(purpose.getId(), false);
+                transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+                    @Override
+                    public void OnTransferDialogSave() {
+                        Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
+                        myAdapter.notifyDataSetChanged();
+                    }
+                });
                 break;
+
             }
             case R.id.tvPurposeInfoReplanish: {
-
+                transferDialog.show();
+                transferDialog.setAccountOrPurpose(purpose.getId(), true);
+                transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+                    @Override
+                    public void OnTransferDialogSave() {
+                        Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
+                        myAdapter.notifyDataSetChanged();
+                    }
+                });
                 break;
             }
         }
