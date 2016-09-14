@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -120,33 +121,39 @@ public class ToolbarManager {
         });
     }
     SearchFragment.TextChangeListnerW textChangeListnerW;
+    SearchFragment searchFragment;
      public void openSearchTools( ){
         setImageToHomeButton(R.drawable.ic_back_button);
         searchEditToolbar.setVisibility(View.VISIBLE);
         searchEditToolbar.setFocusableInTouchMode(true);
         searchEditToolbar.requestFocus();
-        SearchFragment searchFragment=new SearchFragment();
-        textChangeListnerW=searchFragment.getListnerChange();
 
-         searchEditToolbar.addTextChangedListener(new TextWatcher() {
-             @Override
-             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+         if (searchFragment == null) {
 
-             }
+             searchFragment = new SearchFragment();
+             textChangeListnerW=searchFragment.getListnerChange();
 
-             @Override
-             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                 textChangeListnerW.onTextChange(s.toString());
-             }
+             searchEditToolbar.addTextChangedListener(new TextWatcher() {
+                 @Override
+                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-             @Override
-             public void afterTextChanged(Editable s) {
+                 }
 
-             }
-         });
+                 @Override
+                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+                     textChangeListnerW.onTextChange(s.toString());
+                 }
+
+                 @Override
+                 public void afterTextChanged(Editable s) {
+
+                 }
+             });
+         }
 
 
-        fragmentManager.displayFragment(new SearchFragment());
+
+        fragmentManager.displayFragment(searchFragment, "salom");
 
         final InputMethodManager inputMethodManager = (InputMethodManager) context
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -214,7 +221,7 @@ public class ToolbarManager {
                     InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
                     if(imm==null)
                         return;
-                    imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), 0);
                     whenKeyboardClosed.postDelayed(runForItClose,100);
                 }
             }
@@ -224,7 +231,7 @@ public class ToolbarManager {
             InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
             if(imm==null)
                 return;
-            imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+            imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), 0);
         }
 
         whenKeyboardClosed.postDelayed(runForItClose,200);

@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:background="@color/empty"
             android:hint="@string/search"
+            android:layout_marginLeft="@dimen/ten_dp"
             android:textSize="@dimen/eightteen_dp"/>
         <Spinner
             android:id="@+id/spToolbar"

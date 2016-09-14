@@ -128,6 +128,19 @@ public class PAFragmentManager {
                 .commit();
     }
 
+    public void displayFragment(Fragment fragment, String tag) {
+        main.setVisibility(View.GONE);
+        if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
+            return;
+        PRESSED = true;
+        fragmentManager
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .add(R.id.flMain, fragment, tag)
+                .commit();
+    }
+
 
     public void remoteBackPress() {
 ////        if(calcEventBackPressed!=null){

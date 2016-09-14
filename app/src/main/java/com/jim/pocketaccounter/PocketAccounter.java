@@ -216,11 +216,7 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.setSearchView(drawerInitializer,format,paFragmentManager,findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
 //        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
-        toolbarManager.setOnStartImageClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
+
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
 
 

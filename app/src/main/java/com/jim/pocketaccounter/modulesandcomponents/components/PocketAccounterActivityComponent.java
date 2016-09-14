@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.modulesandcomponents.components;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.credit.AdapterCridet;
 import com.jim.pocketaccounter.credit.AdapterCridetArchive;
+import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
 import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.BorrowFragment;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
