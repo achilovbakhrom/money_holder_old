@@ -48,17 +48,18 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
     public FilterDialog(Context context) {
         super(context);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if (sharedPreferences.getLong("filter_begin_time", 0L) != 0L)
+        endDate = Calendar.getInstance();
+        beginDate = Calendar.getInstance();
+        if (sharedPreferences.getLong("filter_begin_time", 0L) != 0L) {
             beginDate.setTimeInMillis(sharedPreferences.getLong("filter_begin_time", 0L));
+        }
         else {
-            beginDate = Calendar.getInstance();
             beginDate.add(Calendar.MONTH, -1);
             beginDate.set(Calendar.HOUR_OF_DAY, 0);
             beginDate.set(Calendar.MINUTE, 0);
             beginDate.set(Calendar.SECOND, 0);
             beginDate.set(Calendar.MILLISECOND, 0);
         }
-        endDate = Calendar.getInstance();
         endDate.set(Calendar.HOUR_OF_DAY, 23);
         endDate.set(Calendar.MINUTE, 59);
         endDate.set(Calendar.SECOND, 59);
@@ -133,6 +134,7 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 editor.putLong("filter_begin_time", beginDate.getTimeInMillis());
                 editor.putLong("filter_end_time", endDate.getTimeInMillis());
                 editor.commit();
+                editor.apply();
                 filterSelectable.onDateSelected(beginDate, endDate);
                 dismiss();
             }

@@ -95,7 +95,7 @@ public class PurposeFragment extends Fragment {
         }
         public void onBindViewHolder(final PurposeFragment.ViewHolder view, final int position) {
             view.tvPurposeName.setText(result.get(position).getDescription());
-            int resId = getResources().getIdentifier(result.get(position).getIcon(), "drawable", getContext().getPackageName());
+            final int resId = getResources().getIdentifier(result.get(position).getIcon(), "drawable", getContext().getPackageName());
             view.ivPurposeItem.setImageResource(resId);
             view.tvPurposeName.setText(result.get(position).getDescription());
             view.itemView.setOnClickListener(new View.OnClickListener() {
@@ -109,11 +109,25 @@ public class PurposeFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     transferDialog.show();
-                    transferDialog.setAccountOrPurpose(result.get(position).getId());
+                    transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
                     transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                         @Override
                         public void OnTransferDialogSave() {
-                            Toast.makeText(getContext(), " saved ", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "saved ", Toast.LENGTH_SHORT).show();
+                            transferDialog.dismiss();
+                        }
+                    });
+                }
+            });
+            view.tvGetMoney.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    transferDialog.show();
+                    transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
+                    transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+                        @Override
+                        public void OnTransferDialogSave() {
+                            Toast.makeText(getContext(), "saved ", Toast.LENGTH_SHORT).show();
                             transferDialog.dismiss();
                         }
                     });

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +38,7 @@ import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.FilterDialog;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
 
 import java.text.SimpleDateFormat;
@@ -70,12 +72,17 @@ public class AccountInfoFragment extends Fragment {
 	OperationsListDialog operationsListDialog;
 	@Inject
 	FilterDialog filterDialog;
+	@Inject
+	TransferDialog transferDialog;
 	private Account account;
 	private FABIcon fabAccountIcon;
 	private TextView tvAccountNameInfo;
 	private TextView tvAccountConfigurationInfo;
 	private RecyclerView rvAccountDetailsInfo;
 	private ImageView ivAccountInfoOperationsFilter;
+	private TextView getPay;
+	private TextView sendPay;
+
 	@SuppressLint("ValidFragment")
 	public AccountInfoFragment(Account account) {
 		this.account = account;
@@ -103,6 +110,8 @@ public class AccountInfoFragment extends Fragment {
 			}
 		});
 
+		getPay = (TextView) rootView.findViewById(R.id.tvAccountInfoReplanish);
+		sendPay = (TextView) rootView.findViewById(R.id.tvAccountInfoToCash);
 
 		fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon);
 		tvAccountNameInfo = (TextView) rootView.findViewById(R.id.tvAccountNameInfo);
@@ -139,6 +148,36 @@ public class AccountInfoFragment extends Fragment {
 				filterDialog.show();
 			}
 		});
+		getPay.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				transferDialog.show();
+				transferDialog.setAccountOrPurpose(account.getId(), false);
+				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+					@Override
+					public void OnTransferDialogSave() {
+						Toast.makeText(getContext(), "saved", Toast.LENGTH_LONG).show();
+						transferDialog.dismiss();
+					}
+				});
+			}
+		});
+		sendPay.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				transferDialog.show();
+				transferDialog.setAccountOrPurpose(account.getId(), true);
+				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+					@Override
+					public void OnTransferDialogSave() {
+						Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
+						transferDialog.dismiss();
+					}
+				});
+			}
+		});
+		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+		rvAccountDetailsInfo.setLayoutManager(layoutManager);
 		refreshOperationsList();
 		return rootView;
 	}
@@ -173,6 +212,7 @@ public class AccountInfoFragment extends Fragment {
 	private void refreshOperationsList() {
 		List<ReportObject> objects = reportManager.getAccountOperations(account, account.getCalendar(), Calendar.getInstance());
 		AccountOperationsAdapter accountOperationsAdapter = new AccountOperationsAdapter(objects);
+		Log.d("sss", "" + objects.size());
 		rvAccountDetailsInfo.setAdapter(accountOperationsAdapter);
 	}
 

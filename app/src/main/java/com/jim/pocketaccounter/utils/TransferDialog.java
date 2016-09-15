@@ -21,6 +21,7 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.managers.LogicManager;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class TransferDialog extends Dialog {
     private int firstPos = 0;
     private int secondPos = 1;
 
-    public void setAccountOrPurpose(String id) {
+    public void setAccountOrPurpose(String id, boolean type) {
         if (id != null) {
             final List<String> first = new ArrayList<>();
             for (Account account : daoSession.getAccountDao().loadAll())
@@ -119,7 +120,9 @@ public class TransferDialog extends Dialog {
             final List<String> second = new ArrayList<>();
             firstAdapter = new TransferAccountAdapter(getContext(), first);
             spTransferFirst.setAdapter(firstAdapter);
-            spTransferFirst.setSelection(selectedPos);
+            if (type) {
+                spTransferFirst.setSelection(selectedPos);
+            }
             spTransferFirst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long pos) {
@@ -129,8 +132,9 @@ public class TransferDialog extends Dialog {
                         if (!id.matches(firstId))
                             second.add(id);
                     }
-                    if (i == spTransferFirst.getSelectedItemPosition()) {
+                    if (i == spTransferSecond.getSelectedItemPosition()) {
                         spTransferSecond.setSelection(firstPos);
+                        secondPos = firstPos;
                     } else {
                         firstPos = i;
                     }
@@ -139,11 +143,15 @@ public class TransferDialog extends Dialog {
             });
             secondAdapter = new TransferAccountAdapter(getContext(), first);
             spTransferSecond.setAdapter(secondAdapter);
+            if (!type) {
+                spTransferSecond.setSelection(selectedPos);
+            }
             spTransferSecond.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (position == spTransferFirst.getSelectedItemPosition()) {
                         spTransferFirst.setSelection(secondPos);
+                        firstPos = secondPos;
                     } else {
                         secondPos = position;
                     }
@@ -176,7 +184,7 @@ public class TransferDialog extends Dialog {
                                 .get(spTransferSecond.getSelectedItemPosition()).getId());
                     } else {
                         accountOperation.setTargetId(daoSession.getPurposeDao().loadAll()
-                                .get(spTransferFirst.getSelectedItemPosition() - daoSession.getAccountDao().loadAll().size()).getId());
+                                .get(spTransferSecond.getSelectedItemPosition() - daoSession.getAccountDao().loadAll().size()).getId());
                     }
                     accountOperation.__setDaoSession(daoSession);
                     logicManager.insertAccountOperation(accountOperation);

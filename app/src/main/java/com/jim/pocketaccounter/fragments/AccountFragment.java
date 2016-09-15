@@ -30,6 +30,7 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.managers.CommonOperations;
@@ -40,6 +41,7 @@ import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FABIcon;
+import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -76,6 +78,8 @@ public class AccountFragment extends Fragment {
 	PAFragmentManager paFragmentManager;
 	@Inject
 	DrawerInitializer drawerInitializer;
+	@Inject
+	TransferDialog transferDialog;
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_layout, container, false);
@@ -158,6 +162,32 @@ public class AccountFragment extends Fragment {
 				}
 			});
 			view.tvContent.setText(text);
+			view.pay.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					transferDialog.show();
+					transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
+					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+						@Override
+						public void OnTransferDialogSave() {
+							Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
+						}
+					});
+				}
+			});
+			view.earn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					transferDialog.show();
+					transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
+					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+						@Override
+						public void OnTransferDialogSave() {
+							Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
+						}
+					});
+				}
+			});
         }
 
         public ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
@@ -171,13 +201,18 @@ public class AccountFragment extends Fragment {
         TextView tvAccountListName;
         TextView tvAccStartMoney;
         TextView tvContent;
-        View view;
+		TextView pay;
+		TextView earn;
+
+		View view;
         public ViewHolder(View view) {
             super(view);
             ivAccountListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
             tvAccStartMoney = (TextView) view.findViewById(R.id.tvAccStartMoney);
             tvAccountListName = (TextView) view.findViewById(R.id.tvAccountListName);
             tvContent = (TextView) view.findViewById(R.id.tvContent);
+			pay = (TextView) view.findViewById(R.id.tvAccountPay);
+			earn = (TextView) view.findViewById(R.id.tvAccountToEarn);
             this.view = view;
         }
     }
