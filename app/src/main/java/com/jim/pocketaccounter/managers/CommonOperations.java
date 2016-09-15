@@ -1,7 +1,12 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.Currency;
@@ -123,6 +128,20 @@ public class CommonOperations {
             b.add(Calendar.DAY_OF_MONTH, 1);
         }
         return countOfDays;
+    }
+
+    public  void ColorSubSeq(String text, String whichWordColor, String colorCode, TextView textView){
+        String textUpper=text.toUpperCase();
+        String whichWordColorUpper=whichWordColor.toUpperCase();
+        SpannableString ss = new SpannableString(text);
+        int strar=0;
+
+        while (textUpper.indexOf(whichWordColorUpper,strar)>=0&&whichWordColor.length()!=0) {
+            Log.d("filtering", "ColorSubSeq: "+strar);
+            ss.setSpan(new BackgroundColorSpan(Color.parseColor(colorCode)),textUpper.indexOf(whichWordColorUpper,strar), textUpper.indexOf(whichWordColorUpper,strar)+whichWordColorUpper.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            strar=textUpper.indexOf(whichWordColorUpper,strar)+whichWordColorUpper.length();
+        }
+        textView.setText(ss);
     }
 
 }

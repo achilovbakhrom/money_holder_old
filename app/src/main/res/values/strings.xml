@@ -1365,4 +1365,15 @@
         <item>year</item>
         <item>beetwen date</item>
     </string-array>
+
+    <string name="simple_recking">Daily recking</string>
+    <string name="credit_var">Credit</string>
+    <string name="debt_var">Debt</string>
+    <string name="borrow_var">Borrow</string>
+    <string name="credit_reckings_var">Credit recking</string>
+    <string name="debt_reckings_var">Debt recking</string>
+    <string name="borrow_reckings_var">Borrow recking</string>
+    <string name="type">Type:</string>
+    <string name="date_with_two_dots">Date:</string>
+
 </resources>

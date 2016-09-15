@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.jim.pocketaccounter.fragments.SearchFragment"
-    android:paddingTop="@dimen/ten_dp">
+    android:paddingTop="@dimen/six_dp">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyc_item_search"
