@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,6 @@ import com.jim.pocketaccounter.utils.FilterDialog;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.TransferDialog;
-
 import org.greenrobot.greendao.query.Query;
 
 import java.text.SimpleDateFormat;
@@ -233,9 +233,18 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         public void deleteOperation() {
             for (int i = tek.length - 1; i >= 0; i--) {
                 if (tek[i]) {
-                    purposes.remove(i);
+                    logicManager.deleteAccountOperation(allPurposes.get(allPurposes.indexOf(purposes.get(i))));
                 }
             }
+            allPurposes = (ArrayList<AccountOperation>) reportManager.getAccountOpertions(purpose);
+            purposes = (ArrayList<AccountOperation>) allPurposes.clone();
+            refreshFilterPurpose();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(2016, Calendar.JANUARY, 31);
+            calendar.add(Calendar.MONTH, 1);
+
+//            ReckingDao reckingDao = daoSession.getReckingDao();
+//            Query<Recking> reckingQuery = reckingDao.queryBuilder().join(Account.class, ReckingDao.Properties.AccountId)
         }
 
         public void refreshFilterPurpose() {
@@ -261,6 +270,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
 
             String name = "", sign = "";
             int color = 0;
+
             if (type == PocketAccounterGeneral.EXPENSE) {
                 Query query = daoSession.getAccountDao().queryBuilder()
                         .where(AccountDao.Properties.Id.eq(purposes.get(position).getTargetId())).build();
@@ -293,6 +303,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             view.amount.setText(sign + purposes.get(position).getAmount() + purposes.get(position).getCurrency().getAbbr());
             view.checkBox.setVisibility(View.GONE);
             view.accountName.setText(name);
+            view.itemView.setOnClickListener(null);
             if (MODE) {
                 view.checkBox.setVisibility(View.VISIBLE);
                 view.checkBox.setChecked(tek[position]);
@@ -300,6 +311,13 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         tek[position] = !tek[position];
+                    }
+                });
+                view.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        tek[position] = !tek[position];
+                        view.checkBox.setChecked(tek[position]);
                     }
                 });
             }

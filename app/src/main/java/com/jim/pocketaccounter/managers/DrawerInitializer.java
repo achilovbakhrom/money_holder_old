@@ -35,6 +35,7 @@ import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
+import com.jim.pocketaccounter.fragments.AutoMarketFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
@@ -361,7 +362,6 @@ public class DrawerInitializer {
         lvLeftMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-
                 if (fragmentManager.getFragmentManager().getBackStackEntryCount() == 0 && position == 0) {
                     pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                 } else {
@@ -391,11 +391,14 @@ public class DrawerInitializer {
                                 fragmentManager.displayFragment(new PurposeFragment());
                                 break;
                             case 6:
+                                fragmentManager.displayFragment(new AutoMarketFragment());
+                                break;
                             case 7:
                                 fragmentManager.displayFragment(new CreditTabLay());
                                 break;
                             case 8:
                                 fragmentManager.displayFragment(new DebtBorrowFragment());
+                                break;
                             case 9:
 //                                fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;

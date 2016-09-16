@@ -11,6 +11,8 @@ import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.AccountOperationDao;
+import com.jim.pocketaccounter.database.AutoMarket;
+import com.jim.pocketaccounter.database.AutoMarketDao;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
@@ -77,6 +79,7 @@ public class LogicManager {
     private PersonDao personDao;
     private ReckingDao reckingDao;
     private AccountOperationDao accountOperationDao;
+    private AutoMarketDao autoMarketDao;
 
     public LogicManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
@@ -95,6 +98,7 @@ public class LogicManager {
         personDao = daoSession.getPersonDao();
         reckingDao = daoSession.getReckingDao();
         accountOperationDao = daoSession.getAccountOperationDao();
+        autoMarketDao = daoSession.getAutoMarketDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -397,6 +401,21 @@ public class LogicManager {
     public int insertAccountOperation (AccountOperation accountOperation) {
         accountOperationDao.insertOrReplace(accountOperation);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deleteAccountOperation (AccountOperation accountOperation) {
+        accountOperationDao.delete(accountOperation);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int insertAutoMarket (AutoMarket autoMarket) {
+        autoMarketDao.insertOrReplace(autoMarket);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deleteAutoMarket (AutoMarket autoMarket) {
+        autoMarketDao.delete(autoMarket);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
     public double isLimitAccess(Account account, Calendar date) {

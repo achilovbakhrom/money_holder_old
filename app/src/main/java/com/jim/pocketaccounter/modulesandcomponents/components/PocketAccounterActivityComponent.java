@@ -78,6 +78,8 @@ public interface PocketAccounterActivityComponent {
     void inject(AddCreditFragment addCreditFragment);
     void inject(NotificationManagerCredit notificationManagerCredit);
     void inject(ToolbarManager toolbarManager);
+    void inject(AutoMarketFragment autoMarketFragment);
+    void inject(AddAutoMarketFragment addAutoMarketFragment);
     void inject(SearchFragment searchFragment);
     //    void inject(LogicManager logicManager);
 }
