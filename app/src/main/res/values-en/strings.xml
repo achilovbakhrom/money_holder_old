@@ -20,6 +20,7 @@
         <item>Share app</item>
         <item>Feedback</item>
         <item>Purpose</item>
+        <item>Auto</item>
     </string-array>
     <string-array name="cat_ids">
         <item>0</item>
@@ -47,12 +48,14 @@
         <item>Categories</item>
         <item>Accounts</item>
         <item>Purpose</item>
+        <item>Auto</item>
     </string-array>
     <string-array name="finance_subitem_icons">
         <item>drawer_currency</item>
         <item>drawer_category</item>
         <item>drawer_account</item>
         <item>drawer_purpose</item>
+        <item>drawer_auto</item>
     </string-array>
     <string-array name="debts_subitems">
         <item>Credits</item>

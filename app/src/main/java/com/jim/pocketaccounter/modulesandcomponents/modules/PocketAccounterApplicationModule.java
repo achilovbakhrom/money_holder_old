@@ -28,7 +28,6 @@ public class PocketAccounterApplicationModule {
 
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
-//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, "notes-db-encrypted");
         DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
         Database db = helper.getEncryptedWritableDb("super-secret");
         daoSession = new DaoMaster(db).newSession();
