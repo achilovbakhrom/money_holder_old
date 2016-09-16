@@ -1,31 +1,69 @@
 package com.jim.pocketaccounter.managers;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
 //import com.jim.pocketaccounter.debt.DebtBorrowFragment;
+import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
+import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
+import com.jim.pocketaccounter.syncbase.SyncBase;
+import com.jim.pocketaccounter.utils.CircleImageView;
+import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.navdrawer.LeftMenuAdapter;
 import com.jim.pocketaccounter.utils.navdrawer.LeftMenuItem;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
+import com.jim.pocketaccounter.utils.password.PasswordWindow;
+import com.jim.pocketaccounter.utils.record.RecordExpanseView;
+import com.jim.pocketaccounter.utils.record.RecordIncomesView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
+
 import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
+import static com.jim.pocketaccounter.PocketAccounter.reg;
 
 /**
  * Created by DEV on 28.08.2016.
@@ -36,6 +74,34 @@ public class DrawerInitializer {
     private LeftSideDrawer drawer;
     private ListView lvLeftMenu;
     private PAFragmentManager fragmentManager;
+
+
+    TextView userName, userEmail;
+    com.jim.pocketaccounter.utils.CircleImageView userAvatar;
+    SharedPreferences spref;
+    public static SyncBase mySync;
+
+    SharedPreferences.Editor ed;
+    private RelativeLayout rlRecordsMain, rlRecordIncomes, rlRecordBalance;
+    private TextView tvRecordIncome, tvRecordBalanse, tvRecordExpanse;
+    private ImageView ivToolbarMostRight, ivToolbarExcel;
+    private RecordExpanseView expanseView;
+    private RecordIncomesView incomeView;
+    private PasswordWindow pwPassword;
+    private Spinner spToolbar;
+    boolean downloadnycCanRest = true;
+    public static boolean isCalcLayoutOpen = false;
+    Uri imageUri;
+    ImageView fabIconFrame;
+    public static final int key_for_restat = 10101;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReferenceFromUrl("gs://pocket-accounter.appspot.com");
+    DownloadImageTask imagetask;
+    View mainRoot;
+    private AnimationDrawable mAnimationDrawable;
+    private NotificationManagerCredit notific;
+    boolean keyFromCalc=false;
+
     public DrawerInitializer(PocketAccounter pocketAccounter, PAFragmentManager fragmentManager) {
         this.pocketAccounter = pocketAccounter;
         this.fragmentManager = fragmentManager;
@@ -57,178 +123,194 @@ public class DrawerInitializer {
         String[] debtSubItemTitles = pocketAccounter.getResources().getStringArray(R.array.debts_subitems);
         String[] debtSubItemIcons = pocketAccounter.getResources().getStringArray(R.array.debts_subitem_icons);
         List<LeftMenuItem> items = new ArrayList<>();
+        spref = pocketAccounter.getSharedPreferences("infoFirst", pocketAccounter.MODE_PRIVATE);
+        mySync = new SyncBase(storageRef, pocketAccounter, "PocketAccounterDatabase");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            userName.setText(user.getDisplayName());
+            userEmail.setText(user.getEmail());
+            try {
+                if (user.getPhotoUrl() != null) {
+                    imagetask = new DownloadImageTask(userAvatar);
+                    imagetask.execute(user.getPhotoUrl().toString());
+                    imageUri = user.getPhotoUrl();
+                }
+            } catch (Exception o) {
 
-//        userAvatar = (CircleImageView) findViewById(R.id.userphoto);
-//        userName = (TextView) findViewById(R.id.tvToolbarName);
-//        userEmail = (TextView) findViewById(R.id.tvGoogleMail);
-//
-//        FABIcon fabIcon = (FABIcon) findViewById(R.id.fabDrawerNavIcon);
-//        fabIconFrame = (ImageView) findViewById(R.id.iconFrameForAnim);
-//
-//        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//
-//        } else
-//            fabIconFrame.setBackgroundResource(R.drawable.cloud_sign_in);
-//
-//
-//        reg = new SignInGoogleMoneyHold(PocketAccounter.this, new SignInGoogleMoneyHold.UpdateSucsess() {
-//            @Override
-//            public void updateToSucsess() {
-//                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                if (user != null) {
-//                    imagetask = new DownloadImageTask(userAvatar);
-//                    userName.setText(user.getDisplayName());
-//                    userEmail.setText(user.getEmail());
-//                    if (user.getPhotoUrl() != null) {
-//                        try {
-//                            imagetask.execute(user.getPhotoUrl().toString());
-//
-//                        } catch (Exception o) {
-//                        }
-//                        imageUri = user.getPhotoUrl();
-//                    }
-//
-//                    showProgressDialog(getString(R.string.cheking_user));
-//                    PocketAccounter.mySync.meta_Message(user.getUid(), new SyncBase.ChangeStateLisMETA() {
-//                        @Override
-//                        public void onSuccses(final long inFormat) {
-//                            hideProgressDialog();
-//                            Date datee = new Date();
-//                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//                            datee.setTime(inFormat);
-//                            final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(PocketAccounter.this);
-//                            builder.setMessage(getString(R.string.sync_last_data_sign_up) + (new SimpleDateFormat("dd.MM.yyyy kk:mm")).format(datee))
-//                                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialog, int id) {
-//                                            showProgressDialog(getString(R.string.download));
-//                                            PocketAccounter.mySync.downloadLast(user.getUid(), new SyncBase.ChangeStateLis() {
-//                                                @Override
-//                                                public void onSuccses() {
-//                                                    runOnUiThread(new Runnable() {
-//                                                        @Override
-//                                                        public void run() {
-//                                                            hideProgressDialog();
-//                                                            PocketAccounter.financeManager = new FinanceManager(PocketAccounter.this);
-//                                                            initialize(new GregorianCalendar());
-//                                                            if (!drawer.isClosed()) {
-//                                                                drawer.close();
-//                                                            }
-//                                                        }
-//                                                    });
-//                                                }
-//
-//                                                @Override
-//                                                public void onFailed(String e) {
-//                                                    hideProgressDialog();
-//                                                }
-//                                            });
-//                                        }
-//                                    }).setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    hideProgressDialog();
-//                                    dialog.cancel();
-//
-//                                }
-//                            });
-//                            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//                                @Override
-//                                public void onCancel(DialogInterface dialog) {
-//                                    hideProgressDialog();
-//                                }
-//                            });
-//                            builder.create().show();
-//                        }
-//
-//                        @Override
-//                        public void onFailed(Exception e) {
-//                            hideProgressDialog();
-//                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//
-//                        }
-//                    });
-//                }
-//            }
-//
-//            @Override
-//            public void updateToFailed() {
-//                userName.setText(R.string.try_later);
-//                userEmail.setText(R.string.err_con);
-//            }
-//        });
-//
-//        fabIcon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final FirebaseUser userim = FirebaseAuth.getInstance().getCurrentUser();
-//                if (userim != null) {
-//
-//                    (new Handler()).postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(PocketAccounter.this);
-//                            builder.setMessage(R.string.sync_message)
-//                                    .setPositiveButton(R.string.sync_short, new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialog, int id) {
-//                                            mAnimationDrawable.start();
+            }
+        }
+
+        userAvatar = (CircleImageView) pocketAccounter.findViewById(R.id.userphoto);
+        userName = (TextView) pocketAccounter.findViewById(R.id.tvToolbarName);
+        userEmail = (TextView) pocketAccounter.findViewById(R.id.tvGoogleMail);
+
+        FABIcon fabIcon = (FABIcon) pocketAccounter.findViewById(R.id.fabDrawerNavIcon);
+        fabIconFrame = (ImageView) pocketAccounter.findViewById(R.id.iconFrameForAnim);
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+
+        } else
+            fabIconFrame.setBackgroundResource(R.drawable.cloud_sign_in);
+
+
+        reg = new SignInGoogleMoneyHold(pocketAccounter, new SignInGoogleMoneyHold.UpdateSucsess() {
+            @Override
+            public void updateToSucsess() {
+                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    imagetask = new DownloadImageTask(userAvatar);
+                    userName.setText(user.getDisplayName());
+                    userEmail.setText(user.getEmail());
+                    if (user.getPhotoUrl() != null) {
+                        try {
+                            imagetask.execute(user.getPhotoUrl().toString());
+
+                        } catch (Exception o) {
+                        }
+                        imageUri = user.getPhotoUrl();
+                    }
+
+                    showProgressDialog(pocketAccounter.getString(R.string.cheking_user));
+                    PocketAccounter.mySync.meta_Message(user.getUid(), new SyncBase.ChangeStateLisMETA() {
+                        @Override
+                        public void onSuccses(final long inFormat) {
+                            hideProgressDialog();
+                            Date datee = new Date();
+                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+                            datee.setTime(inFormat);
+                            final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(pocketAccounter);
+                            builder.setMessage(pocketAccounter.getString(R.string.sync_last_data_sign_up) + (new SimpleDateFormat("dd.MM.yyyy kk:mm")).format(datee))
+                                    .setPositiveButton(pocketAccounter.getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            showProgressDialog(pocketAccounter.getString(R.string.download));
+                                            PocketAccounter.mySync.downloadLast(user.getUid(), new SyncBase.ChangeStateLis() {
+                                                @Override
+                                                public void onSuccses() {
+                                                    pocketAccounter.runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            hideProgressDialog();
+                                                            fragmentManager.initialize(new GregorianCalendar());
+                                                            if (!drawer.isClosed()) {
+                                                                drawer.close();
+                                                            }
+                                                        }
+                                                    });
+                                                }
+
+                                                @Override
+                                                public void onFailed(String e) {
+                                                    hideProgressDialog();
+                                                }
+                                            });
+                                        }
+                                    }).setNegativeButton(pocketAccounter.getString(R.string.no), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    hideProgressDialog();
+                                    dialog.cancel();
+
+                                }
+                            });
+                            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    hideProgressDialog();
+                                }
+                            });
+                            builder.create().show();
+                        }
+
+                        @Override
+                        public void onFailed(Exception e) {
+                            hideProgressDialog();
+                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void updateToFailed() {
+                userName.setText(R.string.try_later);
+                userEmail.setText(R.string.err_con);
+            }
+        });
+
+        fabIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final FirebaseUser userim = FirebaseAuth.getInstance().getCurrentUser();
+                if (userim != null) {
+
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(pocketAccounter);
+                            builder.setMessage(R.string.sync_message)
+                                    .setPositiveButton(R.string.sync_short, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            mAnimationDrawable.start();
 //                                            financeManager.saveAllDatas();
-//                                            mySync.uploadBASE(userim.getUid(), new SyncBase.ChangeStateLis() {
-//                                                @Override
-//                                                public void onSuccses() {
-//                                                    mAnimationDrawable.stop();
-//                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_sucsess);
-//                                                    (new Handler()).postDelayed(new Runnable() {
-//                                                        @Override
-//                                                        public void run() {
-//
-//                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//
-//                                                        }
-//                                                    }, 2000);
-//                                                }
-//
-//                                                @Override
-//                                                public void onFailed(String e) {
-//                                                    mAnimationDrawable.stop();
-//                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_error);
-//                                                    (new Handler()).postDelayed(new Runnable() {
-//                                                        @Override
-//                                                        public void run() {
-//                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//
-//                                                        }
-//                                                    }, 2000);
-//                                                }
-//                                            });
-//
-//                                        }
-//                                    }).setNegativeButton(getString(R.string.cancel1), new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    dialog.cancel();
-//                                }
-//                            });
-//                            builder.create().show();
-//                        }
-//                    }, 150);
-//                } else {
-//                    drawer.close();
-//                    (new Handler()).postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (spref.getBoolean("FIRSTSYNC", true)) {
-//                                reg.openDialog();
-//                            } else
-//                                reg.regitUser();
-//                        }
-//                    }, 150);
-//                }
-//            }
-//        });
+                                            mySync.uploadBASE(userim.getUid(), new SyncBase.ChangeStateLis() {
+                                                @Override
+                                                public void onSuccses() {
+                                                    mAnimationDrawable.stop();
+                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_sucsess);
+                                                    (new Handler()).postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+
+                                                        }
+                                                    }, 2000);
+                                                }
+
+                                                @Override
+                                                public void onFailed(String e) {
+                                                    mAnimationDrawable.stop();
+                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_error);
+                                                    (new Handler()).postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+
+                                                        }
+                                                    }, 2000);
+                                                }
+                                            });
+
+                                        }
+                                    }).setNegativeButton(pocketAccounter.getString(R.string.cancel1), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    }, 150);
+                } else {
+                    drawer.close();
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (spref.getBoolean("FIRSTSYNC", true)) {
+                                reg.openDialog();
+                            } else
+                                reg.regitUser();
+                        }
+                    }, 150);
+                }
+            }
+        });
+
         LeftMenuItem main = new LeftMenuItem(cats[0], R.drawable.drawer_home);
         main.setGroup(true);
         items.add(main);
@@ -378,5 +460,100 @@ public class DrawerInitializer {
                 }, 170);
             }
         });
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        CircleImageView bmImage;
+
+        public DownloadImageTask(CircleImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            File file = new File(pocketAccounter.getFilesDir(), "userphoto.jpg");
+            if (file.exists()) {
+                bmImage.setImageURI(Uri.parse(file.getAbsolutePath()));
+            }
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+
+            for (; true; ) {
+                try {
+                    InputStream in = new java.net.URL(urldisplay).openStream();
+                    mIcon11 = BitmapFactory.decodeStream(in);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                if (isCancelled()) break;
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            if (result != null) {
+                downloadnycCanRest = false;
+                bmImage.setImageBitmap(result);
+                File file = new File(pocketAccounter.getFilesDir(), "userphoto.jpg");
+                FileOutputStream out = null;
+
+                try {
+                    out = new FileOutputStream(file);
+                    result.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (out != null) {
+                            out.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+    private ProgressDialog mProgressDialog;
+    public void showProgressDialog(String message) {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(pocketAccounter);
+            mProgressDialog.setMessage(message);
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.hide();
+        }
+    }
+
+    public void onStopSuniy(){
+
+
+        try {
+
+            if (imagetask != null)
+                imagetask.cancel(true);
+            if (imagetask != null) {
+                imagetask.cancel(true);
+                imagetask = null;
+            }
+        } catch (Exception o) {
+
+        }
     }
 }

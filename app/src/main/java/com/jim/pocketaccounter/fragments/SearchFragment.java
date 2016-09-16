@@ -1,14 +1,17 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,16 +23,27 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.credit.LinearManagerWithOutEx;
+import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.ReckingCreditDao;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.SearchResultConten;
+
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -77,7 +91,7 @@ public class SearchFragment extends Fragment {
     }
     String[] tempIcons;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         rvSearchItems =(RecyclerView) view.findViewById(R.id.recyc_item_search);
@@ -85,7 +99,16 @@ public class SearchFragment extends Fragment {
         rvSearchItems.setLayoutManager(llm);
         rvSearchItems.setAdapter(rvAdapterSearch);
         tempIcons = getResources().getStringArray(R.array.icons);
-
+        rvSearchItems.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_MOVE){
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(container.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
 
 
         return view;
@@ -93,9 +116,31 @@ public class SearchFragment extends Fragment {
 
     public void changeListForResult(String searchSt){
         List<SearchResultConten> searchItemsToSend=new ArrayList<>();
-        searchItemsToSend.add(new SearchResultConten("Vasiya",44.5d,DEBT_RECKING, Calendar.getInstance(),"1","icons_14","Nimadir qilgon erdim",new Currency("Dollar","P","asda",false)));
-        searchItemsToSend.add(new SearchResultConten("Vasiya",44.5d,CREDIT_VAR, Calendar.getInstance(),"1",null,"Nimadir qilgon erdim",new Currency("Dollar","P","asda",false)));
-        searchItemsToSend.add(new SearchResultConten("Motor",-25d,SIMPLE_RECKING, Calendar.getInstance(),"1","icons_14",null,new Currency("Dollar","$","asda",false)));
+//        searchItemsToSend.add(new SearchResultConten("Vasiya",44.5d,DEBT_RECKING, Calendar.getInstance(),"1","icons_14","Nimadir qilgon erdim",new Currency("Dollar","P","asda",false)));
+//        searchItemsToSend.add(new SearchResultConten("Vasiya",44.5d,CREDIT_VAR, Calendar.getInstance(),"1",null,"Nimadir qilgon erdim",new Currency("Dollar","P","asda",false)));
+//        searchItemsToSend.add(new SearchResultConten("Motor",-25d,SIMPLE_RECKING, Calendar.getInstance(),"1","icons_14",null,new Currency("Dollar","$","asda",false)));
+
+        QueryBuilder<CreditDetials> queryBuilderCred=daoSession.getCreditDetialsDao().queryBuilder();
+        queryBuilderCred.whereOr(CreditDetialsDao.Properties.Credit_name.like("%" + searchSt + "%"),
+                CreditDetialsDao.Properties.Value_of_credit_with_procent.like("%" + searchSt + "%"));
+        List<CreditDetials> cd=queryBuilderCred.build().list();
+        for (CreditDetials temp:cd) {
+            searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(),temp.getValue_of_credit_with_procent(),CREDIT_VAR,temp.getTake_time(),temp,temp.getIcon_ID(),(temp.isKey_for_include())?"This credit include the balance":"This Credit Not include the balance",temp.getValyute_currency()));
+        }
+
+        QueryBuilder<ReckingCredit> queryBuilder=daoSession.getReckingCreditDao().queryBuilder();
+        queryBuilder.whereOr(ReckingCreditDao.Properties.Comment.like("%" + searchSt + "%"),
+                ReckingCreditDao.Properties.Amount.like("%" + searchSt + "%"),
+                queryBuilder.join(ReckingCreditDao.Properties.MyCredit_id,CreditDetials.class, CreditDetialsDao.Properties.MyCredit_id).or(CreditDetialsDao.Properties.Credit_name.like("%" + searchSt + "%"),CreditDetialsDao.Properties.Credit_name.like("%" + searchSt + "%")));
+        List<ReckingCredit> rk=queryBuilder.build().list();
+        for (ReckingCredit temp:rk) {
+            CreditDetials creditDetialse=daoSession.getCreditDetialsDao().load(temp.getMyCredit_id());
+            Calendar calen=new GregorianCalendar();
+            calen.setTimeInMillis(temp.getPayDate());
+            searchItemsToSend.add(new SearchResultConten(creditDetialse.getCredit_name(),temp.getAmount(),CREDIT_RECKING, calen,temp,creditDetialse.getIcon_ID(),temp.getComment(),creditDetialse.getValyute_currency()));
+        }
+
+
 
 //        FinanceRecordDao reckingDao = daoSession.getFinanceRecordDao();
 //        CreditDetialsDao creditDetials = daoSession.getCreditDetialsDao();
