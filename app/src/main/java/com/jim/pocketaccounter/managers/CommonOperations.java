@@ -1,7 +1,14 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.BackgroundColorSpan;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.Currency;

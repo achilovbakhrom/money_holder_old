@@ -1379,5 +1379,7 @@
     <string name="borrow_reckings_var">Borrow recking</string>
     <string name="type">Type:</string>
     <string name="date_with_two_dots">Date:</string>
+    <string name="accountdo">Account:</string>
+    <string name="not_exist">Not exist</string>
 
 </resources>

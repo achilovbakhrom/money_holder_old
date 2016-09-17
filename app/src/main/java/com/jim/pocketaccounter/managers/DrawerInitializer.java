@@ -198,7 +198,7 @@ public class DrawerInitializer {
                                                         @Override
                                                         public void run() {
                                                             hideProgressDialog();
-                                                            fragmentManager.initialize(new GregorianCalendar());
+//                                                            fragmentManager.initialize(new GregorianCalendar());
                                                             if (!drawer.isClosed()) {
                                                                 drawer.close();
                                                             }
@@ -261,60 +261,61 @@ public class DrawerInitializer {
                                         public void onClick(DialogInterface dialog, int id) {
                                             mAnimationDrawable.start();
 //                                            financeManager.saveAllDatas();
-//                                            mySync.uploadBASE(userim.getUid(), new SyncBase.ChangeStateLis() {
-//                                                @Override
-//                                                public void onSuccses() {
-//                                                    mAnimationDrawable.stop();
-//                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_sucsess);
-//                                                    (new Handler()).postDelayed(new Runnable() {
-//                                                        @Override
-//                                                        public void run() {
-//
-//                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//
-//                                                        }
-//                                                    }, 2000);
-//                                                }
-//
-//                                                @Override
-//                                                public void onFailed(String e) {
-//                                                    mAnimationDrawable.stop();
-//                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_error);
-//                                                    (new Handler()).postDelayed(new Runnable() {
-//                                                        @Override
-//                                                        public void run() {
-//                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
-//                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
-//
-//                                                        }
-//                                                    }, 2000);
-//                                                }
-//                                            });
-//
-//                                        }
-//                                    }).setNegativeButton(getString(R.string.cancel1), new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    dialog.cancel();
-//                                }
-//                            });
-//                            builder.create().show();
-//                        }
-//                    }, 150);
-//                } else {
-//                    drawer.close();
-//                    (new Handler()).postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (spref.getBoolean("FIRSTSYNC", true)) {
-//                                reg.openDialog();
-//                            } else
-//                                reg.regitUser();
-//                        }
-//                    }, 150);
-//                }
-//            }
-//        });
+                                            mySync.uploadBASE(userim.getUid(), new SyncBase.ChangeStateLis() {
+                                                @Override
+                                                public void onSuccses() {
+                                                    mAnimationDrawable.stop();
+                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_sucsess);
+                                                    (new Handler()).postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+
+                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+
+                                                        }
+                                                    }, 2000);
+                                                }
+
+                                                @Override
+                                                public void onFailed(String e) {
+                                                    mAnimationDrawable.stop();
+                                                    fabIconFrame.setBackgroundResource(R.drawable.cloud_error);
+                                                    (new Handler()).postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            fabIconFrame.setBackgroundResource(R.drawable.cloud_anim);
+                                                            mAnimationDrawable = (AnimationDrawable) fabIconFrame.getBackground();
+
+                                                        }
+                                                    }, 2000);
+                                                }
+                                            });
+
+                                        }
+                                    }).setNegativeButton(pocketAccounter.getString(R.string.cancel1), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                            builder.create().show();
+                        }
+                    }, 150);
+                } else {
+                    drawer.close();
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (spref.getBoolean("FIRSTSYNC", true)) {
+                                reg.openDialog();
+                            } else
+                                reg.regitUser();
+                        }
+                    }, 150);
+                }
+            }
+        });
+
         LeftMenuItem main = new LeftMenuItem(cats[0], R.drawable.drawer_home);
         main.setGroup(true);
         items.add(main);

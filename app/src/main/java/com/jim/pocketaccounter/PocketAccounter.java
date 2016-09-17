@@ -108,7 +108,6 @@ public class PocketAccounter extends AppCompatActivity {
         }
         return component;
     }
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +118,7 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.init();
         date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize(date);
+        paFragmentManager.initialize(date,date);
         dataCache.getCategoryEditFragmentDatas().setDate(date);
 
 
@@ -189,7 +188,6 @@ public class PocketAccounter extends AppCompatActivity {
         return date;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);

@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.utils;
 import android.content.Context;
 
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 
 import java.util.Calendar;
@@ -22,10 +23,11 @@ public class SearchResultConten {
     private Object object;
     private String icon;
     private Currency currency;
+    private Account account;
     private int icon_Id;
 
 
-    public SearchResultConten(String stNameOfItem, double dAmount, int stTypeSearch, Calendar date, Object object, String icon, String comment, Currency currency) {
+    public SearchResultConten(String stNameOfItem, double dAmount, int stTypeSearch, Calendar date, Object object, String icon, String comment, Currency currency,Account account) {
         this.stNameOfItem = stNameOfItem;
         this.dAmount = dAmount;
         this.stTypeSearch = stTypeSearch;
@@ -35,9 +37,9 @@ public class SearchResultConten {
         this.icon=icon;
         this.currency=currency;
         this.icon_Id=0;
-
+        this.account=account;
     }
-    public SearchResultConten(String stNameOfItem, double dAmount, int stTypeSearch, Calendar date, Object object, int icon, String comment, Currency currency) {
+    public SearchResultConten(String stNameOfItem, double dAmount, int stTypeSearch, Calendar date, Object object, int icon, String comment, Currency currency,Account account) {
         this.stNameOfItem = stNameOfItem;
         this.dAmount = dAmount;
         this.stTypeSearch = stTypeSearch;
@@ -47,9 +49,11 @@ public class SearchResultConten {
         this.icon=null;
         this.currency=currency;
         this.icon_Id=icon;
-
+        this.account=account;
     }
 
+    public Account getAccount() {  return account;    }
+    public void setAccount(Account account) {        this.account = account;    }
     public boolean isItIconWithId(){
         return (icon==null)&&(icon_Id!=0);
     }

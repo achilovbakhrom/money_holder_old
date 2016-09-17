@@ -145,11 +145,52 @@
                             android:layout_alignTop="@+id/linearLayout7"
                             android:layout_alignBottom="@+id/linearLayout7" />
                     </RelativeLayout>
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingLeft="@dimen/ten_dp"
-                        android:layout_marginBottom="@dimen/six_dp"
+                        android:id="@+id/relativeLayout6">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+
+                            android:id="@+id/linearLayout9"
+                            android:layout_alignParentLeft="true"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentStart="true">
+
+
+                            <TextView
+                                android:id="@+id/acct"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="@string/accountdo"
+                                android:textSize="@dimen/sixteen_dp"
+                                android:textColor="@color/black_for_glavniy_text"/>
+
+
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/accountName"
+                            android:text="@string/not_exist"
+                            android:textSize="@dimen/sixteen_dp"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="@dimen/sixteen_dp"
+                            android:gravity="top|right"
+                            android:layout_alignTop="@+id/linearLayout9"
+                            android:layout_alignBottom="@+id/linearLayout9" />
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/ten_dp"
+                        android:layout_marginBottom="@dimen/ten_dp"
                         android:id="@+id/relativeLayout5">
                         <LinearLayout
                             android:layout_width="wrap_content"

@@ -27,8 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.antonyt.infiniteviewpager.InfinitePagerAdapter;
-import com.antonyt.infiniteviewpager.InfiniteViewPager;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
@@ -188,6 +186,7 @@ public class PAFragmentManager {
 
     public void displayMainWindow() {
 //        main.setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.rlRecordTable).setVisibility(View.VISIBLE);
         PRESSED = false;
         if (fragmentManager.getBackStackEntryCount() != 0) {
             for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++)
@@ -202,7 +201,7 @@ public class PAFragmentManager {
     }
 
     public void displayFragment(Fragment fragment) {
-        activity.findViewById(R.id.main).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.rlRecordTable).setVisibility(View.GONE);
         if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;
@@ -215,7 +214,7 @@ public class PAFragmentManager {
     }
 
     public void displayFragment(Fragment fragment, String tag) {
-        activity.findViewById(R.id.main).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.rlRecordTable).setVisibility(View.GONE);
         if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;

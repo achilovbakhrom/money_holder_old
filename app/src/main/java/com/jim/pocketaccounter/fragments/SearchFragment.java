@@ -23,6 +23,8 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.credit.LinearManagerWithOutEx;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.Currency;
@@ -125,19 +127,20 @@ public class SearchFragment extends Fragment {
                 CreditDetialsDao.Properties.Value_of_credit_with_procent.like("%" + searchSt + "%"));
         List<CreditDetials> cd=queryBuilderCred.build().list();
         for (CreditDetials temp:cd) {
-            searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(),temp.getValue_of_credit_with_procent(),CREDIT_VAR,temp.getTake_time(),temp,temp.getIcon_ID(),(temp.isKey_for_include())?"This credit include the balance":"This Credit Not include the balance",temp.getValyute_currency()));
+            searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(),temp.getValue_of_credit_with_procent(),CREDIT_VAR,temp.getTake_time(),temp,temp.getIcon_ID(),(temp.isKey_for_include())?"This credit include the balance":"This Credit Not include the balance",temp.getValyute_currency(),null));
         }
 
         QueryBuilder<ReckingCredit> queryBuilder=daoSession.getReckingCreditDao().queryBuilder();
         queryBuilder.whereOr(ReckingCreditDao.Properties.Comment.like("%" + searchSt + "%"),
                 ReckingCreditDao.Properties.Amount.like("%" + searchSt + "%"),
-                queryBuilder.join(ReckingCreditDao.Properties.MyCredit_id,CreditDetials.class, CreditDetialsDao.Properties.MyCredit_id).or(CreditDetialsDao.Properties.Credit_name.like("%" + searchSt + "%"),CreditDetialsDao.Properties.Credit_name.like("%" + searchSt + "%")));
+                queryBuilder.join(ReckingCreditDao.Properties.MyCredit_id,CreditDetials.class, CreditDetialsDao.Properties.MyCredit_id).or(CreditDetialsDao.Properties.Credit_name.like("%" + searchSt + "%"),queryBuilder.join(ReckingCreditDao.Properties.AccountId,Account.class, AccountDao.Properties.Id).or(AccountDao.Properties.Name.like("%" + searchSt + "%"),AccountDao.Properties.Name.like("%" + searchSt + "%"))));
         List<ReckingCredit> rk=queryBuilder.build().list();
         for (ReckingCredit temp:rk) {
             CreditDetials creditDetialse=daoSession.getCreditDetialsDao().load(temp.getMyCredit_id());
             Calendar calen=new GregorianCalendar();
             calen.setTimeInMillis(temp.getPayDate());
-            searchItemsToSend.add(new SearchResultConten(creditDetialse.getCredit_name(),temp.getAmount(),CREDIT_RECKING, calen,temp,creditDetialse.getIcon_ID(),temp.getComment(),creditDetialse.getValyute_currency()));
+            Account acc=daoSession.getAccountDao().load(temp.getAccountId());
+            searchItemsToSend.add(new SearchResultConten(creditDetialse.getCredit_name(),temp.getAmount(),CREDIT_RECKING, calen,temp,creditDetialse.getIcon_ID(),temp.getComment(),creditDetialse.getValyute_currency(),acc));
         }
 
 
@@ -175,6 +178,7 @@ public class SearchFragment extends Fragment {
         List<SearchResultConten> searchItems;
         Context context;
         String seq;
+        private final String COLOR_SEQ="#e2e2e2";
         public void setDataList(List<SearchResultConten> searchItems,Context context,String seq){
             this.searchItems=searchItems;
             this.context=context;
@@ -203,7 +207,7 @@ public class SearchFragment extends Fragment {
 
             /*Set date*/
             if(item.getMyDate()!=null)
-                comonOperation.ColorSubSeq(dateformarter.format(item.getMyDate().getTime()),seq,"#e2e2e2",holder.date);
+                comonOperation.ColorSubSeq(dateformarter.format(item.getMyDate().getTime()),seq,"COLOR_SEQ",holder.date);
 
             /*Set name of item*/
             comonOperation.ColorSubSeq(item.getStNameOfItem(),seq,"#e2e2e2",holder.name);
@@ -211,24 +215,24 @@ public class SearchFragment extends Fragment {
             /*Set item amount*/
             if(item.getdAmount()==0){
                 holder.ammount.setTextColor(Color.parseColor("#028929"));
-                comonOperation.ColorSubSeq(formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,"#e2e2e2",holder.ammount);
+                comonOperation.ColorSubSeq(formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,COLOR_SEQ,holder.ammount);
 
             }
             if (item.getdAmount()>0){
                 holder.ammount.setTextColor(Color.parseColor("#028929"));
-                comonOperation.ColorSubSeq("+"+formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,"#e2e2e2",holder.ammount);
+                comonOperation.ColorSubSeq("+"+formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,COLOR_SEQ,holder.ammount);
             }
             else {
-                comonOperation.ColorSubSeq(formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,"#e2e2e2",holder.ammount);
+                comonOperation.ColorSubSeq(formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,COLOR_SEQ,holder.ammount);
 
             }
             /*Set type*/
-            comonOperation.ColorSubSeq(item.getTypeInString(context),seq,"#e2e2e2",holder.type);
+            comonOperation.ColorSubSeq(item.getTypeInString(context),seq,COLOR_SEQ,holder.type);
 
             /*Set Comment*/
             if(item.getComment()!=null){
                 if(item.getComment().length()!=0)
-                    comonOperation.ColorSubSeq(item.getComment(),seq,"#e2e2e2",holder.comment);
+                    comonOperation.ColorSubSeq(item.getComment(),seq,COLOR_SEQ,holder.comment);
                 else {
                     holder.relativeLayout.setVisibility(View.GONE);
                     holder.forgoneLine.setVisibility(View.GONE);
@@ -307,6 +311,12 @@ public class SearchFragment extends Fragment {
 
             }
 
+            /*Account seting*/
+            if (item.getAccount()==null)
+            holder.ifNotHaveAccount.setVisibility(View.GONE);
+            else
+            comonOperation.ColorSubSeq(item.getAccount().getName(),seq,COLOR_SEQ,holder.accountName);
+
         }
 
         @Override
@@ -324,6 +334,8 @@ public class SearchFragment extends Fragment {
             FrameLayout forgoneLine;
             RelativeLayout relativeLayout;
             LinearLayout mainItemView;
+            TextView accountName;
+            RelativeLayout ifNotHaveAccount;
             SearchItemViewHolder(View itemView) {
                 super(itemView);
                 iconik=(ImageView) itemView.findViewById(R.id.ivRecordDetail);
@@ -332,9 +344,11 @@ public class SearchFragment extends Fragment {
                 type=(TextView) itemView.findViewById(R.id.type_search_item);
                 date=(TextView) itemView.findViewById(R.id.dateToSearch);
                 comment=(TextView) itemView.findViewById(R.id.tvComment);
+                accountName=(TextView) itemView.findViewById(R.id.accountName);
                 forgoneLine=(FrameLayout) itemView.findViewById(R.id.for_gone_a);
                 mainItemView=(LinearLayout) itemView.findViewById(R.id.mainview);
                 relativeLayout=(RelativeLayout) itemView.findViewById(R.id.visibleIfCommentHave);
+                ifNotHaveAccount=(RelativeLayout) itemView.findViewById(R.id.relativeLayout6);
             }
         }
     }
