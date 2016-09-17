@@ -1,7 +1,6 @@
 package com.jim.pocketaccounter;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
@@ -11,11 +10,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -32,7 +29,7 @@ import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.CircleImageView;
-import com.jim.pocketaccounter.utils.DataCache;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
 import com.jim.pocketaccounter.utils.password.PasswordWindow;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
@@ -66,7 +63,6 @@ public class PocketAccounter extends AppCompatActivity {
     private RecordExpanseView expanseView;
     private RecordIncomesView incomeView;
     private PasswordWindow pwPassword;
-    private Calendar date;
     private Spinner spToolbar;
     public static SignInGoogleMoneyHold reg;
     public static boolean isCalcLayoutOpen = false;
@@ -87,10 +83,7 @@ public class PocketAccounter extends AppCompatActivity {
     int WidgetID;
     public static boolean keyboardVisible=false;
     @Inject PAFragmentManager paFragmentManager;
-    @Inject DaoSession daoSession;
-    @Inject SharedPreferences preferences;
     @Inject ToolbarManager toolbarManager;
-    @Inject SettingsManager settingsManager;
     @Inject @Named(value = "display_formmatter") SimpleDateFormat format;
     @Inject DrawerInitializer drawerInitializer;
     @Inject DataCache dataCache;
@@ -114,12 +107,8 @@ public class PocketAccounter extends AppCompatActivity {
         setContentView(R.layout.pocket_accounter);
         component((PocketAccounterApplication) getApplication()).inject(this);
         toolbarManager.init();
-        date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize(date);
-        dataCache.getCategoryEditFragmentDatas().setDate(date);
-
-
+        paFragmentManager.initialize(dataCache.getBeginDate(), dataCache.getEndDate());
 //        mySync = new SyncBase(storageRef, this, "PocketAccounterDatabase");
 //        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 //        if (user != null) {
@@ -196,30 +185,24 @@ public class PocketAccounter extends AppCompatActivity {
 //            });}
     }
 
-    public Calendar getDate() {
-        return date;
+    private void initDates() {
+
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
-        toolbarManager.setSubtitle(format.format(date.getTime()));
-
+        toolbarManager.setSubtitle(format.format(dataCache.getEndDate().getTime()));
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {    drawerInitializer.getDrawer().openLeftSide();         }
         });
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
-        toolbarManager.setSearchView(drawerInitializer,format,paFragmentManager,findViewById(R.id.main));
+        toolbarManager.setSearchView(drawerInitializer, format, paFragmentManager, findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
-//        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
-
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
-
-
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -232,14 +215,14 @@ public class PocketAccounter extends AppCompatActivity {
                 ivDatePickOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.YEAR, dp.getYear());
-                        calendar.set(Calendar.MONTH, dp.getMonth());
-                        calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
-                        PocketAccounter.this.date = (Calendar) calendar.clone();
-                        dataCache.getCategoryEditFragmentDatas().setDate(date);
-                        paFragmentManager.displayMainWindow();
-                        dialog.dismiss();
+//                        Calendar calendar = Calendar.getInstance();
+//                        calendar.set(Calendar.YEAR, dp.getYear());
+//                        calendar.set(Calendar.MONTH, dp.getMonth());
+//                        calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
+//                        PocketAccounter.this.date = (Calendar) calendar.clone();
+//                        dataCache.getCategoryEditFragmentDatas().setDate(date);
+//                        paFragmentManager.displayMainWindow();
+//                        dialog.dismiss();
                     }
                 });
                 ImageView ivDatePickCancel = (ImageView) dialogView.findViewById(R.id.ivDatePickCancel);
@@ -255,11 +238,7 @@ public class PocketAccounter extends AppCompatActivity {
     }
 
 
-//
-//    public Calendar getDate() {
-//        return date;
-//    }
-//
+
 
 //
 //

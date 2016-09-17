@@ -11,9 +11,12 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.fragments.RecordEditFragment;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import android.annotation.SuppressLint;
@@ -55,9 +58,11 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	private Calendar date;
 	@Inject
 	DaoSession daoSession;
+	@Inject
+	PAFragmentManager paFragmentManager;
 	public RecordIncomesView(Context context, Calendar date) {
 		super(context);
-		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
+		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
 		gestureDetector = new GestureDetectorCompat(getContext(),this);
 		workspaceCornerRadius = getResources().getDimension(R.dimen.five_dp);
 		workspaceMargin = getResources().getDimension(R.dimen.twenty_dp);
@@ -173,33 +178,41 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-//		if (PocketAccounter.PRESSED) return false;
-//		int size = buttons.size();
-//		float x = e.getX();
-//		float y = e.getY();
-//		for (int i=0; i<size; i++) {
-//			if (buttons.get(i).getContainer().contains(x, y)) {
-//				buttons.get(i).setPressed(true);
-//				final int position = i;
-//				postDelayed(new Runnable() {
-//					@Override
-//					public void run() {
-//						RootCategory category;
-//						if(PocketAccounter.financeManager.getIncomes().isEmpty())
-//							category = null;
-//						else
-//							category = PocketAccounter.financeManager.getIncomes().get(position);
-//						if (category != null) {}
-////							((PocketAccounter) getContext()).replaceFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
-//						else
-//							openChooseDialog(position);
-//					}
-//				}, 250);
-//				invalidate();
-//				PocketAccounter.PRESSED = true;
-//				break;
-//			}
-//		}
+		if (PocketAccounter.PRESSED) return false;
+		int size = buttons.size();
+		float x = e.getX();
+		float y = e.getY();
+		for (int i=0; i<size; i++) {
+			if (buttons.get(i).getContainer().contains(x, y)) {
+				buttons.get(i).setPressed(true);
+				final int position = i;
+				postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						RootCategory category = null;
+						List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder()
+								.where(BoardButtonDao.Properties.Type.eq(PocketAccounterGeneral.INCOME))
+								.list();
+						if(boardButtons.get(position).getCategoryId() == null)
+							category = null;
+						else {
+							List<RootCategory> categoryList = daoSession.getRootCategoryDao().queryBuilder()
+									.where(RootCategoryDao.Properties.Id.eq(boardButtons.get(position).getCategoryId()))
+									.list();
+							if (!categoryList.isEmpty())
+								category = categoryList.get(0);
+						}
+						if (category != null)
+							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
+						else
+							openChooseDialog(position);
+					}
+				}, 250);
+				invalidate();
+				PocketAccounter.PRESSED = true;
+				break;
+			}
+		}
 		return false;
 	}
 
@@ -218,12 +231,15 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			if (buttons.get(i).getContainer().contains(x, y)) {
 				buttons.get(i).setPressed(true);
 				final int position = i;
-//				if (PocketAccounter.financeManager.getIncomes().get(position) == null) {
-//					for (int j=0; j<buttons.size(); j++)
-//						buttons.get(j).setPressed(false);
-//					invalidate();
-//					return;
-//				}
+				List<BoardButton> boardButtonList = daoSession.getBoardButtonDao()
+						.queryBuilder().where(BoardButtonDao.Properties.Type.eq(PocketAccounterGeneral.INCOME))
+						.list();
+				if (boardButtonList.get(position).getCategoryId() == null) {
+					for (int j=0; j<buttons.size(); j++)
+						buttons.get(j).setPressed(false);
+					invalidate();
+					return;
+				}
 				postDelayed(new Runnable() {
 					@Override
 					public void run() {

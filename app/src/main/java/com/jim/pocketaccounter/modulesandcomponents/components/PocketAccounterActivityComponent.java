@@ -24,17 +24,22 @@ import com.jim.pocketaccounter.fragments.CurrencyEditFragment;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
+import com.jim.pocketaccounter.fragments.MainPageFragment;
 import com.jim.pocketaccounter.fragments.PurposeEditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
+import com.jim.pocketaccounter.fragments.RecordDetailFragment;
+import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
+import com.jim.pocketaccounter.utils.record.RecordIncomesView;
 
 import dagger.Component;
 
@@ -77,5 +82,10 @@ public interface PocketAccounterActivityComponent {
     void inject(AddCreditFragment addCreditFragment);
     void inject(NotificationManagerCredit notificationManagerCredit);
     void inject(ToolbarManager toolbarManager);
+    void inject(RecordEditFragment recordEditFragment);
+    void inject(RecordDetailFragment recordDetailFragment);
+    void inject(RecordExpanseView recordExpanseView);
+    void inject(RecordIncomesView recordIncomesView);
+    void inject(MainPageFragment mainPageFragment);
     //    void inject(LogicManager logicManager);
 }

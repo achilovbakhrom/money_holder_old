@@ -5,13 +5,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.jim.pocketaccounter.PocketAccounterApplication;
-import com.jim.pocketaccounter.utils.DataCache;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.database.Database;
-
-import javax.inject.Inject;
 
 /**
  * Created by DEV on 27.08.2016.

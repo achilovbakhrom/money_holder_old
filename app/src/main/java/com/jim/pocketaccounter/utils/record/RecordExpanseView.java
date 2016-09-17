@@ -1,4 +1,5 @@
 package com.jim.pocketaccounter.utils.record;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,10 +11,19 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.fragments.RecordEditFragment;
+import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.LogicManager;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.WarningDialog;
+import com.jim.pocketaccounter.utils.cache.DataCache;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
@@ -42,6 +52,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import javax.inject.Inject;
 
 @SuppressLint("DrawAllocation")
@@ -52,11 +64,22 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private ArrayList<RecordButtonExpanse> buttons;
 	private GestureDetectorCompat gestureDetector;
 	private Calendar date;
+	private Canvas canvas;
 	@Inject
 	DaoSession daoSession;
+	@Inject
+	PAFragmentManager paFragmentManager;
+	@Inject
+	LogicManager logicManager;
+	@Inject
+	WarningDialog warningDialog;
+	@Inject
+	DataCache dataCache;
+	@Inject
+	CommonOperations commonOperations;
 	public RecordExpanseView(Context context, Calendar date) {
 		super(context);
-		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
+		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
 		this.date = (Calendar) date.clone();
 		gestureDetector = new GestureDetectorCompat(getContext(),this);
 		workspaceCornerRadius = getResources().getDimension(R.dimen.five_dp);
@@ -125,13 +148,15 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	}
 	@SuppressLint("DrawAllocation")
 	@Override
-	protected void onDraw(Canvas canvas) {
+	protected void onDraw(final Canvas canvas) {
 		super.onDraw(canvas);
+		this.canvas = canvas;
 		workspace = new RectF(workspaceMargin, workspaceMargin, getWidth()-workspaceMargin, getHeight()-workspaceMargin);
-		drawButtons(canvas);
-		drawWorkspaceShader(canvas);
+		drawButtons();
+		drawPercents();
+		drawWorkspaceShader();
 	}
-	private void drawButtons(Canvas canvas) {
+	private void drawButtons() {
 		float width, height;
 		width = workspace.width()/4;
 		height = workspace.height()/4;
@@ -146,7 +171,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		int buttonsCount = buttons.size();
 		for (int i=0; i<buttonsCount; i++)
 			buttons.get(i).drawButton(canvas);
-		
 		Paint borderPaint = new Paint();
 		borderPaint.setColor(ContextCompat.getColor(getContext(), R.color.belt_balanse));
 		borderPaint.setStrokeWidth(getResources().getDimension(R.dimen.one_dp));
@@ -154,8 +178,65 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			canvas.drawLine(workspace.left, workspace.top+(i+1)*width, workspace.right, workspace.top+(i+1)*width, borderPaint);
 			canvas.drawLine(workspace.left+(i+1)*width, workspace.top, workspace.left+(i+1)*width, workspace.bottom, borderPaint);
 		}
-	}	
-	private void drawWorkspaceShader(Canvas canvas) {
+	}
+	public void drawPercents() {
+		Calendar begin = (Calendar)dataCache.getEndDate().clone();
+		begin.set(Calendar.HOUR_OF_DAY, 0);
+		begin.set(Calendar.MINUTE, 0);
+		begin.set(Calendar.SECOND, 0);
+		begin.set(Calendar.MILLISECOND, 0);
+		Calendar end = (Calendar) begin.clone();
+		end.set(Calendar.HOUR_OF_DAY, 23);
+		end.set(Calendar.MINUTE, 59);
+		end.set(Calendar.SECOND, 59);
+		end.set(Calendar.MILLISECOND, 59);
+		for (int i = 0; i<buttons.size(); i++) {
+			if (buttons.get(i).getCategory() == null) continue;
+			List<FinanceRecord> byCategory = daoSession.getFinanceRecordDao()
+					.queryBuilder()
+					.where(FinanceRecordDao.Properties.CategoryId.eq(buttons.get(i).getCategory().getCategoryId()),
+							FinanceRecordDao.Properties.Date.ge(begin.getTimeInMillis()),
+							FinanceRecordDao.Properties.Date.le(end.getTimeInMillis()))
+					.list();
+			List<FinanceRecord> allDay = daoSession.getFinanceRecordDao()
+					.queryBuilder()
+					.where(	FinanceRecordDao.Properties.Date.ge(begin.getTimeInMillis()),
+							FinanceRecordDao.Properties.Date.le(end.getTimeInMillis()))
+					.list();
+			double amount = 0.0;
+			if (sum(allDay) != 0)
+				amount = 100*sum(byCategory)/sum(allDay);
+			if (amount != 0) {
+				DecimalFormat format = new DecimalFormat("0.00");
+				String text = format.format(amount)+"%";
+				Rect bounds = new Rect();
+				Paint textPaint = new Paint();
+				textPaint.setColor(ContextCompat.getColor(getContext(), R.color.toolbar_text_color));
+				textPaint.setTextSize(getResources().getDimension(R.dimen.ten_sp));
+				textPaint.setAntiAlias(true);
+				textPaint.setColor(ContextCompat.getColor(getContext(), R.color.red));
+				textPaint.getTextBounds(text, 0, text.length(), bounds);
+				Rect letBound = new Rect();
+				textPaint.getTextBounds("A", 0, "A".length(), letBound);
+				float aLetterHeight = letBound.height();
+				canvas.drawText(text, buttons.get(i).getContainer().centerX()-bounds.width()/2,
+						buttons.get(i).getContainer().centerY()+4*aLetterHeight, textPaint);
+				Rect rect = new Rect();
+				buttons.get(i).getContainer().round(rect);
+			}
+		}
+	}
+	private double sum(List<FinanceRecord> records) {
+		double result = 0.0;
+		for (FinanceRecord record : records) {
+			if (record.getCategory().getType() == PocketAccounterGeneral.INCOME)
+				result += commonOperations.getCost(record);
+			else
+				result -= commonOperations.getCost(record);
+		}
+		return result;
+	}
+	private void drawWorkspaceShader() {
 		Bitmap temp = BitmapFactory.decodeResource(getResources(), R.drawable.workspace_shader);
 		workspaceShader = Bitmap.createScaledBitmap(temp, (int)workspace.width(), (int)workspace.height(), false);
 		Paint paint = new Paint();
@@ -186,7 +267,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		this.gestureDetector.onTouchEvent(event);
 		return super.onTouchEvent(event);
 	}
-
 	@Override
 	public boolean onDown(MotionEvent e) {
 		return false;
@@ -206,15 +286,23 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 				postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						RootCategory category;
-//						if(PocketAccounter.financeManager.getExpanses().isEmpty())
-//							category = null;
-//						else
-//							category = PocketAccounter.financeManager.getExpanses().get(position);
-//						if (category != null)
-//							((PocketAccounter)getContext()).replaceFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
-//						else
-//							openChooseDialog(position);
+						RootCategory category = null;
+						List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder()
+								.where(BoardButtonDao.Properties.Type.eq(PocketAccounterGeneral.EXPENSE))
+								.list();
+						if(boardButtons.get(position).getCategoryId() == null)
+							category = null;
+						else {
+							List<RootCategory> categoryList = daoSession.getRootCategoryDao().queryBuilder()
+									.where(RootCategoryDao.Properties.Id.eq(boardButtons.get(position).getCategoryId()))
+									.list();
+							if (!categoryList.isEmpty())
+								category = categoryList.get(0);
+						}
+						if (category != null)
+							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
+						else
+							openChooseDialog(position);
 				}
 				}, 150);
 				invalidate();
@@ -239,12 +327,15 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			if (buttons.get(i).getContainer().contains(x, y)) {
 				buttons.get(i).setPressed(true);
 				final int position = i;
-//				if (PocketAccounter.financeManager.getExpanses().get(position) == null) {
-//					for (int j=0; j<buttons.size(); j++)
-//						buttons.get(j).setPressed(false);
-//					invalidate();
-//					return;
-//				}
+				List<BoardButton> boardButtonList = daoSession.getBoardButtonDao()
+						.queryBuilder().where(BoardButtonDao.Properties.Type.eq(PocketAccounterGeneral.EXPENSE))
+						.list();
+				if (boardButtonList.get(position).getCategoryId() == null) {
+					for (int j=0; j<buttons.size(); j++)
+						buttons.get(j).setPressed(false);
+					invalidate();
+					return;
+				}
 				postDelayed(new Runnable() {
 					@Override
 					public void run() {
@@ -261,157 +352,146 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		return false;
 	}
 	private void openChooseDialogLongPress(final int pos) {
-//		final Dialog dialog=new Dialog(getContext());
-//		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
-//		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//		dialog.setContentView(dialogView);
-//		String id = PocketAccounter.financeManager.getExpanses().get(pos).getId();
-//		boolean hasAnyRecord = false;
-//		Calendar beg = (Calendar) date.clone();
-//		beg.set(Calendar.HOUR_OF_DAY, 0);
-//		beg.set(Calendar.MINUTE, 0);
-//		beg.set(Calendar.SECOND, 0);
-//		beg.set(Calendar.MILLISECOND, 0);
-//		Calendar end = (Calendar) date.clone();
-//		end.set(Calendar.HOUR_OF_DAY, 23);
-//		end.set(Calendar.MINUTE, 59);
-//		end.set(Calendar.SECOND, 59);
-//		end.set(Calendar.MILLISECOND, 59);
-//		ArrayList<FinanceRecord> temp = new ArrayList<>();
-//		for (int i=0; i<PocketAccounter.financeManager.getRecords().size(); i++) {
-//			Calendar day = PocketAccounter.financeManager.getRecords().get(i).getDate();
-//			if(beg.compareTo(day) <= 0 && end.compareTo(day) >= 0) {
-//				temp.add(PocketAccounter.financeManager.getRecords().get(i));
-//			}
-//		}
-//		for (int i=0; i<temp.size(); i++) {
-//			if (temp.get(i).getCategory().getId().matches(id)) {
-//				hasAnyRecord = true;
-//				break;
-//			}
-//		}
-//		String edit = getContext().getString(R.string.to_edit);
-//		String change = getResources().getString(R.string.change);
-//		String clear = getResources().getString(R.string.clear);
-//		String clearRecords = getContext().getString(R.string.clear_records);
-//		ArrayAdapter<String> adapter;
-//		if (hasAnyRecord) {
-//			String[] items = new String[4];
-//			items[0] = change;
-//			items[1] = clear;
-//			items[2] = edit;
-//			items[3] = clearRecords;
-//			adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, items);
-//		}
-//		else {
-//			String[] items = new String[2];
-//			items[0] = change;
-//			items[1] = clear;
-//			adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, items);
-//		}
-//		ListView lvDialog = (ListView) dialogView.findViewById(R.id.lvDialog);
-//		lvDialog.setAdapter(adapter);
-//		lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//				switch (position) {
-//					case 0:
-//						openCategoryChooseDialog(pos);
-//						break;
-//					case 1:
-//						PocketAccounter.financeManager.getExpanses().set(pos, null);
-//						initButtons();
-//						for (int i=0; i<buttons.size(); i++)
-//							buttons.get(i).setPressed(false);
-//						invalidate();
-//						PocketAccounter.financeManager.saveExpenses();
-//						break;
-//					case 2:
-//						openEditDialog(pos);
-//						break;
-//					case 3:
-//						clear(pos);
-//						break;
-//				}
-//				PocketAccounter.PRESSED = false;
-//				dialog.dismiss();
-//			}
-//		});
-//		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//			@Override
-//			public void onCancel(DialogInterface dialog) {
-//				for (int i=0; i<buttons.size(); i++)
-//					buttons.get(i).setPressed(false);
-//				PocketAccounter.PRESSED = false;
-//				invalidate();
-//			}
-//		});
-//		dialog.show();
+		final Dialog dialog=new Dialog(getContext());
+		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(dialogView);
+		String id = daoSession.getBoardButtonDao().queryBuilder()
+						.where(BoardButtonDao.Properties.Pos.eq(pos))
+						.list().isEmpty() ?
+						null:daoSession.getBoardButtonDao().queryBuilder()
+								.where(BoardButtonDao.Properties.Pos.eq(pos))
+								.list().get(0)
+								.getCategoryId();
+		boolean hasAnyRecord = false;
+		Calendar beg = (Calendar) date.clone();
+		beg.set(Calendar.HOUR_OF_DAY, 0);
+		beg.set(Calendar.MINUTE, 0);
+		beg.set(Calendar.SECOND, 0);
+		beg.set(Calendar.MILLISECOND, 0);
+		Calendar end = (Calendar) date.clone();
+		end.set(Calendar.HOUR_OF_DAY, 23);
+		end.set(Calendar.MINUTE, 59);
+		end.set(Calendar.SECOND, 59);
+		end.set(Calendar.MILLISECOND, 59);
+		List<FinanceRecord> temp = daoSession.getFinanceRecordDao().queryBuilder()
+				.where(FinanceRecordDao.Properties.Date.ge(beg),
+						FinanceRecordDao.Properties.Date.le(end)).list();
+		for (int i=0; i<temp.size(); i++) {
+			if (temp.get(i).getCategory().getId().matches(id)) {
+				hasAnyRecord = true;
+				break;
+			}
+		}
+		String edit = getContext().getString(R.string.to_edit);
+		String change = getResources().getString(R.string.change);
+		String clear = getResources().getString(R.string.clear);
+		String clearRecords = getContext().getString(R.string.clear_records);
+		ArrayAdapter<String> adapter;
+		if (hasAnyRecord) {
+			String[] items = new String[4];
+			items[0] = change;
+			items[1] = clear;
+			items[2] = edit;
+			items[3] = clearRecords;
+			adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, items);
+		}
+		else {
+			String[] items = new String[2];
+			items[0] = change;
+			items[1] = clear;
+			adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, items);
+		}
+		ListView lvDialog = (ListView) dialogView.findViewById(R.id.lvDialog);
+		lvDialog.setAdapter(adapter);
+		lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				switch (position) {
+					case 0:
+						openCategoryChooseDialog(pos);
+						break;
+					case 1:
+						logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, pos, null);
+						initButtons();
+						for (int i=0; i<buttons.size(); i++)
+							buttons.get(i).setPressed(false);
+						invalidate();
+						break;
+					case 2:
+						openEditDialog(pos);
+						break;
+					case 3:
+						clear(pos);
+						break;
+				}
+				PocketAccounter.PRESSED = false;
+				dialog.dismiss();
+			}
+		});
+		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				for (int i=0; i<buttons.size(); i++)
+					buttons.get(i).setPressed(false);
+				PocketAccounter.PRESSED = false;
+				invalidate();
+			}
+		});
+		dialog.show();
 	}
 	private void clear(final int pos) {
-//		final Dialog dialog=new Dialog(getContext());
-//		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.warning_dialog, null);
-//		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//		dialog.setContentView(dialogView);
-//		TextView tv = (TextView) dialogView.findViewById(R.id.tvWarningText);
-//		String catName = PocketAccounter.financeManager.getExpanses().get(pos).getName();
-//		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-//		tv.setText(getContext().getString(R.string.clear_warning)+format.format(date.getTime())+").");
-//		final Calendar beg = (Calendar) date.clone();
-//		beg.set(Calendar.HOUR_OF_DAY, 0);
-//		beg.set(Calendar.MINUTE, 0);
-//		beg.set(Calendar.SECOND, 0);
-//		beg.set(Calendar.MILLISECOND, 0);
-//		final Calendar end = (Calendar) date.clone();
-//		end.set(Calendar.HOUR_OF_DAY, 23);
-//		end.set(Calendar.MINUTE, 59);
-//		end.set(Calendar.SECOND, 59);
-//		end.set(Calendar.MILLISECOND, 59);
-//		Button btnYes = (Button) dialogView.findViewById(R.id.btnWarningYes);
-//		final String id = PocketAccounter.financeManager.getExpanses().get(pos).getId();
-//		btnYes.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				for (int i=0; i<PocketAccounter.financeManager.getRecords().size(); i++) {
-//					Calendar day = PocketAccounter.financeManager.getRecords().get(i).getDate();
-//					if (beg.compareTo(day) <= 0 && end.compareTo(day) >= 0 &&
-//							PocketAccounter.financeManager.getRecords().get(i).getCategory().getId().matches(id)) {
-//						PocketAccounter.financeManager.getRecords().remove(i);
-//						i--;
-//					}
-//				}
-//				PocketAccounter.PRESSED = false;
-//				for (int i=0; i<buttons.size(); i++)
-//					buttons.get(i).setPressed(false);
-//				PocketAccounter.PRESSED = false;
-//				invalidate();
-////				((PocketAccounter)getContext()).calculateBalance(date);
-//				PocketAccounter.financeManager.saveExpenses();
-//				dialog.dismiss();
-//			}
-//		});
-//		Button btnNo = (Button) dialogView.findViewById(R.id.btnWarningNo);
-//		btnNo.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				for (int i=0; i<buttons.size(); i++)
-//					buttons.get(i).setPressed(false);
-//				PocketAccounter.PRESSED = false;
-//				invalidate();
-//				dialog.dismiss();
-//			}
-//		});
-//
-//		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//			@Override
-//			public void onCancel(DialogInterface dialog) {
-//				for (int i=0; i<buttons.size(); i++)
-//					buttons.get(i).setPressed(false);
-//				PocketAccounter.PRESSED = false;
-//				invalidate();
-//			}
-//		});
-//		dialog.show();
+		final Calendar beg = (Calendar) date.clone();
+		beg.set(Calendar.HOUR_OF_DAY, 0);
+		beg.set(Calendar.MINUTE, 0);
+		beg.set(Calendar.SECOND, 0);
+		beg.set(Calendar.MILLISECOND, 0);
+		final Calendar end = (Calendar) date.clone();
+		end.set(Calendar.HOUR_OF_DAY, 23);
+		end.set(Calendar.MINUTE, 59);
+		end.set(Calendar.SECOND, 59);
+		end.set(Calendar.MILLISECOND, 59);
+		final String id = daoSession.getBoardButtonDao().queryBuilder()
+							.where(BoardButtonDao.Properties.Pos.eq(pos))
+							.list().get(0).getCategoryId();
+		warningDialog.setText(getContext().getString(R.string.clear_warning));
+		warningDialog.setOnYesButtonListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				QueryBuilder<FinanceRecord> financeRecordQueryBuilder = daoSession.getFinanceRecordDao().queryBuilder();
+				List<FinanceRecord> deletingRecords = financeRecordQueryBuilder.where(FinanceRecordDao.Properties.Date.ge(beg),
+						FinanceRecordDao.Properties.Date.le(end), FinanceRecordDao.Properties.CategoryId.eq(id))
+						.list();
+				daoSession.getFinanceRecordDao().deleteInTx(deletingRecords);
+				PocketAccounter.PRESSED = false;
+				for (int i=0; i<buttons.size(); i++)
+					buttons.get(i).setPressed(false);
+				PocketAccounter.PRESSED = false;
+				invalidate();
+//				((PocketAccounter)getContext()).calculateBalance(date);
+				warningDialog.dismiss();
+			}
+		});
+		warningDialog.setOnNoButtonClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				for (int i=0; i<buttons.size(); i++)
+					buttons.get(i).setPressed(false);
+				PocketAccounter.PRESSED = false;
+				invalidate();
+				warningDialog.dismiss();
+			}
+		});
+		warningDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				for (int i=0; i<buttons.size(); i++)
+					buttons.get(i).setPressed(false);
+				PocketAccounter.PRESSED = false;
+				invalidate();
+			}
+		});
+		warningDialog.show();
 	}
 	private void openEditDialog(int position) {
 //		final Dialog dialog=new Dialog(getContext());

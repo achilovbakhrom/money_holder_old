@@ -41,12 +41,17 @@ public class RecordSubCategoryAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view = inflater.inflate(R.layout.category_list_item, parent, false);
-		ImageView ivCategoryListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
-		int resId = context.getResources().getIdentifier(result.get(position).getIcon(), "drawable", context.getPackageName());
-		ivCategoryListIcon.setImageResource(resId);
-		TextView tvCategoryListName = (TextView) view.findViewById(R.id.tvAccountListName);
-		tvCategoryListName.setText(result.get(position).getName());
+		View view = inflater.inflate(R.layout.category_choose_list_item, parent, false);
+		ImageView ivCategoryListItem = (ImageView) view.findViewById(R.id.ivCategoryListItem);
+		TextView tvCategoryListItem = (TextView) view.findViewById(R.id.tvCategoryListItem);
+		if (result.get(position) != null) {
+			int resId = context.getResources().getIdentifier(result.get(position).getIcon(), "drawable", context.getPackageName());
+			ivCategoryListItem.setImageResource(resId);
+			tvCategoryListItem.setText(result.get(position).getName());
+		} else {
+			ivCategoryListItem.setImageResource(R.drawable.ic_add_black_24dp);
+			tvCategoryListItem.setText(context.getResources().getString(R.string.add_subcategory));
+		}
 		return view;
 	}
 }

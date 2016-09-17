@@ -11,13 +11,11 @@ import org.greenrobot.greendao.DaoException;
  */
 @Entity(nameInDb = "PHOTO_DETAILS", active = true)
 public class PhotoDetails {
-    @Id
-    @Property
-    private Long id;
     @Property
     String photopath;
     @Property
     String photopathCache;
+    @Id
     @Property
     String recordId;
     /**
@@ -83,16 +81,8 @@ public class PhotoDetails {
     public void setPhotopath(String photopath) {
         this.photopath = photopath;
     }
-    public Long getId() {
-        return this.id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    @Generated(hash = 365682649)
-    public PhotoDetails(Long id, String photopath, String photopathCache,
-            String recordId) {
-        this.id = id;
+    @Generated(hash = 13191626)
+    public PhotoDetails(String photopath, String photopathCache, String recordId) {
         this.photopath = photopath;
         this.photopathCache = photopathCache;
         this.recordId = recordId;
@@ -100,5 +90,4 @@ public class PhotoDetails {
     @Generated(hash = 1285452818)
     public PhotoDetails() {
     }
-
 }

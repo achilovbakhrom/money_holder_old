@@ -41,12 +41,12 @@ public class RecordCategoryAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view = inflater.inflate(R.layout.category_list_item, parent, false);
-		ImageView ivCategoryListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
+		View view = inflater.inflate(R.layout.category_choose_list_item, parent, false);
+		ImageView ivCategoryListItem = (ImageView) view.findViewById(R.id.ivCategoryListItem);
+		TextView tvCategoryListItem = (TextView) view.findViewById(R.id.tvCategoryListItem);
 		int resId = context.getResources().getIdentifier(result.get(position).getIcon(), "drawable", context.getPackageName());
-		ivCategoryListIcon.setImageResource(resId);
-		TextView tvCategoryListName = (TextView) view.findViewById(R.id.tvAccountListName);
-		tvCategoryListName.setText(result.get(position).getName());
+		ivCategoryListItem.setImageResource(resId);
+		tvCategoryListItem.setText(result.get(position).getName());
 		return view;
 	}
 }

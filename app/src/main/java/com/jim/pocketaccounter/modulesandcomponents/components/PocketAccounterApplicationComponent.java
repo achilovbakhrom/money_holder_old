@@ -9,14 +9,13 @@ import com.jim.pocketaccounter.finance.CurrencyChooseAdapter;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
-import com.jim.pocketaccounter.utils.DataCache;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.SystemConfigurator;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterApplicationModule;
 import com.jim.pocketaccounter.utils.record.RecordButtonExpanse;
 import com.jim.pocketaccounter.utils.record.RecordButtonIncome;
-import com.jim.pocketaccounter.utils.record.RecordExpanseView;
-import com.jim.pocketaccounter.utils.record.RecordIncomesView;
 
 import dagger.Component;
 
@@ -37,11 +36,11 @@ public interface PocketAccounterApplicationComponent {
     void inject(SystemConfigurator systemConfigurator);
     void inject(RecordButtonExpanse recordButtonExpense);
     void inject(RecordButtonIncome recordButtonIncome);
-    void inject(RecordIncomesView recordIncomesView);
-    void inject(RecordExpanseView recordExpanseView);
     void inject(CurrencyChooseAdapter currencyChooseAdapter);
     void inject(ReportManager reportManager);
     void inject(CommonOperations commonOperations);
     void inject(LogicManager logicManager);
     void inject(TransferAccountAdapter transferAccountAdapter);
+    void inject(DataCache dataCache);
+    void inject(PAFragmentManager paFragmentManager);
 }

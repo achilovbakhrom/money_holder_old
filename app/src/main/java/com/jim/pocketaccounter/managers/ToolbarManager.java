@@ -255,6 +255,9 @@ public class ToolbarManager {
     public void setImageToHomeButton(int resId) {
         ((PocketAccounter) context).getSupportActionBar().setHomeAsUpIndicator(resId);
     }
+    public Spinner getSpinner() {
+        return spinner;
+    }
     public void setSpinnerVisibility(int visibility) {
         spinner.setVisibility(visibility);
     }

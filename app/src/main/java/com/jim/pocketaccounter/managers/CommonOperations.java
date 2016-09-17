@@ -1,6 +1,8 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -22,9 +24,11 @@ public class CommonOperations {
     @Inject
     DaoSession daoSession;
     private CurrencyDao currencyDao;
+    private Context context;
     public CommonOperations(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         this.currencyDao = daoSession.getCurrencyDao();
+        this.context = context;
     }
     public Currency getMainCurrency() {
         List<Currency> currencies = currencyDao.loadAll();
@@ -70,7 +74,6 @@ public class CommonOperations {
             pos++;
         }
         amount = amount/koeff;
-        Log.d("sss", "getCost: "+amount);
         return amount;
     }
 
@@ -124,5 +127,21 @@ public class CommonOperations {
         }
         return countOfDays;
     }
+    public float convertDpToPixel(float dp) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
+    }
 
+    public int betweenDays(Calendar begin, Calendar end) {
+        Calendar b = (Calendar) begin.clone();
+        Calendar e = (Calendar) end.clone();
+        int result = 0;
+        while (b.compareTo(e) <= 0) {
+            b.add(Calendar.DAY_OF_MONTH, 1);
+            result++;
+        }
+        return result;
+    }
 }

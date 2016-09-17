@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.utils.DataCache;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.SystemConfigurator;
 import com.jim.pocketaccounter.modulesandcomponents.components.DaggerPocketAccounterApplicationComponent;
 import com.jim.pocketaccounter.modulesandcomponents.components.PocketAccounterApplicationComponent;

@@ -349,15 +349,7 @@ public class RecordButtonExpanse {
 			}
 			textPaint.getTextBounds(catText, 0, catText.length(), bounds);
 			canvas.drawText(catText, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
-			double amount = PocketAccounterGeneral.calculateAction(category, date);
-			if (amount != 0) {
-				DecimalFormat format = new DecimalFormat("0.00");
-				String text = format.format(amount)+"%";
-				bounds = new Rect();
-				textPaint.setColor(ContextCompat.getColor(context, R.color.red));
-				textPaint.getTextBounds(text, 0, text.length(), bounds);
-				canvas.drawText(text, container.centerX()-bounds.width()/2, container.centerY()+4*aLetterHeight, textPaint);
-			}
+
 		} else {
 			temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_category);
 			scaled = Bitmap.createScaledBitmap(temp, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
@@ -365,10 +357,9 @@ public class RecordButtonExpanse {
 			Paint textPaint = new Paint();
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
 			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
-			Rect bounds = new Rect();
 			String text = context.getResources().getString(R.string.add);
 			textPaint.setAntiAlias(true);
-			bounds = new Rect();
+			Rect bounds = new Rect();
 			textPaint.getTextBounds(text, 0, text.length(), bounds);
 			canvas.drawText(text, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
 		}
@@ -380,4 +371,5 @@ public class RecordButtonExpanse {
 		return container;
 	}
 	public void setCategory(BoardButton boardButton) {this.boardButton = boardButton;}
+	public BoardButton getCategory() {return boardButton; }
 }

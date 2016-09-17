@@ -3,13 +3,21 @@ package com.jim.pocketaccounter.managers;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -17,15 +25,29 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.antonyt.infiniteviewpager.InfinitePagerAdapter;
+import com.antonyt.infiniteviewpager.InfiniteViewPager;
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.fragments.MainPageFragment;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
+import com.jim.pocketaccounter.utils.lvp.LoopViewPager;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
 import com.jim.pocketaccounter.utils.record.RecordIncomesView;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
 
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
@@ -37,76 +59,140 @@ import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
 public class PAFragmentManager {
     private PocketAccounter activity;
     private FragmentManager fragmentManager;
-    private LinearLayout main;
     private boolean keyboardVisible = false;
+    private TextView tvRecordIncome, tvRecordExpanse, tvRecordBalanse;
+    private int lastPosition = 0;
+    private List<MainPageFragment> fragments;
+    @Inject
+    ReportManager reportManager;
+    @Inject
+    CommonOperations commonOperations;
+    @Inject
+    DataCache dataCache;
     public PAFragmentManager(PocketAccounter activity) {
         this.activity = activity;
+        ((PocketAccounterApplication) activity.getApplicationContext()).component().inject(this);
         fragmentManager = activity.getSupportFragmentManager();
-        main = (LinearLayout)activity.findViewById(R.id.change);
+        fragments = new ArrayList<>();
     }
     public FragmentManager getFragmentManager() {
         return fragmentManager;
     }
 
-    public void initialize(Calendar date) {
-        activity.treatToolbar();
-        main.setVisibility(View.VISIBLE);
-        activity.findViewById(R.id.main).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+    public void initialize(final Calendar begin, final Calendar end) {
+        final LoopViewPager lvpMain = (LoopViewPager) activity.findViewById(R.id.lvpMain);
+        PagerAdapter adapter = new LVPAdapter(getFragmentManager());
+        lvpMain.setAdapter(adapter);
+        lvpMain.setOffscreenPageLimit(5);
+        Log.d("sss", "current item "+lvpMain.getCurrentItem());
+        lvpMain.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onGlobalLayout() {
-                int heightDiff = activity.findViewById(R.id.main).getRootView().getHeight() - activity.findViewById(R.id.main).getHeight();
-                if (heightDiff > dpToPx(activity, 200)) { // if more than 200 dp, it's probably a keyboard...
-                    keyboardVisible = true;
-                } else {
-                    keyboardVisible = false;
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d("sss", "last "+lastPosition + " curr "+position);
+                if ((lastPosition == 0 && position == 1) || (lastPosition == 1 && position == 2)
+                        || (lastPosition == 2 && position == 3) || (lastPosition == 3 && position == 4)
+                        || (lastPosition == 4 && position == 0)) {
+                    dataCache.getEndDate().add(Calendar.DAY_OF_MONTH, 1);
                 }
+                if ((lastPosition== 0 && position == 4) || (lastPosition == 4 && position == 3)
+                        || (lastPosition == 3 && position == 2) || (lastPosition == 2 && position == 1)
+                        || (lastPosition == 1 && position == 0)) {
+                    dataCache.getEndDate().add(Calendar.DAY_OF_MONTH, -1);
+                }
+                Fragment page = getFragmentManager().findFragmentByTag("android:switcher:" + R.id.lvpMain + ":" + lvpMain.getCurrentItem());
+                if (page != null) {
+                    ((MainPageFragment)page).update();
+                }
+                lastPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
-        if (keyboardVisible) {
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(activity.findViewById(R.id.main).getWindowToken(), 0);
-            activity.findViewById(R.id.main).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    keyboardVisible=false;
-                    initialize(activity.getDate());
-                }
-            },100);
-        }
-        PRESSED = false;
+//        activity.treatToolbar();
+//        main.setVisibility(View.VISIBLE);
+//        activity.findViewById(R.id.main).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                int heightDiff = activity.findViewById(R.id.main).getRootView().getHeight() - activity.findViewById(R.id.main).getHeight();
+//                if (heightDiff > dpToPx(activity, 200)) { // if more than 200 dp, it's probably a keyboard...
+//                    keyboardVisible = true;
+//                } else {
+//                    keyboardVisible = false;
+//                }
+//            }
+//        });
+//        if (keyboardVisible) {
+//            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+//            imm.hideSoftInputFromWindow(activity.findViewById(R.id.main).getWindowToken(), 0);
+//            activity.findViewById(R.id.main).postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    keyboardVisible=false;
+//                    initialize(dataCache.getBeginDate(), dataCache.getEndDate());
+//                }
+//            },100);
+//        }
+//        PRESSED = false;
+//
+//        reportManager.calculateBalance(begin, end);
+//        DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+//        int width = dm.widthPixels;
+//        int height = dm.heightPixels;
+//        int side;
+//        if (height * 0.55 > width)
+//            side = width;
+//        else
+//            side = (int) (height * 0.55);
+//        RecordExpanseView expanseView = new RecordExpanseView(activity, end);
+//        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(side, side);
+//        lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//        expanseView.setLayoutParams(lp);
+//        ((RelativeLayout)activity.findViewById(R.id.rlRecordExpanses)).removeAllViews();
+//        ((RelativeLayout)activity.findViewById(R.id.rlRecordExpanses)).addView(expanseView);
+//        RecordIncomesView incomeView = new RecordIncomesView(activity, end);
+//        RelativeLayout.LayoutParams lpIncomes = new RelativeLayout.LayoutParams(side,
+//                side / 4 + (int) (activity.getResources().getDimension(R.dimen.thirty_dp)));
+//        lpIncomes.addRule(RelativeLayout.CENTER_HORIZONTAL);
+//        incomeView.setLayoutParams(lpIncomes);
+//        ((RelativeLayout) activity.findViewById(R.id.rlRecordIncomes)).removeAllViews();
+//        ((RelativeLayout) activity.findViewById(R.id.rlRecordIncomes)).addView(incomeView);
 
-//        calculateBalance(date);
-        DisplayMetrics dm = activity.getResources().getDisplayMetrics();
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-        int side;
-        if (height * 0.55 > width)
-            side = width;
-        else
-            side = (int) (height * 0.55);
-        RecordExpanseView expanseView = new RecordExpanseView(activity, date);
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(side, side);
-        lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        expanseView.setLayoutParams(lp);
-        ((RelativeLayout)activity.findViewById(R.id.rlRecordExpanses)).removeAllViews();
-        ((RelativeLayout)activity.findViewById(R.id.rlRecordExpanses)).addView(expanseView);
-        RecordIncomesView incomeView = new RecordIncomesView(activity, date);
-        RelativeLayout.LayoutParams lpIncomes = new RelativeLayout.LayoutParams(side,
-                side / 4 + (int) (activity.getResources().getDimension(R.dimen.thirty_dp)));
-        lpIncomes.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        incomeView.setLayoutParams(lpIncomes);
-        ((RelativeLayout) activity.findViewById(R.id.rlRecordIncomes)).removeAllViews();
-        ((RelativeLayout) activity.findViewById(R.id.rlRecordIncomes)).addView(incomeView);
+    }
+
+    public void calculateBalance(Calendar begin, Calendar end) {
+        DecimalFormat decFormat = new DecimalFormat("0.00");
+        Map<String, Double> balance = reportManager.calculateBalance(begin, end);
+        String abbr = commonOperations.getMainCurrency().getAbbr();
+        for (String key : balance.keySet()) {
+            switch (key) {
+                case PocketAccounterGeneral.INCOMES:
+                    tvRecordIncome.setText(decFormat.format(balance.get(key)) + abbr);
+                    break;
+                case PocketAccounterGeneral.EXPENSES:
+                    tvRecordExpanse.setText(decFormat.format(balance.get(key)) + abbr);
+                    break;
+                case PocketAccounterGeneral.BALANCE:
+                    tvRecordBalanse.setText(decFormat.format(balance.get(key)) + abbr);
+                    break;
+            }
+        }
     }
 
     public void displayMainWindow() {
-        main.setVisibility(View.VISIBLE);
+//        main.setVisibility(View.VISIBLE);
         PRESSED = false;
         if (fragmentManager.getBackStackEntryCount() != 0) {
-
             for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++)
                 fragmentManager.popBackStack();
-            initialize(activity.getDate());
+            initialize(dataCache.getBeginDate(), dataCache.getEndDate());
         }
     }
 
@@ -116,7 +202,7 @@ public class PAFragmentManager {
     }
 
     public void displayFragment(Fragment fragment) {
-        main.setVisibility(View.GONE);
+        activity.findViewById(R.id.main).setVisibility(View.VISIBLE);
         if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;
@@ -129,7 +215,7 @@ public class PAFragmentManager {
     }
 
     public void displayFragment(Fragment fragment, String tag) {
-        main.setVisibility(View.GONE);
+        activity.findViewById(R.id.main).setVisibility(View.VISIBLE);
         if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;
@@ -139,6 +225,25 @@ public class PAFragmentManager {
                 .addToBackStack(null)
                 .add(R.id.flMain, fragment, tag)
                 .commit();
+    }
+
+    class LVPAdapter extends FragmentPagerAdapter {
+        Fragment fragment;
+        public LVPAdapter(FragmentManager fm) {
+            super(fm);
+        }
+        @Override
+        public Fragment getItem(int position) {
+            fragment = new MainPageFragment(activity, dataCache.getEndDate());
+            return fragment;
+        }
+        @Override
+        public int getCount() {
+            return 5;
+        }
+        public void updateFragment() {
+            ((MainPageFragment)fragment).update();
+        }
     }
 
 

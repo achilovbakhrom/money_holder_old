@@ -13,13 +13,16 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressLint("ViewHolder")
 public class RecordAccountAdapter extends BaseAdapter {
-	private ArrayList<Account> result;
+	private List<Account> result;
 	private LayoutInflater inflater;
-	public RecordAccountAdapter(Context context, ArrayList<Account> result) {
+	private Context context;
+	public RecordAccountAdapter(Context context, List<Account> result) {
 	    this.result = result;
+		this.context = context;
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	@Override
@@ -38,7 +41,8 @@ public class RecordAccountAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View view = inflater.inflate(R.layout.record_edit_spinner_item, parent, false);
 		ImageView ivAccountListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
-//		ivAccountListIcon.setImageResource(result.get(position).getIcon());
+		int resId = context.getResources().getIdentifier(result.get(position).getIcon(), "drawable", context.getPackageName());
+		ivAccountListIcon.setImageResource(resId);
 		TextView tvAccountListName = (TextView) view.findViewById(R.id.tvAccountListName);
 		tvAccountListName.setText(result.get(position).getName());
 		return view;

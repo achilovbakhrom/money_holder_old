@@ -19,7 +19,7 @@ public class IncomeExpanseDataRow {
     public double getTotalProfit() {return totalProfit;}
     public IncomeExpanseDataRow(Calendar date) {this.date = (Calendar) date.clone();}
     public void calculate() {
-        totalIncome = 0;
+        totalIncome = 0; 
         totalExpanse = 0;
         totalProfit = 0;
 //        for (int i=0; i<details.size(); i++) {

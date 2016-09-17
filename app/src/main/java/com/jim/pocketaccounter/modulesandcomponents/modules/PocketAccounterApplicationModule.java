@@ -9,7 +9,7 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.ReportManager;
-import com.jim.pocketaccounter.utils.DataCache;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -28,7 +28,6 @@ public class PocketAccounterApplicationModule {
 
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
-//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, "notes-db-encrypted");
         DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
         Database db = helper.getEncryptedWritableDb("super-secret");
         daoSession = new DaoMaster(db).newSession();
@@ -44,9 +43,7 @@ public class PocketAccounterApplicationModule {
     @Provides
     public DaoSession getDaoSession() {
         if (daoSession == null) {
-//            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, "notes-db-encrypted");
             DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
-
             Database db = helper.getEncryptedWritableDb("super-secret");
             daoSession = new DaoMaster(db).newSession();
         }
@@ -56,7 +53,7 @@ public class PocketAccounterApplicationModule {
     @Provides
     public DataCache getDataCache() {
         if (dataCache == null)
-            dataCache = new DataCache();
+            dataCache = new DataCache(pocketAccounterApplication);
         return dataCache;
     }
 

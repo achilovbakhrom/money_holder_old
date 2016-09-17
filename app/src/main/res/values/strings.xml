@@ -1358,6 +1358,8 @@
     <string name="export_exel">Export Exel</string>
     <string name="filter">Filter</string>
     <string name="search">Search</string>
+    <string name="none_minus_account_warning">Счет не может быть нулевым!</string>
+    <string name="add_category">Добавить категорию</string>
     <string-array name="period_purpose">
         <item>no period</item>
         <item>week</item>

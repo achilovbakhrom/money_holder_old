@@ -1,7 +1,11 @@
 package com.jim.pocketaccounter.managers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -314,6 +318,7 @@ public class DrawerInitializer {
                                 break;
                             case 8:
                                 fragmentManager.displayFragment(new DebtBorrowFragment());
+                                break;
                             case 9:
 //                                fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;
@@ -336,41 +341,31 @@ public class DrawerInitializer {
 //                                startActivityForResult(zssettings, key_for_restat);
                                 break;
                             case 14:
-//                                if (keyboardVisible) {
-//                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
-//                                }
-//
-//                                findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                                Intent rate_app_web = new Intent(Intent.ACTION_VIEW);
-//                                PocketAccounter.openActivity=true;
-//
-//                                rate_app_web.setData(Uri.parse(getString(R.string.rate_app_web)));
-//                                startActivity(rate_app_web);
-                                break;
                             case 15:
 //                                if (keyboardVisible) {
 //                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
 //                                }
-//
-//                                findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                                Intent Email = new Intent(Intent.ACTION_SEND);
-//                                PocketAccounter.openActivity=true;
-//
-//                                Email.setType("text/email");
-//                                Email.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_app));
-//                                Email.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_app_text));
-//                                startActivity(Intent.createChooser(Email, getString(R.string.share_app)));
+                                pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
+                                Intent rate_app_web = new Intent(Intent.ACTION_VIEW);
+                                PocketAccounter.openActivity=true;
+                                rate_app_web.setData(Uri.parse(pocketAccounter.getString(R.string.rate_app_web)));
+                                pocketAccounter.startActivity(rate_app_web);
                                 break;
                             case 16:
-//                                if (keyboardVisible) {
-//                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
-//                                }
-//
-//                                findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                                openGmail(PocketAccounter.this, new String[]{getString(R.string.to_email)}, getString(R.string.feedback_subject), getString(R.string.feedback_content));
+                                pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
+                                Intent Email = new Intent(Intent.ACTION_SEND);
+                                PocketAccounter.openActivity=true;
+                                Email.setType("text/email");
+                                Email.putExtra(Intent.EXTRA_SUBJECT, pocketAccounter.getString(R.string.share_app));
+                                Email.putExtra(Intent.EXTRA_TEXT, pocketAccounter.getString(R.string.share_app_text));
+                                pocketAccounter.startActivity(Intent.createChooser(Email, pocketAccounter.getString(R.string.share_app)));
+                                break;
+                            case 17:
+                                pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
+                                openGmail(pocketAccounter, new String[]{pocketAccounter.getString(R.string.to_email)},
+                                            pocketAccounter.getString(R.string.feedback_subject),
+                                            pocketAccounter.getString(R.string.feedback_content));
                                 break;
                         }
 
@@ -378,5 +373,23 @@ public class DrawerInitializer {
                 }, 170);
             }
         });
+    }
+    public static void openGmail(Activity activity, String[] email, String subject, String content) {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        PocketAccounter.openActivity=true;
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, email);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, content);
+        final PackageManager pm = activity.getPackageManager();
+        final List<ResolveInfo> matches = pm.queryIntentActivities(emailIntent, 0);
+        ResolveInfo best = null;
+        for (final ResolveInfo info : matches)
+            if (info.activityInfo.packageName.endsWith(".gm") || info.activityInfo.name.toLowerCase().contains("gmail"))
+                best = info;
+        if (best != null)
+            emailIntent.setClassName(best.activityInfo.packageName, best.activityInfo.name);
+        activity.startActivity(emailIntent);
     }
 }

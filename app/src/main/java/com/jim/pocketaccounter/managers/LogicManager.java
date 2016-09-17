@@ -464,4 +464,14 @@ public class LogicManager {
         }
         return accounted;
     }
+
+    public int insertRecord(FinanceRecord record) {
+        recordDao.insertOrReplace(record);
+        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    }
+
+    public int deleteRecord(FinanceRecord record) {
+        recordDao.delete(record);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
 }
