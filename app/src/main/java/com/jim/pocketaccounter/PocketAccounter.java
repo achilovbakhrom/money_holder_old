@@ -1,18 +1,22 @@
 package com.jim.pocketaccounter;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -41,6 +45,8 @@ import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActiv
 import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
 import com.jim.pocketaccounter.syncbase.SyncBase;
 
+import org.greenrobot.greendao.AbstractDao;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -51,6 +57,7 @@ public class PocketAccounter extends AppCompatActivity {
     TextView userName, userEmail;
     CircleImageView userAvatar;
     public static Toolbar toolbar;
+
     public static LeftSideDrawer drawer;
     private ListView lvLeftMenu;
 //    public static FinanceManager financeManager;
@@ -67,7 +74,7 @@ public class PocketAccounter extends AppCompatActivity {
     public static SignInGoogleMoneyHold reg;
     public static boolean isCalcLayoutOpen = false;
     public static boolean openActivity = false;
-    boolean downloadnycCanRest = true;
+    private Calendar date;
     public static SyncBase mySync;
     Uri imageUri;
     ImageView fabIconFrame;
@@ -83,7 +90,10 @@ public class PocketAccounter extends AppCompatActivity {
     int WidgetID;
     public static boolean keyboardVisible=false;
     @Inject PAFragmentManager paFragmentManager;
+    @Inject DaoSession daoSession;
+    @Inject SharedPreferences preferences;
     @Inject ToolbarManager toolbarManager;
+    @Inject SettingsManager settingsManager;
     @Inject @Named(value = "display_formmatter") SimpleDateFormat format;
     @Inject DrawerInitializer drawerInitializer;
     @Inject DataCache dataCache;
@@ -107,23 +117,13 @@ public class PocketAccounter extends AppCompatActivity {
         setContentView(R.layout.pocket_accounter);
         component((PocketAccounterApplication) getApplication()).inject(this);
         toolbarManager.init();
+        date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize(dataCache.getBeginDate(), dataCache.getEndDate());
-//        mySync = new SyncBase(storageRef, this, "PocketAccounterDatabase");
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        if (user != null) {
-//            userName.setText(user.getDisplayName());
-//            userEmail.setText(user.getEmail());
-//            try {
-//                if (user.getPhotoUrl() != null) {
-//                    imagetask = new DownloadImageTask(userAvatar);
-//                    imagetask.execute(user.getPhotoUrl().toString());
-//                    imageUri = user.getPhotoUrl();
-//                }
-//            } catch (Exception o) {
-//
-//            }
-//        }
+        paFragmentManager.initialize(date);
+        dataCache.getCategoryEditFragmentDatas().setDate(date);
+
+
+
 //        rlRecordsMain = (RelativeLayout) findViewById(R.id.rlRecordExpanses);
 //        tvRecordIncome = (TextView) findViewById(R.id.tvRecordIncome);
 //        tvRecordBalanse = (TextView) findViewById(R.id.tvRecordBalanse);
@@ -185,24 +185,30 @@ public class PocketAccounter extends AppCompatActivity {
 //            });}
     }
 
-    private void initDates() {
-
+    public Calendar getDate() {
+        return date;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
-        toolbarManager.setSubtitle(format.format(dataCache.getEndDate().getTime()));
+        toolbarManager.setSubtitle(format.format(date.getTime()));
+
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {    drawerInitializer.getDrawer().openLeftSide();         }
         });
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
-        toolbarManager.setSearchView(drawerInitializer, format, paFragmentManager, findViewById(R.id.main));
+        toolbarManager.setSearchView(drawerInitializer,format,paFragmentManager,findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
+//        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
+
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
+
+
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,14 +221,14 @@ public class PocketAccounter extends AppCompatActivity {
                 ivDatePickOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-//                        Calendar calendar = Calendar.getInstance();
-//                        calendar.set(Calendar.YEAR, dp.getYear());
-//                        calendar.set(Calendar.MONTH, dp.getMonth());
-//                        calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
-//                        PocketAccounter.this.date = (Calendar) calendar.clone();
-//                        dataCache.getCategoryEditFragmentDatas().setDate(date);
-//                        paFragmentManager.displayMainWindow();
-//                        dialog.dismiss();
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(Calendar.YEAR, dp.getYear());
+                        calendar.set(Calendar.MONTH, dp.getMonth());
+                        calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
+                        PocketAccounter.this.date = (Calendar) calendar.clone();
+                        dataCache.getCategoryEditFragmentDatas().setDate(date);
+                        paFragmentManager.displayMainWindow();
+                        dialog.dismiss();
                     }
                 });
                 ImageView ivDatePickCancel = (ImageView) dialogView.findViewById(R.id.ivDatePickCancel);
@@ -238,7 +244,11 @@ public class PocketAccounter extends AppCompatActivity {
     }
 
 
-
+//
+//    public Calendar getDate() {
+//        return date;
+//    }
+//
 
 //
 //
@@ -389,19 +399,10 @@ public class PocketAccounter extends AppCompatActivity {
 //            initialize(new GregorianCalendar());
 //        }
 //    }
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        financeManager.saveRecords();
-//        SharedPreferences sPref;
-//        sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
-//        WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);
-//        if (WidgetID >= 0) {
-//            if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
-//                WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
-//                        WidgetID);
-//        }
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(pocketAccounter);
 //        boolean notif = prefs.getBoolean("general_notif", true);
 //        if (notif) {
 //            try {
@@ -414,19 +415,20 @@ public class PocketAccounter extends AppCompatActivity {
 //        } else {
 //            notific.cancelAllNotifs();
 //        }
-//
-//        try {
-//
-//            if (imagetask != null)
-//                imagetask.cancel(true);
-//            if (imagetask != null) {
-//                imagetask.cancel(true);
-//                imagetask = null;
-//            }
-//        } catch (Exception o) {
-//
+//        financeManager.saveRecords();
+//        SharedPreferences sPref;
+//        sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
+//        WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);
+//        if (WidgetID >= 0) {
+//            if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
+//                WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
+//                        WidgetID);
 //        }
-//    }
+        drawerInitializer.onStopSuniy();
+//        for (AbstractDao temp:daoSession.getAllDaos()) {
+//        }
+
+    }
 //
 //    private void fillLeftMenu() {
 //        String[] cats = getResources().getStringArray(R.array.drawer_cats);
@@ -1099,68 +1101,7 @@ public class PocketAccounter extends AppCompatActivity {
 //
 //    }
 //
-//    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-//        CircleImageView bmImage;
-//
-//        public DownloadImageTask(CircleImageView bmImage) {
-//            this.bmImage = bmImage;
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            File file = new File(getFilesDir(), "userphoto.jpg");
-//            if (file.exists()) {
-//                bmImage.setImageURI(Uri.parse(file.getAbsolutePath()));
-//            }
-//        }
-//
-//        protected Bitmap doInBackground(String... urls) {
-//            String urldisplay = urls[0];
-//            Bitmap mIcon11 = null;
-//
-//            for (; true; ) {
-//                try {
-//                    InputStream in = new java.net.URL(urldisplay).openStream();
-//                    mIcon11 = BitmapFactory.decodeStream(in);
-//                    break;
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    try {
-//                        Thread.sleep(10000);
-//                    } catch (InterruptedException e1) {
-//                        e1.printStackTrace();
-//                    }
-//                }
-//                if (isCancelled()) break;
-//            }
-//            return mIcon11;
-//        }
-//
-//        protected void onPostExecute(Bitmap result) {
-//            if (result != null) {
-//                downloadnycCanRest = false;
-//                bmImage.setImageBitmap(result);
-//                File file = new File(getFilesDir(), "userphoto.jpg");
-//                FileOutputStream out = null;
-//
-//                try {
-//                    out = new FileOutputStream(file);
-//                    result.compress(Bitmap.CompressFormat.JPEG, 100, out);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } finally {
-//                    try {
-//                        if (out != null) {
-//                            out.close();
-//                        }
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        }
-//    }
+
 //
 //    public static float convertDpToPixel(float dp, Context context) {
 //        Resources resources = context.getResources();
@@ -1180,14 +1121,7 @@ public class PocketAccounter extends AppCompatActivity {
 //            mProgressDialog.setIndeterminate(true);
 //        }
 //
-//        mProgressDialog.show();
-//    }
-//
-//    public void hideProgressDialog() {
-//        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-//            mProgressDialog.hide();
-//        }
-//    }
+
 //
 
 }

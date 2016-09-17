@@ -54,6 +54,7 @@ public class PurposeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        PurposeInfoFragment purposeInfoFragment = new PurposeInfoFragment(null);
         final View rootView = inflater.inflate(R.layout.purpose_layout, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         toolbarManager.setTitle(getString(R.string.purposes));

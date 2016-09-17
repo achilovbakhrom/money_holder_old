@@ -31,6 +31,7 @@ import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
 import com.jim.pocketaccounter.fragments.RecordDetailFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
+import com.jim.pocketaccounter.fragments.SearchFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.SettingsManager;
@@ -87,5 +88,8 @@ public interface PocketAccounterActivityComponent {
     void inject(RecordExpanseView recordExpanseView);
     void inject(RecordIncomesView recordIncomesView);
     void inject(MainPageFragment mainPageFragment);
+    void inject(AutoMarketFragment autoMarketFragment);
+    void inject(AddAutoMarketFragment addAutoMarketFragment);
+    void inject(SearchFragment searchFragment);
     //    void inject(LogicManager logicManager);
 }

@@ -76,6 +76,7 @@ public class TransferAccountAdapter extends BaseAdapter {
                 break;
             }
         }
+
         tvTransferItem.setText(name);
         ivTransferItem.setImageResource(resId);
         return view;

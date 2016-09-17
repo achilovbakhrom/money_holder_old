@@ -1,8 +1,6 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -74,6 +72,7 @@ public class CommonOperations {
             pos++;
         }
         amount = amount/koeff;
+        Log.d("sss", "getCost: "+amount);
         return amount;
     }
 
@@ -132,6 +131,20 @@ public class CommonOperations {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
+    }
+
+    public  void ColorSubSeq(String text, String whichWordColor, String colorCode, TextView textView){
+        String textUpper=text.toUpperCase();
+        String whichWordColorUpper=whichWordColor.toUpperCase();
+        SpannableString ss = new SpannableString(text);
+        int strar=0;
+
+        while (textUpper.indexOf(whichWordColorUpper,strar)>=0&&whichWordColor.length()!=0) {
+            Log.d("filtering", "ColorSubSeq: "+strar);
+            ss.setSpan(new BackgroundColorSpan(Color.parseColor(colorCode)),textUpper.indexOf(whichWordColorUpper,strar), textUpper.indexOf(whichWordColorUpper,strar)+whichWordColorUpper.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            strar=textUpper.indexOf(whichWordColorUpper,strar)+whichWordColorUpper.length();
+        }
+        textView.setText(ss);
     }
 
     public int betweenDays(Calendar begin, Calendar end) {
