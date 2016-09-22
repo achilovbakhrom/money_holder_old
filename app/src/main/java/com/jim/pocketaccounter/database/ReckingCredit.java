@@ -2,6 +2,9 @@ package com.jim.pocketaccounter.database;
 
 import android.support.annotation.Keep;
 
+import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
+
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
@@ -9,6 +12,7 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
+import java.util.Calendar;
 import java.util.UUID;
 
 /**
@@ -19,8 +23,8 @@ public class ReckingCredit {
     @Id
     @NotNull
     private long id;
-    @Property
-    private long payDate;
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
+    private Calendar payDate;
     @Property
     private double amount;
     @Property
@@ -36,13 +40,18 @@ public class ReckingCredit {
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
+
     @Keep
-    public ReckingCredit(long payDate, double amount, String accountId, long myCredit_id, String comment) {
+    public ReckingCredit(Calendar payDate, double amount, String accountId, long myCredit_id, String comment) {
         this.payDate = payDate;
         this.amount = amount;
         this.accountId = accountId;
         this.myCredit_id = myCredit_id;
         this.comment = comment;
+        this.id = System.currentTimeMillis();
+    }
+    @Keep
+    public ReckingCredit() {
         this.id = System.currentTimeMillis();
     }
     /**
@@ -108,10 +117,10 @@ public class ReckingCredit {
     public void setAmount(double amount) {
         this.amount = amount;
     }
-    public long getPayDate() {
+    public Calendar getPayDate() {
         return this.payDate;
     }
-    public void setPayDate(long payDate) {
+    public void setPayDate(Calendar payDate) {
         this.payDate = payDate;
     }
     public long getId() {
@@ -120,8 +129,9 @@ public class ReckingCredit {
     public void setId(long id) {
         this.id = id;
     }
-    @Generated(hash = 1709448582)
-    public ReckingCredit(long id, long payDate, double amount, String accountId, long myCredit_id, String comment) {
+    @Generated(hash = 944164788)
+    public ReckingCredit(long id, Calendar payDate, double amount, String accountId, long myCredit_id,
+            String comment) {
         this.id = id;
         this.payDate = payDate;
         this.amount = amount;
@@ -129,8 +139,7 @@ public class ReckingCredit {
         this.myCredit_id = myCredit_id;
         this.comment = comment;
     }
-    @Keep
-    public ReckingCredit() {
-        this.id = System.currentTimeMillis();
-    }
+
+  
+
 }

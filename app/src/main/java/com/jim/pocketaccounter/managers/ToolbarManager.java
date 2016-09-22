@@ -141,12 +141,12 @@ public class ToolbarManager {
 
                  @Override
                  public void onTextChanged(CharSequence s, int start, int before, int count) {
-                     textChangeListnerW.onTextChange(s.toString());
+
                  }
 
                  @Override
                  public void afterTextChanged(Editable s) {
-
+                     textChangeListnerW.onTextChange(searchEditToolbar.getText().toString());
                  }
              });
          }

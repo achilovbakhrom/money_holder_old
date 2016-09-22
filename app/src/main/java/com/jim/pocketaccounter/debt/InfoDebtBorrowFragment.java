@@ -560,7 +560,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                 public void onClick(DialogInterface d, int id) {
                                     d.cancel();
                                     if (tek) {
-                                        peysAdapter.setDataChanged(dateFormat.format(date.getTime()), Double.parseDouble(enterPay.getText().toString()),
+                                        peysAdapter.setDataChanged(date, Double.parseDouble(enterPay.getText().toString()),
                                                 "" + accountSp.getSelectedItem(), comment.getText().toString());
                                         dialog.dismiss();
                                     }
@@ -571,7 +571,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                             }
                         } else {
                             if (tek) {
-                                peysAdapter.setDataChanged(dateFormat.format(date.getTime()), Double.parseDouble(enterPay.getText().toString()),
+                                peysAdapter.setDataChanged(date, Double.parseDouble(enterPay.getText().toString()),
                                         "" + accountSp.getSelectedItem(), comment.getText().toString());
                                 dialog.dismiss();
                             }
@@ -706,7 +706,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             }
         }
 
-        public void setDataChanged(String clDate, double value, String accountId, String comment) {
+        public void setDataChanged(Calendar clDate, double value, String accountId, String comment) {
             for (Account account : accountDao.queryBuilder().list()) {
                 if (account.getName().matches(accountId)) {
                     accountId = account.getId();

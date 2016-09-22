@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -105,10 +106,9 @@ public class AddCreditFragment extends Fragment {
     long forMoth = 1000L * 60L * 60L * 24L * 30L;
     long forWeek = 1000L * 60L * 60L * 24L * 7L;
     long forYear = 1000L * 60L * 60L * 24L * 365L;
-    ArrayList<Currency> currencies;
+    List<Currency> currencies;
     CreditFragment.EventFromAdding eventLis;
     AddCreditFragment ThisFragment;
-    ArrayList<CreditDetials> myList;
     CheckBox isOpkey;
     public static final String OPENED_TAG = "Addcredit";
     public static boolean to_open_dialog = false;
@@ -497,7 +497,7 @@ public class AddCreditFragment extends Fragment {
             }
         });
 
-        currencies = (ArrayList<Currency>) currencyDao.queryBuilder().list();
+        currencies = currencyDao.loadAll();
         valyutes = new String[currencies.size()];
         valyutes_symbols = new String[currencies.size()];
 
@@ -565,7 +565,7 @@ public class AddCreditFragment extends Fragment {
             } else if (currentCredit.getPeriod_time_tip() == forDay) {
                 spinner_peiod.setSelection(3);
             }
-            if (!currentCredit.isKey_for_include()) {
+            if (!currentCredit.getKey_for_include()) {
                 isOpkey.setChecked(false);
                 spiner_trasnact.setVisibility(View.GONE);
             }
@@ -573,9 +573,9 @@ public class AddCreditFragment extends Fragment {
             for (ReckingCredit temp : currentCredit.getReckings()) {
                 Log.d("gogogo", "onCreateView: " + temp.getAmount());
                 Log.d("gogogo", "onCreateView: " + temp.getPayDate() + "  ==  " + currentCredit.getTake_time().getTimeInMillis());
-                if (temp.getPayDate() == currentCredit.getTake_time().getTimeInMillis()) {
+                if (temp.getPayDate().getTimeInMillis() == currentCredit.getTake_time().getTimeInMillis()) {
                     transactionCred.setText(parseToWithoutNull(temp.getAmount()));
-                    if (currentCredit.isKey_for_include())
+                    if (currentCredit.getKey_for_include())
                         for (Account acca : accounts) {
                             if (acca.getId().matches(temp.getAccountId()))
                                 spiner_trasnact.setSelection(getIndex(spiner_trasnact, acca.getName()));
@@ -803,6 +803,7 @@ public class AddCreditFragment extends Fragment {
         ImageView cancel = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowCancel);
         ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
         sb = new StringBuilder(procentCred.getText().toString());
+        Log.d("sbb", sb.toString());
         int a = sb.toString().indexOf('%');
         if (a != -1)
             sb.deleteCharAt(a);
@@ -854,7 +855,6 @@ public class AddCreditFragment extends Fragment {
                         period_tip = forDay;
                         break;
                 }
-                myList = (ArrayList<CreditDetials>) creditDetialsDao.queryBuilder().list();
 
                 boolean key = true;
                 key = isOpkey.isChecked();
@@ -919,7 +919,7 @@ public class AddCreditFragment extends Fragment {
 //                    }
 //                    //TODO editda tekwir ozini hisoblamaslini
 //                    for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
-//                        if (creditDetials.isKey_for_include()) {
+//                        if (creditDetials.getKey_for_include()) {
 //                            for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                                if (!reckingCredit.getAccountId().matches(account.getId()))
 //                                    continue;
@@ -938,8 +938,9 @@ public class AddCreditFragment extends Fragment {
                         return;
                     }
                 }
-
+                Log.d("Currencies", currencies.get(spiner_forValut.getSelectedItemPosition()).getAbbr());
                 if (isEdit()) {
+                    Log.d("sbb",Double.parseDouble(sb.toString())+"" );
                     A1 = new CreditDetials(selectedIcon, nameCred.getText().toString(), new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]),
                             Double.parseDouble(sb.toString()), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString()),
                             currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution), currentCredit.getMyCredit_id());
@@ -949,59 +950,61 @@ public class AddCreditFragment extends Fragment {
                             Double.parseDouble(sb.toString()), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString()),
                             currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution), System.currentTimeMillis());
                 }
-
+                A1.__setDaoSession(daoSession);
                 String transactionCredString = transactionCred.getText().toString();
                 if (!transactionCredString.matches("")) {
                     ReckingCredit first_pay;
+
                     if (key && accounts.size() != 0) {
-                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])).getTimeInMillis(), Double.parseDouble(transactionCredString), accounts.get(spiner_trasnact.getSelectedItemPosition()).getId(),
+                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), Double.parseDouble(transactionCredString), accounts.get(spiner_trasnact.getSelectedItemPosition()).getId(),
                                 A1.getMyCredit_id(), getString(R.string.this_first_comment));
                     } else {
-                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])).getTimeInMillis(), Double.parseDouble(transactionCredString), "pustoy",
+                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), Double.parseDouble(transactionCredString), "pustoy",
                                 A1.getMyCredit_id(), getString(R.string.this_first_comment));
                     }
-                    if (isEdit() && currentCredit.getReckings().size() != 0) {
-                        ArrayList<ReckingCredit> tempiker = (ArrayList<ReckingCredit>) currentCredit.getReckings();
+                    first_pay.__setDaoSession(daoSession);
+                    if (isEdit()){
+                        List<ReckingCredit> tempiker = currentCredit.getReckings();
                         boolean iskeeeep = true;
                         for (ReckingCredit temp : tempiker) {
-                            if (temp.getPayDate() == currentCredit.getTake_time().getTimeInMillis()) {
-                                tempiker.set(tempiker.indexOf(temp), first_pay);
+                            if (temp.getPayDate().getTimeInMillis() == currentCredit.getTake_time().getTimeInMillis()) {
+                                first_pay.setId(temp.getId());
+                                logicManager.insertReckingCredit(first_pay);
                                 iskeeeep = false;
+                                break;
                             }
                         }
                         if (iskeeeep) {
-                            tempiker.add(0, first_pay);
+                           logicManager.insertReckingCredit(first_pay);
                         }
-                        A1.getReckings().addAll(tempiker);
-
-                    } else {
-                        ArrayList<ReckingCredit> tempik = (ArrayList<ReckingCredit>) A1.getReckings();
-                        tempik.add(0, first_pay);
-                        A1.getReckings().addAll(tempik);
+                    }
+                else {
+                        logicManager.insertReckingCredit(first_pay);
                     }
                 }
+
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
 
                 A1.setInfo(mode + ":" + sequence);
                 if (isEdit()) {
-                    myList.set(myList.indexOf(currentCredit), A1);
+                    logicManager.insertCredit(A1);
+                    //TODO CLOSE ALL FRAGMENTS
                 } else {
-                    A1.__setDaoSession(daoSession);
                     switch(logicManager.insertCredit(A1)) {
                         case LogicManagerConstants.SAVED_SUCCESSFULL: {
-                            Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
                             break;
                         }
                     }
-                    myList.add(0, A1);
                 }
                 dialog.dismiss();
                 if (isEdit()) {
                     paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
                 } else
-                    closeCurrentFragment();
+                    paFragmentManager.getFragmentManager().popBackStack();
+
                 onSucsessed = true;
             }
         });

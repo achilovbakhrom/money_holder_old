@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,8 +83,11 @@ public class SystemConfigurator {
                             newCurrencyCost.setDay(day);
                         } catch (ParseException e) {
                             e.printStackTrace();
+
                         }
                         newCurrencyCost.setCost(costCursor.getDouble(costCursor.getColumnIndex("cost")));
+                        newCurrencyCost.__setDaoSession(daoSession);
+                        newCurrency.__setDaoSession(daoSession);
                         newCurrency.getCosts().add(newCurrencyCost);
                     }
                     costCursor.moveToNext();
@@ -310,11 +314,11 @@ public class SystemConfigurator {
                 ArrayList<Recking> list = new ArrayList<Recking>();
                 while (!reckCursor.isAfterLast()) {
                     if (id.matches(reckCursor.getString(reckCursor.getColumnIndex("id")))) {
-                        list.add(new Recking(reckCursor.getString(reckCursor.getColumnIndex("pay_date")),
-                                reckCursor.getDouble(reckCursor.getColumnIndex("amount")), id,
-                                reckCursor.getString(reckCursor.getColumnIndex("account_id")),
-                                reckCursor.getString(reckCursor.getColumnIndex("comment"))
-                        ));
+//                        list.add(new Recking(reckCursor.getString(reckCursor.getColumnIndex("pay_date")),
+//                                reckCursor.getDouble(reckCursor.getColumnIndex("amount")), id,
+//                                reckCursor.getString(reckCursor.getColumnIndex("account_id")),
+//                                reckCursor.getString(reckCursor.getColumnIndex("comment"))
+//                        ));
                     }
                     reckCursor.moveToNext();
                 }
@@ -369,11 +373,14 @@ public class SystemConfigurator {
                         String comment = curCreditRecking.getString(curCreditRecking.getColumnIndex("comment"));
                         String accountId = curCreditRecking.getString(curCreditRecking.getColumnIndex("account_id"));
                         long creditId = Long.parseLong(curCreditRecking.getString(curCreditRecking.getColumnIndex("credit_id")));
-                        ReckingCredit newReckingCredit = new ReckingCredit(payDate, amount, accountId, creditId, comment);
+                        Calendar calen=Calendar.getInstance();
+                        calen.setTimeInMillis(payDate);
+                        ReckingCredit newReckingCredit = new ReckingCredit(calen, amount, accountId, creditId, comment);
                         reckings.add(newReckingCredit);
                     }
                     curCreditRecking.moveToNext();
                 }
+                credit.__setDaoSession(daoSession);
                 credit.getReckings().addAll(reckings);
                 credit.setInfo(curCreditTable.getString(curCreditTable.getColumnIndex("empty")));
                 creditDetialses.add(credit);
@@ -404,6 +411,7 @@ public class SystemConfigurator {
                         break;
                     }
                 }
+                object.__setDaoSession(daoSession);
                 object.setType(cursor.getInt(cursor.getColumnIndex("type")));
                 smsParseObjects.add(object);
                 cursor.moveToNext();
@@ -420,6 +428,7 @@ public class SystemConfigurator {
                 } else {
                     boardButton.setCategoryId(expenses.get(i).getId());
                 }
+                boardButton.__setDaoSession(daoSession);
                 daoSession.getBoardButtonDao().save(boardButton);
             }
             for (int i=0; i<incomes.size(); i++) {
@@ -431,6 +440,7 @@ public class SystemConfigurator {
                 } else {
                     boardButton.setCategoryId(incomes.get(i).getId());
                 }
+                boardButton.__setDaoSession(daoSession);
                 daoSession.getBoardButtonDao().save(boardButton);
             }
             daoSession.getFinanceRecordDao().saveInTx(financeRecords);
@@ -465,6 +475,7 @@ public class SystemConfigurator {
                     daoSession.getCurrencyCostDao().insert(currencyCost);
                     List<CurrencyCost> costs = new ArrayList<>();
                     costs.add(currencyCost);
+                    currency.__setDaoSession(daoSession);
                     currency.setCosts(costs);
                     daoSession.getCurrencyDao().insert(currency);
                 }
@@ -487,6 +498,7 @@ public class SystemConfigurator {
                     account.setAmount(0.0d);
                     account.setNoneMinusAccount(false);
                     account.setCalendar(Calendar.getInstance());
+                    account.__setDaoSession(daoSession);
                     daoSession.getAccountDao().insert(account);
                 }
 
@@ -514,9 +526,11 @@ public class SystemConfigurator {
                             subCategory.setParentId(catValues[i]);
                             subCategory.setIcon(tempIcons[j]);
                             subCategories.add(subCategory);
+                            subCategory.__setDaoSession(daoSession);
                             daoSession.getSubCategoryDao().insert(subCategory);
                         }
                         rootCategory.setSubCategories(subCategories);
+                        rootCategory.__setDaoSession(daoSession);
                     }
                     daoSession.getRootCategoryDao().insert(rootCategory);
                 }
@@ -531,6 +545,7 @@ public class SystemConfigurator {
                         boardButton.setCategoryId(categories.get(i).getId());
                         boardButton.setPos(incomes);
                         boardButton.setType(PocketAccounterGeneral.INCOME);
+                        boardButton.__setDaoSession(daoSession);
                         daoSession.getBoardButtonDao().insert(boardButton);
                         incomes++;
                     }
@@ -541,6 +556,7 @@ public class SystemConfigurator {
                         boardButton.setCategoryId(categories.get(i).getId());
                         boardButton.setPos(expenses);
                         boardButton.setType(PocketAccounterGeneral.EXPENSE);
+                        boardButton.__setDaoSession(daoSession);
                         daoSession.getBoardButtonDao().insert(boardButton);
                         expenses++;
                     }

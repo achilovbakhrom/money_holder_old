@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +34,14 @@ public class CreditArchiveFragment extends Fragment {
             @Override
             public void itemInsertedToArchive() {
                 updateList();
+                Log.d("checkInterfaces", "ARCHIVE - updateList();");
             }
         };
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("checkInterfaces", "onCreatView : " );
         View V=inflater.inflate(R.layout.fragment_credit, container, false);
         crRV=(RecyclerView) V.findViewById(R.id.my_recycler_view);
         LinearLayoutManager llm = new LinearLayoutManager(This);
@@ -50,7 +53,9 @@ public class CreditArchiveFragment extends Fragment {
     }
 
     public void updateList(){
-        crAdap.notifyItemInserted(0);
+        Log.d("checkInterfaces", (crAdap==null)?"AdapterIsNull":"AdapterIsNotNull");
+        crAdap.updateBase();
+        crAdap.notifyDataSetChanged();
         if(crRV.getChildCount()>0);
         crRV.scrollToPosition(0);
     }

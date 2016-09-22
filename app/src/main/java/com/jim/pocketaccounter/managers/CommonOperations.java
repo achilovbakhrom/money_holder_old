@@ -164,4 +164,25 @@ public class CommonOperations {
         }
         return result;
     }
+
+    public boolean compareTimeInOneDay(Calendar cal1,Calendar cal2){
+
+        Calendar begin= (Calendar) cal1.clone();
+        begin.set(Calendar.HOUR,0);
+        begin.set(Calendar.MINUTE,0);
+        begin.set(Calendar.SECOND,0);
+        begin.set(Calendar.MILLISECOND,0);
+
+        Calendar end=(Calendar) cal1.clone();
+        end.set(Calendar.HOUR,23);
+        end.set(Calendar.MINUTE,59);
+        end.set(Calendar.SECOND,59);
+        end.set(Calendar.MILLISECOND,59);
+
+
+        if (begin.compareTo(cal2)<=0&&end.compareTo(cal2)>=0){
+        return true;
+        }
+        return false;
+    }
 }

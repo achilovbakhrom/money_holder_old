@@ -26,9 +26,9 @@ public class DebtBorrow {
     private String perId;
     @ToOne(joinProperty = "perId")
     private Person person;
-    @Convert(converter = CalendarConvertor.class, columnType = Long.class)
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar takenDate;
-    @Convert(converter = CalendarConvertor.class, columnType = Long.class)
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar returnDate;
     @Property
     private int type;

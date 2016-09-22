@@ -153,7 +153,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentCredit.isKey_for_include()){
+                if(currentCredit.getKey_for_include()){
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setMessage(getString(R.string.dou_delete))
                             .setPositiveButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -191,7 +191,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
         icon_credit.setImageResource(currentCredit.getIcon_ID());
         dateForSimpleDate.setTime(currentCredit.getTake_time().getTimeInMillis());
         myTakedCredTime.setText(dateFormat.format(dateForSimpleDate));
-        calculeted.setText((currentCredit.isKey_for_include())?CALCULATED:NOT_CALCULATED);
+        calculeted.setText((currentCredit.getKey_for_include())?CALCULATED:NOT_CALCULATED);
         myCreditName.setText(currentCredit.getCredit_name());
 
         myTotalPaid.setText(parseToWithoutNull(total_paid)+currentCredit.getValyute_currency().getAbbr());
@@ -365,9 +365,9 @@ public class InfoCreditFragmentForArchive extends Fragment {
 
         public void onBindViewHolder(final ViewHolder view, int position) {
             ReckingCredit item=list.get(position);
-            view.infoDate.setText(getString(R.string.date_of_pay)+": "+dateFormat.format(item.getPayDate()));
+            view.infoDate.setText(getString(R.string.date_of_pay)+": "+dateFormat.format(item.getPayDate().getTime()));
             view.infoSumm.setText(parseToWithoutNull(item.getAmount())+currentCredit.getValyute_currency().getAbbr());
-            if(currentCredit.isKey_for_include()){
+            if(currentCredit.getKey_for_include()){
                 ArrayList<Account> accounts = (ArrayList<Account>) accountDao.queryBuilder().list();
                 String accs = accounts.get(0).getName();
                 for (int i = 0; i < accounts.size(); i++) {

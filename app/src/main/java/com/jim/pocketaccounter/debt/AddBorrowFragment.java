@@ -394,7 +394,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 imageView.setImageBitmap(decodeFile(new File(currentDebtBorrow.getPerson().getPhoto())));
                 photoPath = currentDebtBorrow.getPerson().getPhoto();
             }
-            if (!currentDebtBorrow.getReckings().isEmpty() && currentDebtBorrow.getReckings().get(0).getPayDate().matches(dateFormat.format(getDate.getTime())))
+            if (!currentDebtBorrow.getReckings().isEmpty() &&commonOperations.compareTimeInOneDay(currentDebtBorrow.getReckings().get(0).getPayDate(),getDate))
                 firstPay.setText("" + currentDebtBorrow.getReckings().get(0).getAmount());
         }
         return view;
@@ -469,12 +469,12 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                             logicManager.insertDebtBorrow(currentDebtBorrow);
                         }
                         if (!firstPay.getText().toString().isEmpty()) {
-                            if (!currentDebtBorrow.getReckings().isEmpty() && currentDebtBorrow.getReckings().get(0)
-                                    .getPayDate().matches(dateFormat.format(currentDebtBorrow.getTakenDate().getTime()))) {
+                            if (!currentDebtBorrow.getReckings().isEmpty() && commonOperations.compareTimeInOneDay(currentDebtBorrow.getReckings().get(0)
+                                    .getPayDate(),currentDebtBorrow.getTakenDate())) {
                                 currentDebtBorrow.getReckings().get(0).setAmount(Double.parseDouble(firstPay.getText().toString()));
                             } else {
                                 currentDebtBorrow.getReckings().add(0, new Recking(
-                                        dateFormat.format(Calendar.getInstance().getTime()),
+                                        Calendar.getInstance(),
                                         Double.parseDouble(firstPay.getText().toString()), currentDebtBorrow.getId(),
                                         account.getId(), ""));
                             }
@@ -503,8 +503,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                             logicManager.insertDebtBorrow(debtBorrow);
                         }
                         if (!firstPay.getText().toString().isEmpty()) {
-                            reckings.add(new Recking(
-                                    dateFormat.format(Calendar.getInstance().getTime()),
+                            reckings.add(new Recking(Calendar.getInstance(),
                                     Double.parseDouble(firstPay.getText().toString()), debtBorrow.getId(),
                                     debtBorrow.getAccount().getId(), ""));
                         }
@@ -582,7 +581,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 //                }
 //            }
 //            for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-//                if (creditDetials.isKey_for_include()) {
+//                if (creditDetials.getKey_for_include()) {
 //                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                        if (reckingCredit.getAccountId().matches(account.getId())) {
 //                            Calendar cal = Calendar.getInstance();
@@ -593,8 +592,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 //                }
 //            }
             if (debt.getType() == DebtBorrow.DEBT) {
-                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
-                        dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(currentDebtBorrow.getReckings().get(0).getPayDate())) {
+                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() && commonOperations.compareTimeInOneDay(currentDebtBorrow.getTakenDate(),currentDebtBorrow.getReckings().get(0).getPayDate())) {
                     accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                     accounted = accounted - currentDebtBorrow.getReckings().get(0).getAmount();
@@ -603,8 +601,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                 }
             } else {
-                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
-                        dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(currentDebtBorrow.getReckings().get(0).getPayDate())) {
+                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() && commonOperations.compareTimeInOneDay(currentDebtBorrow.getTakenDate(),currentDebtBorrow.getReckings().get(0).getPayDate())) {
                     accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                     accounted = accounted + currentDebtBorrow.getReckings().get(0).getAmount();

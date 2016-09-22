@@ -131,7 +131,7 @@ public class CategoryReportDatas {
 //        double creditTotalPaid = 0.0;
 //        ArrayList<CreditDetials> credits = new ArrayList<CreditDetials>();
 //        for (int i=0; i<PocketAccounter.financeManager.getCredits().size(); i++) {
-//            if (PocketAccounter.financeManager.getCredits().get(i).isKey_for_include())
+//            if (PocketAccounter.financeManager.getCredits().get(i).getKey_for_include())
 //                credits.add(PocketAccounter.financeManager.getCredits().get(i));
 //        }
 //        for (int i=0; i<credits.size(); i++) {

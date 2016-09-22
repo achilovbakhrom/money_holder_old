@@ -351,7 +351,7 @@ public class PocketAccounter extends AppCompatActivity {
 //
 //        if (balanceSolve.matches(whole)) {
 //            for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-//                if (creditDetials.isKey_for_include()) {
+//                if (creditDetials.getKey_for_include()) {
 //                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTimeInMillis(reckingCredit.getPayDate());
@@ -362,7 +362,7 @@ public class PocketAccounter extends AppCompatActivity {
 //            }
 //        } else {
 //            for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-//                if (creditDetials.isKey_for_include()) {
+//                if (creditDetials.getKey_for_include()) {
 //                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTimeInMillis(reckingCredit.getPayDate());

@@ -21,8 +21,11 @@ import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.SearchResultConten;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.inject.Inject;
 
@@ -60,6 +63,7 @@ public class CreditFragment extends Fragment {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         crList= (ArrayList<CreditDetials>) creditDetialsDao.queryBuilder().list();
+        sortListFromDate(crList);
         This=getActivity();
     }
     public  CreditTabLay.ForFab getEvent(){
@@ -120,11 +124,13 @@ public class CreditFragment extends Fragment {
                     public void canceledAdding() {
                     }
                 });
-            paFragmentManager.getFragmentManager().popBackStack();
+//            paFragmentManager.getFragmentManager().popBackStack();
             paFragmentManager.displayFragment(fragment);
         }
     }
     public void updateToFirst(){
+        Log.d("checkInterfaces", (crAdap==null)?"ADDING - AdapterIsNull":"ADDING - AdapterIsNotNull");
+        crAdap.updateList();
         try{
             (new Handler()).postDelayed(new Runnable() {
                 @Override
@@ -143,6 +149,18 @@ public class CreditFragment extends Fragment {
             catch (Exception o){}
         }
         catch (Exception o){}
+    }
+
+    public void sortListFromDate(ArrayList<CreditDetials> crList){
+
+        Collections.sort(crList, new Comparator<CreditDetials>() {
+            @Override
+            public int compare(CreditDetials con1, CreditDetials con2)
+            {
+                return  con1.getMyCredit_id()<con2.getMyCredit_id()?1:-1;
+            }
+        });
+
     }
 
     @Override

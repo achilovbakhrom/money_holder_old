@@ -29,7 +29,7 @@ public class Account {
 	private Currency startMoneyCurrency;
 	@Property
 	private String startMoneyCurrencyId;
-	@Convert(converter = CalendarConvertor.class, columnType = Long.class)
+	@Convert(converter = CalendarConvertor.class, columnType = String.class)
 	private Calendar calendar;
 	@Property
 	private boolean noneMinusAccount;

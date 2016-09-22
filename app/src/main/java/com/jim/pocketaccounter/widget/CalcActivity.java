@@ -1247,7 +1247,7 @@ package com.jim.pocketaccounter.widget;
 //                }
 //                //TODO editda tekwir ozini hisoblamaslini
 //                for (CreditDetials creditDetials : PocketAccounter.financeManager.getCredits()) {
-//                    if (creditDetials.isKey_for_include()) {
+//                    if (creditDetials.getKey_for_include()) {
 //                        for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                            if (reckingCredit.getAccountId().matches(account.getDebtBorrowsId())) {
 //                                Calendar cal = Calendar.getInstance();

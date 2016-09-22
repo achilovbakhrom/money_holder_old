@@ -163,7 +163,7 @@ public class InfoCreditFragment extends Fragment {
         icon_credit=(ImageView) V.findViewById(R.id.icon_creditt);
 
         rcList= (ArrayList<ReckingCredit>) currentCredit.getReckings();
-
+        currentCredit.resetReckings();
         adapRecyc=new PaysCreditAdapter(rcList);
         myPay=(TextView)  V.findViewById(R.id.paybut);
         myDelete=(TextView)  V.findViewById(R.id.deleterbut);
@@ -182,6 +182,7 @@ public class InfoCreditFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(which==0) {
+                            paFragmentManager.getFragmentManager().popBackStack();
                             AddCreditFragment forEdit=new AddCreditFragment();
                             forEdit.shareForEdit(currentCredit);
                             openFragment(forEdit, PockerTag.Edit);
@@ -256,7 +257,7 @@ public class InfoCreditFragment extends Fragment {
         dateForSimpleDate.setTime(currentCredit.getTake_time().getTimeInMillis());
         myTakedCredTime.setText(dateFormat.format(dateForSimpleDate));
         myCreditName.setText(currentCredit.getCredit_name());
-        calculeted.setText((currentCredit.isKey_for_include())?getString(R.string.calculaed):getString(R.string.not_calc));
+        calculeted.setText((currentCredit.getKey_for_include())?getString(R.string.calculaed):getString(R.string.not_calc));
 
         myTotalPaid.setText(parseToWithoutNull(total_paid)+currentCredit.getValyute_currency().getAbbr());
         if(currentCredit.getValue_of_credit_with_procent()-total_paid<=0){
@@ -442,7 +443,7 @@ public class InfoCreditFragment extends Fragment {
         final EditText comment = (EditText) dialogView.findViewById(R.id.etInfoDebtBorrowPayComment);
         final Spinner accountSp = (Spinner) dialogView.findViewById(R.id.spInfoDebtBorrowAccount);
         accaunt_AC = null;
-        if (currentCredit.isKey_for_include()) {
+        if (currentCredit.getKey_for_include()) {
             accaunt_AC = (ArrayList<Account>) accountDao.queryBuilder().list();
             String[] accaounts = new String[accaunt_AC.size()];
             for (int i = 0; i < accaounts.length; i++) {
@@ -493,76 +494,68 @@ public class InfoCreditFragment extends Fragment {
                     total_paid+=item.getAmount();
 
                 if(!amount.matches("")){
-                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-                    if (account.getIsLimited() && currentCredit.isKey_for_include()) {
-                        double limit =  account.getLimite();
-                        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getCurrency(), account.getAmount());;
-                        for (int i = 0; i < financeRecordDao.queryBuilder().list().size(); i++) {
-                            FinanceRecord tempac=financeRecordDao.queryBuilder().list().get(i);
-                            if (tempac.getAccount().getId().matches(account.getId())) {
-                                if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-                                    accounted = accounted + commonOperations.getCost(tempac.getDate(),tempac.getCurrency(),account.getCurrency(),tempac.getAmount());
-                                else
-                                    accounted = accounted - commonOperations.getCost(tempac.getDate(),tempac.getCurrency(),account.getCurrency(),tempac.getAmount());
-                            }
-                        }
-                        for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
-                            if (debtBorrow.getCalculate()) {
-                                if (debtBorrow.getAccount().getId().matches(account.getId())) {
-                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getCurrency(), debtBorrow.getAmount());
-                                    } else {
-                                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getCurrency(), debtBorrow.getAmount());
-                                    }
-                                    for (Recking recking : debtBorrow.getReckings()) {
-                                        Calendar cal = Calendar.getInstance();
-                                        try {
-                                            cal.setTime(dateFormat.parse(recking.getPayDate()));
-                                        } catch (ParseException e) {
-                                            e.printStackTrace();
-                                        }
-                                        if (debtBorrow.getType() == DebtBorrow.DEBT) {
-                                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-                                        } else {
-                                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-                                        }
-                                    }
-                                } else {
-                                    for (Recking recking : debtBorrow.getReckings()) {
-                                        Calendar cal = Calendar.getInstance();
-                                        if (recking.getAccountId().matches(account.getId())) {
-                                            try {
-                                                cal.setTime(dateFormat.parse(recking.getPayDate()));
-                                            } catch (ParseException e) {
-                                                e.printStackTrace();
-                                            }
-                                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-                                            } else {
-                                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
-                            if (creditDetials.isKey_for_include()) {
-                                for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-                                    if (reckingCredit.getAccountId().matches(account.getId())) {
-                                        Calendar cal = Calendar.getInstance();
-                                        cal.setTimeInMillis(reckingCredit.getPayDate());
-                                        accounted = accounted - commonOperations.getCost(cal, creditDetials.getValyute_currency(),account.getCurrency(), reckingCredit.getAmount());
-                                    }
-                                }
-                            }
-                        }
-                        accounted = accounted - commonOperations.getCost(date, currentCredit.getValyute_currency(), account.getCurrency() ,Double.parseDouble(amount));
-                        if (-limit > accounted) {
-                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
+
+//                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
+//                    if (account.getIsLimited() && currentCredit.getKey_for_include()) {
+//                        double limit =  account.getLimite();
+//                        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getCurrency(), account.getAmount());;
+//                        for (int i = 0; i < financeRecordDao.queryBuilder().list().size(); i++) {
+//                            FinanceRecord tempac=financeRecordDao.queryBuilder().list().get(i);
+//                            if (tempac.getAccount().getId().matches(account.getId())) {
+//                                if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
+//                                    accounted = accounted + commonOperations.getCost(tempac.getDate(),tempac.getCurrency(),account.getCurrency(),tempac.getAmount());
+//                                else
+//                                    accounted = accounted - commonOperations.getCost(tempac.getDate(),tempac.getCurrency(),account.getCurrency(),tempac.getAmount());
+//                            }
+//                        }
+//                        for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
+//                            if (debtBorrow.getCalculate()) {
+//                                if (debtBorrow.getAccount().getId().matches(account.getId())) {
+//                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
+//                                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getCurrency(), debtBorrow.getAmount());
+//                                    } else {
+//                                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getCurrency(), debtBorrow.getAmount());
+//                                    }
+//                                    for (Recking recking : debtBorrow.getReckings()) {
+//                                        Calendar cal = recking.getPayDate();
+//
+//                                        if (debtBorrow.getType() == DebtBorrow.DEBT) {
+//                                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
+//                                        } else {
+//                                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
+//                                        }
+//                                    }
+//                                } else {
+//                                    for (Recking recking : debtBorrow.getReckings()) {
+//                                        Calendar cal = recking.getPayDate();
+//                                        if (recking.getAccountId().matches(account.getId())) {
+//
+//                                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
+//                                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
+//                                            } else {
+//                                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
+//                            if (creditDetials.getKey_for_include()) {
+//                                for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+//                                    if (reckingCredit.getAccountId().matches(account.getId())) {
+//                                        accounted = accounted - commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(),account.getCurrency(), reckingCredit.getAmount());
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        accounted = accounted - commonOperations.getCost(date, currentCredit.getValyute_currency(), account.getCurrency() ,Double.parseDouble(amount));
+//                        if (-limit > accounted) {
+//                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//                    }
+
                     if(Double.parseDouble(amount)>currentCredit.getValue_of_credit_with_procent()-total_paid){
                         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setMessage(context.getString(R.string.payment_balans)+parseToWithoutNull(currentCredit.getValue_of_credit_with_procent()-total_paid)+
@@ -573,14 +566,14 @@ public class InfoCreditFragment extends Fragment {
                                     public void onClick(DialogInterface dialoge, int id) {
 
                                         ReckingCredit rec=null;
-                                        if(!amount.matches("")&&currentCredit.isKey_for_include())
-                                            rec=new ReckingCredit(date.getTimeInMillis(),Double.parseDouble(amount),accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(),
+                                        if(!amount.matches("")&&currentCredit.getKey_for_include())
+                                            rec=new ReckingCredit(date,Double.parseDouble(amount),accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(),
                                                     currentCredit.getMyCredit_id(),comment.getText().toString());
                                         else
-                                            rec=new ReckingCredit(date.getTimeInMillis(),Double.parseDouble(amount),"",
+                                            rec=new ReckingCredit(date,Double.parseDouble(amount),"",
                                                     currentCredit.getMyCredit_id(),comment.getText().toString());
                                         rcList.add(rec);
-                                        currentCredit.getReckings().addAll(rcList);
+//                                        currentCredit.getReckings().addAll(rcList);
                                         logicManager.insertReckingCredit(rec);
                                         A1.change_item(currentCredit,currentPOS);
                                         updateDate();
@@ -589,6 +582,8 @@ public class InfoCreditFragment extends Fragment {
                                             isCheks[i] = false;
                                         }
                                         dialog.dismiss();
+                                        adapRecyc.notifyDataSetChanged();
+
                                     }
                                 }).setNegativeButton(context.getString(R.string.cancel1), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -599,11 +594,12 @@ public class InfoCreditFragment extends Fragment {
 
                     } else {
                         ReckingCredit rec = null;
-                        if (!amount.matches("") && currentCredit.isKey_for_include())
-                            rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), currentCredit.getMyCredit_id(), comment.getText().toString());
+                        if (!amount.matches("") && currentCredit.getKey_for_include())
+                            rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), currentCredit.getMyCredit_id(), comment.getText().toString());
                         else
-                            rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), "", currentCredit.getMyCredit_id(), comment.getText().toString());
-                        currentCredit.getReckings().add(rec);
+                            rec = new ReckingCredit(date, Double.parseDouble(amount), "", currentCredit.getMyCredit_id(), comment.getText().toString());
+//                        currentCredit.getReckings().add(rec);
+                        rcList.add(rec);
                         logicManager.insertReckingCredit(rec);
                         isCheks = new boolean[rcList.size()];
                         for (int i = 0; i < isCheks.length; i++) {
@@ -611,6 +607,7 @@ public class InfoCreditFragment extends Fragment {
                         }
                         A1.change_item(currentCredit, currentPOS);
                         updateDate();
+                        adapRecyc.notifyDataSetChanged();
                         dialog.dismiss();
                     }
                 }
@@ -669,6 +666,7 @@ public class InfoCreditFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int id) {
                             for (int t = isCheks.length - 1; t >= 0; t--) {
                                 if (isCheks[t]) {
+                                    logicManager.deleteReckingCredit(rcList.get(t));
                                     rcList.remove(t);
                                     adapRecyc.notifyItemRemoved(t);
                                     A1.change_item(currentCredit, currentPOS);
@@ -678,12 +676,13 @@ public class InfoCreditFragment extends Fragment {
                             for (int i = 0; i < isCheks.length; i++) {
                                 isCheks[i] = false;
                             }
+                            updateDate();
                         }
                     }).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
                     adapRecyc.notifyDataSetChanged();
-                    updateDate();
+
                 }
             });
             builder.create().show();
@@ -716,9 +715,9 @@ public class InfoCreditFragment extends Fragment {
 
         public void onBindViewHolder(final ViewHolder view, final int position) {
             ReckingCredit item = list.get(position);
-            view.infoDate.setText(getString(R.string.date_of_pay) + ": " + dateFormat.format(item.getPayDate()));
+            view.infoDate.setText(getString(R.string.date_of_pay) + ": " + dateFormat.format(item.getPayDate().getTime()));
             view.infoSumm.setText(parseToWithoutNull(item.getAmount()) + currentCredit.getValyute_currency().getAbbr());
-            if (currentCredit.isKey_for_include()) {
+            if (currentCredit.getKey_for_include()) {
                 ArrayList<Account> accounts = (ArrayList<Account>) accountDao.queryBuilder().list();
                 String accs = accounts.get(0).getName();
                 for (int i = 0; i < accounts.size(); i++) {

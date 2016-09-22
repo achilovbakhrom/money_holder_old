@@ -25,9 +25,9 @@ public class Purpose {
     private String icon;
     @Property
     private String description;
-    @Convert(converter = CalendarConvertor.class, columnType = Long.class)
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar begin;
-    @Convert(converter = CalendarConvertor.class, columnType = Long.class)
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar end;
     @Property
     private double purpose;

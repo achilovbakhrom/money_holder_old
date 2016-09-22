@@ -326,7 +326,7 @@ public class BorrowFragment extends Fragment {
                                             public void onClick(DialogInterface d, int id) {
                                                 d.cancel();
                                                 if (person.getCalculate()) {
-                                                    Recking recking = new Recking(dateFormat.format(date.getTime()),
+                                                    Recking recking = new Recking(date,
                                                             Double.parseDouble(enterPay.getText().toString()),
                                                             persons.get(position).getId(), finalAc,
                                                             comment.getText().toString());
@@ -343,7 +343,7 @@ public class BorrowFragment extends Fragment {
                                                     view.BorrowPersonSumm.setText(getResources().getString(R.string.repaid));
                                                     dialog.dismiss();
                                                 } else {
-                                                    Recking recking = new Recking(dateFormat.format(date.getTime()),
+                                                    Recking recking = new Recking(date,
                                                             Double.parseDouble(enterPay.getText().toString()),
                                                             persons.get(position).getId(), comment.getText().toString());
                                                     logicManager.insertReckingDebt(recking);
@@ -366,7 +366,7 @@ public class BorrowFragment extends Fragment {
                                     } else {
                                         Recking recking = null;
                                         if (person.getCalculate() && isMumkin(person, ac, Double.parseDouble(enterPay.getText().toString()))) {
-                                            recking = new Recking(dateFormat.format(date.getTime()),
+                                            recking = new Recking(date,
                                                     Double.parseDouble(enterPay.getText().toString()),
                                                     persons.get(position).getId(), ac,
                                                     comment.getText().toString());
@@ -386,7 +386,7 @@ public class BorrowFragment extends Fragment {
                                             dialog.dismiss();
                                         } else {
                                             if (!person.getCalculate()) {
-                                                recking = new Recking(dateFormat.format(date.getTime()),
+                                                recking = new Recking(date,
                                                         Double.parseDouble(enterPay.getText().toString()),
                                                         persons.get(position).getId(),
                                                         comment.getText().toString());

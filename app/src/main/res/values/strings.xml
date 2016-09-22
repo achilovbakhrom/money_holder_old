@@ -1381,5 +1381,20 @@
     <string name="date_with_two_dots">Date:</string>
     <string name="accountdo">Account:</string>
     <string name="not_exist">Not exist</string>
+    <string name="borrow_arch">BORROW in Archive</string>
+    <string name="debt_arch">Debt in Archive</string>
+    <string name="debt_com">This Debt included in the balance. But now the record in archive</string>
+    <string name="debt_comment_not_icluded">This Debt Not included in the balance. But now the record in archive</string>
+    <string name="debt_coment">This Debt included in the balance</string>
+    <string name="debt_comment_to">This Debt Not included in the balance</string>
+    <string name="borrow_com">This Borrow included in the balance. But now the record in archive</string>
+    <string name="borrow_comment_not_icl_arch">This Borrow Not included in the balance. But now the record in archive</string>
+    <string name="borrow_comment">This Borrow included in the balance</string>
+    <string name="borrow_coment_incl">This Borrow Not included in the balance</string>
+    <string name="cred_include_bal">This credit include the balance</string>
+    <string name="cred_not_include_bal">This Credit Not include the balance</string>
+    <string name="include_balance">This Credit included in the balance. But now the record in archive</string>
+    <string name="some_credit">This Credit Not included in the balance. But now the record in archive</string>
+    <string name="cred_arch">Credit Archive</string>
 
 </resources>

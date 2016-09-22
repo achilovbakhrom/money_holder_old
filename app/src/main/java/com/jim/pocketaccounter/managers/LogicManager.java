@@ -398,6 +398,11 @@ public class LogicManager {
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
+    public int deleteReckingCredit(ReckingCredit reckingCredit) {
+        reckingCreditDao.delete(reckingCredit);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
     public int insertAccountOperation (AccountOperation accountOperation) {
         accountOperationDao.insertOrReplace(accountOperation);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
@@ -439,12 +444,8 @@ public class LogicManager {
                         accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
                     }
                     for (Recking recking : debtBorrow.getReckings()) {
-                        Calendar cal = Calendar.getInstance();
-                        try {
-                            cal.setTime(simpleDateFormat.parse(recking.getPayDate()));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        Calendar cal = recking.getPayDate();
+
                         if (debtBorrow.getType() == DebtBorrow.DEBT) {
                             accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
                         } else {
@@ -453,13 +454,9 @@ public class LogicManager {
                     }
                 } else {
                     for (Recking recking : debtBorrow.getReckings()) {
-                        Calendar cal = Calendar.getInstance();
+                        Calendar cal = recking.getPayDate();
                         if (recking.getAccountId().matches(account.getId())) {
-                            try {
-                                cal.setTime(simpleDateFormat.parse(recking.getPayDate()));
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+
                             if (debtBorrow.getType() == DebtBorrow.BORROW) {
                                 accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
                             } else {
@@ -471,12 +468,10 @@ public class LogicManager {
             }
         }
         for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
-            if (creditDetials.isKey_for_include()) {
+            if (creditDetials.getKey_for_include()) {
                 for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
                     if (reckingCredit.getAccountId().matches(account.getId())) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTimeInMillis(reckingCredit.getPayDate());
-                        accounted = accounted - commonOperations.getCost(cal, creditDetials.getValyute_currency(), account.getCurrency(), reckingCredit.getAmount());
+                        accounted = accounted - commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(), account.getCurrency(), reckingCredit.getAmount());
                     }
                 }
             }

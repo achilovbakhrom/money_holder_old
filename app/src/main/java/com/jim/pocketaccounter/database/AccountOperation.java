@@ -24,7 +24,7 @@ public class AccountOperation {
     @Id
     @Property
     private String id;
-    @Convert(converter = CalendarConvertor.class, columnType = Long.class)
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar date;
     @Property
     private String sourceId;

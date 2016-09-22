@@ -144,6 +144,12 @@ public class SearchResultConten {
             return context.getResources().getString(R.string.debt_reckings_var);
         case BORROW_RECKING:
             return context.getResources().getString(R.string.borrow_reckings_var);
+        case DEBT_ARCHIVE:
+            return context.getString(R.string.debt_arch);
+        case BORROW_ARCHIVE:
+            return context.getString(R.string.borrow_arch);
+        case CREDIT_ARCHIVE:
+            return context.getString(R.string.cred_arch);
 
     }
         return null;

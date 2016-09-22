@@ -17,7 +17,7 @@ import org.greenrobot.greendao.DaoException;
 
 @Entity(nameInDb = "FINANCE_RECORDS", active = true)
 public class FinanceRecord {
-    @Convert(converter = CalendarConvertor.class, columnType = Long.class)
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar date;
     @Property
     private double amount = 0.0;

@@ -59,10 +59,13 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         cardDetials = new ArrayList<>();
-        cardDetials = creditDetialsDao.queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).build().list();
+        cardDetials = creditDetialsDao.queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
         this.context = This;
         formater = new DecimalFormat("0.##");
     }
+     public  void updateBase(){
+        cardDetials = creditDetialsDao.queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
+     }
 
     AdapterCridetArchive.GoCredFragForNotify svyazForNotifyFromArchAdap;
 
@@ -160,16 +163,7 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
                     @Override
                     public void delete_item(int position) {
                         CreditDetials Az = cardDetials.get(position);
-                        if (Az.isKey_for_include()) {
-                            ArrayList<CreditDetials> credList = (ArrayList<CreditDetials>) creditDetialsDao.queryBuilder().list();
-                            for (CreditDetials creditDetials : credList) {
-                                if (creditDetials.getTake_time().getTimeInMillis() == Az.getTake_time().getTimeInMillis()) {
-                                    credList.remove(creditDetials);
-                                    logicManager.deleteCredit(creditDetials);
-                                    break;
-                                }
-                            }
-                        }
+                        logicManager.deleteCredit(Az);
                         cardDetials.remove(position);
                         notifyItemRemoved(position);
                     }
@@ -256,7 +250,6 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
 
     public void openFragment(Fragment fragment, String tag) {
         if (fragment != null) {
-            paFragmentManager.getFragmentManager().popBackStack();
             paFragmentManager.displayFragment(fragment);
         }
     }

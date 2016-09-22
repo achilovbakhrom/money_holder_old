@@ -170,12 +170,8 @@ public class ReportManager {
                         result.add(reportObject);
                     }
                     for (Recking recking : debtBorrow.getReckings()) {
-                        Calendar calendar = Calendar.getInstance();
-                        try {
-                            calendar.setTime(dateFormat.parse(recking.getPayDate()));
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
+                        Calendar calendar = recking.getPayDate();
+
                         if (calendar.compareTo(begin) >= 0 && calendar.compareTo(end) <= 0) {
                             ReportObject reportObject = new ReportObject();
                             reportObject.setDate(calendar);
@@ -212,10 +208,9 @@ public class ReportManager {
             }
             if (cl.getName().matches(CreditDetials.class.getName())) {
                 for (CreditDetials creditDetials : creditDetialsDao.loadAll()) {
-                    if (!creditDetials.isKey_for_include()) continue;
+                    if (!creditDetials.getKey_for_include()) continue;
                     for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTimeInMillis(reckingCredit.getPayDate());
+                        Calendar calendar = reckingCredit.getPayDate();
                         if (calendar.compareTo(begin) >= 0 && calendar.compareTo(end) <= 0) {
                             ReportObject reportObject = new ReportObject();
                             reportObject.setType(PocketAccounterGeneral.EXPENSE);

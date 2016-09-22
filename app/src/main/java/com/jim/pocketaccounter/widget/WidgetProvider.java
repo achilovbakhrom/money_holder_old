@@ -323,7 +323,7 @@ public class WidgetProvider extends AppWidgetProvider {
 //
 //        if (balanceSolve.matches(whole)) {
 //            for (CreditDetials creditDetials : manager.getCredits()) {
-//                if (creditDetials.isKey_for_include()) {
+//                if (creditDetials.getKey_for_include()) {
 //                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTimeInMillis(reckingCredit.getPayDate());
@@ -334,7 +334,7 @@ public class WidgetProvider extends AppWidgetProvider {
 //            }
 //        } else {
 //            for (CreditDetials creditDetials : manager.getCredits()) {
-//                if (creditDetials.isKey_for_include()) {
+//                if (creditDetials.getKey_for_include()) {
 //                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                        Calendar calendar = Calendar.getInstance();
 //                        calendar.setTimeInMillis(reckingCredit.getPayDate());
@@ -450,7 +450,7 @@ public class WidgetProvider extends AppWidgetProvider {
 //                }
 //            }
 //            for (CreditDetials creditDetials : manager.getCredits()) {
-//                if (creditDetials.isKey_for_include()) {
+//                if (creditDetials.getKey_for_include()) {
 //                    for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //                        Calendar cal = Calendar.getInstance();
 //                        cal.setTimeInMillis(reckingCredit.getPayDate());

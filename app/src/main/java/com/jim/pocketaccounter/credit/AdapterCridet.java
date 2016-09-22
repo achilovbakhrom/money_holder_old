@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,13 +80,16 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     long forMoth = 1000L * 60L * 60L * 24L * 30L;
     long forYear = 1000L * 60L * 60L * 24L * 365L;
     final static long forWeek = 1000L * 60L * 60L * 24L * 7L;
-
+    public void updateList(){
+        this.cardDetials=creditDetialsDao.queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
+    }
     public AdapterCridet(Context This, CreditTabLay.SvyazkaFragmentov svyaz) {
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
         this.cardDetials=creditDetialsDao.queryBuilder()
-                .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).build().list();
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
         this.context = This;
         formater = new DecimalFormat("0.##");
         this.svyaz = svyaz;
@@ -96,8 +100,10 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (holdeer instanceof Fornull) {
             return;
         }
+
         final myViewHolder holder = (myViewHolder) holdeer;
         final CreditDetials itemCr = cardDetials.get(position);
+        Log.d("sizeee", itemCr.getReckings().size()+"");
         holder.credit_procent.setText(parseToWithoutNull(itemCr.getProcent()) + "%");
         holder.total_value.setText(parseToWithoutNull(itemCr.getValue_of_credit_with_procent()) + itemCr.getValyute_currency().getAbbr());
         double total_paid = 0;
@@ -170,30 +176,32 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.glav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int pos = cardDetials.indexOf(itemCr);
+                final int pos = cardDetials.indexOf(itemCr);
                 InfoCreditFragment temp = new InfoCreditFragment();
                 temp.setConteent(itemCr, pos, new InfoCreditFragment.ConWithFragments() {
                     @Override
                     public void change_item(CreditDetials changed_item, int position) {
                         notifyItemChanged(position);
+                        updateList();
+
                     }
 
                     @Override
                     public void to_Archive(int position) {
                         CreditDetials toArc = cardDetials.get(position);
                         toArc.setKey_for_archive(true);
-                        if (toArc.isKey_for_include()) {
-                            notifyItemChanged(position);
-                        } else {
-                            cardDetials.remove(position);
-                            notifyItemRemoved(position);
-                        }
+                        logicManager.insertCredit(toArc);
+                        cardDetials.set(position,toArc);
                         svyaz.itemInsertedToArchive();
+                        updateList();
+                        notifyItemChanged(position);
                     }
 
                     @Override
                     public void delete_item(int position) {
+                        logicManager.deleteCredit(cardDetials.get(position));
                         cardDetials.remove(position);
+                        updateList();
                         notifyItemRemoved(position);
                     }
                 });
@@ -208,13 +216,10 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (toArcive) {
                     CreditDetials toArc = cardDetials.get(position);
                     toArc.setKey_for_archive(true);
-                    if (toArc.isKey_for_include()) {
-                        notifyItemChanged(position);
-                    } else {
-                        cardDetials.remove(position);
-                        notifyItemRemoved(position);
-                    }
                     logicManager.insertCredit(toArc);
+                    cardDetials.set(position,toArc);
+                    notifyItemChanged(position);
+                    svyaz.itemInsertedToArchive();
                     svyaz.itemInsertedToArchive();
                 } else
                     openDialog(itemCr, position);
@@ -260,7 +265,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        return cardDetials.get(position).isKey_for_archive() ? VIEW_NULL : VIEW_NOT_NULL;
+        return cardDetials.get(position).getKey_for_archive() ? VIEW_NULL : VIEW_NOT_NULL;
     }
 
     public String parseToWithoutNull(double A) {
@@ -330,9 +335,10 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     @Override
                     public void canceledAdding() {}
                 });
-            final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter) context).getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.add(R.id.flMain, fragment, tag);
-            ft.commit();
+            paFragmentManager.displayFragment(fragment,tag);
+//            final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter) context).getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//            ft.add(R.id.flMain, fragment, tag);
+//            ft.commit();
         }
     }
 
@@ -345,7 +351,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         final EditText enterPay = (EditText) dialogView.findViewById(R.id.etInfoDebtBorrowPaySumm);
         final EditText comment = (EditText) dialogView.findViewById(R.id.etInfoDebtBorrowPayComment);
         final Spinner accountSp = (Spinner) dialogView.findViewById(R.id.spInfoDebtBorrowAccount);
-        if (current.isKey_for_include()) {
+        if (current.getKey_for_include()) {
             accaunt_AC = (ArrayList<Account>) accountDao.queryBuilder().list();
             String[] accaounts = new String[accaunt_AC.size()];
             for (int i = 0; i < accaounts.length; i++) {
@@ -401,18 +407,18 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     total_paid += item.getAmount();
 
                 if (!amount.matches("")) {
-                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-                    if (account.getIsLimited()&& current.isKey_for_include()) {
-                        //TODO editda tekwir ozini hisoblamaslini
-                        double limit = account.getLimite();
-                        double accounted =  logicManager.isLimitAccess(account, date);
-
-                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
-                        if (-limit > accounted) {
-                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
+//                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
+//                    if (account.getIsLimited()&& current.getKey_for_include()) {
+//                        //TODO editda tekwir ozini hisoblamaslini
+//                        double limit = account.getLimite();
+//                        double accounted =  logicManager.isLimitAccess(account, date);
+//
+//                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
+//                        if (-limit > accounted) {
+//                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//                    }
                     if (Double.parseDouble(amount) > current.getValue_of_credit_with_procent() - total_paid) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setMessage(context.getString(R.string.payment_balans) + parseToWithoutNull(current.getValue_of_credit_with_procent() - total_paid) +
@@ -423,10 +429,10 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                     public void onClick(DialogInterface dialoge, int id) {
                                         String amount = enterPay.getText().toString();
                                         ReckingCredit rec = null;
-                                        if (!amount.matches("") && current.isKey_for_include())
-                                            rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
+                                        if (!amount.matches("") && current.getKey_for_include())
+                                            rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
                                         else
-                                            rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
+                                            rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
                                         int pos = cardDetials.indexOf(current);
                                         current.getReckings().add(rec);
                                         notifyItemChanged(position);
@@ -442,10 +448,10 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         builder.create().show();
                     } else {
                         ReckingCredit rec = null;
-                        if (!amount.matches("") && current.isKey_for_include())
-                            rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
+                        if (!amount.matches("") && current.getKey_for_include())
+                            rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
                         else
-                            rec = new ReckingCredit(date.getTimeInMillis(), Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
+                            rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
                         int pos = cardDetials.indexOf(current);
                         current.getReckings().add(rec);
                         logicManager.insertReckingCredit(rec);

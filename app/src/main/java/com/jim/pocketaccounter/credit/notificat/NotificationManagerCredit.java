@@ -71,7 +71,7 @@ public class NotificationManagerCredit {
         cal.set(Calendar.MINUTE, morning_time.get(Calendar.MINUTE));
         cal.set(Calendar.SECOND, 0);
         for (CreditDetials item : myCredits) {
-            if (item.isKey_for_archive()) continue;
+            if (item.getKey_for_archive()) continue;
             boolean isNotify = sharedPreferences.getBoolean("general_notif", true);
             Calendar returnDate = (Calendar) item.getTake_time().clone();
             long period_tip = item.getPeriod_time_tip();

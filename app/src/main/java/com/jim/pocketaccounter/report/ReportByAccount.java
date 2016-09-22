@@ -169,7 +169,7 @@ public class ReportByAccount {
 //        ArrayList<CreditDetials> temp_credit = PocketAccounter.financeManager.getCredits();
 //        ArrayList<CreditDetials> credit = new ArrayList<>();
 //        for (int i = 0; i < temp_credit.size(); i++) {
-//            if (!temp_credit.get(i).isKey_for_include()) continue;
+//            if (!temp_credit.get(i).getKey_for_include()) continue;
 //            for (int j = 0; j < temp_credit.get(i).getReckings().size(); j++) {
 //                ReckingCredit recking = temp_credit.get(i).getReckings().get(j);
 //                Calendar cal = Calendar.getInstance();

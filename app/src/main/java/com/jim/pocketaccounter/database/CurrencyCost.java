@@ -18,7 +18,7 @@ public class CurrencyCost {
 	private double cost;
 	@Property
 	private String currencyId;
-	@Convert(converter = CalendarConvertor.class, columnType = Long.class)
+	@Convert(converter = CalendarConvertor.class, columnType = String.class)
 	private Calendar day;
 	/** Used for active entity operations. */
 	@Generated(hash = 1159184481)

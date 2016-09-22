@@ -2,12 +2,16 @@ package com.jim.pocketaccounter.database;
 
 import android.support.annotation.Keep;
 
+import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
+
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
+import java.util.Calendar;
 import java.util.UUID;
 
 /**
@@ -18,8 +22,8 @@ public class Recking {
     @Id
     @Property
     private String id;
-    @Property
-    private String payDate;
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
+    private Calendar payDate;
     @Property
     private double amount;
     @Property
@@ -34,8 +38,9 @@ public class Recking {
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
+
     @Keep
-    public Recking(String payDate, double amount, String id, String accountId, String comment) {
+    public Recking(Calendar payDate, double amount, String id, String accountId, String comment) {
         this.payDate = payDate;
         this.amount = amount;
         this.debtBorrowsId = id;
@@ -44,7 +49,7 @@ public class Recking {
         this.id = UUID.randomUUID().toString();
     }
     @Keep
-    public Recking(String payDate, double amount, String id, String comment) {
+    public Recking(Calendar payDate, double amount, String id, String comment) {
         this.payDate = payDate;
         this.amount = amount;
         this.debtBorrowsId = id;
@@ -118,10 +123,10 @@ public class Recking {
     public void setAmount(double amount) {
         this.amount = amount;
     }
-    public String getPayDate() {
+    public Calendar getPayDate() {
         return this.payDate;
     }
-    public void setPayDate(String payDate) {
+    public void setPayDate(Calendar payDate) {
         this.payDate = payDate;
     }
     public String getId() {
@@ -130,8 +135,8 @@ public class Recking {
     public void setId(String id) {
         this.id = id;
     }
-    @Generated(hash = 1802619909)
-    public Recking(String id, String payDate, double amount, String accountId, String debtBorrowsId,
+    @Generated(hash = 1526389974)
+    public Recking(String id, Calendar payDate, double amount, String accountId, String debtBorrowsId,
             String comment) {
         this.id = id;
         this.payDate = payDate;
@@ -140,4 +145,5 @@ public class Recking {
         this.debtBorrowsId = debtBorrowsId;
         this.comment = comment;
     }
+
 }

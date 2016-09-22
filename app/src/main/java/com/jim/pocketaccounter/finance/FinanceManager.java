@@ -355,7 +355,7 @@
 //			}
 //		}
 //		for (CreditDetials creditDetials : credits) {
-//			if (creditDetials.isKey_for_include()) {
+//			if (creditDetials.getKey_for_include()) {
 //				for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
 //					BalanceObject balanceObject = new BalanceObject();
 //					balanceObject.setCurrency(creditDetials.getValyute_currency());

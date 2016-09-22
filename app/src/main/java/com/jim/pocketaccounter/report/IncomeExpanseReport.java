@@ -70,7 +70,7 @@ public class IncomeExpanseReport {
 //        ArrayList<CreditDetials> temp = PocketAccounter.financeManager.getCredits();
 //        ArrayList<CreditDetials> credits = new ArrayList<CreditDetials>();
 //        for (int i=0; i<temp.size(); i++) {
-//            if (!temp.get(i).isKey_for_include()) continue;
+//            if (!temp.get(i).getKey_for_include()) continue;
 //            for (int j=0; j<temp.get(i).getReckings().size(); j++) {
 //                ReckingCredit recking = temp.get(i).getReckings().get(j);
 //                Calendar cal = Calendar.getInstance();
