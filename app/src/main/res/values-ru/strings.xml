@@ -1357,4 +1357,38 @@
     <string name="period">Период</string>
     <string name="none_minus_account_warning">Счет не может быть нулевым!</string>
     <string name="add_category">Добавить категорию</string>
+    <string name="debt_borrow_list_is_empty">Список долгов и займов пуст!</string>
+    <!--operations-->
+    <string-array name="operation_category">
+        <item>Выбрать из существующих</item>
+        <item>Создать новый</item>
+    </string-array>
+    <string-array name = "board_operation_names_long_press">
+        <item>Категория</item>
+        <item>Кредиты</item>
+        <item>Долги</item>
+        <item>Функция</item>
+        <item>Страница</item>
+    </string-array>
+    <string-array name="operation_names">
+        <item>Вперед</item>
+        <item>Назад</item>
+    </string-array>
+    <string-array name="operation_ids">
+        <item>next_button</item>
+        <item>back_button</item>
+    </string-array>
+    <string-array name="operation_icons">
+        <item>icons_316</item>
+        <item>icons_317</item>
+    </string-array>
+
+    <string-array name="page_names">
+        <item>Валюты</item>
+        <item>Счета</item>
+    </string-array>
+    <string-array name="page_ids">
+        <item>currency_page</item>
+        <item>account_page</item>
+    </string-array>
 </resources>

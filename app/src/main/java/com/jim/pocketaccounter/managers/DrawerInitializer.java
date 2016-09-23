@@ -105,7 +105,7 @@ public class DrawerInitializer {
     View mainRoot;
     private AnimationDrawable mAnimationDrawable;
     private NotificationManagerCredit notific;
-    boolean keyFromCalc=false;
+    boolean keyFromCalc = false;
 
     public DrawerInitializer(PocketAccounter pocketAccounter, PAFragmentManager fragmentManager) {
         this.pocketAccounter = pocketAccounter;

@@ -459,8 +459,8 @@
 //			for (int i=0; i<credits.size(); i++) {
 //				values.put("credit_name", credits.get(i).getCredit_name());
 //				values.put("icon_id", credits.get(i).getIcon_ID());
-//				values.put("key_for_include", credits.get(i).getKey_for_include());
-//				values.put("key_for_archive", credits.get(i).getKey_for_archive());
+//				values.put("key_for_include", credits.get(i).isKey_for_include());
+//				values.put("key_for_archive", credits.get(i).isKey_for_archive());
 //				values.put("taken_date", format.format(credits.get(i).getTake_time().getTime()));
 //				values.put("percent", credits.get(i).getProcent());
 ////				values.put("percent_interval", Long.toString(credits.get(i).getProcent_interval()));

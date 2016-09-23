@@ -12,21 +12,27 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 
+import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
+
+import org.greenrobot.greendao.query.Query;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 
 public class RecordButtonExpanse {
-	public static final int TOP_LEFT = 0, SIMPLE = 1, LEFT_SIMPLE = 2, LEFT_BOTTOM = 3, BOTTOM_SIMPLE = 4,
-							BOTTOM_RIGHT = 5, TOP_RIGHT = 6, TOP_SIMPLE = 7, RIGHT_SIMPLE = 8;
 	private boolean pressed = false;
 	private RectF container;
 	private int type;
@@ -37,11 +43,14 @@ public class RecordButtonExpanse {
 	private BoardButton boardButton;
 	private float aLetterHeight;
 	private Calendar date;
-	@Inject
-	DaoSession daoSession;
+	private BitmapFactory.Options options;
+	@Inject DaoSession daoSession;
+	@Inject	DataCache dataCache;
 	public RecordButtonExpanse(Context context, int type, Calendar date) {
 		this.context = context;
 		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
+		options = new BitmapFactory.Options();
+		options.inPreferredConfig = Bitmap.Config.RGB_565;
 		this.date = (Calendar) date.clone();
 		clearance = context.getResources().getDimension(R.dimen.one_dp);
 		shape = new Path();
@@ -51,36 +60,37 @@ public class RecordButtonExpanse {
 		Rect bounds = new Rect();
 		paint.getTextBounds("A", 0, "A".length(), bounds);
 		aLetterHeight = bounds.height();
+		container = new RectF();
 	}
-	public void setBounds(float left, float top, float right, float bottom, float radius) {
-		container = new RectF(left, top, right, bottom);
+	public synchronized void setBounds(float left, float top, float right, float bottom, float radius) {
+		container.set(left, top, right, bottom);
 		this.radius = radius;
 		switch(type) {
-		case TOP_LEFT:
+		case PocketAccounterGeneral.UP_TOP_LEFT:
 			initTopLeft();
 			break;
-		case TOP_SIMPLE:
+		case PocketAccounterGeneral.UP_TOP_SIMPLE:
 			initSimple();
 			break;
-		case TOP_RIGHT:
+		case PocketAccounterGeneral.UP_TOP_RIGHT:
 			initTopRight();
 			break;
-		case LEFT_SIMPLE:
+		case PocketAccounterGeneral.UP_LEFT_SIMPLE:
 			initLeftSimple();
 			break;
-		case SIMPLE:
+		case PocketAccounterGeneral.UP_SIMPLE:
 			initSimple();
 			break;
-		case RIGHT_SIMPLE:
+		case PocketAccounterGeneral.UP_RIGHT_SIMPLE:
 			initSimple();
 			break;
-		case LEFT_BOTTOM:
+		case PocketAccounterGeneral.UP_LEFT_BOTTOM:
 			initLeftBottom();
 			break;
-		case BOTTOM_SIMPLE:
+		case PocketAccounterGeneral.UP_BOTTOM_SIMPLE:
 			initBottomSimple();
 			break;
-		case BOTTOM_RIGHT:
+		case PocketAccounterGeneral.UP_BOTTOM_RIGHT:
 			initBottomRight();
 			break;
 		}
@@ -105,8 +115,13 @@ public class RecordButtonExpanse {
 		float bitmapWidth, bitmapHeight;
 		bitmapHeight = container.height()/5;
 		bitmapWidth = bitmapHeight*6-radius/2;
-		Bitmap temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.bottom_shadow);
-		shadow = Bitmap.createScaledBitmap(temp, (int)(bitmapWidth-2*clearance), (int)bitmapHeight, false);
+		if (dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_RIGHT) == null) {
+			shadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.bottom_shadow, options);
+			shadow = Bitmap.createScaledBitmap(shadow, (int)(bitmapWidth-2*clearance), (int)bitmapHeight, false);
+			dataCache.getElements().put(PocketAccounterGeneral.UP_BOTTOM_RIGHT, shadow);
+		}
+		else
+			shadow = dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_RIGHT);
 	}
 	private void initBottomSimple() {
 		shape.moveTo(container.left, container.top);
@@ -118,8 +133,13 @@ public class RecordButtonExpanse {
 		float bitmapWidth, bitmapHeight;
 		bitmapHeight = container.height()/5;
 		bitmapWidth = bitmapHeight*6;
-		Bitmap temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.bottom_shadow);
-		shadow = Bitmap.createScaledBitmap(temp, (int)(bitmapWidth-2*clearance), (int)bitmapHeight, false);
+		if (dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_SIMPLE) == null) {
+			shadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.bottom_shadow, options);
+			shadow = Bitmap.createScaledBitmap(shadow, (int)(bitmapWidth-2*clearance), (int)bitmapHeight, false);
+			dataCache.getElements().put(PocketAccounterGeneral.UP_BOTTOM_SIMPLE, shadow);
+		}
+		else
+			shadow = dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_SIMPLE);
 	}
 	private void initSimple() {
 		shape.moveTo(container.left, container.top);
@@ -144,9 +164,15 @@ public class RecordButtonExpanse {
 		float bitmapWidth, bitmapHeight;
 		bitmapWidth = container.width()/5;
 		bitmapHeight = bitmapWidth*6-delta_y;
-		Bitmap temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.left_shadow);
-		shadow = Bitmap.createScaledBitmap(temp, (int)bitmapWidth, (int)(bitmapHeight-clearance*2), false);
+		if (dataCache.getElements().get(PocketAccounterGeneral.UP_TOP_LEFT) == null) {
+			shadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.left_shadow, options);
+			shadow = Bitmap.createScaledBitmap(shadow, (int)bitmapWidth, (int)(bitmapHeight-clearance*2), false);
+			dataCache.getElements().put(PocketAccounterGeneral.UP_TOP_LEFT, shadow);
+		}
+		else
+			shadow = dataCache.getElements().get(PocketAccounterGeneral.UP_TOP_LEFT);
 	}
+
 	private void initLeftSimple() {
 		shape.moveTo(container.left, container.top);
 		shape.lineTo(container.right, container.top);
@@ -157,8 +183,13 @@ public class RecordButtonExpanse {
 		float bitmapWidth, bitmapHeight;
 		bitmapWidth = container.width()/5;
 		bitmapHeight = bitmapWidth*6;
-		Bitmap temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.left_shadow);
-		shadow = Bitmap.createScaledBitmap(temp, (int)bitmapWidth, (int)(bitmapHeight-clearance*2), false);
+		if (dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_SIMPLE) == null) {
+			shadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.left_shadow, options);
+			shadow = Bitmap.createScaledBitmap(shadow, (int)bitmapWidth, (int)(bitmapHeight-clearance*2), false);
+			dataCache.getElements().put(PocketAccounterGeneral.UP_LEFT_SIMPLE, shadow);
+		}
+		else
+			shadow = dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_SIMPLE);
 	}
 	private void initLeftBottom() {
 		shape.moveTo(container.left, container.top);
@@ -171,11 +202,16 @@ public class RecordButtonExpanse {
 		float bitmapWidth, bitmapHeight;
 		bitmapWidth = 6*container.width()/5;
 		bitmapHeight = bitmapWidth;
-		Bitmap temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.left_bottom);
-		shadow = Bitmap.createScaledBitmap(temp, (int)(bitmapWidth-clearance*2), (int)(bitmapHeight+clearance*2), false);
+		if (dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_BOTTOM) == null) {
+			shadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.left_bottom, options);
+			shadow = Bitmap.createScaledBitmap(shadow, (int)(bitmapWidth-clearance*2), (int)(bitmapHeight+clearance*2), false);
+			dataCache.getElements().put(PocketAccounterGeneral.UP_LEFT_BOTTOM, shadow);
+		}
+		else
+			shadow = dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_BOTTOM);
 	}
-	public void drawButton(Canvas canvas) {
-		Bitmap temp, scaled;
+	public synchronized void drawButton(Canvas canvas) {
+		Bitmap scaled = null;
 		Paint bitmapPaint = new Paint();
 		bitmapPaint.setAntiAlias(true);
 		bitmapPaint.setAlpha(0x77);
@@ -185,7 +221,7 @@ public class RecordButtonExpanse {
 		paint.setColor(Color.WHITE);
 		PointF center = new PointF();
 		switch(type) {
-		case TOP_LEFT:
+		case PocketAccounterGeneral.UP_TOP_LEFT:
 			if (!pressed) {
 				float shadow_x, shadow_y;
 				center.set(container.left+radius, container.top+radius);
@@ -200,26 +236,38 @@ public class RecordButtonExpanse {
 				innerShadowPaint.setAlpha(0x22);
 				innerShadowPaint.setAntiAlias(true);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_first);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()/5), (int)container.height(), false);
+				Bitmap innerShadow = null;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_TOP_LEFT_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_first, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()/5), (int)container.height(), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_TOP_LEFT_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_TOP_LEFT_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.right-innerShadow.getWidth(), container.top, innerShadowPaint);
 			}
 			break;
-		case TOP_SIMPLE:
+		case PocketAccounterGeneral.UP_TOP_SIMPLE:
 			canvas.drawPath(shape, paint);
 			if (pressed) {
 				Paint innerShadowPaint = new Paint();
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_first);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()/5), (int)container.height(), false);
+				Bitmap innerShadow = null;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_TOP_SIMPLE_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_first, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()/5), (int)container.height(), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_TOP_SIMPLE_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_TOP_SIMPLE_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.right-innerShadow.getWidth(), container.top, innerShadowPaint);
 			}
 			break;
-		case TOP_RIGHT:
+		case PocketAccounterGeneral.UP_TOP_RIGHT:
 			canvas.drawPath(shape, paint);
 			if (pressed) {
 				Paint innerShadowPaint = new Paint();
@@ -228,7 +276,7 @@ public class RecordButtonExpanse {
 				canvas.drawPath(shape, innerShadowPaint);
 			}
 			break;
-		case LEFT_SIMPLE:
+		case PocketAccounterGeneral.UP_LEFT_SIMPLE:
 			if (!pressed)
 				canvas.drawBitmap(shadow, container.left-shadow.getWidth(), container.top+clearance, bitmapPaint);
 			canvas.drawPath(shape, paint);
@@ -237,39 +285,57 @@ public class RecordButtonExpanse {
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()), (int)container.height(), false);
+				Bitmap innerShadow;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_SIMPLE_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()), (int)container.height(), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_LEFT_SIMPLE_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_SIMPLE_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.left, container.top, innerShadowPaint);
 			}
 			break;
-		case SIMPLE:
+		case PocketAccounterGeneral.UP_SIMPLE:
 			canvas.drawPath(shape, paint);
 			if (pressed) {
 				Paint innerShadowPaint = new Paint();
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()), (int)container.height(), false);
+				Bitmap innerShadow;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_SIMPLE_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()), (int)container.height(), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_SIMPLE_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_SIMPLE_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.left, container.top, innerShadowPaint);
 			}
 			break;
-		case RIGHT_SIMPLE:
+		case PocketAccounterGeneral.UP_RIGHT_SIMPLE:
 			canvas.drawPath(shape, paint);
 			if (pressed) {
 				Paint innerShadowPaint = new Paint();
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_third);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()), (int)(container.height()/5), false);
+				Bitmap innerShadow;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_RIGHT_SIMPLE_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_third, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()), (int)(container.height()/5), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_RIGHT_SIMPLE_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_RIGHT_SIMPLE_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.left, container.top, innerShadowPaint);
 			}
 			break;
-		case LEFT_BOTTOM:
+		case PocketAccounterGeneral.UP_LEFT_BOTTOM:
 			if (!pressed)
 				canvas.drawBitmap(shadow, container.right-shadow.getWidth()-clearance, container.top-clearance, bitmapPaint);
 			canvas.drawPath(shape, paint);
@@ -278,13 +344,19 @@ public class RecordButtonExpanse {
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()), (int)container.height(), false);
+				Bitmap innerShadow = null;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_BOTTOM_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()), (int)container.height(), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_LEFT_BOTTOM_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_BOTTOM_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.left, container.top, innerShadowPaint);
 			}
 			break;
-		case BOTTOM_SIMPLE:
+		case PocketAccounterGeneral.UP_BOTTOM_SIMPLE:
 			if (!pressed)
 				canvas.drawBitmap(shadow, container.left-shadow.getHeight()+clearance, container.bottom, bitmapPaint);
 			canvas.drawPath(shape, paint);
@@ -293,13 +365,19 @@ public class RecordButtonExpanse {
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)(container.width()), (int)container.height(), false);
+				Bitmap innerShadow = null;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_SIMPLE_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_second, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)(container.width()), (int)container.height(), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_BOTTOM_SIMPLE_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_SIMPLE_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.left, container.top, innerShadowPaint);
 			}
 			break;
-		case BOTTOM_RIGHT:
+		case PocketAccounterGeneral.UP_BOTTOM_RIGHT:
 			if (!pressed) {
 				center.set(container.right-radius, container.bottom-radius);
 				float delta_x, delta_y;
@@ -313,46 +391,111 @@ public class RecordButtonExpanse {
 				innerShadowPaint.setColor(Color.BLACK);
 				innerShadowPaint.setAlpha(0x22);
 				canvas.drawPath(shape, innerShadowPaint);
-				Bitmap inTemp = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_third);
-				Bitmap innerShadow = Bitmap.createScaledBitmap(inTemp, (int)container.width(), (int)(container.height()/5), false);
+				Bitmap innerShadow;
+				if (dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_RIGHT_PRESSED) == null) {
+					innerShadow = BitmapFactory.decodeResource(context.getResources(), R.drawable.record_pressed_third, options);
+					innerShadow = Bitmap.createScaledBitmap(innerShadow, (int)container.width(), (int)(container.height()/5), false);
+					dataCache.getElements().put(PocketAccounterGeneral.UP_BOTTOM_RIGHT_PRESSED, innerShadow);
+				}
+				else
+					innerShadow = dataCache.getElements().get(PocketAccounterGeneral.UP_BOTTOM_RIGHT_PRESSED);
 				innerShadowPaint.setAlpha(0x66);
 				canvas.drawBitmap(innerShadow, container.left, container.top, innerShadowPaint);
 			}
 			break;
 		}
 		bitmapPaint.setAlpha(0xFF);
-		if (boardButton != null) {
-			RootCategory category = null;
-			for (RootCategory cat : daoSession.getRootCategoryDao().loadAll()) {
-				if (cat.getId().matches(boardButton.getCategoryId())) {
-					category = cat;
+		if (boardButton.getCategoryId() != null) {
+			String name = "";
+
+			switch (boardButton.getType()) {
+				case PocketAccounterGeneral.CATEGORY:
+					RootCategory category = null;
+					for (RootCategory cat : daoSession.getRootCategoryDao().loadAll()) {
+						if (cat.getId().matches(boardButton.getCategoryId())) {
+							category = cat;
+							break;
+						}
+					}
+					name = category.getName();
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getPos()) == null) {
+						int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), resId, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						List<Bitmap> list = new ArrayList<>();
+						list.add(scaled);
+						dataCache.getBoardBitmapsCache().put(boardButton.getPos(), list);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getPos()).get(0);
 					break;
-				}
+				case PocketAccounterGeneral.CREDIT:
+
+					break;
+				case PocketAccounterGeneral.DEBT_BORROW:
+					Query<DebtBorrow> query = daoSession.getDebtBorrowDao()
+							.queryBuilder()
+							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getId()))
+							.build();
+					if (!query.list().isEmpty())
+						name = query.list().get(0).getPerson().getName();
+
+					break;
+				case PocketAccounterGeneral.FUNCTION:
+					String[] operationIds = context.getResources().getStringArray(R.array.operation_ids);
+					String[] operationIcons = context.getResources().getStringArray(R.array.operation_icons);
+					String[] operationNames = context.getResources().getStringArray(R.array.operation_names);
+					String icon = null;
+					for (int i = 0; i < operationIds.length; i++) {
+						if (operationIds[i].matches(boardButton.getCategoryId())) {
+							icon = operationIcons[i];
+							name = operationNames[i];
+							break;
+						}
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getPos()) == null) {
+						int id = context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), id, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						List<Bitmap> list = new ArrayList<>();
+						list.add(scaled);
+						dataCache.getBoardBitmapsCache().put(boardButton.getPos(), list);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getPos()).get(0);
+					break;
+				case PocketAccounterGeneral.PAGE:
+
+					break;
 			}
-			int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
-			temp = BitmapFactory.decodeResource(context.getResources(), resId);
-			scaled = Bitmap.createScaledBitmap(temp, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint();
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
 			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
 			textPaint.setAntiAlias(true);
 			Rect bounds = new Rect();
-			String catText = category.getName();
-			for (int i=0; i < category.getName().length(); i++) {
-				textPaint.getTextBounds(category.getName(), 0, i, bounds);
+			for (int i=0; i < name.length(); i++) {
+				textPaint.getTextBounds(name, 0, i, bounds);
 				if (bounds.width() >= container.width()) {
-					catText = category.getName().substring(0, i-5);
-					catText = catText + "...";
+					name = name.substring(0, i-5);
+					name += "...";
 					break;
 				}
 			}
-			textPaint.getTextBounds(catText, 0, catText.length(), bounds);
-			canvas.drawText(catText, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
+			textPaint.getTextBounds(name, 0, name.length(), bounds);
+			canvas.drawText(name, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
 
 		} else {
-			temp = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_category);
-			scaled = Bitmap.createScaledBitmap(temp, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+			if (dataCache.getBoardBitmapsCache().get(PocketAccounterGeneral.ICONS_NO_CATEGORY) == null) {
+				scaled = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_category, options);
+				scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+				List<Bitmap> list = new ArrayList<>();
+				list.add(scaled);
+				dataCache.getBoardBitmapsCache().put(PocketAccounterGeneral.ICONS_NO_CATEGORY, list);
+			}
+			else
+				scaled = dataCache.getBoardBitmapsCache().get(PocketAccounterGeneral.ICONS_NO_CATEGORY).get(0);
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint();
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));

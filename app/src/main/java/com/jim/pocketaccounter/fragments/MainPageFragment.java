@@ -5,17 +5,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,6 +18,7 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -50,21 +46,19 @@ public class MainPageFragment extends Fragment {
     private RelativeLayout rlRecordExpanses, rlRecordIncomes, rlRecordBalance;
     private RecordExpanseView expenseView;
     private RecordIncomesView incomeView;
-    public String  str = "";
     @Inject ReportManager reportManager;
     @Inject DataCache dataCache;
     @Inject CommonOperations commonOperations;
     @Inject ToolbarManager toolbarManager;
     @Inject @Named(value = "display_formmatter") SimpleDateFormat simpleDateFormat;
+    @Inject PAFragmentManager paFragmentManager;
     public MainPageFragment(Context context, Calendar day) {
         this.day = (Calendar) day.clone();
         this.pocketAccounter = (PocketAccounter) context;
-        str = "hello";
         pocketAccounter.component((PocketAccounterApplication) pocketAccounter.getApplicationContext()).inject(this);
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.main_page_fragment, container, false);
-        pocketAccounter.treatToolbar();
         pocketAccounter.findViewById(R.id.main).setVisibility(View.VISIBLE);
         pocketAccounter.findViewById(R.id.main).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -107,10 +101,6 @@ public class MainPageFragment extends Fragment {
             side = width;
         else
             side = (int) (height * 0.55);
-        final AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
-        animation.setDuration(200);
-        animation.setFillEnabled(true);
-        animation.setFillAfter(true);
         expenseView = new RecordExpanseView(pocketAccounter, day);
         RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(side, side);
         lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -124,8 +114,24 @@ public class MainPageFragment extends Fragment {
         incomeView.setLayoutParams(lpIncomes);
         rlRecordIncomes.removeAllViews();
         rlRecordIncomes.addView(incomeView);
+        calculateBalance();  }
+    public void update() {
+        toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
+        calculateBalance();
+    }
+    public void calculateBalance() {
+        Calendar begin = (Calendar) day.clone();
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        begin.set(Calendar.MINUTE, 0);
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
+        Calendar end = (Calendar) day.clone();
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.HOUR_OF_DAY, 59);
+        end.set(Calendar.HOUR_OF_DAY, 59);
+        end.set(Calendar.HOUR_OF_DAY, 59);
         DecimalFormat decFormat = new DecimalFormat("0.00");
-        Map<String, Double> balance = reportManager.calculateBalance(dataCache.getBeginDate(), dataCache.getEndDate());
+        Map<String, Double> balance = reportManager.calculateBalance(begin, end);
         String abbr = commonOperations.getMainCurrency().getAbbr();
         for (String key : balance.keySet()) {
             switch (key) {
@@ -141,12 +147,11 @@ public class MainPageFragment extends Fragment {
             }
         }
     }
-    public void update() {
-        toolbarManager.setSubtitle(simpleDateFormat.format(dataCache.getEndDate().getTime()));
-        expenseView.drawPercents();
-    }
+
     public static float dpToPx(Context context, float valueInDp) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return TypedValue.applyDimension(COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
+    public Calendar getDay() {return day;}
+    public void setDay(Calendar day) {this.day = (Calendar) day.clone();}
 }

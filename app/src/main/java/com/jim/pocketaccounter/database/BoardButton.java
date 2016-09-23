@@ -17,9 +17,11 @@ public class BoardButton {
     @Property
     private String categoryId;
     @Property
-    private int type;
+    private int table;
     @Property
     private int pos;
+    @Property
+    private int type;
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -65,6 +67,24 @@ public class BoardButton {
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
+    public int getType() {
+        return this.type;
+    }
+    public void setType(int type) {
+        this.type = type;
+    }
+    public int getPos() {
+        return this.pos;
+    }
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+    public int getTable() {
+        return this.table;
+    }
+    public void setTable(int table) {
+        this.table = table;
+    }
     public String getCategoryId() {
         return this.categoryId;
     }
@@ -77,24 +97,13 @@ public class BoardButton {
     public void setId(Long id) {
         this.id = id;
     }
-    public int getPos() {
-        return this.pos;
-    }
-    public void setPos(int pos) {
-        this.pos = pos;
-    }
-    public int getType() {
-        return this.type;
-    }
-    public void setType(int type) {
-        this.type = type;
-    }
-    @Generated(hash = 426985612)
-    public BoardButton(Long id, String categoryId, int type, int pos) {
+    @Generated(hash = 356784743)
+    public BoardButton(Long id, String categoryId, int table, int pos, int type) {
         this.id = id;
         this.categoryId = categoryId;
-        this.type = type;
+        this.table = table;
         this.pos = pos;
+        this.type = type;
     }
     @Generated(hash = 1734855031)
     public BoardButton() {

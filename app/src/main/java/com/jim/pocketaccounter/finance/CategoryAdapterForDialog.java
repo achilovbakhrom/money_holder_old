@@ -11,15 +11,17 @@ import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.utils.record.IconWithName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressLint("ViewHolder")
 public class CategoryAdapterForDialog extends BaseAdapter {
-	private ArrayList<RootCategory> result;
+	private List<IconWithName> result;
 	private LayoutInflater inflater;
 	private Context context;
-	public CategoryAdapterForDialog(Context context, ArrayList<RootCategory> result) {
+	public CategoryAdapterForDialog(Context context, List<IconWithName> result) {
 	    this.result = result;
 		this.context = context;
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -38,11 +40,11 @@ public class CategoryAdapterForDialog extends BaseAdapter {
 	}
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view = inflater.inflate(R.layout.category_list_item, parent, false);
-		ImageView ivCategoryListIcon = (ImageView) view.findViewById(R.id.ivAccountListIcon);
+		View view = inflater.inflate(R.layout.icon_with_name, parent, false);
+		ImageView ivCategoryListIcon = (ImageView) view.findViewById(R.id.ivIconWithName);
 		int resId = context.getResources().getIdentifier(result.get(position).getIcon(), "drawable", context.getPackageName());
 		ivCategoryListIcon.setImageResource(resId);
-		TextView tvCategoryListName = (TextView) view.findViewById(R.id.tvAccountListName);
+		TextView tvCategoryListName = (TextView) view.findViewById(R.id.tvIconWithName);
 		tvCategoryListName.setText(result.get(position).getName());
 		return view;
 	}

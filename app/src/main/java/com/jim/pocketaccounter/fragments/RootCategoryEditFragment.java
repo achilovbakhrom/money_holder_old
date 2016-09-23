@@ -43,6 +43,7 @@ import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,12 +63,11 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 	private String[] icons;
 	private List<SubCategory> subCategories;
 	private String categoryId;
+	private int editMode, pos;
 	@Inject
 	DaoSession daoSession;
 	@Inject
 	ToolbarManager toolbarManager;
-	@Inject
-	DataCache dataCache;
 	@Inject
 	PAFragmentManager paFragmentManager;
 	@Inject
@@ -78,8 +78,10 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 	LogicManager logicManager;
 	@Inject
 	WarningDialog warningDialog;
-	public RootCategoryEditFragment(RootCategory rootCategory) {
+	public RootCategoryEditFragment(RootCategory rootCategory, int mode, int pos, Calendar date) {
 		category = rootCategory;
+		editMode = mode;
+		this.pos = pos;
 	}
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,7 +101,7 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 				v.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.NO_MODE)
+						if (editMode == PocketAccounterGeneral.NO_MODE)
 							paFragmentManager.displayFragment(new CategoryFragment());
 						else {
 							paFragmentManager.displayMainWindow();
@@ -113,12 +115,12 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 		etCatEditName = (EditText) rootView.findViewById(R.id.etAccountEditName);
 		chbCatEditExpanse = (CheckBox) rootView.findViewById(R.id.chbCatEditExpanse);
 		chbCatEditIncome = (CheckBox) rootView.findViewById(R.id.chbCatEditIncome);
-		if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.EXPANSE_MODE) {
+		if (editMode == PocketAccounterGeneral.EXPANSE_MODE) {
 			chbCatEditExpanse.setChecked(true);
 			chbCatEditIncome.setChecked(false);
 
 		}
-		if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.INCOME_MODE) {
+		if (editMode == PocketAccounterGeneral.INCOME_MODE) {
 			chbCatEditExpanse.setChecked(false);
 			chbCatEditIncome.setChecked(true);
 
@@ -126,15 +128,15 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 		chbCatEditExpanse.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.NO_MODE) {
+				if (editMode == PocketAccounterGeneral.NO_MODE) {
 					chbCatEditExpanse.setChecked(isChecked);
 					chbCatEditIncome.setChecked(!isChecked);
 				}
-				if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.EXPANSE_MODE) {
+				if (editMode == PocketAccounterGeneral.EXPANSE_MODE) {
 					chbCatEditExpanse.setChecked(true);
 					chbCatEditIncome.setChecked(false);
 				}
-				if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.INCOME_MODE) {
+				if (editMode == PocketAccounterGeneral.INCOME_MODE) {
 					chbCatEditExpanse.setChecked(false);
 					chbCatEditIncome.setChecked(true);
 				}
@@ -143,15 +145,15 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 		chbCatEditIncome.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.NO_MODE) {
+				if (editMode == PocketAccounterGeneral.NO_MODE) {
 					chbCatEditExpanse.setChecked(!isChecked);
 					chbCatEditIncome.setChecked(isChecked);
 				}
-				if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.EXPANSE_MODE) {
+				if (editMode == PocketAccounterGeneral.EXPANSE_MODE) {
 					chbCatEditExpanse.setChecked(true);
 					chbCatEditIncome.setChecked(false);
 				}
-				if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.INCOME_MODE) {
+				if (editMode == PocketAccounterGeneral.INCOME_MODE) {
 					chbCatEditExpanse.setChecked(false);
 					chbCatEditIncome.setChecked(true);
 				}
@@ -346,12 +348,12 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 			rootCategory.setSubCategories(subCategories);
 			rootCategory.setId(categoryId);
 			logicManager.insertRootCategory(rootCategory);
-			if (dataCache.getCategoryEditFragmentDatas().getMode() == PocketAccounterGeneral.NO_MODE) {
+			if (editMode == PocketAccounterGeneral.NO_MODE) {
 				paFragmentManager.displayFragment(new CategoryFragment());
 			}
 			else {
-				logicManager.changeBoardButton(dataCache.getCategoryEditFragmentDatas().getType(),
-						dataCache.getCategoryEditFragmentDatas().getPos(), categoryId);
+				logicManager.changeBoardButton(rootCategory.getType(),
+						pos, categoryId);
 				paFragmentManager.displayMainWindow();
 				paFragmentManager.getFragmentManager().popBackStack();
 			}

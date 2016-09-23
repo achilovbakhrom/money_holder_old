@@ -64,6 +64,7 @@ public class LogicManager {
     DaoSession daoSession;
     @Inject
     CommonOperations commonOperations;
+    private Context context;
     private CurrencyDao currencyDao;
     private CurrencyCostDao currencyCostDao;
     private FinanceRecordDao recordDao;
@@ -82,6 +83,7 @@ public class LogicManager {
     private AutoMarketDao autoMarketDao;
 
     public LogicManager(Context context) {
+        this.context = context;
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         currencyDao = daoSession.getCurrencyDao();
         currencyCostDao = daoSession.getCurrencyCostDao();
@@ -274,19 +276,70 @@ public class LogicManager {
     }
 
     public void changeBoardButton(int type, int pos, String categoryId) {
+        int t = 100;
+        if (categoryId != null) {
+            List<RootCategory> categoryList = daoSession.getRootCategoryDao().loadAll();
+            boolean categoryFound = false, operationFound = false, creditFound = false,
+                    debtBorrowFound = false;
+            for (RootCategory category : categoryList) {
+                if (categoryId.matches(category.getId())) {
+                    categoryFound = true;
+                    t = PocketAccounterGeneral.CATEGORY;
+                    break;
+                }
+            }
+            if (!categoryFound) {
+                String[] operationIds = context.getResources().getStringArray(R.array.operation_ids);
+                for (String operationId : operationIds) {
+                    if (operationId.matches(categoryId)) {
+                        operationFound = true;
+                        t = PocketAccounterGeneral.FUNCTION;
+                        break;
+                    }
+                }
+            }
+            if (!operationFound) {
+                List<CreditDetials> credits = daoSession.getCreditDetialsDao().loadAll();
+                for (CreditDetials creditDetials : credits) {
+                    if (Long.toString(creditDetials.getMyCredit_id()).matches(categoryId)) {
+                        creditFound = true;
+                        t = PocketAccounterGeneral.CREDIT;
+                        break;
+                    }
+                }
+            }
+            if (!creditFound) {
+                List<DebtBorrow> debtBorrows = daoSession.getDebtBorrowDao().loadAll();
+                for (DebtBorrow debtBorrow : debtBorrows) {
+                    if (debtBorrow.getId().matches(categoryId)) {
+                        debtBorrowFound = true;
+                        t = PocketAccounterGeneral.DEBT_BORROW;
+                        break;
+                    }
+                }
+            }
+            if (!debtBorrowFound) {
+                String[] pageIds = context.getResources().getStringArray(R.array.page_ids);
+                for (int i = 0; i < pageIds.length; i++) {
+                    if (pageIds[i].matches(categoryId)) {
+                        t = PocketAccounterGeneral.PAGE;
+                        break;
+                    }
+                }
+            }
+        }
         Query<BoardButton> query = boardButtonDao
                 .queryBuilder()
-                .where(BoardButtonDao.Properties.Type.eq(type), BoardButtonDao.Properties.Pos.eq(pos))
+                .where(BoardButtonDao.Properties.Table.eq(type),
+                       BoardButtonDao.Properties.Pos.eq(pos))
                 .build();
         List<BoardButton> list = query.list();
         BoardButton boardButton = null;
         if (!list.isEmpty())
             boardButton = list.get(0);
         boardButton.setCategoryId(categoryId);
-        Query<BoardButton> boardButtonQuery = boardButtonDao
-                .queryBuilder()
-                .where(BoardButtonDao.Properties.Id.eq(boardButton.getId()))
-                .build();
+        if (categoryId != null)
+            boardButton.setType(t);
         boardButtonDao.insertOrReplace(boardButton);
     }
 

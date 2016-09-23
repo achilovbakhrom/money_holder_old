@@ -3,19 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--PreferenceCategory android:title="@string/language"-->
+
     <Preference
         android:title="@string/language"
         android:selectable="false"
         android:layout="@layout/my_pref_layout"
         />
-        <ListPreference
-            android:defaultValue='@string/language_default'
-            android:dialogIcon="@drawable/remove_red"
-            android:entries="@array/language_titles"
-            android:entryValues="@array/language_values"
-            android:key="language"
-            android:selectable="true"
-            android:summary="@string/choose_language" />
+    <ListPreference
+        android:defaultValue='@string/language_default'
+        android:dialogIcon="@drawable/remove_red"
+        android:entries="@array/language_titles"
+        android:entryValues="@array/language_values"
+        android:key="language"
+        android:selectable="true"
+        android:summary="@string/choose_language" />
     <!--<PreferenceCategory android:title="@string/finance">-->
     <Preference
         android:title="@string/finance"

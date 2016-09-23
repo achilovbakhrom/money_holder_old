@@ -167,7 +167,7 @@ public class CategoryInfoFragment extends Fragment {
 				switch(position) {
 					case 0:
 						paFragmentManager.getFragmentManager().popBackStack();
-						paFragmentManager.displayFragment(new RootCategoryEditFragment(rootCategory));
+						paFragmentManager.displayFragment(new RootCategoryEditFragment(rootCategory, PocketAccounterGeneral.NO_MODE, 0, null));
 						break;
 					case 1:
 						warningDialog.setText(getResources().getString(R.string.category_delete_warning));

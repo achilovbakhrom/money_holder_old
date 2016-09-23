@@ -455,7 +455,9 @@ public class SystemConfigurator {
                 Log.d(PocketAccounterGeneral.TAG, "Can't delete file: " + oldDBFile.getName() + ". Please try again...");
         } else {
             if (preferences.getBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, true)) {
-                preferences.edit().putBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, false).commit();
+                preferences.edit()
+                           .putBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, false)
+                           .commit();
                 //inserting currencies
                 String [] currencyNames = context.getResources().getStringArray(R.array.base_currencies);
                 String [] currencyIds = context.getResources().getStringArray(R.array.currency_ids);
@@ -544,18 +546,20 @@ public class SystemConfigurator {
                         BoardButton boardButton = new BoardButton();
                         boardButton.setCategoryId(categories.get(i).getId());
                         boardButton.setPos(incomes);
-                        boardButton.setType(PocketAccounterGeneral.INCOME);
+                        boardButton.setTable(PocketAccounterGeneral.INCOME);
+                        boardButton.setType(PocketAccounterGeneral.CATEGORY);
                         boardButton.__setDaoSession(daoSession);
                         daoSession.getBoardButtonDao().insert(boardButton);
                         incomes++;
                     }
                 }
-                for (int i=0; i<categories.size() && expenses<PocketAccounterGeneral.EXPANCE_BUTTONS_COUNT; i++) {
+                for (int i = 0; i<categories.size() && expenses<PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT; i++) {
                     if (categories.get(i).getType() == PocketAccounterGeneral.EXPENSE) {
                         BoardButton boardButton = new BoardButton();
                         boardButton.setCategoryId(categories.get(i).getId());
                         boardButton.setPos(expenses);
-                        boardButton.setType(PocketAccounterGeneral.EXPENSE);
+                        boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                        boardButton.setType(PocketAccounterGeneral.CATEGORY);
                         boardButton.__setDaoSession(daoSession);
                         daoSession.getBoardButtonDao().insert(boardButton);
                         expenses++;

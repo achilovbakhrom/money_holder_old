@@ -1,5 +1,6 @@
 package com.jim.pocketaccounter.utils.record;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,13 +12,16 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -56,10 +60,15 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	private ArrayList<RecordButtonIncome> buttons;
 	private GestureDetectorCompat gestureDetector;
 	private Calendar date;
+	private Canvas canvas;
 	@Inject
 	DaoSession daoSession;
 	@Inject
 	PAFragmentManager paFragmentManager;
+	@Inject
+	DataCache dataCache;
+	@Inject
+	CommonOperations commonOperations;
 	public RecordIncomesView(Context context, Calendar date) {
 		super(context);
 		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
@@ -71,26 +80,25 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		setClickable(true);
 	}
 	private void initButtons() {
-
 		buttons = new ArrayList<>();
+		RecordButtonIncome button;
+		int type = 0;
+		BoardButtonDao boardButtonDao = daoSession.getBoardButtonDao();
+		List<BoardButton> boardButtonList = boardButtonDao.loadAll();
 		for (int i=0; i<4; i++) {
-			RecordButtonIncome button = null;
-			int type = 0;
 			switch(i) {
 				case 0:
-					type = RecordButtonIncome.MOST_LEFT;
+					type = PocketAccounterGeneral.DOWN_MOST_LEFT;
 					break;
 				case 1:
 				case 2:
-					type = RecordButtonIncome.SIMPLE;
+					type = PocketAccounterGeneral.DOWN_SIMPLE;
 					break;
 				case 3:
-					type = RecordButtonIncome.MOST_RIGHT;
+					type = PocketAccounterGeneral.DOWN_MOST_RIGHT;
 					break;
 			}
 			button = new RecordButtonIncome(getContext(), type, date);
-			BoardButtonDao boardButtonDao = daoSession.getBoardButtonDao();
-			List<BoardButton> boardButtonList = boardButtonDao.loadAll();
 			for (int j=0; j<boardButtonList.size(); j++) {
 				if (boardButtonList.get(j).getType() == PocketAccounterGeneral.INCOME &&
 						boardButtonList.get(j).getPos() == i) {
@@ -110,54 +118,108 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		workspace = new RectF(workspaceMargin, workspaceMargin, getWidth()-workspaceMargin, getHeight()-workspaceMargin);
-		drawButtons(canvas);
-		drawWorkspaceShader(canvas);
+		this.canvas = canvas;
+		workspace = new RectF(workspaceMargin,
+								workspaceMargin,
+								getWidth()-workspaceMargin,
+								getHeight()-workspaceMargin);
+		drawButtons();
+		drawPercents();
+		drawWorkspaceShader();
 	}
-	private void drawButtons(Canvas canvas) {
+	private void drawButtons() {
 		float width, height;
 		width = workspace.width()/4;
 		height = workspace.height();
+		float left, top, right, bottom;
 		for (int i=0; i<4; i++) {
-			float left, top, right, bottom;
 			left = workspace.left+(i%4)*width;
 			top = workspace.top+((int)Math.floor(i/4)*height);
 			right = workspace.left+(i%4+1)*width;
 			bottom = workspace.top+((int)(Math.floor(i/4)+1)*height);
 			buttons.get(i).setBounds(left, top, right, bottom, workspaceCornerRadius);
-		}
-		for (int i=0; i<buttons.size(); i++) 
 			buttons.get(i).drawButton(canvas);
+		}
 		Paint borderPaint = new Paint();
 		borderPaint.setColor(ContextCompat.getColor(getContext(), R.color.record_borders));
 		borderPaint.setStrokeWidth(getResources().getDimension(R.dimen.one_dp));
 		for (int i=0; i<3; i++) 
 			canvas.drawLine(workspace.left+(i+1)*width, workspace.top, workspace.left+(i+1)*width, workspace.bottom, borderPaint);
 	}
-	private void drawWorkspaceShader(Canvas canvas) {
-		Bitmap temp = BitmapFactory.decodeResource(getResources(), R.drawable.workspace_shader);
-		workspaceShader = Bitmap.createScaledBitmap(temp, (int)workspace.width(), (int)workspace.height(), false);
+	public void drawPercents() {
+		Calendar begin = (Calendar)dataCache.getEndDate().clone();
+		begin.set(Calendar.HOUR_OF_DAY, 0);
+		begin.set(Calendar.MINUTE, 0);
+		begin.set(Calendar.SECOND, 0);
+		begin.set(Calendar.MILLISECOND, 0);
+		Calendar end = (Calendar) begin.clone();
+		end.set(Calendar.HOUR_OF_DAY, 23);
+		end.set(Calendar.MINUTE, 59);
+		end.set(Calendar.SECOND, 59);
+		end.set(Calendar.MILLISECOND, 59);
+		List<FinanceRecord> allDay = daoSession.getFinanceRecordDao()
+				.queryBuilder()
+				.where(	FinanceRecordDao.Properties.Date.ge(begin.getTimeInMillis()),
+						FinanceRecordDao.Properties.Date.le(end.getTimeInMillis()))
+				.list();
+		if (sum(allDay) == 0) return;
+		Rect bounds = new Rect();
+		Paint textPaint = new Paint();
+		textPaint.setColor(ContextCompat.getColor(getContext(), R.color.red));
+		textPaint.setTextSize(getResources().getDimension(R.dimen.ten_sp));
+		textPaint.setAntiAlias(true);
+		Rect letBound = new Rect();
+		textPaint.getTextBounds("A", 0, "A".length(), letBound);
+		DecimalFormat format = new DecimalFormat("0.00");
+		float aLetterHeight = letBound.height();
+		List<FinanceRecord> byCategory = new ArrayList<>();
+		for (RecordButtonIncome button : buttons) {
+			if (button.getCategory() == null) continue;
+			byCategory.clear();
+			for (FinanceRecord financeRecord : allDay) {
+				if (financeRecord.getCategory().getId().matches(button.getCategory().getCategoryId())) {
+					byCategory.add(financeRecord);
+				}
+			}
+			if (sum(byCategory) == 0) return;
+			double amount = 0.0;
+			if (sum(allDay) != 0)
+				amount = 100 * sum(byCategory) / sum(allDay);
+			String text = format.format(amount)+"%";
+			textPaint.getTextBounds(text, 0, text.length(), bounds);
+			canvas.drawText(text, button.getContainer().centerX()-bounds.width()/2,
+					button.getContainer().centerY()+4*aLetterHeight, textPaint);
+		}
+	}
+	private double sum(List<FinanceRecord> records) {
+		double result = 0.0;
+		for (FinanceRecord record : records) {
+			if (record.getCategory().getType() == PocketAccounterGeneral.INCOME)
+				result += commonOperations.getCost(record);
+			else
+				result -= commonOperations.getCost(record);
+		}
+		return result;
+	}
+	private void drawWorkspaceShader() {
+		if (dataCache.getElements().get(PocketAccounterGeneral.DOWN_WORKSPACE_SHADER) == null) {
+			workspaceShader = commonOperations.getRoundedCornerBitmap(
+					commonOperations.decodeSampledBitmapFromResource(
+							getResources(), R.drawable.workspace_shader, (int)workspace.width(), (int)workspace.height()),
+					(int) workspaceCornerRadius);
+			workspaceShader = Bitmap.createScaledBitmap(workspaceShader, (int)workspace.width(), (int)workspace.height(), false);
+			dataCache.getElements().put(PocketAccounterGeneral.DOWN_WORKSPACE_SHADER, workspaceShader);
+		}
+		else
+			workspaceShader = dataCache.getElements().get(PocketAccounterGeneral.DOWN_WORKSPACE_SHADER);
 		Paint paint = new Paint();
 		paint.setAlpha(0x55);
 		paint.setAntiAlias(true);
-		canvas.drawBitmap(getRoundedCornerBitmap(workspaceShader), workspace.left, workspace.top, paint);
+		canvas.drawBitmap(workspaceShader, workspace.left, workspace.top, paint);
 		paint.setStyle(Paint.Style.STROKE);
 		paint.setColor(ContextCompat.getColor(getContext(), R.color.record_outline));
 		paint.setStrokeWidth(getResources().getDimension(R.dimen.one_dp));
 		canvas.drawRoundRect(workspace, workspaceCornerRadius, workspaceCornerRadius, paint);
-	}
-	public Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
-		Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Config.ARGB_8888);
-		Canvas canvas = new Canvas(output);
-		final Paint paint = new Paint();
-		final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-		final RectF rectF = new RectF(rect);
-		paint.setAntiAlias(true);
-		canvas.drawARGB(0, 0, 0, 0);
-		canvas.drawRoundRect(rectF, workspaceCornerRadius, workspaceCornerRadius, paint);
-		paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
-		canvas.drawBitmap(bitmap, rect, rect, paint);
-		return output;
 	}
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {

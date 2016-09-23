@@ -114,7 +114,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.fabAccountAdd:
-				paFragmentManager.displayFragment(new RootCategoryEditFragment(null));
+				paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.NO_MODE, 0, null));
 				break;
 		}
 	}
@@ -157,7 +157,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 				@Override
 				public void onClick(View v) {
 					dataCache.getCategoryEditFragmentDatas().setMode(PocketAccounterGeneral.NO_MODE);
-					paFragmentManager.displayFragment(new RootCategoryEditFragment(result.get(position)));
+					paFragmentManager.displayFragment(new RootCategoryEditFragment(result.get(position), PocketAccounterGeneral.NO_MODE, 0, null));
 				}
 			});
 			view.view.setOnClickListener(new OnClickListener() {

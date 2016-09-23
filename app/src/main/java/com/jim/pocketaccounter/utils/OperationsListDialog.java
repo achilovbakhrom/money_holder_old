@@ -25,11 +25,9 @@ public class OperationsListDialog extends Dialog {
         setContentView(dialogView);
         listView = (ListView) dialogView.findViewById(R.id.lvOperations);
     }
-
     public OperationsListDialog(Context context, int themeResId) {
         super(context, themeResId);
     }
-
     protected OperationsListDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
     }
