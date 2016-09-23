@@ -1410,14 +1410,26 @@
         <item>Страница</item>
     </string-array>
     <string-array name="operation_names">
+        <item>Синхронизация с Google</item>
+        <item>Загрузка данных</item>
+        <item>Трансфер денег</item>
+        <item>Очистить данных за этот день</item>
         <item>Вперед</item>
         <item>Назад</item>
     </string-array>
     <string-array name="operation_ids">
+        <item>sync</item>
+        <item>load_sync</item>
+        <item>transfer_money</item>
+        <item>clear_whole_day</item>
         <item>next_button</item>
         <item>back_button</item>
     </string-array>
     <string-array name="operation_icons">
+        <item>icons_312</item>
+        <item>icons_313</item>
+        <item>icons_314</item>
+        <item>icons_315</item>
         <item>icons_316</item>
         <item>icons_317</item>
     </string-array>
@@ -1429,5 +1441,9 @@
     <string-array name="page_ids">
         <item>currency_page</item>
         <item>account_page</item>
+    </string-array>
+    <string-array name="page_icons">
+        <item>icons_100</item>
+        <item>icons_101</item>
     </string-array>
 </resources>

@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
@@ -78,6 +79,8 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 	LogicManager logicManager;
 	@Inject
 	WarningDialog warningDialog;
+	@Inject
+	DataCache dataCache;
 	public RootCategoryEditFragment(RootCategory rootCategory, int mode, int pos, Calendar date) {
 		category = rootCategory;
 		editMode = mode;
@@ -354,6 +357,14 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 			else {
 				logicManager.changeBoardButton(rootCategory.getType(),
 						pos, categoryId);
+				List<Bitmap> list = new ArrayList<>();
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inPreferredConfig = Bitmap.Config.RGB_565;
+				int resId = getResources().getIdentifier(rootCategory.getIcon(), "drawable", getContext().getPackageName());
+				Bitmap scaled = BitmapFactory.decodeResource(getResources(), resId, options);
+				scaled = Bitmap.createScaledBitmap(scaled, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+				list.add(scaled);
+				dataCache.getBoardBitmapsCache().put(pos, list);
 				paFragmentManager.displayMainWindow();
 				paFragmentManager.getFragmentManager().popBackStack();
 			}

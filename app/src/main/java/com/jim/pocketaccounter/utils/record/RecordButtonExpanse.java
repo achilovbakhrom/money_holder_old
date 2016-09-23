@@ -465,10 +465,29 @@ public class RecordButtonExpanse {
 						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getPos()).get(0);
 					break;
 				case PocketAccounterGeneral.PAGE:
-
+					String[] pageIds = context.getResources().getStringArray(R.array.page_ids);
+					String[] pageIcons = context.getResources().getStringArray(R.array.page_icons);
+					String[] pageNames = context.getResources().getStringArray(R.array.page_names);
+					icon = null;
+					for (int i = 0; i < pageIds.length; i++) {
+						if (pageIds[i].matches(boardButton.getCategoryId())) {
+							icon = pageIcons[i];
+							name = pageNames[i];
+							break;
+						}
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getPos()) == null) {
+						int id = context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), id, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						List<Bitmap> list = new ArrayList<>();
+						list.add(scaled);
+						dataCache.getBoardBitmapsCache().put(boardButton.getPos(), list);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getPos()).get(0);
 					break;
 			}
-
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint();
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));

@@ -100,7 +100,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			}
 			button = new RecordButtonIncome(getContext(), type, date);
 			for (int j=0; j<boardButtonList.size(); j++) {
-				if (boardButtonList.get(j).getType() == PocketAccounterGeneral.INCOME &&
+				if (boardButtonList.get(j).getTable() == PocketAccounterGeneral.INCOME &&
 						boardButtonList.get(j).getPos() == i) {
 					if (boardButtonList.get(j).getCategoryId() == null ||
 							boardButtonList.get(j).getCategoryId().matches("")) {

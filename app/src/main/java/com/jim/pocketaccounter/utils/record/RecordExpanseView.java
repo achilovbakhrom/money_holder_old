@@ -290,36 +290,38 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 				postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						RootCategory category = null;
 						List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder()
-								.where(BoardButtonDao.Properties.Type.eq(PocketAccounterGeneral.EXPENSE))
+								.where(BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
 								.list();
-						if(boardButtons.get(position).getCategoryId() == null)
-							category = null;
-						else {
-							List<RootCategory> categoryList = daoSession.getRootCategoryDao().queryBuilder()
-									.where(RootCategoryDao.Properties.Id.eq(boardButtons.get(position).getCategoryId()))
-									.list();
-							if (!categoryList.isEmpty())
-								category = categoryList.get(0);
-						}
 
-						if (category == null)
-							openChooseDialog(position);
-						else if (category.getType() == PocketAccounterGeneral.CATEGORY)
+
+						if (boardButtons.get(position).getCategoryId() == null)
+							openTypeChooseDialog(position);
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.CATEGORY) {
+							RootCategory category = null;
+							if(boardButtons.get(position).getCategoryId() == null)
+								category = null;
+							else {
+								List<RootCategory> categoryList = daoSession.getRootCategoryDao().queryBuilder()
+										.where(RootCategoryDao.Properties.Id.eq(boardButtons.get(position).getCategoryId()))
+										.list();
+								if (!categoryList.isEmpty())
+									category = categoryList.get(0);
+							}
 							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
-						else if (category.getType() == PocketAccounterGeneral.CREDIT) {}
-						else if (category.getType() == PocketAccounterGeneral.DEBT_BORROW) {}
-						else if (category.getType() == PocketAccounterGeneral.PAGE) {}
-						else if (category.getType() == PocketAccounterGeneral.CREDIT) {
+						}
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.CREDIT) {}
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.DEBT_BORROW) {}
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.PAGE) {}
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.CREDIT) {
 							String[] functionIds = getResources().getStringArray(R.array.operation_ids);
-							if (category.getId().matches(functionIds[0])) {
+							if (boardButtons.get(position).getCategoryId().matches(functionIds[0])) {
 								if (currentPage == tableCount-1)
 									currentPage = 0;
 								else
 									currentPage++;
 							}
-							else if (category.getId().matches(functionIds[1])) {
+							else if (boardButtons.get(position).getCategoryId().matches(functionIds[1])) {
 								if (currentPage == 0)
 									currentPage = tableCount-1;
 								else
@@ -423,10 +425,12 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 						break;
 					case 1:
 						logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, pos, null);
+						changeIconInCache(pos, "no_category");
 						initButtons();
 						for (int i=0; i<buttons.size(); i++)
 							buttons.get(i).setPressed(false);
 						invalidate();
+						operationsListDialog.dismiss();
 						break;
 					case 2:
 						openEditDialog(pos);
@@ -501,13 +505,55 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 							openOperationsList(pos);
 							break;
 						case 4:
-
+							openPageChooseDialog(pos);
 							break;
 					}
+					operationsListDialog.dismiss();
 				}
 			}
 		});
 		operationsListDialog.show();
+	}
+
+	private void openPageChooseDialog(final int pos) {
+		final Dialog dialog=new Dialog(getContext());
+		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(dialogView);
+		final ArrayList<IconWithName> categories = new ArrayList<>();
+		String[] pageNames = getContext().getResources().getStringArray(R.array.page_names);
+		String[] pageIds = getContext().getResources().getStringArray(R.array.page_ids);
+		String[] pageIcons = getContext().getResources().getStringArray(R.array.page_icons);
+		for (int i=0; i<pageNames.length; i++) {
+			IconWithName iconWithName = new IconWithName(pageIcons[i], pageNames[i], pageIds[i]);
+			categories.add(iconWithName);
+		}
+		CategoryAdapterForDialog adapter = new CategoryAdapterForDialog(getContext(), categories);
+		ListView lvDialog = (ListView) dialogView.findViewById(R.id.lvDialog);
+		lvDialog.setAdapter(adapter);
+		lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, pos, categories.get(position).getId());
+				changeIconInCache(pos, categories.get(position).getIcon());
+				initButtons();
+				for (int i=0; i<buttons.size(); i++)
+					buttons.get(i).setPressed(false);
+				invalidate();
+				PocketAccounter.PRESSED = false;
+				dialog.dismiss();
+			}
+		});
+		dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				for (int i=0; i<buttons.size(); i++)
+					buttons.get(i).setPressed(false);
+				invalidate();
+				PocketAccounter.PRESSED = false;
+			}
+		});
+		dialog.show();
 	}
 
 	private void openOperationsList(final int pos) {
