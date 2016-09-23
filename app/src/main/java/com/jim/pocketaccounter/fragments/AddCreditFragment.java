@@ -46,6 +46,7 @@ import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.debt.PockerTag;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -55,7 +56,10 @@ import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.IconChooseDialog;
+import com.jim.pocketaccounter.utils.OnIconPickListener;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -84,6 +88,10 @@ public class AddCreditFragment extends Fragment {
     LogicManager logicManager;
     @Inject
     CommonOperations commonOperations;
+    @Inject
+    IconChooseDialog iconChooseDialog;
+    @Inject
+    DataCache dataCache;
     CreditDetialsDao creditDetialsDao;
     CurrencyDao currencyDao;
     AccountDao accountDao;
@@ -97,7 +105,7 @@ public class AddCreditFragment extends Fragment {
     String[] valyutes_symbols;
     String[] accs;
     ArrayList<Account> accounts;
-    int selectedIcon;
+    String selectedIcon;
     EditText nameCred, valueCred, procentCred, periodCred, firstCred, lastCred, transactionCred;
     Context context;
     int argFirst[] = new int[3];
@@ -117,10 +125,20 @@ public class AddCreditFragment extends Fragment {
     private String mode = PocketAccounterGeneral.EVERY_DAY, sequence = "";
     private Spinner spNotifMode;
     private ArrayList<String> adapter;
-
+    boolean fromMainWindow=false;
+    int modeFromMain;
+    int posFromMain;
     public AddCreditFragment() {
         // Required empty public constructor
         ThisFragment = this;
+    }
+
+    public AddCreditFragment setDateFormatModes( int mode, int pos){
+        fromMainWindow=true;
+        this.modeFromMain=mode;
+        this.posFromMain=pos;
+        return this;
+
     }
 
     public void shareForEdit(CreditDetials currentCredit) {
@@ -456,36 +474,26 @@ public class AddCreditFragment extends Fragment {
 
         icona = (ImageView) V.findViewById(R.id.imageForIcon);
         String[] tempIcons = getResources().getStringArray(R.array.icons);
-        final int[] icons = new int[tempIcons.length];
-
-        for (int i = 0; i < tempIcons.length; i++)
-            icons[i] = getResources().getIdentifier(tempIcons[i], "drawable", getActivity().getPackageName());
-        selectedIcon = icons[4];
+        selectedIcon = tempIcons[4];
 
         icona.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(getActivity());
-                View dialogView = getActivity().getLayoutInflater().inflate(R.layout.cat_icon_select, null);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(dialogView);
-                GridView gvIcon = (GridView) dialogView.findViewById(R.id.gvCategoryIcons);
-                IconAdapterAccount adapter = new IconAdapterAccount(getActivity(), icons, selectedIcon);
-                gvIcon.setAdapter(adapter);
-                gvIcon.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                //TODO ICON DIALOG
+                iconChooseDialog.setSelectedIcon(selectedIcon);
+                iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Bitmap temp = BitmapFactory.decodeResource(getResources(), icons[position]);
-                        Bitmap icon = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp), (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
-                        icona.setImageBitmap(icon);
-                        selectedIcon = icons[position];
-                        dialog.dismiss();
+                    public void OnIconPick(String icon) {
+                        int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+                        Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
+                        Bitmap iconik = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp), (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+                        icona.setImageBitmap(iconik);
+                        selectedIcon = icon;
+                        iconChooseDialog.dismiss();
                     }
                 });
-                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                int width = displayMetrics.widthPixels;
-                dialog.getWindow().setLayout(7 * width / 8, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                dialog.show();
+                iconChooseDialog.show();
+
             }
         });
 
@@ -539,7 +547,8 @@ public class AddCreditFragment extends Fragment {
         spiner_trasnact.setAdapter(adapter_scet);
 
         if (isEdit()) {
-            icona.setImageResource(currentCredit.getIcon_ID());
+            int resId = getResources().getIdentifier(selectedIcon, "drawable", getContext().getPackageName());
+            icona.setImageResource(resId);
             nameCred.setText(currentCredit.getCredit_name());
             valueCred.setText(parseToWithoutNull(currentCredit.getValue_of_credit()));
             procentCred.setText(parseToWithoutNull(currentCredit.getProcent()) + "%");
@@ -789,7 +798,7 @@ public class AddCreditFragment extends Fragment {
     }
 
     StringBuilder sb;
-    double creditValueWith;
+
 
     private void openDialog() {
         final Dialog dialog = new Dialog(getActivity());
@@ -862,83 +871,25 @@ public class AddCreditFragment extends Fragment {
                 String sloution = solution.getText().toString();
                 if (sloution.indexOf(',') != -1)
                     sloution = sloution.substring(0, sloution.indexOf(',')) + "." + sloution.substring(sloution.indexOf(',') + 1, sloution.length());
-                CreditDetials A1 = null;
+                CreditDetials A1 ;
                 Account account = accounts.get(spiner_trasnact.getSelectedItemPosition());
 
                 if (account.getIsLimited() && key) {
                     double limit = account.getLimite();
                     double accounted = logicManager.isLimitAccess(account, new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]));
-//                    for (int i = 0; i < financeRecordDao.queryBuilder().list().size(); i++) {
-//                        FinanceRecord tempac = financeRecordDao.queryBuilder().list().get(i);
-//                        if (tempac.getAccount().getId().matches(account.getId())) {
-//                            if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-//                                accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
-//                            else
-//                                accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
-//                        }
-//                    }
-//                    for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
-//                        if (debtBorrow.getCalculate()) {
-//                            if (debtBorrow.getAccount().getId().matches(account.getId())) {
-//                                if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                    accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
-//                                } else {
-//                                    accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getLimitCurrency(), debtBorrow.getAmount());
-//                                }
-//                                for (Recking recking : debtBorrow.getReckings()) {
-//                                    Calendar cal = Calendar.getInstance();
-//                                    try {
-//                                        cal.setTime(dateFormat.parse(recking.getPayDate()));
-//                                    } catch (ParseException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    if (debtBorrow.getType() == DebtBorrow.DEBT) {
-//                                        accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                    } else {
-//                                        accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                    }
-//                                }
-//                            } else {
-//                                for (Recking recking : debtBorrow.getReckings()) {
-//                                    Calendar cal = Calendar.getInstance();
-//                                    if (recking.getAccountId().matches(account.getId())) {
-//                                        try {
-//                                            cal.setTime(dateFormat.parse(recking.getPayDate()));
-//                                        } catch (ParseException e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                        } else {
-//                                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getLimitCurrency(), recking.getAmount());
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    //TODO editda tekwir ozini hisoblamaslini
-//                    for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
-//                        if (creditDetials.getKey_for_include()) {
-//                            for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-//                                if (!reckingCredit.getAccountId().matches(account.getId()))
-//                                    continue;
-//                                if (isEdit())
-//                                    if (currentCredit.getTake_time().getTimeInMillis() == reckingCredit.getPayDate())
-//                                        continue;
-//                                Calendar cal = Calendar.getInstance();
-//                                cal.setTimeInMillis(reckingCredit.getPayDate());
-//                                accounted = accounted - commonOperations.getCost(cal, creditDetials.getValyute_currency(), reckingCredit.getAmount());
-//                            }
-//                        }
-//                    }
+                    if (isEdit()&&currentCredit.getKey_for_include()){
+                        for (ReckingCredit reckingCredit : currentCredit.getReckings()) {
+                            if (currentCredit.getTake_time().getTimeInMillis() == reckingCredit.getPayDate().getTimeInMillis())
+                                accounted=+commonOperations.getCost(reckingCredit.getPayDate(), currentCredit.getValyute_currency(), reckingCredit.getAmount());
+                        }
+                    }
                     accounted = accounted - commonOperations.getCost((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), currencies.get(spiner_forValut.getSelectedItemPosition()), account.getCurrency(), Double.parseDouble(transactionCred.getText().toString()));
                     if (-limit > accounted) {
                         Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
-                Log.d("Currencies", currencies.get(spiner_forValut.getSelectedItemPosition()).getAbbr());
+
                 if (isEdit()) {
                     Log.d("sbb",Double.parseDouble(sb.toString())+"" );
                     A1 = new CreditDetials(selectedIcon, nameCred.getText().toString(), new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]),
@@ -1002,8 +953,29 @@ public class AddCreditFragment extends Fragment {
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
-                } else
+                } else if(fromMainWindow){
+
+                    if(modeFromMain==PocketAccounterGeneral.EXPANSE_MODE)
+                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,posFromMain,Long.toString(A1.getMyCredit_id()));
+                    else
+                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,posFromMain,Long.toString(A1.getMyCredit_id()));
+
+
+                    BitmapFactory.Options options=new BitmapFactory.Options();
+                    options.inPreferredConfig= Bitmap.Config.RGB_565;
+                    Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
+                    temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
+                    List<Bitmap> bitmaps=new ArrayList<>();
+                    bitmaps.add(temp);
+                    dataCache.getBoardBitmapsCache().put(posFromMain,bitmaps);
+
                     paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.displayMainWindow();
+                }
+                else {
+
+                    paFragmentManager.getFragmentManager().popBackStack();
+                }
 
                 onSucsessed = true;
             }
@@ -1029,10 +1001,12 @@ public class AddCreditFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        if (!onSucsessed && currentCredit == null)
-            eventLis.canceledAdding();
-        else if (currentCredit == null) {
-            eventLis.addedCredit();
+        if(!fromMainWindow){
+            if (!onSucsessed && currentCredit == null)
+                eventLis.canceledAdding();
+            else if (currentCredit == null) {
+                eventLis.addedCredit();
+            }
         }
         super.onDetach();
     }

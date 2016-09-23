@@ -1397,6 +1397,7 @@
     <string name="some_credit">This Credit Not included in the balance. But now the record in archive</string>
     <string name="cred_arch">Credit Archive</string>
     <string name="debt_borrow_list_is_empty">Список долгов и займов пуст!</string>
+    <string name="choose_type_p">Choose type action</string>
     <!--operations-->
     <string-array name="operation_category">
         <item>Выбрать из существующих</item>

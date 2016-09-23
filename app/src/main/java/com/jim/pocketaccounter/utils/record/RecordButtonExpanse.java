@@ -16,6 +16,7 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
@@ -407,7 +408,6 @@ public class RecordButtonExpanse {
 		bitmapPaint.setAlpha(0xFF);
 		if (boardButton.getCategoryId() != null) {
 			String name = "";
-
 			switch (boardButton.getType()) {
 				case PocketAccounterGeneral.CATEGORY:
 					RootCategory category = null;
@@ -430,7 +430,20 @@ public class RecordButtonExpanse {
 						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getPos()).get(0);
 					break;
 				case PocketAccounterGeneral.CREDIT:
-
+					CreditDetials creditDetials = daoSession.getCreditDetialsDao().load(Long.parseLong(boardButton.getCategoryId()));
+					if(creditDetials!=null){
+						name=creditDetials.getCredit_name();
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getPos()) == null) {
+						int resId = context.getResources().getIdentifier(creditDetials.getIcon_ID(), "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), resId, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						List<Bitmap> list = new ArrayList<>();
+						list.add(scaled);
+						dataCache.getBoardBitmapsCache().put(boardButton.getPos(), list);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getPos()).get(0);
 					break;
 				case PocketAccounterGeneral.DEBT_BORROW:
 					Query<DebtBorrow> query = daoSession.getDebtBorrowDao()

@@ -19,6 +19,7 @@ import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
+import com.jim.pocketaccounter.fragments.AddCreditFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
@@ -486,7 +487,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, pos, date));
 											break;
 										case 1:
-
+											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.EXPANSE_MODE,pos));
 											break;
 										case 2:
 
@@ -828,7 +829,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		final ArrayList<IconWithName> categories = new ArrayList<>();
 		List<CreditDetials> creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
 		for (CreditDetials creditDetials : creditDetialsList) {
-			IconWithName iconWithName = new IconWithName(Integer.toString(creditDetials.getIcon_ID()),
+			IconWithName iconWithName = new IconWithName(creditDetials.getIcon_ID(),
 					creditDetials.getCredit_name(), Long.toString(creditDetials.getMyCredit_id()));
 			categories.add(iconWithName);
 		}

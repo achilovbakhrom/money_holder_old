@@ -399,24 +399,25 @@ public class DrawerInitializer {
                                 fragmentManager.displayFragment(new AutoMarketFragment());
                                 break;
                             case 7:
+                            case 8:
                                 fragmentManager.displayFragment(new CreditTabLay());
                                 break;
-                            case 8:
+                            case 9:
                                 fragmentManager.displayFragment(new DebtBorrowFragment());
                                 break;
-                            case 9:
+                            case 10:
 //                                fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;
-                            case 10:
+                            case 11:
 //                                fragmentManager.displayFragment(new TableBarFragment());
                                 break;
-                            case 11:
+                            case 12:
 //                                fragmentManager.displayFragment(new ReportByCategory());
                                 break;
-                            case 12:
+                            case 13:
 //                                fragmentManager.displayFragment(new SMSParseFragment());
                                 break;
-                            case 13:
+                            case 14:
 
 //                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
 //                                PocketAccounter.openActivity=true;
@@ -425,7 +426,7 @@ public class DrawerInitializer {
 //                                }
 //                                startActivityForResult(zssettings, key_for_restat);
                                 break;
-                            case 14:
+                            case 15:
 //                                if (keyboardVisible) {
 //                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
@@ -438,7 +439,7 @@ public class DrawerInitializer {
 //                                rate_app_web.setData(Uri.parse(getString(R.string.rate_app_web)));
 //                                startActivity(rate_app_web);
                                 break;
-                            case 15:
+                            case 16:
 //                                if (keyboardVisible) {
 //                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
@@ -449,7 +450,7 @@ public class DrawerInitializer {
                                 rate_app_web.setData(Uri.parse(pocketAccounter.getString(R.string.rate_app_web)));
                                 pocketAccounter.startActivity(rate_app_web);
                                 break;
-                            case 16:
+                            case 17:
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                                 Intent Email = new Intent(Intent.ACTION_SEND);
                                 PocketAccounter.openActivity=true;
@@ -458,7 +459,7 @@ public class DrawerInitializer {
                                 Email.putExtra(Intent.EXTRA_TEXT, pocketAccounter.getString(R.string.share_app_text));
                                 pocketAccounter.startActivity(Intent.createChooser(Email, pocketAccounter.getString(R.string.share_app)));
                                 break;
-                            case 17:
+                            case 18:
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                                 openGmail(pocketAccounter, new String[]{pocketAccounter.getString(R.string.to_email)},
                                             pocketAccounter.getString(R.string.feedback_subject),

@@ -114,7 +114,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         Date AAa = (new Date());
         AAa.setTime(itemCr.getTake_time().getTimeInMillis());
         holder.taken_credit_date.setText(dateFormat.format(AAa));
-        holder.iconn.setImageResource(itemCr.getIcon_ID());
+        int resId = context.getResources().getIdentifier(itemCr.getIcon_ID(), "drawable", context.getPackageName());
+        holder.iconn.setImageResource(resId);
 
         Calendar to = (Calendar) itemCr.getTake_time().clone();
         long period_tip = itemCr.getPeriod_time_tip();
@@ -181,9 +182,13 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 temp.setConteent(itemCr, pos, new InfoCreditFragment.ConWithFragments() {
                     @Override
                     public void change_item(CreditDetials changed_item, int position) {
+//                        updateList();
+                        double obswiy = 0;
+                        for (ReckingCredit item : cardDetials.get(position).getReckings())
+                            obswiy += item.getAmount();
+                        Log.d("test002", cardDetials.get(position).getCredit_name()+" --- "+ cardDetials.get(position).getValue_of_credit_with_procent() + " --- "+obswiy);
                         notifyItemChanged(position);
-                        updateList();
-
+//                        notifyDataSetChanged();
                     }
 
                     @Override
@@ -191,16 +196,13 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         CreditDetials toArc = cardDetials.get(position);
                         toArc.setKey_for_archive(true);
                         logicManager.insertCredit(toArc);
-                        cardDetials.set(position,toArc);
                         svyaz.itemInsertedToArchive();
-                        updateList();
                         notifyItemChanged(position);
                     }
 
                     @Override
                     public void delete_item(int position) {
                         logicManager.deleteCredit(cardDetials.get(position));
-                        cardDetials.remove(position);
                         updateList();
                         notifyItemRemoved(position);
                     }
@@ -219,7 +221,6 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     logicManager.insertCredit(toArc);
                     cardDetials.set(position,toArc);
                     notifyItemChanged(position);
-                    svyaz.itemInsertedToArchive();
                     svyaz.itemInsertedToArchive();
                 } else
                     openDialog(itemCr, position);
@@ -407,18 +408,19 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     total_paid += item.getAmount();
 
                 if (!amount.matches("")) {
-//                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-//                    if (account.getIsLimited()&& current.getKey_for_include()) {
-//                        //TODO editda tekwir ozini hisoblamaslini
-//                        double limit = account.getLimite();
-//                        double accounted =  logicManager.isLimitAccess(account, date);
-//
-//                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
-//                        if (-limit > accounted) {
-//                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
-//                    }
+                    if(current.getKey_for_include()){
+                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
+                    if (account.getIsLimited()) {
+                        //TODO editda tekwir ozini hisoblamaslini
+                        double limit = account.getLimite();
+                        double accounted =  logicManager.isLimitAccess(account, date);
+
+                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
+                        if (-limit > accounted) {
+                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }}
                     if (Double.parseDouble(amount) > current.getValue_of_credit_with_procent() - total_paid) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setMessage(context.getString(R.string.payment_balans) + parseToWithoutNull(current.getValue_of_credit_with_procent() - total_paid) +
@@ -434,9 +436,9 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                         else
                                             rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
                                         int pos = cardDetials.indexOf(current);
-                                        current.getReckings().add(rec);
-                                        notifyItemChanged(position);
                                         logicManager.insertReckingCredit(rec);
+                                        current.resetReckings();
+                                        notifyItemChanged(position);
                                         dialog.dismiss();
                                     }
                                 }).setNegativeButton(context.getString(R.string.cancel1), new DialogInterface.OnClickListener() {
@@ -453,8 +455,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         else
                             rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
                         int pos = cardDetials.indexOf(current);
-                        current.getReckings().add(rec);
                         logicManager.insertReckingCredit(rec);
+                        current.resetReckings();
                         notifyItemChanged(pos);
                         dialog.dismiss();
                     }

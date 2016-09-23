@@ -97,7 +97,8 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         Date AAa = (new Date());
         AAa.setTime(itemCr.getTake_time().getTimeInMillis());
         holder.taken_credit_date.setText(dateFormat.format(AAa));
-        holder.iconn.setImageResource(itemCr.getIcon_ID());
+        int resId = context.getResources().getIdentifier(itemCr.getIcon_ID(), "drawable", context.getPackageName());
+        holder.iconn.setImageResource(resId);
 
         Calendar to = (Calendar) itemCr.getTake_time().clone();
         long period_tip = itemCr.getPeriod_time_tip();

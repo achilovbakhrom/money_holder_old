@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -56,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -103,7 +105,7 @@ public class InfoCreditFragment extends Fragment {
     ImageView icon_credit;
     ConWithFragments A1;
     PaysCreditAdapter adapRecyc;
-    ArrayList<ReckingCredit> rcList;
+    List<ReckingCredit> rcList;
     boolean delete_flag=false;
     int currentPOS=0;
     final static long forDay=1000L*60L*60L*24L;
@@ -138,7 +140,6 @@ public class InfoCreditFragment extends Fragment {
         context = getActivity();
     }
 
-    ImageView ivToolbarMostRight;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -162,7 +163,7 @@ public class InfoCreditFragment extends Fragment {
         tranact_recyc=(RecyclerView) V.findViewById(R.id.recycler_for_transactions);
         icon_credit=(ImageView) V.findViewById(R.id.icon_creditt);
 
-        rcList= (ArrayList<ReckingCredit>) currentCredit.getReckings();
+        rcList=  currentCredit.getReckings();
         currentCredit.resetReckings();
         adapRecyc=new PaysCreditAdapter(rcList);
         myPay=(TextView)  V.findViewById(R.id.paybut);
@@ -178,7 +179,7 @@ public class InfoCreditFragment extends Fragment {
             public void onClick(View v) {
                 //TODO add remove and edit
                 final AlertDialog.Builder builderChouse = new AlertDialog.Builder(getActivity());
-                builderChouse.setTitle("Choose type action").setItems(R.array.more_option_for_credit_debt, new DialogInterface.OnClickListener() {
+                builderChouse.setTitle(getString(R.string.choose_type_p)).setItems(R.array.more_option_for_credit_debt, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(which==0) {
@@ -228,8 +229,7 @@ public class InfoCreditFragment extends Fragment {
             public void onClick(View v) {
                 if(toArcive&&!delete_flag){
                     A1.to_Archive(currentPOS);
-                    ((PocketAccounter)context).getSupportFragmentManager().popBackStack();
-                    paFragmentManager.displayFragment(new CreditTabLay());
+                    paFragmentManager.getFragmentManager().popBackStack();
                 }
                 else if(!delete_flag)
                 {
@@ -253,7 +253,8 @@ public class InfoCreditFragment extends Fragment {
 
         myTakedValue.setText(parseToWithoutNull(currentCredit.getValue_of_credit())+currentCredit.getValyute_currency().getAbbr());
         myReturnValue.setText(parseToWithoutNull(currentCredit.getValue_of_credit_with_procent())+currentCredit.getValyute_currency().getAbbr());
-        icon_credit.setImageResource(currentCredit.getIcon_ID());
+        int resId = context.getResources().getIdentifier(currentCredit.getIcon_ID(), "drawable", context.getPackageName());
+        icon_credit.setImageResource(resId);
         dateForSimpleDate.setTime(currentCredit.getTake_time().getTimeInMillis());
         myTakedCredTime.setText(dateFormat.format(dateForSimpleDate));
         myCreditName.setText(currentCredit.getCredit_name());
@@ -494,67 +495,20 @@ public class InfoCreditFragment extends Fragment {
                     total_paid+=item.getAmount();
 
                 if(!amount.matches("")){
+                    if(currentCredit.getKey_for_include()){
+                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
+                    if (account.getIsLimited() ) {
+                        //TODO editda tekwir ozini hisoblamaslini
+                        double limit = account.getLimite();
+                        double accounted =  logicManager.isLimitAccess(account, date);
 
-//                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-//                    if (account.getIsLimited() && currentCredit.getKey_for_include()) {
-//                        double limit =  account.getLimite();
-//                        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getCurrency(), account.getAmount());;
-//                        for (int i = 0; i < financeRecordDao.queryBuilder().list().size(); i++) {
-//                            FinanceRecord tempac=financeRecordDao.queryBuilder().list().get(i);
-//                            if (tempac.getAccount().getId().matches(account.getId())) {
-//                                if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-//                                    accounted = accounted + commonOperations.getCost(tempac.getDate(),tempac.getCurrency(),account.getCurrency(),tempac.getAmount());
-//                                else
-//                                    accounted = accounted - commonOperations.getCost(tempac.getDate(),tempac.getCurrency(),account.getCurrency(),tempac.getAmount());
-//                            }
-//                        }
-//                        for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
-//                            if (debtBorrow.getCalculate()) {
-//                                if (debtBorrow.getAccount().getId().matches(account.getId())) {
-//                                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getCurrency(), debtBorrow.getAmount());
-//                                    } else {
-//                                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(),account.getCurrency(), debtBorrow.getAmount());
-//                                    }
-//                                    for (Recking recking : debtBorrow.getReckings()) {
-//                                        Calendar cal = recking.getPayDate();
-//
-//                                        if (debtBorrow.getType() == DebtBorrow.DEBT) {
-//                                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-//                                        } else {
-//                                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-//                                        }
-//                                    }
-//                                } else {
-//                                    for (Recking recking : debtBorrow.getReckings()) {
-//                                        Calendar cal = recking.getPayDate();
-//                                        if (recking.getAccountId().matches(account.getId())) {
-//
-//                                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
-//                                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-//                                            } else {
-//                                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(),account.getCurrency(), recking.getAmount());
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
-//                            if (creditDetials.getKey_for_include()) {
-//                                for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-//                                    if (reckingCredit.getAccountId().matches(account.getId())) {
-//                                        accounted = accounted - commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(),account.getCurrency(), reckingCredit.getAmount());
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        accounted = accounted - commonOperations.getCost(date, currentCredit.getValyute_currency(), account.getCurrency() ,Double.parseDouble(amount));
-//                        if (-limit > accounted) {
-//                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
-//                    }
+                        accounted = accounted - commonOperations.getCost(date, currentCredit.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
+                        if (-limit > accounted) {
+                            Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }}
+
 
                     if(Double.parseDouble(amount)>currentCredit.getValue_of_credit_with_procent()-total_paid){
                         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -572,11 +526,14 @@ public class InfoCreditFragment extends Fragment {
                                         else
                                             rec=new ReckingCredit(date,Double.parseDouble(amount),"",
                                                     currentCredit.getMyCredit_id(),comment.getText().toString());
-                                        rcList.add(rec);
+//                                        rcList.add(rec);
 //                                        currentCredit.getReckings().addAll(rcList);
                                         logicManager.insertReckingCredit(rec);
-                                        A1.change_item(currentCredit,currentPOS);
+                                        currentCredit.resetReckings();
+                                        rcList=currentCredit.getReckings();
                                         updateDate();
+                                        adapRecyc.setMyList(rcList);
+                                        A1.change_item(currentCredit,currentPOS);
                                         isCheks = new boolean[rcList.size()];
                                         for (int i = 0; i < isCheks.length; i++) {
                                             isCheks[i] = false;
@@ -599,14 +556,17 @@ public class InfoCreditFragment extends Fragment {
                         else
                             rec = new ReckingCredit(date, Double.parseDouble(amount), "", currentCredit.getMyCredit_id(), comment.getText().toString());
 //                        currentCredit.getReckings().add(rec);
-                        rcList.add(rec);
+//                        rcList.add(rec);
                         logicManager.insertReckingCredit(rec);
+                        currentCredit.resetReckings();
+                        rcList=currentCredit.getReckings();
+                        adapRecyc.setMyList(rcList);
+                        updateDate();
                         isCheks = new boolean[rcList.size()];
                         for (int i = 0; i < isCheks.length; i++) {
                             isCheks[i] = false;
                         }
                         A1.change_item(currentCredit, currentPOS);
-                        updateDate();
                         adapRecyc.notifyDataSetChanged();
                         dialog.dismiss();
                     }
@@ -667,7 +627,9 @@ public class InfoCreditFragment extends Fragment {
                             for (int t = isCheks.length - 1; t >= 0; t--) {
                                 if (isCheks[t]) {
                                     logicManager.deleteReckingCredit(rcList.get(t));
-                                    rcList.remove(t);
+                                    currentCredit.resetReckings();
+                                    rcList=currentCredit.getReckings();
+                                    adapRecyc.setMyList(rcList);
                                     adapRecyc.notifyItemRemoved(t);
                                     A1.change_item(currentCredit, currentPOS);
                                 } else adapRecyc.notifyItemChanged(t);
@@ -703,12 +665,14 @@ public class InfoCreditFragment extends Fragment {
 
     }
     private class PaysCreditAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private ArrayList<ReckingCredit> list;
+        private List<ReckingCredit> list;
 
-        public PaysCreditAdapter(ArrayList<ReckingCredit> list) {
+        public PaysCreditAdapter(List<ReckingCredit> list) {
             this.list = list;
         }
-
+        public void setMyList(List<ReckingCredit> list){
+            this.list=list;
+        }
         public int getItemCount() {
             return list.size();
         }

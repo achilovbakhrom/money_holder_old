@@ -47,6 +47,7 @@ public class SystemConfigurator {
     DaoSession daoSession;
     @Inject
     SharedPreferences preferences;
+
     public SystemConfigurator(Context context) {
         this.context = context;
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
@@ -56,6 +57,7 @@ public class SystemConfigurator {
         migrateDatabase();
     }
     private void migrateDatabase() {
+
         String  currentDBPath= "//data//" + context.getPackageName().toString()
                 + "//databases//" + Configuration.OLD_DB_NAME;
         File oldDBFile = new File(Environment.getDataDirectory(), currentDBPath);
@@ -330,6 +332,7 @@ public class SystemConfigurator {
             }
 
             //loading credits
+            //TODO ARCHIVE TABLEDAN OLIB BITTA QIB QOYISH KERE
             ArrayList<CreditDetials> creditDetialses = new ArrayList<>();
             Cursor curCreditTable = old.query("credit_table", null, null, null, null, null, null);
             Cursor curCreditRecking = old.query("credit_recking_table", null, null, null, null, null, null);
@@ -338,7 +341,20 @@ public class SystemConfigurator {
             while (!curCreditTable.isAfterLast()) {
                 CreditDetials credit = new CreditDetials();
                 credit.setCredit_name(curCreditTable.getString(curCreditTable.getColumnIndex("credit_name")));
-                credit.setIcon_ID(curCreditTable.getInt(curCreditTable.getColumnIndex("icon_id")));
+
+                int resId = curCreditTable.getInt(curCreditTable.getColumnIndex("icon_id"));
+                boolean iconFound = false;
+                int pos = 0;
+                String icons[] = context.getResources().getStringArray(R.array.icons);
+                for (int i=0; i<icons.length; i++) {
+                    if (context.getResources().getIdentifier(icons[i], "drawable", context.getPackageName()) == resId) {
+                        iconFound = true;
+                        pos = i;
+                        break;
+                    }
+                }
+                credit.setIcon_ID(iconFound ? icons[pos] : "icons_4");
+
                 try {
                     Calendar takenDate = Calendar.getInstance();
                     takenDate.setTime(format.parse(curCreditTable.getString(curCreditTable.getColumnIndex("taken_date"))));

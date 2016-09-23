@@ -188,7 +188,8 @@ public class InfoCreditFragmentForArchive extends Fragment {
 
         myTakedValue.setText(parseToWithoutNull(currentCredit.getValue_of_credit())+currentCredit.getValyute_currency().getAbbr());
         myReturnValue.setText(parseToWithoutNull(currentCredit.getValue_of_credit_with_procent())+currentCredit.getValyute_currency().getAbbr());
-        icon_credit.setImageResource(currentCredit.getIcon_ID());
+        int resId = context.getResources().getIdentifier(currentCredit.getIcon_ID(), "drawable", context.getPackageName());
+        icon_credit.setImageResource(resId);
         dateForSimpleDate.setTime(currentCredit.getTake_time().getTimeInMillis());
         myTakedCredTime.setText(dateFormat.format(dateForSimpleDate));
         calculeted.setText((currentCredit.getKey_for_include())?CALCULATED:NOT_CALCULATED);

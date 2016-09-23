@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 public class PocketAccounterApplication extends Application {
     private PocketAccounterApplicationComponent pocketAccounterApplicationComponent;
+     boolean keyIsMegraded = false;
     @Inject
     DaoSession daoSession;
     @Inject
@@ -32,8 +33,18 @@ public class PocketAccounterApplication extends Application {
                 .pocketAccounterApplicationModule(new PocketAccounterApplicationModule(this))
                 .build();
         pocketAccounterApplicationComponent.inject(this);
-        SystemConfigurator configurator = new SystemConfigurator(this);
-        configurator.configurate();
+        keyIsMegraded=sharedPreferences.getBoolean("migrated",false);
+        if(!keyIsMegraded){
+            try {
+                SystemConfigurator configurator = new SystemConfigurator(this);
+                configurator.configurate();
+                keyIsMegraded=true;
+            }
+            catch (Exception o){
+                o.printStackTrace();
+                //TODO  MEGRATSIYADAN OWIBKANI OBRABOTKASI
+            }
+        }
 
     }
     public PocketAccounterApplicationComponent component() {

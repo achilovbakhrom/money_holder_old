@@ -355,6 +355,7 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 				paFragmentManager.displayFragment(new CategoryFragment());
 			}
 			else {
+				//TODO daravotka borakan
 				logicManager.changeBoardButton(rootCategory.getType(),
 						pos, categoryId);
 				List<Bitmap> list = new ArrayList<>();
