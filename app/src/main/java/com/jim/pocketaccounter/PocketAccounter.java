@@ -1,8 +1,10 @@
 package com.jim.pocketaccounter;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -14,10 +16,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -27,6 +34,8 @@ import android.widget.TextView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.DaoSession;
 //import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
@@ -49,6 +58,7 @@ import org.greenrobot.greendao.AbstractDao;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -57,7 +67,6 @@ public class PocketAccounter extends AppCompatActivity {
     TextView userName, userEmail;
     CircleImageView userAvatar;
     public static Toolbar toolbar;
-
     public static LeftSideDrawer drawer;
     private ListView lvLeftMenu;
 //    public static FinanceManager financeManager;
@@ -188,44 +197,281 @@ public class PocketAccounter extends AppCompatActivity {
         return date;
     }
 
+    // date_picker -----Start----
+    private Calendar beginDate;
+    private Calendar endDate;
+    private int state = 0;
+    private EditText startTimeFilter;
+    private EditText endTimeFilter;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
         toolbarManager.setSubtitle(format.format(date.getTime()));
-
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {    drawerInitializer.getDrawer().openLeftSide();         }
+            public void onClick(View v) {
+                drawerInitializer.getDrawer().openLeftSide();
+            }
         });
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
-        toolbarManager.setSearchView(drawerInitializer,format,paFragmentManager,findViewById(R.id.main));
+        toolbarManager.setSearchView(drawerInitializer, format, paFragmentManager, findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
 //        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
-
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
-
-
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                beginDate = (Calendar) Calendar.getInstance().clone();
+                endDate = (Calendar) Calendar.getInstance().clone();
                 final Dialog dialog = new Dialog(PocketAccounter.this);
-                View dialogView = getLayoutInflater().inflate(R.layout.date_picker, null);
+                final View dialogView = getLayoutInflater().inflate(R.layout.date_picker, null);
+                dialogView.findViewById(R.id.dp).setVisibility(View.VISIBLE);
+                dialogView.findViewById(R.id.rlDatePickerPeriod).setVisibility(View.GONE);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(dialogView);
                 final DatePicker dp = (DatePicker) dialogView.findViewById(R.id.dp);
                 ImageView ivDatePickOk = (ImageView) dialogView.findViewById(R.id.ivDatePickOk);
+                final Button btnAll = (Button) dialogView.findViewById(R.id.btnDatePickerAll);
+                final Button btnDay = (Button) dialogView.findViewById(R.id.btnDatePickerDay);
+                final Button btnPeriod = (Button) dialogView.findViewById(R.id.btnDatePickerPeriod);
+                final RelativeLayout rlDatePickerPeriod = (RelativeLayout) dialogView.findViewById(R.id.rlDatePickerPeriod);
+                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
+                final String[] year = new String[51];
+                for (int i = 0; i < 51; i++) {
+                    year[i] = (i + 2000) + "";
+                }
+                final Spinner yearFilter = (Spinner) dialogView.findViewById(R.id.spDatePickerPeriodYear);
+                ArrayAdapter<String> yearAdapter = new ArrayAdapter<String>(dialogView.getContext(), R.layout.spiner_gravity_right, year);
+                yearFilter.setAdapter(yearAdapter);
+                yearFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        beginDate.set(Calendar.YEAR, Integer.parseInt(yearFilter.getSelectedItem().toString()));
+                        beginDate.set(Calendar.MONTH, Calendar.JANUARY);
+                        beginDate.set(Calendar.DAY_OF_MONTH, 1);
+                        endDate = (Calendar) beginDate.clone();
+                        endDate.set(Calendar.MONTH, Calendar.DECEMBER);
+                        endDate.set(Calendar.DAY_OF_MONTH, 31);
+                        Log.d("yeaar begin", "" + beginDate.getTime());
+                        Log.d("yeaar end", "" + endDate.getTime());
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+                for (int i = 0; i < year.length; i++) {
+                    if (year[i].matches("" + Calendar.getInstance().get(Calendar.YEAR))) {
+                        yearFilter.setSelection(i);
+                    }
+                }
+                final Spinner monthFilter = (Spinner) dialogView.findViewById(R.id.spDatePickerPeriodMonth);
+                final String[] months = dialogView.getResources().getStringArray(R.array.months);
+                ArrayAdapter<String> yearMonthAdapter = new ArrayAdapter<String>(dialogView.getContext(), R.layout.spiner_gravity_right, months);
+                monthFilter.setAdapter(yearMonthAdapter);
+                monthFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        beginDate.set(Calendar.MONTH, monthFilter.getSelectedItemPosition());
+                        beginDate.set(Calendar.DAY_OF_MONTH, 1);
+                        endDate = (Calendar) beginDate.clone();
+                        endDate.set(Calendar.DAY_OF_MONTH, beginDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                        Log.d("month begin", "" + beginDate.getTime());
+                        Log.d("month end", "" + endDate.getTime());
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+                for (int i = 0; i < months.length; i++) {
+                    if (i == Calendar.getInstance().get(Calendar.MONTH)) {
+                        monthFilter.setSelection(i);
+                    }
+                }
+                startTimeFilter = (EditText) dialogView.findViewById(R.id.etDatePickerPeriodStart);
+                endTimeFilter = (EditText) dialogView.findViewById(R.id.etDatePickerPeriodEnd);
+                startTimeFilter.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            Calendar calendar = Calendar.getInstance();
+                            Dialog mDialog = new DatePickerDialog(dialogView.getContext(),
+                                    getBeginListener, calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH), calendar
+                                    .get(Calendar.DAY_OF_MONTH));
+                            mDialog.show();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                endTimeFilter.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                            Calendar calendar = Calendar.getInstance();
+                            Dialog mDialog = new DatePickerDialog(dialogView.getContext(),
+                                    getEndListener, calendar.get(Calendar.YEAR),
+                                    calendar.get(Calendar.MONTH), calendar
+                                    .get(Calendar.DAY_OF_MONTH));
+                            mDialog.show();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                Spinner spDatePickerPeriod = (Spinner) dialogView.findViewById(R.id.spDatePickerPeriod);
+                ArrayAdapter<?> adapter = ArrayAdapter.createFromResource(dialogView.getContext(), R.array.date_picker_period_spinner, android.R.layout.simple_spinner_item);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spDatePickerPeriod.setAdapter(adapter);
+                spDatePickerPeriod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> parent, View itemSelected, int selectedItemPosition, long selectedId) {
+                        switch (selectedItemPosition) {
+                            case 0: { //This Month
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
+                                beginDate = (Calendar) Calendar.getInstance().clone();
+                                endDate = (Calendar) Calendar.getInstance().clone();
+                                beginDate.set(Calendar.DAY_OF_MONTH, 1);
+                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
+                                beginDate.set(Calendar.MINUTE, 0);
+                                beginDate.set(Calendar.SECOND, 0);
+                                beginDate.set(Calendar.MILLISECOND, 0);
+                                endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+                                endDate.set(Calendar.HOUR_OF_DAY, 23);
+                                endDate.set(Calendar.MINUTE, 59);
+                                endDate.set(Calendar.SECOND, 59);
+                                endDate.set(Calendar.MILLISECOND, 59);
+                                break;
+                            }
+                            case 1: { //3 days
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
+                                beginDate = (Calendar) Calendar.getInstance().clone();
+                                endDate = (Calendar) Calendar.getInstance().clone();
+                                beginDate.set(Calendar.DAY_OF_YEAR, endDate.get(Calendar.DAY_OF_YEAR) - 2);
+                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
+                                beginDate.set(Calendar.MINUTE, 0);
+                                beginDate.set(Calendar.SECOND, 0);
+                                beginDate.set(Calendar.MILLISECOND, 0);
+                                endDate.set(Calendar.HOUR_OF_DAY, 23);
+                                endDate.set(Calendar.MINUTE, 59);
+                                endDate.set(Calendar.SECOND, 59);
+                                endDate.set(Calendar.MILLISECOND, 59);
+                                break;
+                            }
+                            case 2: { // 7 days - week
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
+                                beginDate = (Calendar) Calendar.getInstance().clone();
+                                endDate = (Calendar) Calendar.getInstance().clone();
+                                beginDate.set(Calendar.DAY_OF_YEAR, endDate.get(Calendar.DAY_OF_YEAR) - 6);
+                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
+                                beginDate.set(Calendar.MINUTE, 0);
+                                beginDate.set(Calendar.SECOND, 0);
+                                beginDate.set(Calendar.MILLISECOND, 0);
+                                endDate.set(Calendar.HOUR_OF_DAY, 23);
+                                endDate.set(Calendar.MINUTE, 59);
+                                endDate.set(Calendar.SECOND, 59);
+                                endDate.set(Calendar.MILLISECOND, 59);
+                                break;
+                            }
+                            case 3: {//month year
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.VISIBLE);
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.rlDatePickerPeriodMonth).setVisibility(View.VISIBLE);
+                                dialogView.findViewById(R.id.rlDatePickerPeriodYear).setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case 4: { //year
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.VISIBLE);
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.rlDatePickerPeriodMonth).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.rlDatePickerPeriodYear).setVisibility(View.VISIBLE);
+                                break;
+                            }
+                            case 5: { //period
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.VISIBLE);
+                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.VISIBLE);
+                                dialogView.findViewById(R.id.rlDatePickerPeriodMonth).setVisibility(View.GONE);
+                                dialogView.findViewById(R.id.rlDatePickerPeriodYear).setVisibility(View.GONE);
+                                break;
+                            }
+                        }
+                    }
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+                btnAll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        state = 2;
+                        AccountDao accountDao = daoSession.getAccountDao();
+                        List<Account> accounts = accountDao.loadAll();
+                        beginDate = (Calendar) accounts.get(0).getCalendar().clone();
+                        endDate = (Calendar) Calendar.getInstance().clone();
+
+                        Log.d("begin", "" + beginDate.getTime());
+                        Log.d("end", "" + endDate.getTime());
+                        dialog.dismiss();
+                    }
+                });
+                btnDay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        state = 0;
+                        btnAll.setTextColor(Color.BLACK);
+                        btnDay.setTextColor(getResources().getColor(R.color.green_light));
+                        btnPeriod.setTextColor(Color.BLACK);
+                        dp.setVisibility(View.VISIBLE);
+                        rlDatePickerPeriod.setVisibility(View.GONE);
+                    }
+                });
+                btnPeriod.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        state = 1;
+                        dp.setVisibility(View.GONE);
+                        rlDatePickerPeriod.setVisibility(View.VISIBLE);
+                        btnAll.setTextColor(Color.BLACK);
+                        btnDay.setTextColor(Color.BLACK);
+                        btnPeriod.setTextColor(getResources().getColor(R.color.green_light));
+                    }
+                });
                 ivDatePickOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.YEAR, dp.getYear());
-                        calendar.set(Calendar.MONTH, dp.getMonth());
-                        calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
-                        PocketAccounter.this.date = (Calendar) calendar.clone();
-                        dataCache.getCategoryEditFragmentDatas().setDate(date);
-                        paFragmentManager.displayMainWindow();
+                        switch (state) {
+                            case 0: {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.set(Calendar.YEAR, dp.getYear());
+                                calendar.set(Calendar.MONTH, dp.getMonth());
+                                calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
+                                beginDate = (Calendar) calendar.clone();
+                                endDate = (Calendar) calendar.clone();
+                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
+                                beginDate.set(Calendar.MINUTE, 0);
+                                beginDate.set(Calendar.SECOND, 0);
+                                beginDate.set(Calendar.MILLISECOND, 0);
+                                endDate.set(Calendar.HOUR_OF_DAY, 23);
+                                endDate.set(Calendar.MINUTE, 59);
+                                endDate.set(Calendar.SECOND, 59);
+                                endDate.set(Calendar.MILLISECOND, 59);
+                                Log.d("Calendar begin", "" + beginDate.getTime());
+                                Log.d("Calendar end", "" + endDate.getTime());
+                                break;
+                            }
+                            case 1: {
+                                Log.d("Period begin", "" + beginDate.getTime());
+                                Log.d("Period end", "" + endDate.getTime());
+                                break;
+                            }
+                            case 2: {
+                                break;
+                            }
+                        }
                         dialog.dismiss();
                     }
                 });
@@ -240,15 +486,31 @@ public class PocketAccounter extends AppCompatActivity {
             }
         });
     }
+    DatePickerDialog.OnDateSetListener getBeginListener = new DatePickerDialog.OnDateSetListener() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
-
+        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
+            beginDate.set(arg1, arg2, arg3);
+            if (beginDate.compareTo(endDate) >= 0) {
+                beginDate = (Calendar) endDate.clone();
+            }
+            startTimeFilter.setText(dateFormat.format(beginDate.getTime()));
+        }
+    };
+    DatePickerDialog.OnDateSetListener getEndListener = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            endDate.set(arg1, arg2, arg3);
+            if (beginDate.compareTo(endDate) >= 0) {
+                endDate = (Calendar) beginDate.clone();
+            }
+            endTimeFilter.setText(dateFormat.format(endDate.getTime()));
+        }
+    };
 //
 //    public Calendar getDate() {
 //        return date;
 //    }
-//
-
-//
 //
 //    public void calculateBalance(Calendar date) {
 //        if (PocketAccounter.financeManager == null) return;
@@ -1118,9 +1380,5 @@ public class PocketAccounter extends AppCompatActivity {
 //            mProgressDialog.setMessage(message);
 //            mProgressDialog.setIndeterminate(true);
 //        }
-//
-
-//
-
 }
 

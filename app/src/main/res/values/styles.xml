@@ -31,5 +31,7 @@
     <style name="MineCustomTabText" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">@dimen/twelve_sp</item>
     </style>
-
+    <style name="FlatButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/green_light</item>
+    </style>
 </resources>

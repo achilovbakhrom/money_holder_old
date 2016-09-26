@@ -1403,7 +1403,7 @@
         <item>Выбрать из существующих</item>
         <item>Создать новый</item>
     </string-array>
-    <string-array name = "board_operation_names_long_press">
+    <string-array name="board_operation_names_long_press">
         <item>Категория</item>
         <item>Кредиты</item>
         <item>Долги</item>
@@ -1446,5 +1446,13 @@
     <string-array name="page_icons">
         <item>icons_100</item>
         <item>icons_101</item>
+    </string-array>
+    <string-array name="date_picker_period_spinner">
+        <item>This Month</item>
+        <item>Last 3 days</item>
+        <item>This Week</item>
+        <item>Month, Year</item>
+        <item>Year</item>
+        <item>Period</item>
     </string-array>
 </resources>
