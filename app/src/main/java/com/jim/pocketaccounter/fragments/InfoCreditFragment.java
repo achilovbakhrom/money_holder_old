@@ -116,9 +116,10 @@ public class InfoCreditFragment extends Fragment {
     private Context context;
     DecimalFormat formater;
     TextView myPay,myDelete;
-
+    boolean fromMainWindow=false;
     private boolean[] isCheks;
-
+    private  int positionOfBourdMain;
+    private int modeOfMain;
     public InfoCreditFragment() {
         // Required empty public constructor
     }
@@ -128,7 +129,12 @@ public class InfoCreditFragment extends Fragment {
         this.A1 = A1;
         this.currentPOS = currentPOS;
     }
-
+    public void setContentFromMainWindow(CreditDetials temp,int positionOfBourd,int modeOfMain){
+        fromMainWindow=true;
+        currentCredit=temp;
+        this.positionOfBourdMain=positionOfBourd;
+        this.modeOfMain=modeOfMain;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -185,6 +191,7 @@ public class InfoCreditFragment extends Fragment {
                         if(which==0) {
                             paFragmentManager.getFragmentManager().popBackStack();
                             AddCreditFragment forEdit=new AddCreditFragment();
+                            forEdit.setDateFormatModes(modeOfMain,positionOfBourdMain);
                             forEdit.shareForEdit(currentCredit);
                             openFragment(forEdit, PockerTag.Edit);
                         }
@@ -197,9 +204,18 @@ public class InfoCreditFragment extends Fragment {
                                         }
                                     }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-
+                                    if(!fromMainWindow)
                                     A1.delete_item(currentPOS);
+                                    else {
+                                        logicManager.deleteCredit(currentCredit);
+                                        if(modeOfMain==PocketAccounterGeneral.EXPANSE_MODE)
+                                            logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,positionOfBourdMain,null);
+                                        else
+                                            logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,positionOfBourdMain,null);
+
+                                    }
                                     getActivity().getSupportFragmentManager().popBackStack();
+                                    paFragmentManager.displayMainWindow();
 
                                 }
                             });
@@ -228,8 +244,23 @@ public class InfoCreditFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(toArcive&&!delete_flag){
-                    A1.to_Archive(currentPOS);
-                    paFragmentManager.getFragmentManager().popBackStack();
+                    if(!fromMainWindow)
+                    {
+                        A1.to_Archive(currentPOS);
+                        paFragmentManager.getFragmentManager().popBackStack();
+
+                    }
+                    else {
+                        currentCredit.setKey_for_archive(true);
+                        logicManager.insertCredit(currentCredit);
+                        if(modeOfMain==PocketAccounterGeneral.EXPANSE_MODE)
+                            logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,positionOfBourdMain,null);
+                        else
+                            logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,positionOfBourdMain,null);
+
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayMainWindow();
+                    }
                 }
                 else if(!delete_flag)
                 {
@@ -533,6 +564,7 @@ public class InfoCreditFragment extends Fragment {
                                         rcList=currentCredit.getReckings();
                                         updateDate();
                                         adapRecyc.setMyList(rcList);
+                                        if(!fromMainWindow)
                                         A1.change_item(currentCredit,currentPOS);
                                         isCheks = new boolean[rcList.size()];
                                         for (int i = 0; i < isCheks.length; i++) {
@@ -566,6 +598,7 @@ public class InfoCreditFragment extends Fragment {
                         for (int i = 0; i < isCheks.length; i++) {
                             isCheks[i] = false;
                         }
+                        if(!fromMainWindow)
                         A1.change_item(currentCredit, currentPOS);
                         adapRecyc.notifyDataSetChanged();
                         dialog.dismiss();
@@ -631,6 +664,7 @@ public class InfoCreditFragment extends Fragment {
                                     rcList=currentCredit.getReckings();
                                     adapRecyc.setMyList(rcList);
                                     adapRecyc.notifyItemRemoved(t);
+                                    if(!fromMainWindow)
                                     A1.change_item(currentCredit, currentPOS);
                                 } else adapRecyc.notifyItemChanged(t);
                             }

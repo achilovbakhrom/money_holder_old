@@ -19,6 +19,15 @@
         android:summary="@string/choose_language" />
     <!--<PreferenceCategory android:title="@string/finance">-->
     <Preference
+        android:title="Main window"
+        android:selectable="false"
+        android:layout="@layout/my_pref_layout"/>
+    <Preference
+        android:key="mainwind"
+        android:summary="@string/pages_about"
+        android:title="@string/count_pages" />
+
+    <Preference
         android:title="@string/finance"
         android:selectable="false"
         android:layout="@layout/my_pref_layout"
@@ -42,7 +51,7 @@
             android:key="general_notif"
             android:summary="@string/notifications_summary"
             android:title="@string/notifications" />
-        <com.jim.pocketaccounter.TimePreference
+        <com.jim.pocketaccounter.utils.TimePreference
             android:defaultValue="08:00"
             android:summary="@string/planning_notif_summary"
             android:showDefault="true"
@@ -94,6 +103,7 @@
 
 
     <!--<PreferenceCategory      android:title="@string/securee">-->
+
     <Preference
         android:title="@string/securee"
         android:selectable="false"
@@ -110,8 +120,15 @@
 
             />
 
-
-
+    <Preference
+        android:title="Widget"
+        android:selectable="false"
+        android:layout="@layout/my_pref_layout"
+        />
+    <CheckBoxPreference
+        android:defaultValue="@bool/widget_def"
+        android:key="securewidget"
+        android:title="@string/balance_invis"/>
 
     <!--<PreferenceCategory        android:title="@string/sbrosit_title">-->
     <Preference

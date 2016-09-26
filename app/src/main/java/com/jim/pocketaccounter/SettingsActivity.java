@@ -3,6 +3,7 @@ package com.jim.pocketaccounter;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetManager;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.CheckBoxPreference;
@@ -39,6 +41,8 @@ import com.jim.pocketaccounter.database.CurrencyCost;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.syncbase.SyncBase;
+import com.jim.pocketaccounter.widget.WidgetKeys;
+import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -181,8 +185,34 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             }
         });
 
+        ((CheckBoxPreference) findPreference("securewidget")).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                (new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences sPref;
+                        sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
+                        int WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);
+                        if (WidgetID >= 0) {
+                            if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
+                                WidgetProvider.updateWidget(SettingsActivity.this, AppWidgetManager.getInstance(SettingsActivity.this),
+                                        WidgetID);
+                        }
+                    }
+                })).start();
 
-
+                return true;
+            }
+        });
+        SharedPreferences sPref;
+        sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
+        int WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);
+        if (WidgetID >= 0) {
+            if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
+                WidgetProvider.updateWidget(SettingsActivity.this, AppWidgetManager.getInstance(SettingsActivity.this),
+                        WidgetID);
+        }
 
         Preference sbrosdannix = (Preference) findPreference("sbros");
         sbrosdannix.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -226,6 +256,67 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             }
         });
 
+        Preference mainWindow=findPreference("mainwind");
+        mainWindow.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                final Dialog dialog = new Dialog(SettingsActivity.this);
+                final View dialogView = getLayoutInflater().inflate(R.layout.main_window_pages_set, null);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(dialogView);
+
+                final EditText topWindow=(EditText)dialogView.findViewById(R.id.firstPassword);
+                final EditText bottomWindow=(EditText)dialogView.findViewById(R.id.secondPassword);
+                final TextView tvTop=(TextView)dialogView.findViewById(R.id.passwordTextShould);
+                final TextView tvBottom=(TextView)dialogView.findViewById(R.id.passwordRepiat);
+                final TextView Titlee=(TextView)dialogView.findViewById(R.id.idtitle);
+                topWindow.setText(""+Integer.toString(PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this).getInt("key_for_window_top",4)));
+                bottomWindow.setText(""+Integer.toString(PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this).getInt("key_for_window_bottom",4)));
+                dialogView.findViewById(R.id.okbuttt).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        boolean isMojno=true;
+                        if(Integer.parseInt(topWindow.getText().toString())>10){
+                            tvTop.setText(getString(R.string.limit_page));
+                            tvTop.setTextColor(Color.RED);
+                            isMojno=false;
+                        }
+                        else {
+                            tvTop.setText(R.string.in_window_expense_top_window);
+                            tvTop.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.black_for_secondary_text));
+                        }
+                        if(Integer.parseInt(bottomWindow.getText().toString())>10){
+                            tvBottom.setText(getString(R.string.limit_page));
+                            tvBottom.setTextColor(Color.RED);
+                            isMojno=false;
+                        }
+                        else {
+                            tvBottom.setText(R.string.in_windows_incomes_bottom_window);
+                            tvBottom.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.black_for_secondary_text));
+                        }
+                        if(isMojno){
+
+                            PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this).edit().putInt("key_for_window_top",Integer.parseInt(topWindow.getText().toString())).apply();
+                            PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this).edit().putInt("key_for_window_bottom",Integer.parseInt(bottomWindow.getText().toString())).apply();
+
+                            //TODO Obrabotka click
+                            //top klyuch "key_for_window_top"
+                            //bottom klyuch "key_for_window_bottom"
+
+
+
+                            dialog.dismiss();
+                        }
+
+                    }
+                });
+                DisplayMetrics dm = getResources().getDisplayMetrics();
+                int width = dm.widthPixels;
+                dialog.getWindow().setLayout(7*width/8, SlidingPaneLayout.LayoutParams.WRAP_CONTENT);
+                dialog.show();
+                return false;
+            }
+        });
 
         CheckBoxPreference checkkSecure=(CheckBoxPreference)findPreference("secure");
         checkkSecure.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -524,6 +615,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
         }
     }
     public boolean mListStyled;
+
+
 
     @Override
     public void onResume() {

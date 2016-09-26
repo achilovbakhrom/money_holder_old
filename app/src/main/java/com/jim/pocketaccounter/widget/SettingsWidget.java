@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.widget;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +16,12 @@ import android.widget.TextView;
 
 import com.jim.pocketaccounter.R;
 //import com.jim.pocketaccounter.finance.FinanceManager;
+import com.jim.pocketaccounter.database.DaoMaster;
+import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.database.RootCategory;
+
+import org.greenrobot.greendao.database.Database;
 
 import java.util.ArrayList;
 
@@ -118,9 +124,16 @@ public class SettingsWidget extends AppCompatActivity {
                 else if(position==1)
                     edit.putInt(WidgetKeys.SETTINGS_WIDGET_PERIOD_TYPE,WidgetKeys.SETTINGS_WIDGET_PERIOD_TYPE_WEEK).commit();
 
-               if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
-                WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                        mAppWidgetId);
+               if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId){
+                   (new Thread(new Runnable() {
+                       @Override
+                       public void run() {
+                           WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+                                   mAppWidgetId);
+                       }
+                   })).start();
+               }
+
             }
 
             @Override
@@ -138,40 +151,65 @@ public class SettingsWidget extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 edit.putString(WidgetKeys.BUTTON_1_ID,WidgetKeys.BUTTON_DISABLED).commit();
-                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
-                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                            mAppWidgetId);
+                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId){
+                    (new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+                                    mAppWidgetId);
+                                                  }
+                    })).start();
+                }
                 RefreshList();
+
             }
         });
         delete_button_2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 edit.putString(WidgetKeys.BUTTON_2_ID,WidgetKeys.BUTTON_DISABLED).commit();;
-                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
-                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                            mAppWidgetId);
+                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId){
+                    (new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+                                    mAppWidgetId);
+                                                   }
+                    })).start();}
                 RefreshList();
+
             }
         });
         delete_button_3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 edit.putString(WidgetKeys.BUTTON_3_ID,WidgetKeys.BUTTON_DISABLED).commit();;
-                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
-                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                            mAppWidgetId);
+                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId){
+                    (new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+                                    mAppWidgetId);
+                                                    }
+                    })).start();}
                 RefreshList();
+
             }
         });
         delete_button_4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 edit.putString(WidgetKeys.BUTTON_4_ID,WidgetKeys.BUTTON_DISABLED).commit();;
-                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
-                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                            mAppWidgetId);
+                if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId){
+                    (new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+                                    mAppWidgetId);
+                        }
+                    })).start();}
                 RefreshList();
+
             }
         });
 
@@ -179,6 +217,7 @@ public class SettingsWidget extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
                 chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_1_ID);
                 chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
                 startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
@@ -190,6 +229,7 @@ public class SettingsWidget extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
                 chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_2_ID);
                 chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
                 startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
@@ -199,6 +239,7 @@ public class SettingsWidget extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
                 chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_3_ID);
                 chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
                 startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);;
@@ -208,7 +249,7 @@ public class SettingsWidget extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
-
+                chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
                 chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_4_ID);
                 chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
                 startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
@@ -216,130 +257,133 @@ public class SettingsWidget extends AppCompatActivity {
         });
 
     }
+    Database db;
     private void RefreshList(){
-//        String butID_1,butID_2,butID_3,butID_4;
-//        FinanceManager financeManager=new FinanceManager(this);
-//        listCategory=financeManager.getCategories();
+        String butID_1,butID_2,butID_3,butID_4;
+        DaoMaster.DevOpenHelper helper = new DatabaseMigration(getApplicationContext(), "pocketaccounter-db");
+        db = helper.getReadableDb();
+        DaoSession daoSession = new DaoMaster(db).newSession();
 
-//        butID_1=sPref.getString(WidgetKeys.BUTTON_1_ID,WidgetKeys.BUTTON_DISABLED);
-//        butID_2=sPref.getString(WidgetKeys.BUTTON_2_ID,WidgetKeys.BUTTON_DISABLED);
-//        butID_3=sPref.getString(WidgetKeys.BUTTON_3_ID,WidgetKeys.BUTTON_DISABLED);
-//        butID_4=sPref.getString(WidgetKeys.BUTTON_4_ID,WidgetKeys.BUTTON_DISABLED);
-//
-//        for (RootCategory temp:listCategory) {
-//
-//            if(!butID_1.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_1)){
-//                //ustanovka ikonki
-//                imageView_button_1.setImageResource(R.drawable.shape_for_widget_black);
-//                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
-//                imageView_button_1.setImageResource(resId);
-//                category_name_1.setText(temp.getName());
-//                delete_button_1.setVisibility(View.VISIBLE);
-//                change_button_1.setVisibility(View.VISIBLE);
-//                imageView_button_1.setOnClickListener(null);
-//            }
-//
-//            if(!butID_2.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_2)){
-//                //ustanovka ikonki
-//                imageView_button_2.setImageResource(R.drawable.shape_for_widget_black);
-//                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
-//                imageView_button_2.setImageResource(resId);
-//                category_name_2.setText(temp.getName());
-//                delete_button_2.setVisibility(View.VISIBLE);
-//                change_button_2.setVisibility(View.VISIBLE);
-//                imageView_button_2.setOnClickListener(null);
-//            }
-//
-//            if(!butID_3.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_3)){
-//                //ustanovka ikonki
-//                imageView_button_3.setImageResource(R.drawable.shape_for_widget_black);
-//                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
-//                imageView_button_3.setImageResource(resId);
-//                category_name_3.setText(temp.getName());
-//                delete_button_3.setVisibility(View.VISIBLE);
-//                change_button_3.setVisibility(View.VISIBLE);
-//                imageView_button_3.setOnClickListener(null);
-//            }
-//
-//            if(!butID_4.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_4)){
-//                //ustanovka ikonki
-//                imageView_button_4.setImageResource(R.drawable.shape_for_widget_black);
-//                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
-//                imageView_button_4.setImageResource(resId);
-//                category_name_4.setText(temp.getName());
-//                delete_button_4.setVisibility(View.VISIBLE);
-//                change_button_4.setVisibility(View.VISIBLE);
-//                imageView_button_4.setOnClickListener(null);
-//            }
-//        }
-//
-//        if(butID_1.matches(WidgetKeys.BUTTON_DISABLED)){
-//            imageView_button_1.setImageResource(R.drawable.ic_add_black_24dp);
-//            category_name_1.setText(R.string.ch_cat);
-//            delete_button_1.setVisibility(View.GONE);
-//            change_button_1.setVisibility(View.GONE);
-//            imageView_button_1.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
-//                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_1_ID);
-//                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
-//                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
-//                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
-//                }
-//            });
-//        }
-//        if(butID_2.matches(WidgetKeys.BUTTON_DISABLED)){
-//            imageView_button_2.setImageResource(R.drawable.ic_add_black_24dp);
-//            category_name_2.setText(R.string.ch_cat);
-//            delete_button_2.setVisibility(View.GONE);
-//            change_button_2.setVisibility(View.GONE);
-//            imageView_button_2.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
-//                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_2_ID);
-//                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
-//                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
-//                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
-//                }
-//            });
-//        }
-//        if(butID_3.matches(WidgetKeys.BUTTON_DISABLED)){
-//
-//            imageView_button_3.setImageResource(R.drawable.ic_add_black_24dp);
-//            category_name_3.setText(R.string.ch_cat);
-//            delete_button_3.setVisibility(View.GONE);
-//            change_button_3.setVisibility(View.GONE);
-//            imageView_button_3.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
-//                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_3_ID);
-//                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
-//                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
-//                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
-//                }
-//            });
-//
-//        }
-//        if(butID_4.matches(WidgetKeys.BUTTON_DISABLED)){
-//            imageView_button_4.setImageResource(R.drawable.ic_add_black_24dp);
-//            category_name_4.setText(R.string.ch_cat);
-//            delete_button_4.setVisibility(View.GONE);
-//            change_button_4.setVisibility(View.GONE);
-//
-//            imageView_button_4.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
-//                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_4_ID);
-//                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
-//                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
-//                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
-//                }
-//            });
-//        }
+        butID_1=sPref.getString(WidgetKeys.BUTTON_1_ID,WidgetKeys.BUTTON_DISABLED);
+        butID_2=sPref.getString(WidgetKeys.BUTTON_2_ID,WidgetKeys.BUTTON_DISABLED);
+        butID_3=sPref.getString(WidgetKeys.BUTTON_3_ID,WidgetKeys.BUTTON_DISABLED);
+        butID_4=sPref.getString(WidgetKeys.BUTTON_4_ID,WidgetKeys.BUTTON_DISABLED);
+
+        for (RootCategory temp:daoSession.getRootCategoryDao().loadAll()) {
+
+            if(!butID_1.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_1)){
+                //ustanovka ikonki
+                imageView_button_1.setImageResource(R.drawable.shape_for_widget_black);
+                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
+                imageView_button_1.setImageResource(resId);
+                category_name_1.setText(temp.getName());
+                delete_button_1.setVisibility(View.VISIBLE);
+                change_button_1.setVisibility(View.VISIBLE);
+                imageView_button_1.setOnClickListener(null);
+            }
+
+            if(!butID_2.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_2)){
+                //ustanovka ikonki
+                imageView_button_2.setImageResource(R.drawable.shape_for_widget_black);
+                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
+                imageView_button_2.setImageResource(resId);
+                category_name_2.setText(temp.getName());
+                delete_button_2.setVisibility(View.VISIBLE);
+                change_button_2.setVisibility(View.VISIBLE);
+                imageView_button_2.setOnClickListener(null);
+            }
+
+            if(!butID_3.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_3)){
+                //ustanovka ikonki
+                imageView_button_3.setImageResource(R.drawable.shape_for_widget_black);
+                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
+                imageView_button_3.setImageResource(resId);
+                category_name_3.setText(temp.getName());
+                delete_button_3.setVisibility(View.VISIBLE);
+                change_button_3.setVisibility(View.VISIBLE);
+                imageView_button_3.setOnClickListener(null);
+            }
+
+            if(!butID_4.matches(WidgetKeys.BUTTON_DISABLED)&&temp.getId().matches(butID_4)){
+                //ustanovka ikonki
+                imageView_button_4.setImageResource(R.drawable.shape_for_widget_black);
+                int resId = getResources().getIdentifier(temp.getIcon(), "drawable", getPackageName());
+                imageView_button_4.setImageResource(resId);
+                category_name_4.setText(temp.getName());
+                delete_button_4.setVisibility(View.VISIBLE);
+                change_button_4.setVisibility(View.VISIBLE);
+                imageView_button_4.setOnClickListener(null);
+            }
+        }
+        db.close();
+
+        if(butID_1.matches(WidgetKeys.BUTTON_DISABLED)){
+            imageView_button_1.setImageResource(R.drawable.ic_add_black_24dp);
+            category_name_1.setText(R.string.ch_cat);
+            delete_button_1.setVisibility(View.GONE);
+            change_button_1.setVisibility(View.GONE);
+            imageView_button_1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_1_ID);
+                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
+                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
+                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
+                }
+            });
+        }
+        if(butID_2.matches(WidgetKeys.BUTTON_DISABLED)){
+            imageView_button_2.setImageResource(R.drawable.ic_add_black_24dp);
+            category_name_2.setText(R.string.ch_cat);
+            delete_button_2.setVisibility(View.GONE);
+            change_button_2.setVisibility(View.GONE);
+            imageView_button_2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_2_ID);
+                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
+                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
+                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
+                }
+            });
+        }
+        if(butID_3.matches(WidgetKeys.BUTTON_DISABLED)){
+
+            imageView_button_3.setImageResource(R.drawable.ic_add_black_24dp);
+            category_name_3.setText(R.string.ch_cat);
+            delete_button_3.setVisibility(View.GONE);
+            change_button_3.setVisibility(View.GONE);
+            imageView_button_3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_3_ID);
+                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
+                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
+                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
+                }
+            });
+
+        }
+        if(butID_4.matches(WidgetKeys.BUTTON_DISABLED)){
+            imageView_button_4.setImageResource(R.drawable.ic_add_black_24dp);
+            category_name_4.setText(R.string.ch_cat);
+            delete_button_4.setVisibility(View.GONE);
+            change_button_4.setVisibility(View.GONE);
+
+            imageView_button_4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent chooseint=new Intent(SettingsWidget.this,ChooseWidget.class);
+                    chooseint.putExtra(WidgetKeys.KEY_FOR_INTENT,WidgetKeys.BUTTON_4_ID);
+                    chooseint.putExtra(WidgetKeys.INTENT_FOR_BACK_SETTINGS,WidgetKeys.INTENT_GO_BACK);
+                    chooseint.putExtra(WidgetKeys.ACTION_WIDGET_RECEIVER_CHANGE_DIAGRAM_ID, mAppWidgetId);
+                    startActivityForResult(chooseint,WidgetKeys.REQUET_CODE_INTENT);
+                }
+            });
+        }
 
     }
 
@@ -348,9 +392,17 @@ public class SettingsWidget extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==WidgetKeys.REQUET_CODE_INTENT&& resultCode == RESULT_OK){
             if(AppWidgetManager.INVALID_APPWIDGET_ID!=mAppWidgetId)
-                WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
-                        mAppWidgetId);
-            RefreshList();
+                Log.d("testtt", "onActivityResult: "+mAppWidgetId);
+            (new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    WidgetProvider.updateWidget(getApplicationContext(), AppWidgetManager.getInstance(getApplicationContext()),
+                            mAppWidgetId);
+
+                    RefreshList();
+                }
+            })).start();
+
         }
     }
 }

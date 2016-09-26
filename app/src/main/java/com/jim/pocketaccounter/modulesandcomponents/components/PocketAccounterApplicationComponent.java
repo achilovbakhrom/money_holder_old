@@ -16,6 +16,7 @@ import com.jim.pocketaccounter.utils.SystemConfigurator;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterApplicationModule;
 import com.jim.pocketaccounter.utils.record.RecordButtonExpanse;
 import com.jim.pocketaccounter.utils.record.RecordButtonIncome;
+import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import dagger.Component;
 
@@ -43,4 +44,5 @@ public interface PocketAccounterApplicationComponent {
     void inject(TransferAccountAdapter transferAccountAdapter);
     void inject(DataCache dataCache);
     void inject(PAFragmentManager paFragmentManager);
+    void inject(WidgetProvider widgetProvider);
 }

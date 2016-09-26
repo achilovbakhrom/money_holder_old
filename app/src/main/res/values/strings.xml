@@ -990,6 +990,7 @@
     <string name="notifications">Notifications</string>
     <bool name="notif_default">true</bool>
     <bool name="secure_default">false</bool>
+    <bool name="widget_def">false</bool>
     <string name="notifications_summary">Daily notification ON/OFF</string>
     <string name="planning_before_default">10</string>
     <string name="general_notif">general_notif</string>
@@ -1455,4 +1456,11 @@
         <item>Year</item>
         <item>Period</item>
     </string-array>
+    <string name="count_pages">Count pages</string>
+    <string name="pages_about">Expanse and Income pages</string>
+    <string name="how_much_pages_you_need">How much pages you need?</string>
+    <string name="in_window_expense_top_window">In window Expenses (top window)</string>
+    <string name="limit_page">Limit is 10 count</string>
+    <string name="in_windows_incomes_bottom_window">In windows Incomes (bottom window)</string>
+    <string name="balance_invis">Balance detials invisible</string>
 </resources>

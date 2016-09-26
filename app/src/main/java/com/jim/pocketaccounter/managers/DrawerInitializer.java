@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
 //import com.jim.pocketaccounter.debt.DebtBorrowFragment;
+import com.jim.pocketaccounter.SettingsActivity;
 import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
@@ -67,6 +68,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 
+import static android.app.Activity.RESULT_OK;
 import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
 import static com.jim.pocketaccounter.PocketAccounter.reg;
 
@@ -406,27 +408,28 @@ public class DrawerInitializer {
                                 fragmentManager.displayFragment(new DebtBorrowFragment());
                                 break;
                             case 10:
+                            case 11:
 //                                fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;
-                            case 11:
+                            case 12:
 //                                fragmentManager.displayFragment(new TableBarFragment());
                                 break;
-                            case 12:
+                            case 13:
 //                                fragmentManager.displayFragment(new ReportByCategory());
                                 break;
-                            case 13:
+                            case 14:
 //                                fragmentManager.displayFragment(new SMSParseFragment());
                                 break;
-                            case 14:
-
-//                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
-//                                PocketAccounter.openActivity=true;
-//                                for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
-//                                    fragmentManager.popBackStack();
-//                                }
-//                                startActivityForResult(zssettings, key_for_restat);
-                                break;
                             case 15:
+
+                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
+                                PocketAccounter.openActivity=true;
+                                for (int i = 0; i < fragmentManager.getFragmentManager().getBackStackEntryCount(); i++) {
+                                    fragmentManager.getFragmentManager().popBackStack();
+                                }
+                                pocketAccounter.startActivityForResult(zssettings, key_for_restat);
+                                break;
+                            case 16:
 //                                if (keyboardVisible) {
 //                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
@@ -439,7 +442,7 @@ public class DrawerInitializer {
 //                                rate_app_web.setData(Uri.parse(getString(R.string.rate_app_web)));
 //                                startActivity(rate_app_web);
                                 break;
-                            case 16:
+                            case 17:
 //                                if (keyboardVisible) {
 //                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
@@ -450,7 +453,7 @@ public class DrawerInitializer {
                                 rate_app_web.setData(Uri.parse(pocketAccounter.getString(R.string.rate_app_web)));
                                 pocketAccounter.startActivity(rate_app_web);
                                 break;
-                            case 17:
+                            case 18:
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                                 Intent Email = new Intent(Intent.ACTION_SEND);
                                 PocketAccounter.openActivity=true;
@@ -459,7 +462,7 @@ public class DrawerInitializer {
                                 Email.putExtra(Intent.EXTRA_TEXT, pocketAccounter.getString(R.string.share_app_text));
                                 pocketAccounter.startActivity(Intent.createChooser(Email, pocketAccounter.getString(R.string.share_app)));
                                 break;
-                            case 18:
+                            case 19:
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                                 openGmail(pocketAccounter, new String[]{pocketAccounter.getString(R.string.to_email)},
                                             pocketAccounter.getString(R.string.feedback_subject),
@@ -472,6 +475,32 @@ public class DrawerInitializer {
             }
         });
     }
+
+    public void onActivResultForDrawerCalls(int requestCode, int resultCode, Intent data){
+        if (requestCode == SignInGoogleMoneyHold.RC_SIGN_IN) {
+            reg.regitRequstGet(data);
+        }
+        if (requestCode == key_for_restat && resultCode == RESULT_OK) {
+            fragmentManager.displayMainWindow();
+            if (!drawer.isClosed()) {
+                drawer.close();
+            }
+            if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                userAvatar.setImageResource(R.drawable.no_photo);
+                userName.setText(R.string.please_sign);
+                userEmail.setText(R.string.and_sync_your_data);
+                fabIconFrame.setBackgroundResource(R.drawable.cloud_sign_in);
+            }
+        }
+        if (resultCode != RESULT_OK && requestCode == key_for_restat && resultCode != 1111) {
+            fragmentManager.displayMainWindow();
+            for (int i = 0; i < fragmentManager.getFragmentManager().getBackStackEntryCount(); i++) {
+                fragmentManager.getFragmentManager().popBackStack();
+            }
+
+        }
+    }
+
     public static void openGmail(Activity activity, String[] email, String subject, String content) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         PocketAccounter.openActivity=true;

@@ -768,7 +768,6 @@ public class AddCreditFragment extends Fragment {
                 case 0:
                     //moth
                     calend.add(Calendar.MONTH, -period_long);
-
                     break;
                 case 1:
                     //year
@@ -949,11 +948,14 @@ public class AddCreditFragment extends Fragment {
                     }
                 }
                 dialog.dismiss();
-                if (isEdit()) {
+                if (isEdit()&&!fromMainWindow) {
+
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
-                } else if(fromMainWindow){
+
+                }
+                else if(fromMainWindow){
 
                     if(modeFromMain==PocketAccounterGeneral.EXPANSE_MODE)
                         logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,posFromMain,Long.toString(A1.getMyCredit_id()));
@@ -968,8 +970,6 @@ public class AddCreditFragment extends Fragment {
                     List<Bitmap> bitmaps=new ArrayList<>();
                     bitmaps.add(temp);
                     dataCache.getBoardBitmapsCache().put(posFromMain,bitmaps);
-
-                    paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayMainWindow();
                 }
                 else {
@@ -1011,7 +1011,4 @@ public class AddCreditFragment extends Fragment {
         super.onDetach();
     }
 
-    public void closeCurrentFragment() {
-        getActivity().getSupportFragmentManager().popBackStack();
-    }
 }

@@ -92,6 +92,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 import static android.app.Activity.RESULT_OK;
 import static com.jim.pocketaccounter.debt.AddBorrowFragment.RESULT_LOAD_IMAGE;
+import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
 
 @SuppressLint("ValidFragment")
 public class RecordEditFragment extends Fragment implements OnClickListener {
@@ -919,6 +920,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+            if(requestCode==REQUEST_DELETE_PHOTOS&&data!=null&&resultCode==RESULT_OK){
         if((int)data.getExtras().get(PhotoAdapter.COUNT_DELETES)!=0){
             for (int i = 0; i < (int)data.getExtras().get(PhotoAdapter.COUNT_DELETES); i++) {
                 for (int j = myTickets.size()-1; j>=0; j--) {
@@ -945,7 +947,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     }
                 }
             })).start();
-        }
+        }}
 
         if(requestCode == RESULT_LOAD_IMAGE && null != data) {
             Uri selectedImage = data.getData();
@@ -1006,7 +1008,11 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     outFileCache.flush();
                     outFile.close();
                     outFileCache.close();
-                    PhotoDetails temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
+                    PhotoDetails temp;
+                    if(record!=null)
+                        temp =new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),record.getRecordId());
+                    else
+                        temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
                     myTickets.add(temp);
                     myTickedAdapter.notifyDataSetChanged();
                 } catch (FileNotFoundException e) {
@@ -1072,7 +1078,11 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     outFileCache.flush();
                     outFile.close();
                     outFileCache.close();
-                    PhotoDetails temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
+                    PhotoDetails temp;
+                    if(record!=null)
+                        temp =new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),record.getRecordId());
+                    else
+                         temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
                     myTickets.add(temp);
                     myTickedAdapter.notifyDataSetChanged();
                 } catch (FileNotFoundException e) {
@@ -1165,7 +1175,10 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             savingRecord.setAccount(account);
             savingRecord.setCurrency(currency);
             savingRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
-            savingRecord.setRecordId(uid_code);
+            if(record!=null)
+                savingRecord.setRecordId(record.getRecordId());
+            else
+                savingRecord.setRecordId(uid_code);
             savingRecord.setAllTickets(myTickets);
             savingRecord.setComment(comment_add.getText().toString());
             logicManager.insertRecord(savingRecord);
@@ -1198,10 +1211,11 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             if (((PocketAccounter) getContext()).getSupportFragmentManager().getBackStackEntryCount() != 0) {
                 FragmentManager fm = ((PocketAccounter) getContext()).getSupportFragmentManager();
                 for (int i = 0; i < fm.getBackStackEntryCount(); i++) fm.popBackStack();
-//                paFragmentManager.displayFragment(new RecordDetailFragment(date));
+                paFragmentManager.displayFragment(new RecordDetailFragment(date));
             }
         }
         else {
+            paFragmentManager.displayMainWindow();
             paFragmentManager.initialize(dataCache.getBeginDate(), dataCache.getEndDate());
             paFragmentManager.getFragmentManager().popBackStack();
         }

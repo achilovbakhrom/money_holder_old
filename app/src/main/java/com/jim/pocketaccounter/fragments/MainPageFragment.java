@@ -89,6 +89,14 @@ public class MainPageFragment extends Fragment {
         tvRecordExpanse = (TextView) rootView.findViewById(R.id.tvRecordExpanse);
         tvRecordBalanse = (TextView) rootView.findViewById(R.id.tvRecordBalanse);
         PRESSED = false;
+        rlRecordBalance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PRESSED) return;
+                paFragmentManager.displayFragment(new RecordDetailFragment(dataCache.getEndDate()));
+                PRESSED = true;
+            }
+        });
         initialize();
         return rootView;
     }

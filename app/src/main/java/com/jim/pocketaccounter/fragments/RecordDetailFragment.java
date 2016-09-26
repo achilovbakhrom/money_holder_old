@@ -85,7 +85,6 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
         toolbarManager.setTitle(getResources().getString(R.string.records));
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd,LLL yyyy");
         toolbarManager.setSubtitle(dateFormat.format(date.getTime()));
-        ( PocketAccounter.toolbar.findViewById(R.id.spToolbar)).setVisibility(View.GONE);
         rvRecordDetail = (RecyclerView) rootView.findViewById(R.id.rvRecordDetail);
         refreshList();
         setMode(mode);
@@ -94,8 +93,9 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
 
     private void refreshList() {
         records = new ArrayList<>();
-        List<FinanceRecord> records = daoSession.getFinanceRecordDao().loadAll();
-        int size = records.size();
+        List<FinanceRecord> allrecords = daoSession.getFinanceRecordDao().loadAll();
+        int size = allrecords.size();
+
         Calendar begin = (Calendar) date.clone();
         begin.set(Calendar.HOUR_OF_DAY, 0);
         begin.set(Calendar.MINUTE, 0);
@@ -107,9 +107,9 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
         end.set(Calendar.SECOND, 59);
         end.set(Calendar.MILLISECOND, 59);
         for (int i = 0; i < size; i++) {
-            if (records.get(i).getDate().compareTo(begin) >= 0 &&
-                    records.get(i).getDate().compareTo(end) <= 0)
-                records.add(records.get(i));
+            if (allrecords.get(i).getDate().compareTo(begin) >= 0 &&
+                    allrecords.get(i).getDate().compareTo(end) <= 0)
+                records.add(allrecords.get(i));
         }
         RecordDetailAdapter adapter = new RecordDetailAdapter(getContext(), records, mode);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());

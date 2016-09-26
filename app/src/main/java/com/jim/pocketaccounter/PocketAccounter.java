@@ -2,7 +2,9 @@ package com.jim.pocketaccounter;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -38,12 +40,14 @@ import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.DaoSession;
 //import com.jim.pocketaccounter.finance.FinanceManager;
+import com.jim.pocketaccounter.fragments.RecordDetailFragment;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.CircleImageView;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
+import com.jim.pocketaccounter.utils.password.OnPasswordRightEntered;
 import com.jim.pocketaccounter.utils.password.PasswordWindow;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
 import com.jim.pocketaccounter.utils.record.RecordIncomesView;
@@ -53,6 +57,8 @@ import com.jim.pocketaccounter.modulesandcomponents.components.PocketAccounterAc
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
 import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
 import com.jim.pocketaccounter.syncbase.SyncBase;
+import com.jim.pocketaccounter.widget.WidgetKeys;
+import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import org.greenrobot.greendao.AbstractDao;
 
@@ -129,22 +135,22 @@ public class PocketAccounter extends AppCompatActivity {
         treatToolbar();
         paFragmentManager.initialize(date,date);
         dataCache.getCategoryEditFragmentDatas().setDate(date);
-
+        pwPassword = (PasswordWindow) findViewById(R.id.pwPassword);
 
 
 //        rlRecordsMain = (RelativeLayout) findViewById(R.id.rlRecordExpanses);
 //        tvRecordIncome = (TextView) findViewById(R.id.tvRecordIncome);
-//        tvRecordBalanse = (TextView) findViewById(R.id.tvRecordBalanse);
 //        rlRecordIncomes = (RelativeLayout) findViewById(R.id.rlRecordIncomes);
 //        ivToolbarMostRight = (ImageView) findViewById(R.id.ivToolbarMostRight);
 //        spToolbar = (Spinner) toolbar.findViewById(R.id.spToolbar);
 //        ivToolbarExcel = (ImageView) findViewById(R.id.ivToolbarExcel);
 //        rlRecordBalance = (RelativeLayout) findViewById(R.id.rlRecordBalance);
+//        tvRecordBalanse = (TextView) findViewById(R.id.tvRecordBalanse);
 //        rlRecordBalance.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                if (PRESSED) return;
-//                replaceFragment(new RecordDetailFragment(date));
+//                paFragmentManager.displayFragment(new RecordDetailFragment(date));
 //                PRESSED = true;
 //            }
 //        });
@@ -191,6 +197,22 @@ public class PocketAccounter extends AppCompatActivity {
 //                    finish();
 //                }
 //            });}
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (preferences.getBoolean("secure", false)) {
+            pwPassword.setVisibility(View.VISIBLE);
+            pwPassword.setOnPasswordRightEnteredListener(new OnPasswordRightEntered() {
+                @Override
+                public void onPasswordRight() {
+                    pwPassword.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onExit() {
+                    finish();
+                }
+            });}
+
     }
 
     public Calendar getDate() {
@@ -676,14 +698,14 @@ public class PocketAccounter extends AppCompatActivity {
 //            notific.cancelAllNotifs();
 //        }
 //        financeManager.saveRecords();
-//        SharedPreferences sPref;
-//        sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
-//        WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);
-//        if (WidgetID >= 0) {
-//            if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
-//                WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
-//                        WidgetID);
-//        }
+        SharedPreferences sPref;
+        sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
+        WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);
+        if (WidgetID >= 0) {
+            if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
+                WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
+                        WidgetID);
+        }
         drawerInitializer.onStopSuniy();
 //        for (AbstractDao temp:daoSession.getAllDaos()) {
 //        }
@@ -1276,29 +1298,29 @@ public class PocketAccounter extends AppCompatActivity {
 //        }
 //    }
 //
-//    @Override
-//    public void onRestart() {
-//        super.onRestart();
-//        keyFromCalc=true;
-//
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        if (preferences.getBoolean("secure", false)&&!openActivity) {
-//            if(!drawer.isClosed())
-//            drawer.close();
-//            pwPassword.setVisibility(View.VISIBLE);
-//            pwPassword.setOnPasswordRightEnteredListener(new OnPasswordRightEntered() {
-//                @Override
-//                public void onPasswordRight() {
-//                    pwPassword.setVisibility(View.GONE);
-//                }
-//
-//                @Override
-//                public void onExit() {
-//                    finish();
-//                }
-//            });
-//        }
-//        openActivity = false;
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        keyFromCalc=true;
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (preferences.getBoolean("secure", false)&&!openActivity) {
+            if(!drawerInitializer.getDrawer().isClosed())
+            drawerInitializer.getDrawer().close();
+            pwPassword.setVisibility(View.VISIBLE);
+            pwPassword.setOnPasswordRightEnteredListener(new OnPasswordRightEntered() {
+                @Override
+                public void onPasswordRight() {
+                    pwPassword.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onExit() {
+                    finish();
+                }
+            });
+        }
+        openActivity = false;
 //
 //
 //        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -1315,52 +1337,30 @@ public class PocketAccounter extends AppCompatActivity {
 //            userEmail.setText(R.string.and_sync_your_data);
 //
 //        }
-//    }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//
-//
-//        Log.d("resulttt", "onActivityResultPOCKET: ");
-//        findViewById(R.id.change).setVisibility(View.VISIBLE);
-//        if (requestCode == SignInGoogleMoneyHold.RC_SIGN_IN) {
-//            reg.regitRequstGet(data);
-//        }
-//        if (requestCode == key_for_restat && resultCode == RESULT_OK) {
-//            initialize(date);
-//            if (!drawer.isClosed()) {
-//                drawer.close();
-//            }
-//            if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-//                userAvatar.setImageResource(R.drawable.no_photo);
-//                userName.setText(R.string.please_sign);
-//                userEmail.setText(R.string.and_sync_your_data);
-//                fabIconFrame.setBackgroundResource(R.drawable.cloud_sign_in);
-//            }
-//        }
-//        if (resultCode != RESULT_OK && requestCode == key_for_restat && resultCode != 1111) {
-//            initialize(date);
-//            for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
-//                fragmentManager.popBackStack();
-//            }
-//
-//        }
-//
-//        if (requestCode == key_for_restat && resultCode == 1111) {
-//            if (WidgetID >= 0) {
-//                if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
-//                    WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
-//                            WidgetID);
-//            }
-//            finish();
-//        }
-//
-//
-//
-//    }
-//
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+
+        findViewById(R.id.change).setVisibility(View.VISIBLE);
+        drawerInitializer.onActivResultForDrawerCalls(requestCode,resultCode,data);
+
+        if (requestCode == key_for_restat && resultCode == 1111) {
+            if (WidgetID >= 0) {
+                if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
+                    WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
+                            WidgetID);
+            }
+            finish();
+        }
+
+
+
+    }
+
 
 //
 //    public static float convertDpToPixel(float dp, Context context) {

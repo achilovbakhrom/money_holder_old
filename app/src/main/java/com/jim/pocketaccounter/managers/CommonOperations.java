@@ -24,6 +24,7 @@ import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.FinanceRecord;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -172,6 +173,7 @@ public class CommonOperations {
         }
         return result;
     }
+
 
     public Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
         BitmapFactory.Options options = new BitmapFactory.Options();

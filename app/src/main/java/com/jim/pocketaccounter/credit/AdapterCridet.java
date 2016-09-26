@@ -184,10 +184,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     public void change_item(CreditDetials changed_item, int position) {
 //                        updateList();
                         double obswiy = 0;
-                        for (ReckingCredit item : cardDetials.get(position).getReckings())
-                            obswiy += item.getAmount();
-                        Log.d("test002", cardDetials.get(position).getCredit_name()+" --- "+ cardDetials.get(position).getValue_of_credit_with_procent() + " --- "+obswiy);
-                        notifyItemChanged(position);
+                         notifyItemChanged(position);
 //                        notifyDataSetChanged();
                     }
 

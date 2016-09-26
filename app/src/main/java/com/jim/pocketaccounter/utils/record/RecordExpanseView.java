@@ -11,6 +11,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
@@ -20,6 +21,7 @@ import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.fragments.AddCreditFragment;
+import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
@@ -311,10 +313,15 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 							}
 							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
 						}
-						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.CREDIT) {}
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.CREDIT) {
+							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(boardButtons.get(position).getCategoryId()));
+							InfoCreditFragment temp = new InfoCreditFragment();
+							temp.setContentFromMainWindow(item,position,PocketAccounterGeneral.EXPANSE_MODE);
+							paFragmentManager.displayFragment(temp);
+						}
 						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.DEBT_BORROW) {}
 						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.PAGE) {}
-						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.CREDIT) {
+						else if (boardButtons.get(position).getType() == PocketAccounterGeneral.FUNCTION) {
 							String[] functionIds = getResources().getStringArray(R.array.operation_ids);
 							if (boardButtons.get(position).getCategoryId().matches(functionIds[0])) {
 								if (currentPage == tableCount-1)
@@ -827,7 +834,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setContentView(dialogView);
 		final ArrayList<IconWithName> categories = new ArrayList<>();
-		List<CreditDetials> creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
+		List<CreditDetials> creditDetialsList = daoSession.getCreditDetialsDao().queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).build().list();
 		for (CreditDetials creditDetials : creditDetialsList) {
 			IconWithName iconWithName = new IconWithName(creditDetials.getIcon_ID(),
 					creditDetials.getCredit_name(), Long.toString(creditDetials.getMyCredit_id()));

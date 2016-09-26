@@ -29,7 +29,7 @@ public class PocketAccounterApplicationModule {
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
         DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
-        Database db = helper.getEncryptedWritableDb("super-secret");
+        Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
 
@@ -44,7 +44,7 @@ public class PocketAccounterApplicationModule {
     public DaoSession getDaoSession() {
         if (daoSession == null) {
             DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
-            Database db = helper.getEncryptedWritableDb("super-secret");
+            Database db = helper.getWritableDb();
             daoSession = new DaoMaster(db).newSession();
         }
         return daoSession;

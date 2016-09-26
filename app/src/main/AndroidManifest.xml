@@ -62,6 +62,15 @@
             android:label="Widget Settings"
             android:launchMode="singleInstance"
             android:noHistory="true"/>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".widget.ChooseWidget"
             android:launchMode="singleInstance"
@@ -72,5 +81,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:launchMode="singleInstance"/>
+        <activity android:name=".photocalc.PhotoViewActivity"
+            android:screenOrientation="portrait"/>
     </application>
 </manifest>
