@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -43,7 +44,7 @@ public class TransferDialog extends Dialog {
     @Inject
     DatePicker datePicker;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
 
     private View dialogView;
@@ -166,6 +167,9 @@ public class TransferDialog extends Dialog {
         ivYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                 if (onTransferDialogSaveListener != null && !etAccountEditName.getText().toString().isEmpty()) {
                     onTransferDialogSaveListener.OnTransferDialogSave();
                     AccountOperation accountOperation = new AccountOperation();

@@ -70,7 +70,7 @@ public class AccountFragment extends Fragment {
 	@Inject
 	ReportManager reportManager;
 	@Inject
-	@Named(value = "display_formmatter")
+	@Named(value = "display_formatter")
 	SimpleDateFormat dateFormat;
 	@Inject
 	CommonOperations commonOperations;

@@ -276,7 +276,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                     @Override
                     public void onClick(View v) {
                         boolean isMojno=true;
-                        if(Integer.parseInt(topWindow.getText().toString())>10){
+                        if(Integer.parseInt(topWindow.getText().toString()) < 1 ||
+                                Integer.parseInt(topWindow.getText().toString()) > 10){
                             tvTop.setText(getString(R.string.limit_page));
                             tvTop.setTextColor(Color.RED);
                             isMojno=false;
@@ -285,7 +286,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                             tvTop.setText(R.string.in_window_expense_top_window);
                             tvTop.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.black_for_secondary_text));
                         }
-                        if(Integer.parseInt(bottomWindow.getText().toString())>10){
+                        if(Integer.parseInt(bottomWindow.getText().toString())<1 ||
+                                Integer.parseInt(bottomWindow.getText().toString())>10){
                             tvBottom.setText(getString(R.string.limit_page));
                             tvBottom.setTextColor(Color.RED);
                             isMojno=false;
@@ -295,19 +297,24 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                             tvBottom.setTextColor(ContextCompat.getColor(SettingsActivity.this,R.color.black_for_secondary_text));
                         }
                         if(isMojno){
-
                             PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this).edit().putInt("key_for_window_top",Integer.parseInt(topWindow.getText().toString())).apply();
                             PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this).edit().putInt("key_for_window_bottom",Integer.parseInt(bottomWindow.getText().toString())).apply();
-
-                            //TODO Obrabotka click
-                            //top klyuch "key_for_window_top"
-                            //bottom klyuch "key_for_window_bottom"
-
-
-
+                            if (PreferenceManager
+                                    .getDefaultSharedPreferences(SettingsActivity.this)
+                                    .getInt("income_current_page", 0) >= Integer.parseInt(bottomWindow.getText().toString())) {
+                                PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this)
+                                        .edit()
+                                        .putInt("income_current_page", 0).apply();
+                            }
+                            if (PreferenceManager
+                                    .getDefaultSharedPreferences(SettingsActivity.this)
+                                    .getInt("expense_current_page", 0) >= Integer.parseInt(topWindow.getText().toString())) {
+                                PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this)
+                                        .edit()
+                                        .putInt("expense_current_page", 0).apply();
+                            }
                             dialog.dismiss();
                         }
-
                     }
                 });
                 DisplayMetrics dm = getResources().getDisplayMetrics();

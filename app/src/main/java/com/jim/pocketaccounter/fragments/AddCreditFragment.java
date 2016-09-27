@@ -76,7 +76,7 @@ import javax.inject.Named;
 
 public class AddCreditFragment extends Fragment {
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     @Inject
     PAFragmentManager paFragmentManager;
@@ -138,7 +138,6 @@ public class AddCreditFragment extends Fragment {
         this.modeFromMain=mode;
         this.posFromMain=pos;
         return this;
-
     }
 
     public void shareForEdit(CreditDetials currentCredit) {
@@ -967,9 +966,7 @@ public class AddCreditFragment extends Fragment {
                     options.inPreferredConfig= Bitmap.Config.RGB_565;
                     Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
                     temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
-                    List<Bitmap> bitmaps=new ArrayList<>();
-                    bitmaps.add(temp);
-                    dataCache.getBoardBitmapsCache().put(posFromMain,bitmaps);
+//                    dataCache.getBoardBitmapsCache().put(modeFromMain, temp);
                     paFragmentManager.displayMainWindow();
                 }
                 else {

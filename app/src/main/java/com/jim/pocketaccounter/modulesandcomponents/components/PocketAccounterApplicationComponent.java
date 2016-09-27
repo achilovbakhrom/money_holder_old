@@ -18,6 +18,11 @@ import com.jim.pocketaccounter.utils.record.RecordButtonExpanse;
 import com.jim.pocketaccounter.utils.record.RecordButtonIncome;
 import com.jim.pocketaccounter.widget.WidgetProvider;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.inject.Named;
+
 import dagger.Component;
 
 /**
@@ -32,6 +37,14 @@ public interface PocketAccounterApplicationComponent {
     DataCache getDataCache();
     CommonOperations getCommonOperations();
     ReportManager reportManager();
+    @Named(value = "begin")
+    Calendar getBegin();
+    @Named(value = "end")
+    Calendar getEnd();
+    @Named(value = "common_formatter")
+    SimpleDateFormat getCommonFormatter();
+    @Named(value = "display_formatter")
+    SimpleDateFormat getDisplayFormatter();
     void inject(DatabaseMigration databaseMigration);
     void inject(PocketAccounterApplication pocketAccounterApplication);
     void inject(SystemConfigurator systemConfigurator);

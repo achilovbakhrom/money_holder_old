@@ -1360,6 +1360,7 @@
     <string name="none_minus_account_warning">Счет не может быть нулевым!</string>
     <string name="add_category">Добавить категорию</string>
     <string name="debt_borrow_list_is_empty">Список долгов и займов пуст!</string>
+    <string name="credit_list_is_empty">Список кредитов пуст!</string>
     <!--operations-->
     <string-array name="operation_category">
         <item>Выбрать из существующих</item>
@@ -1376,7 +1377,7 @@
         <item>Синхронизация с Google</item>
         <item>Загрузка данных</item>
         <item>Трансфер денег</item>
-        <item>Очистить данных за этот день</item>
+        <item>Очистить данных за весь день</item>
         <item>Вперед</item>
         <item>Назад</item>
     </string-array>
@@ -1396,17 +1397,46 @@
         <item>icons_316</item>
         <item>icons_317</item>
     </string-array>
-
     <string-array name="page_names">
         <item>Валюты</item>
+        <item>Категории</item>
         <item>Счета</item>
+        <item>Цель</item>
+        <item>Автооперации</item>
+        <item>Кредиты</item>
+        <item>Долги</item>
+        <item>Отчет по счетам</item>
+        <item>Отчет по доходам и расходам</item>
+        <item>Отчет по категориям</item>
+        <item>SMS парсинг</item>
+        <item>Настройки</item>
     </string-array>
     <string-array name="page_ids">
         <item>currency_page</item>
+        <item>category_page</item>
         <item>account_page</item>
+        <item>purpose_page</item>
+        <item>auto_page</item>
+        <item>credit_page</item>
+        <item>debtborrow_page</item>
+        <item>report_by_account_page</item>
+        <item>report_by_income_expense_page</item>
+        <item>report_by_category_page</item>
+        <item>sms_parsing_page</item>
+        <item>settings_page</item>
     </string-array>
     <string-array name="page_icons">
         <item>icons_100</item>
         <item>icons_101</item>
+        <item>icons_102</item>
+        <item>icons_103</item>
+        <item>icons_104</item>
+        <item>icons_105</item>
+        <item>icons_106</item>
+        <item>icons_107</item>
+        <item>icons_108</item>
+        <item>icons_109</item>
+        <item>icons_110</item>
+        <item>icons_111</item>
     </string-array>
 </resources>

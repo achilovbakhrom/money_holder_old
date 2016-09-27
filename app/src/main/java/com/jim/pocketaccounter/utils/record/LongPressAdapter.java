@@ -16,13 +16,14 @@ import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressLint("ViewHolder")
 public class LongPressAdapter extends BaseAdapter {
-	private ArrayList<FinanceRecord> result;
+	private List<FinanceRecord> result;
 	private LayoutInflater inflater;
 	private Context context;
-	public LongPressAdapter(Context context, ArrayList<FinanceRecord> result) {
+	public LongPressAdapter(Context context, List<FinanceRecord> result) {
 	    this.result = result;
 		this.context = context;
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -6,32 +6,46 @@ import android.os.Build;
 import android.support.v4.util.LruCache;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
-import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.Recking;
+import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class DataCache {
     private CategoryEditFragmentDatas categoryEditFragmentDatas;
-    private LruCache<Integer, List<Bitmap>> boardBitmaps;
+    private LruCache<Long, Bitmap> boardBitmaps;
     private LruCache<Integer, Bitmap> elements;
+    private LruCache<String, List<BoardButtonPercent>> percents;
     private Calendar beginDate, endDate;
     @Inject SharedPreferences sharedPreferences;
     @Inject DaoSession daoSession;
     @Inject CommonOperations commonOperations;
+    @Inject ReportManager reportManager;
+    @Named(value = "begin") @Inject Calendar begin;
+    @Named(value = "end") @Inject Calendar end;
     public DataCache(PocketAccounterApplication application) {
         application.component().inject(this);
         initBeginAndEndDates();
-        categoryEditFragmentDatas = new CategoryEditFragmentDatas();
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 8;
-
+        final int cacheSize = maxMemory / 16;
+        percents = new LruCache<>(cacheSize);
+        updatePercents();
+        categoryEditFragmentDatas = new CategoryEditFragmentDatas();
         elements = new LruCache<Integer, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(Integer key, Bitmap bitmap) {
@@ -41,17 +55,17 @@ public class DataCache {
                     return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
             }
         };
-        boardBitmaps = new LruCache<Integer, List<Bitmap>>(cacheSize) {
+        boardBitmaps = new LruCache<Long, Bitmap>(cacheSize) {
             @Override
-            protected int sizeOf(Integer key, List<Bitmap> bitmaps) {
+            protected int sizeOf(Long key, Bitmap bitmap) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1)
-                    return bitmaps.get(0).getByteCount() / 1024;
+                    return bitmap.getByteCount() / 1024;
                 else
-                    return bitmaps.get(0).getRowBytes() * bitmaps.get(0).getHeight() / 1024;
+                    return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
             }
         };
     }
-    public LruCache<Integer, List<Bitmap>> getBoardBitmapsCache() {
+    public LruCache<Long, Bitmap> getBoardBitmapsCache() {
         return boardBitmaps;
     }
     public LruCache<Integer, Bitmap> getElements() {
@@ -93,13 +107,327 @@ public class DataCache {
         }
     }
 
+    private String format(Calendar calendar) {
+        return calendar.get(Calendar.DAY_OF_MONTH)+"."
+                +(calendar.get(Calendar.MONTH)+1)+"."
+                +calendar.get(Calendar.YEAR);
+    }
+
+    public void updateOneDay(final Calendar day) {
+        String date = format(day);
+        begin.setTimeInMillis(new Long(day.getTimeInMillis()));
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        begin.set(Calendar.MINUTE, 0);
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
+        end.setTimeInMillis(new Long(day.getTimeInMillis()));
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 59);
+        List<FinanceRecord> tempFinances = daoSession.getFinanceRecordDao().loadAll();
+        List<FinanceRecord> financeRecords = new ArrayList<>();
+        for (FinanceRecord record : tempFinances) {
+            if (record.getDate().compareTo(begin) >= 0 &&
+                    record.getDate().compareTo(end) <= 0) {
+                financeRecords.add(record);
+            }
+        }
+        List<CreditDetials> tempCredits = daoSession.getCreditDetialsDao().loadAll();
+        List<CreditDetials> creditDetialList= new ArrayList<>();
+        for (CreditDetials creditDetial : tempCredits) {
+            if (!creditDetial.getKey_for_include()) continue;
+            for (ReckingCredit reckingCredit : creditDetial.getReckings()) {
+                if (reckingCredit.getPayDate().compareTo(begin) >= 0 &&
+                        reckingCredit.getPayDate().compareTo(end) <= 0) {
+                    creditDetialList.add(creditDetial);
+                    break;
+                }
+            }
+        }
+        List<DebtBorrow> tempDebtBorrows = daoSession.getDebtBorrowDao().loadAll();
+        List<DebtBorrow> debtBorrows = new ArrayList<>();
+        for (DebtBorrow debtBorrow : tempDebtBorrows) {
+            if (!debtBorrow.getCalculate()) continue;
+            if (debtBorrow.getTakenDate().compareTo(begin) >= 0 &&
+                    debtBorrow.getTakenDate().compareTo(end) <= 0) {
+                debtBorrows.add(debtBorrow);
+                break;
+            }
+            for (Recking recking: debtBorrow.getReckings()) {
+                if (recking.getPayDate().compareTo(begin) >= 0 &&
+                        recking.getPayDate().compareTo(end) <= 0) {
+                    debtBorrows.add(debtBorrow);
+                    break;
+                }
+            }
+        }
+        Map<String, Double> balance = reportManager.calculateBalance(begin, end);
+        Double allExpenses = balance.get(PocketAccounterGeneral.EXPENSES);
+        Double allIncomes = balance.get(PocketAccounterGeneral.INCOMES);
+        List<BoardButton> boardButtonList = daoSession.getBoardButtonDao().loadAll();
+        BoardButtonPercent boardButtonPercent = null;
+        for (int i=0; i<boardButtonList.size(); i++) {
+            if (boardButtonList.get(i).getCategoryId() == null ||
+                    (allExpenses == 0.0d && allIncomes == 0.0d)) {
+                boardButtonPercent = new BoardButtonPercent();
+                boardButtonPercent.setPosition(boardButtonList.get(i).getPos());
+                boardButtonPercent.setTable(boardButtonList.get(i).getTable());
+                boardButtonPercent.setPercent(0.0d);
+
+                if (percents.get(date) == null) {
+                    List<BoardButtonPercent> list = new ArrayList<>();
+                    list.add(boardButtonPercent);
+                    percents.put(date, list);
+                }
+                else {
+                    List<BoardButtonPercent> list = percents.get(date);
+                    int pos = 0;
+                    boolean found = false;
+                    for (int j=0; j<list.size(); j++) {
+                        if (list.get(j).getTable() == boardButtonList.get(i).getTable()
+                                && list.get(j).getPosition() == boardButtonList.get(i).getPos()) {
+                            found = true;
+                            pos = j;
+                            break;
+                        }
+                    }
+                    if (found)
+                        percents.get(date).get(pos).setPercent(boardButtonPercent.getPercent());
+                    else
+                        percents.get(date).add(boardButtonPercent);
+
+                }
+                continue;
+            }
+            int type = boardButtonList.get(i).getType();
+            switch (type) {
+                case PocketAccounterGeneral.CATEGORY:
+                    Double categoryExpenses = 0.0d, categoryIncomes = 0.0d;
+                    for (FinanceRecord record : financeRecords) {
+                        if (record.getCategory().getId().equals(boardButtonList.get(i).getCategoryId())) {
+                            if (boardButtonList.get(i).getTable() == PocketAccounterGeneral.EXPENSE) {
+                                categoryExpenses += commonOperations.getCost(record);
+                            }
+                            else {
+                                categoryIncomes += commonOperations.getCost(record);
+                            }
+                        }
+                    }
+                    boardButtonPercent = new BoardButtonPercent();
+                    boardButtonPercent.setPosition(boardButtonList.get(i).getPos());
+                    boardButtonPercent.setTable(boardButtonList.get(i).getTable());
+                    if (boardButtonList.get(i).getTable() == PocketAccounterGeneral.EXPENSE) {
+                        if (allExpenses == 0)
+                            boardButtonPercent.setPercent(0.0d);
+                        else
+                            boardButtonPercent.setPercent(100.0d*categoryExpenses/allExpenses);
+                    }
+                    else {
+                        if (allIncomes == 0)
+                            boardButtonPercent.setPercent(0.0d);
+                        else
+                            boardButtonPercent.setPercent(100.0d*categoryIncomes/allIncomes);
+                    }
+                    if (percents.get(date) == null) {
+                        List<BoardButtonPercent> list = new ArrayList<>();
+                        list.add(boardButtonPercent);
+                        percents.put(date, list);
+                    }
+                    else {
+                        List<BoardButtonPercent> list = percents.get(date);
+                        int pos = 0;
+                        boolean found = false;
+                        for (int j=0; j<list.size(); j++) {
+                            if (list.get(j).getTable() == boardButtonList.get(i).getTable()
+                                    && list.get(j).getPosition() == boardButtonList.get(i).getPos()) {
+                                found = true;
+                                pos = j;
+                                break;
+                            }
+                        }
+                        if (found)
+                            percents.get(date).get(pos).setPercent(boardButtonPercent.getPercent());
+                        else
+                            percents.get(date).add(boardButtonPercent);
+
+                    }
+                    break;
+                case PocketAccounterGeneral.CREDIT:
+                    Double credit = 0.0d;
+                    for (CreditDetials creditDetials : creditDetialList) {
+                        for (ReckingCredit recking : creditDetials.getReckings()) {
+                            if (recking.getPayDate().compareTo(begin) >= 0 &&
+                                    recking.getPayDate().compareTo(end) <= 0) {
+                                credit += commonOperations.getCost(day, creditDetials.getValyute_currency(), recking.getAmount());
+                            }
+                        }
+                    }
+                    boardButtonPercent = new BoardButtonPercent();
+                    boardButtonPercent.setPosition(boardButtonList.get(i).getPos());
+                    boardButtonPercent.setTable(boardButtonList.get(i).getTable());
+                    boardButtonPercent.setPercent(100.0d*credit/allExpenses);
+                    if (percents.get(date) == null) {
+                        List<BoardButtonPercent> list = new ArrayList<>();
+                        list.add(boardButtonPercent);
+                        percents.put(date, list);
+                    }
+                    else {
+                        List<BoardButtonPercent> list = percents.get(date);
+                        int pos = 0;
+                        boolean found = false;
+                        for (int j=0; j<list.size(); j++) {
+                            if (list.get(j).getTable() == boardButtonList.get(i).getTable()
+                                    && list.get(j).getPosition() == boardButtonList.get(i).getPos()) {
+                                found = true;
+                                pos = j;
+                                break;
+                            }
+                        }
+                        if (found)
+                            percents.get(date).get(pos).setPercent(boardButtonPercent.getPercent());
+                        else
+                            percents.get(date).add(boardButtonPercent);
+
+                    }
+                    break;
+                case PocketAccounterGeneral.DEBT_BORROW:
+                    Double debtBorrowExpenses = 0.0d, debtBorrowIncomes = 0.0d;
+                    for (DebtBorrow db : debtBorrows) {
+                        if (db.getId().equals(boardButtonList.get(i).getCategoryId())) {
+                            if (db.getType() == DebtBorrow.BORROW)
+                                debtBorrowExpenses += commonOperations.getCost(day, db.getCurrency(), db.getAmount());
+                            else
+                                debtBorrowIncomes += commonOperations.getCost(day, db.getCurrency(), db.getAmount());
+                            for (Recking recking : db.getReckings()) {
+                                if (recking.getPayDate().compareTo(begin) >= 0 &&
+                                        recking.getPayDate().compareTo(end) <= 0) {
+                                    if (db.getType() == DebtBorrow.BORROW)
+                                        debtBorrowIncomes += commonOperations.getCost(day, db.getCurrency(), recking.getAmount());
+                                    else
+                                        debtBorrowExpenses += commonOperations.getCost(day, db.getCurrency(), recking.getAmount());
+                                }
+                            }
+
+                        }
+                    }
+                    boardButtonPercent = new BoardButtonPercent();
+                    boardButtonPercent.setPosition(boardButtonList.get(i).getPos());
+                    boardButtonPercent.setTable(boardButtonList.get(i).getTable());
+                    if (boardButtonList.get(i).getTable() == PocketAccounterGeneral.EXPENSE) {
+                        if (allExpenses == 0.0d)
+                            boardButtonPercent.setPercent(0.0d);
+                        else
+                            boardButtonPercent.setPercent(100.0d*debtBorrowExpenses/allExpenses);
+                    }
+                    else {
+                        if (allIncomes ==0)
+                            boardButtonPercent.setPercent(0.0d);
+                        else
+                            boardButtonPercent.setPercent(100.0d*debtBorrowIncomes/allIncomes);
+                    }
+                    if (percents.get(date) == null) {
+                        List<BoardButtonPercent> list = new ArrayList<>();
+                        list.add(boardButtonPercent);
+                        percents.put(date, list);
+                    }
+                    else {
+                        List<BoardButtonPercent> list = percents.get(date);
+                        int pos = 0;
+                        boolean found = false;
+                        for (int j=0; j<list.size(); j++) {
+                            if (list.get(j).getTable() == boardButtonList.get(i).getTable()
+                                    && list.get(j).getPosition() == boardButtonList.get(i).getPos()) {
+                                found = true;
+                                pos = j;
+                                break;
+                            }
+                        }
+                        if (found)
+                            percents.get(date).get(pos).setPercent(boardButtonPercent.getPercent());
+                        else
+                            percents.get(date).add(boardButtonPercent);
+
+                    }
+                    break;
+            }
+        }
+    }
+
+    public void updatePercents() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Map<String, List<BoardButtonPercent>> snapshot = percents.snapshot();
+                begin.setTimeInMillis(endDate.getTimeInMillis());
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                end.setTimeInMillis(endDate.getTimeInMillis());
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.MILLISECOND, 59);
+                for (int i=0; i<10; i++) {
+                    boolean hasSuchRecord = false;
+                    Set<String> keys = snapshot.keySet();
+                    for (String key : keys) {
+                        if (key.equalsIgnoreCase(format(begin))) {
+                            hasSuchRecord = true;
+                            break;
+                        }
+                    }
+                    if (!hasSuchRecord) {
+                        updateOneDay(end);
+                    }
+                    if (i >= 5) {
+                        if (i == 5) {
+                            begin.setTimeInMillis(endDate.getTimeInMillis());
+                            begin.set(Calendar.HOUR_OF_DAY, 0);
+                            begin.set(Calendar.MINUTE, 0);
+                            begin.set(Calendar.SECOND, 0);
+                            begin.set(Calendar.MILLISECOND, 0);
+                            end.setTimeInMillis(endDate.getTimeInMillis());
+                            end.set(Calendar.HOUR_OF_DAY, 23);
+                            end.set(Calendar.MINUTE, 59);
+                            end.set(Calendar.SECOND, 59);
+                            end.set(Calendar.MILLISECOND, 59);
+                        }
+                        begin.add(Calendar.DAY_OF_MONTH, -1);
+                        end.add(Calendar.DAY_OF_MONTH, -1);
+                    }
+                    else {
+                        begin.add(Calendar.DAY_OF_MONTH, 1);
+                        end.add(Calendar.DAY_OF_MONTH, 1);
+                    }
+                }
+            }
+        }).run();
+    }
+
+    public Double getPercent(Integer table, Calendar day, Integer position) {
+        Map<String, List<BoardButtonPercent>> snapshot = percents.snapshot();
+        if (snapshot.get(format(day)) != null) {
+            List<BoardButtonPercent> boardButtonPercents = snapshot.get(format(day));
+            for (BoardButtonPercent boardButtonPercent : boardButtonPercents) {
+                if (boardButtonPercent.getTable() == table &&
+                        boardButtonPercent.getPosition() == position)
+                    return boardButtonPercent.getPercent();
+            }
+        }
+        return 0.0;
+    }
+
     private void initBeginAndEndDates() {
-        endDate = Calendar.getInstance();
+        if (endDate == null)
+            endDate = Calendar.getInstance();
         endDate.set(Calendar.HOUR_OF_DAY, 23);
         endDate.set(Calendar.MINUTE, 59);
         endDate.set(Calendar.SECOND, 59);
         endDate.set(Calendar.MILLISECOND, 59);
-        beginDate = Calendar.getInstance();
+        if (beginDate == null)
+            beginDate = Calendar.getInstance();
         beginDate.set(Calendar.HOUR_OF_DAY, 0);
         beginDate.set(Calendar.MINUTE, 0);
         beginDate.set(Calendar.SECOND, 0);
@@ -116,10 +444,10 @@ public class DataCache {
     }
 
     public void setBeginDate(Calendar beginDate) {
-        this.beginDate = (Calendar) beginDate.clone();
+        this.beginDate.setTimeInMillis(new Long(beginDate.getTimeInMillis()));
     }
 
     public void setEndDate(Calendar endDate) {
-        this.endDate = (Calendar) endDate.clone();
+        this.endDate.setTimeInMillis(new Long(endDate.getTimeInMillis()));
     }
 }

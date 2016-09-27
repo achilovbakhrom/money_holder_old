@@ -15,9 +15,13 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.DebtBorrow;
+import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.cache.DataCache;
+
+import org.greenrobot.greendao.query.Query;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -131,7 +135,7 @@ public class RecordButtonIncome {
 			shadow = dataCache.getElements().get(PocketAccounterGeneral.DOWN_SIMPLE);
 	}
 	public void drawButton(Canvas canvas) {
-		Bitmap scaled;
+		Bitmap scaled = null;
 		Paint bitmapPaint = new Paint();
 		bitmapPaint.setAntiAlias(true);
 		bitmapPaint.setAlpha(0x77);
@@ -197,50 +201,105 @@ public class RecordButtonIncome {
 		}
 		bitmapPaint.setAlpha(0xFF);
 		if (boardButton.getCategoryId() != null) {
-			RootCategory category = null;
-			List<RootCategory> categories = daoSession.getRootCategoryDao().loadAll();
-			for (RootCategory cat : categories) {
-				if (cat.getId().matches(boardButton.getCategoryId())) {
-					category = cat;
+			String name = "";
+			switch (boardButton.getType()) {
+				case PocketAccounterGeneral.CATEGORY:
+					RootCategory category = null;
+					List<RootCategory> categoryList = daoSession.getRootCategoryDao().loadAll();
+					for (RootCategory cat : categoryList) {
+						if (cat.getId().matches(boardButton.getCategoryId())) {
+							category = cat;
+							break;
+						}
+					}
+					name = category.getName();
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
+						int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), resId, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 					break;
-				}
+				case PocketAccounterGeneral.CREDIT:
+
+					break;
+				case PocketAccounterGeneral.DEBT_BORROW:
+					Query<DebtBorrow> query = daoSession.getDebtBorrowDao()
+							.queryBuilder()
+							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getId()))
+							.build();
+					if (!query.list().isEmpty())
+						name = query.list().get(0).getPerson().getName();
+
+					break;
+				case PocketAccounterGeneral.FUNCTION:
+					String[] operationIds = context.getResources().getStringArray(R.array.operation_ids);
+					String[] operationIcons = context.getResources().getStringArray(R.array.operation_icons);
+					String[] operationNames = context.getResources().getStringArray(R.array.operation_names);
+					String icon = null;
+					for (int i = 0; i < operationIds.length; i++) {
+						if (operationIds[i].matches(boardButton.getCategoryId())) {
+							icon = operationIcons[i];
+							name = operationNames[i];
+							break;
+						}
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
+						int id = context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), id, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
+					break;
+				case PocketAccounterGeneral.PAGE:
+					String[] pageIds = context.getResources().getStringArray(R.array.page_ids);
+					String[] pageIcons = context.getResources().getStringArray(R.array.page_icons);
+					String[] pageNames = context.getResources().getStringArray(R.array.page_names);
+					icon = null;
+					for (int i = 0; i < pageIds.length; i++) {
+						if (pageIds[i].matches(boardButton.getCategoryId())) {
+							icon = pageIcons[i];
+							name = pageNames[i];
+							break;
+						}
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
+						int id = context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
+						scaled = BitmapFactory.decodeResource(context.getResources(), id, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
+					break;
 			}
-			int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
-			if (dataCache.getBoardBitmapsCache().get(16+boardButton.getPos()) == null) {
-				scaled = BitmapFactory.decodeResource(context.getResources(), resId);
-				scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
-				List<Bitmap> list = new ArrayList<>();
-				list.add(scaled);
-				dataCache.getBoardBitmapsCache().put(16+boardButton.getPos(), list);
-			}
-			else
-				scaled = dataCache.getBoardBitmapsCache().get(16+boardButton.getPos()).get(0);
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
 			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
 			Rect bounds = new Rect();
-			String catText = category.getName();
-			for (int i=0; i < category.getName().length(); i++) {
-				textPaint.getTextBounds(category.getName(), 0, i, bounds);
+			for (int i=0; i < name.length(); i++) {
+				textPaint.getTextBounds(name, 0, i, bounds);
 				if (bounds.width() >= container.width()) {
-					catText = category.getName().substring(0, i-5);
-					catText = catText + "...";
+					name = name.substring(0, i-5);
+					name += "...";
 					break;
 				}
 			}
-			textPaint.getTextBounds(catText, 0, catText.length(), bounds);
-			canvas.drawText(catText, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
+			textPaint.getTextBounds(name, 0, name.length(), bounds);
+			canvas.drawText(name, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
 		} else {
-			if (dataCache.getBoardBitmapsCache().get(16+boardButton.getPos()) == null) {
+			if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
 				scaled = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_category, options);
 				scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
-				List<Bitmap> list = new ArrayList<>();
-				list.add(scaled);
-				dataCache.getBoardBitmapsCache().put(16+boardButton.getPos(), list);
+				dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 			}
 			else
-				scaled = dataCache.getBoardBitmapsCache().get(16+boardButton.getPos()).get(0);
+				scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));

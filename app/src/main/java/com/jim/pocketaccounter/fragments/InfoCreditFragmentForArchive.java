@@ -44,7 +44,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
     @Inject
     ToolbarManager toolbarManager;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     @Inject
     PAFragmentManager paFragmentManager;

@@ -15,7 +15,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -29,6 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by DEV on 01.09.2016.
@@ -39,17 +39,24 @@ public class CommonOperations {
     DaoSession daoSession;
     private CurrencyDao currencyDao;
     private Context context;
+    private Currency mainCurrency;
+    @Inject @Named(value = "begin") Calendar begin;
+    @Inject @Named(value = "end") Calendar end;
+
     public CommonOperations(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         this.currencyDao = daoSession.getCurrencyDao();
         this.context = context;
     }
     public Currency getMainCurrency() {
-        List<Currency> currencies = currencyDao.loadAll();
-        for (Currency currency : currencies) {
-            if (currency.getMain()) return currency;
+        if (mainCurrency == null) {
+            List<Currency> currencies = currencyDao.loadAll();
+            for (Currency currency : currencies) {
+                if (currency.getIsMain())
+                    mainCurrency = currency;
+            }
         }
-        return null;
+        return mainCurrency;
     }
 
     public double getCost(FinanceRecord record) {
@@ -88,7 +95,6 @@ public class CommonOperations {
             pos++;
         }
         amount = amount/koeff;
-        Log.d("sss", "getCost: "+amount);
         return amount;
     }
 
@@ -156,7 +162,6 @@ public class CommonOperations {
         int strar=0;
 
         while (textUpper.indexOf(whichWordColorUpper,strar)>=0&&whichWordColor.length()!=0) {
-            Log.d("filtering", "ColorSubSeq: "+strar);
             ss.setSpan(new BackgroundColorSpan(Color.parseColor(colorCode)),textUpper.indexOf(whichWordColorUpper,strar), textUpper.indexOf(whichWordColorUpper,strar)+whichWordColorUpper.length(),  Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             strar=textUpper.indexOf(whichWordColorUpper,strar)+whichWordColorUpper.length();
         }
@@ -214,24 +219,18 @@ public class CommonOperations {
         return output;
     }
 
-    public boolean compareTimeInOneDay(Calendar cal1,Calendar cal2){
-
-        Calendar begin= (Calendar) cal1.clone();
+    public boolean compareTimeInOneDay(Calendar source, Calendar target){
+        begin.setTimeInMillis(source.getTimeInMillis());
         begin.set(Calendar.HOUR,0);
         begin.set(Calendar.MINUTE,0);
         begin.set(Calendar.SECOND,0);
         begin.set(Calendar.MILLISECOND,0);
-
-        Calendar end=(Calendar) cal1.clone();
+        end.setTimeInMillis(source.getTimeInMillis());
         end.set(Calendar.HOUR,23);
         end.set(Calendar.MINUTE,59);
         end.set(Calendar.SECOND,59);
         end.set(Calendar.MILLISECOND,59);
-
-
-        if (begin.compareTo(cal2)<=0&&end.compareTo(cal2)>=0){
-        return true;
-        }
-        return false;
+        return begin.compareTo(target) <= 0 &&
+                end.compareTo(target) >= 0;
     }
 }

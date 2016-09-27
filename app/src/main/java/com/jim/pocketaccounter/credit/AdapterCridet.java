@@ -68,7 +68,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     AccountDao accountDao;
 
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
 
     List<CreditDetials> cardDetials;

@@ -26,6 +26,7 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
@@ -358,14 +359,21 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 				//TODO daravotka borakan
 				logicManager.changeBoardButton(rootCategory.getType(),
 						pos, categoryId);
-				List<Bitmap> list = new ArrayList<>();
 				BitmapFactory.Options options = new BitmapFactory.Options();
 				options.inPreferredConfig = Bitmap.Config.RGB_565;
 				int resId = getResources().getIdentifier(rootCategory.getIcon(), "drawable", getContext().getPackageName());
 				Bitmap scaled = BitmapFactory.decodeResource(getResources(), resId, options);
 				scaled = Bitmap.createScaledBitmap(scaled, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
-				list.add(scaled);
-				dataCache.getBoardBitmapsCache().put(pos, list);
+				Long id = null;
+				if (!daoSession.getBoardButtonDao().queryBuilder()
+						.where(BoardButtonDao.Properties.CategoryId.eq(categoryId))
+						.build().list().isEmpty()) {
+					id = daoSession.getBoardButtonDao().queryBuilder()
+							.where(BoardButtonDao.Properties.CategoryId.eq(categoryId))
+							.build().list().get(0).getId();
+				}
+				if (id != null)
+				dataCache.getBoardBitmapsCache().put(id, scaled);
 				paFragmentManager.displayMainWindow();
 				paFragmentManager.getFragmentManager().popBackStack();
 			}

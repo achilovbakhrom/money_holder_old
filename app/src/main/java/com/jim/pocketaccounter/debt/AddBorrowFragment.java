@@ -90,7 +90,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     @Inject
     DaoSession daoSession;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     private DebtBorrowDao debtBorrowDao;
     private AccountDao accountDao;

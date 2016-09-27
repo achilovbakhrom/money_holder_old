@@ -93,5 +93,4 @@ public interface PocketAccounterActivityComponent {
     void inject(AutoMarketFragment autoMarketFragment);
     void inject(AddAutoMarketFragment addAutoMarketFragment);
     void inject(SearchFragment searchFragment);
-    //    void inject(LogicManager logicManager);
 }

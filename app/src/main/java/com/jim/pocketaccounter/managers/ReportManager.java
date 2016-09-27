@@ -29,21 +29,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by DEV on 01.09.2016.
  */
 
 public class ReportManager {
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    CommonOperations commonOperations;
+    @Inject DaoSession daoSession;
+    @Inject CommonOperations commonOperations;
+    @Named(value = "begin") @Inject Calendar begin;
+    @Named(value = "end") @Inject Calendar end;
     private Context context;
     private AccountOperationDao accountOperationsDao;
     private FinanceRecordDao financeRecordDao;
@@ -61,28 +63,19 @@ public class ReportManager {
         accountDao = daoSession.getAccountDao();
     }
 
-    public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar b, Calendar e, Class ... classes) {
-        Calendar begin = (Calendar) b.clone();
-        begin.set(Calendar.HOUR_OF_DAY, 0);
-        begin.set(Calendar.MINUTE, 0);
-        begin.set(Calendar.SECOND, 0);
-        begin.set(Calendar.MILLISECOND, 0);
-        Calendar end = (Calendar) e.clone();
-        end.set(Calendar.HOUR_OF_DAY, 23);
-        end.set(Calendar.MINUTE, 59);
-        end.set(Calendar.SECOND, 59);
-        end.set(Calendar.MILLISECOND, 59);
+    public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ... classes) {
         List<ReportObject> result = new ArrayList<>();
         for (Class cl : classes) {
             if (cl.getName().matches(Account.class.getName())) {
-                for (Account account : accountDao.loadAll()) {
+                List<Account> accounts = accountDao.loadAll();
+                for (Account account : accounts) {
                     if (account.getAmount() != 0 &&
                             account.getCalendar().compareTo(begin) >= 0 &&
                             account.getCalendar().compareTo(end) <= 0) {
                         ReportObject reportObject = new ReportObject();
                         reportObject.setType(PocketAccounterGeneral.INCOME);
                         reportObject.setAccount(account);
-                        reportObject.setDate((Calendar)account.getCalendar().clone());
+                        reportObject.setDate(account.getCalendar());
                         if (toMainCurrency) {
                             reportObject.setCurrency(commonOperations.getMainCurrency());
                             reportObject.setAmount(commonOperations.getCost(account.getCalendar(),
@@ -97,7 +90,8 @@ public class ReportManager {
                 }
             }
             if (cl.getName().matches(AccountOperation.class.getName())) {
-                for (AccountOperation accountOperations : accountOperationsDao.loadAll()) {
+                List<AccountOperation> accountOperationList = accountOperationsDao.loadAll();
+                for (AccountOperation accountOperations : accountOperationList) {
                     if (accountOperations.getDate().compareTo(begin) >= 0 &&
                             accountOperations.getDate().compareTo(end) <= 0) {
                         ReportObject reportObject = new ReportObject();
@@ -123,13 +117,14 @@ public class ReportManager {
                 }
             }
             if (cl.getName().matches(FinanceRecord.class.getName())) {
-                for (FinanceRecord financeRecord : financeRecordDao.loadAll()) {
+                List<FinanceRecord> financeRecordList = financeRecordDao.loadAll();
+                for (FinanceRecord financeRecord : financeRecordList) {
                     if (financeRecord.getDate().compareTo(begin) >= 0 &&
                             financeRecord.getDate().compareTo(end) <= 0) {
                         ReportObject reportObject = new ReportObject();
                         reportObject.setType(financeRecord.getCategory().getType());
                         reportObject.setAccount(financeRecord.getAccount());
-                        reportObject.setDate((Calendar) financeRecord.getDate().clone());
+                        reportObject.setDate(financeRecord.getDate());
                         if (toMainCurrency) {
                             reportObject.setCurrency(commonOperations.getMainCurrency());
                             reportObject.setAmount(commonOperations.getCost(financeRecord.getDate(), financeRecord.getCurrency(), financeRecord.getAmount()));
@@ -144,7 +139,8 @@ public class ReportManager {
                 }
             }
             if (cl.getName().matches(DebtBorrow.class.getName())) {
-                for (DebtBorrow debtBorrow : debtBorrowDao.loadAll()) {
+                List<DebtBorrow> debtBorrowList = debtBorrowDao.loadAll();
+                for (DebtBorrow debtBorrow : debtBorrowList) {
                     if (!debtBorrow.getCalculate()) continue;
                     if (debtBorrow.getTakenDate().compareTo(begin) >= 0 &&
                             debtBorrow.getTakenDate().compareTo(end) <= 0) {
@@ -157,7 +153,7 @@ public class ReportManager {
                             reportObject.setDescription(context.getResources().getString(R.string.debt_statistics));
                             reportObject.setType(PocketAccounterGeneral.INCOME);
                         }
-                        reportObject.setDate((Calendar) debtBorrow.getTakenDate().clone());
+                        reportObject.setDate(debtBorrow.getTakenDate());
                         reportObject.setAccount(debtBorrow.getAccount());
                         if (toMainCurrency) {
                             reportObject.setAmount(commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), debtBorrow.getAmount()));
@@ -184,7 +180,8 @@ public class ReportManager {
                                 reportObject.setType(PocketAccounterGeneral.EXPENSE);
                             }
                             Account account = null;
-                            for (Account acc : accountDao.loadAll()) {
+                            List<Account> accountList = accountDao.loadAll();
+                            for (Account acc : accountList) {
                                 if (acc.getId().matches(recking.getAccountId())) {
                                     account = acc;
                                     break;
@@ -207,7 +204,8 @@ public class ReportManager {
                 }
             }
             if (cl.getName().matches(CreditDetials.class.getName())) {
-                for (CreditDetials creditDetials : creditDetialsDao.loadAll()) {
+                List<CreditDetials> creditDetialsList = creditDetialsDao.loadAll();
+                for (CreditDetials creditDetials : creditDetialsList) {
                     if (!creditDetials.getKey_for_include()) continue;
                     for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
                         Calendar calendar = reckingCredit.getPayDate();
@@ -217,7 +215,8 @@ public class ReportManager {
                             reportObject.setDate(calendar);
                             reportObject.setDescription(context.getResources().getString(R.string.credit));
                             Account account = null;
-                            for (Account acc : accountDao.loadAll()) {
+                            List<Account> accountList = accountDao.loadAll();
+                            for (Account acc : accountList) {
                                 if (acc.getId().matches(reckingCredit.getAccountId())) {
                                     account = acc;
                                     break;
@@ -264,8 +263,8 @@ public class ReportManager {
 
     public double calculateLimitAccountsAmount(Account account) {
         List<ReportObject> list = null;
-
-        list = getReportObjects(false, getFirstDay(), Calendar.getInstance(),
+        end.setTimeInMillis(System.currentTimeMillis());
+        list = getReportObjects(false, getFirstDay(), end,
                                         Account.class,
                                         FinanceRecord.class,
                                         DebtBorrow.class,
@@ -285,28 +284,29 @@ public class ReportManager {
     }
 
     public Calendar getFirstDay() {
-        Calendar result = Calendar.getInstance();
+        end.setTimeInMillis(System.currentTimeMillis());
         for (FinanceRecord financeRecord : financeRecordDao.loadAll()) {
-            if (financeRecord.getDate().compareTo(result) <= 0)
-                result = (Calendar) financeRecord.getDate().clone();
+            if (financeRecord.getDate().compareTo(end) <= 0)
+                end = financeRecord.getDate();
         }
         for (DebtBorrow debtBorrow : debtBorrowDao.loadAll()) {
-            if (debtBorrow.getTakenDate().compareTo(result) <= 0)
-                result = (Calendar) debtBorrow.getTakenDate().clone();
+            if (debtBorrow.getTakenDate().compareTo(end) <= 0)
+                end = debtBorrow.getTakenDate();
         }
         for (CreditDetials creditDetials : creditDetialsDao.loadAll()) {
-            if (creditDetials.getTake_time().compareTo(result) <= 0)
-                result = (Calendar) creditDetials.getTake_time().clone();
+            if (creditDetials.getTake_time().compareTo(end) <= 0)
+                end = creditDetials.getTake_time();
         }
         for (Account account : accountDao.loadAll()) {
-            if (account.getCalendar().compareTo(result) <= 0)
-                result = (Calendar) account.getCalendar().clone();
+            if (account.getCalendar().compareTo(end) <= 0)
+                end = account.getCalendar();
         }
-        return result;
+        return end;
     }
 
     public Map<Currency, Double> getRemain(Account account) {
-        List<ReportObject> list = getReportObjects(false, account.getCalendar(), Calendar.getInstance(),
+        end.setTimeInMillis(System.currentTimeMillis());
+        List<ReportObject> list = getReportObjects(false, account.getCalendar(), end,
                 Account.class,
                 FinanceRecord.class,
                 DebtBorrow.class,

@@ -13,6 +13,11 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import org.greenrobot.greendao.database.Database;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -25,14 +30,14 @@ public class PocketAccounterApplicationModule {
     private DaoSession daoSession;
     private DataCache dataCache;
     private SharedPreferences preferences;
-
+    private Calendar begin, end;
+    private SimpleDateFormat displayFormatter, commonFormatter;
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
         DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
-
     }
 
     @Provides
@@ -73,4 +78,34 @@ public class PocketAccounterApplicationModule {
     public CommonOperations getCommonOperations() {
         return new CommonOperations(pocketAccounterApplication);
     }
+    @Provides
+    @Named(value = "begin")
+    public Calendar getBegin() {
+        if (begin == null)
+            begin = Calendar.getInstance();
+        return begin;
+    }
+
+    @Provides
+    @Named(value = "end")
+    public Calendar getEnd() {
+        if (end == null)
+            end = Calendar.getInstance();
+        return end;
+    }
+    @Provides
+    @Named(value = "common_formatter")
+    public SimpleDateFormat getCommonFormatter() {
+        if (commonFormatter == null)
+            commonFormatter = new SimpleDateFormat("dd.MM.yyyy");
+        return commonFormatter;
+    }
+    @Provides
+    @Named(value = "display_formatter")
+    public SimpleDateFormat getDisplayFormatter() {
+        if (displayFormatter == null)
+            displayFormatter = new SimpleDateFormat("dd LLLL, yyyy");
+        return displayFormatter;
+    }
+
 }

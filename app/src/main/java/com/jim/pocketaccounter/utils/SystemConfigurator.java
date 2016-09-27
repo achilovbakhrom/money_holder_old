@@ -23,6 +23,7 @@ import com.jim.pocketaccounter.database.PhotoDetails;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SubCategory;
 
@@ -553,33 +554,298 @@ public class SystemConfigurator {
                     daoSession.getRootCategoryDao().insert(rootCategory);
                 }
 
-                //inserting expenses and incomes
-                int incomes = 0, expenses = 0;
-                List<RootCategory> categories = daoSession.getRootCategoryDao().loadAll();
-                Log.d("sss", "exp list and inc list "+categories.size());
-                for (int i=0; i<categories.size() && incomes<PocketAccounterGeneral.INCOME_BUTTONS_COUNT; i++) {
-                    if (categories.get(i).getType() == PocketAccounterGeneral.INCOME) {
-                        BoardButton boardButton = new BoardButton();
-                        boardButton.setCategoryId(categories.get(i).getId());
-                        boardButton.setPos(incomes);
-                        boardButton.setTable(PocketAccounterGeneral.INCOME);
-                        boardButton.setType(PocketAccounterGeneral.CATEGORY);
-                        boardButton.__setDaoSession(daoSession);
-                        daoSession.getBoardButtonDao().insert(boardButton);
-                        incomes++;
-                    }
+                String[] operationIds = context.getResources().getStringArray(R.array.operation_ids);
+                String[] pageIds = context.getResources().getStringArray(R.array.page_ids);
+
+                //---------------------------- first income page ------------------------
+
+                List<RootCategory> categories = daoSession.getRootCategoryDao()
+                        .queryBuilder().where(RootCategoryDao.Properties.Type.eq(PocketAccounterGeneral.INCOME))
+                        .list();
+                for (int i=0; i<3; i++) {
+                    BoardButton boardButton = new BoardButton();
+                    boardButton.setCategoryId(categories.get(i).getId());
+                    boardButton.setPos(i);
+                    boardButton.setTable(PocketAccounterGeneral.INCOME);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insert(boardButton);
                 }
-                for (int i = 0; i<categories.size() && expenses<PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT; i++) {
-                    if (categories.get(i).getType() == PocketAccounterGeneral.EXPENSE) {
-                        BoardButton boardButton = new BoardButton();
+                //forward button
+                BoardButton boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(3);
+                boardButton.setTable(PocketAccounterGeneral.INCOME);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insert(boardButton);
+
+                //second income page
+                for (int i=4; i<7; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(i);
+                    boardButton.setTable(PocketAccounterGeneral.INCOME);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insert(boardButton);
+                }
+
+                //forward button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(7);
+                boardButton.setTable(PocketAccounterGeneral.INCOME);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insert(boardButton);
+
+                //fourth income page
+                for (int i=8; i<11; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(i);
+                    boardButton.setTable(PocketAccounterGeneral.INCOME);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insert(boardButton);
+                }
+
+                //forward button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(11);
+                boardButton.setTable(PocketAccounterGeneral.INCOME);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insert(boardButton);
+
+                //fourth income page
+                for (int i=12; i<15; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(i);
+                    boardButton.setTable(PocketAccounterGeneral.INCOME);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insert(boardButton);
+                }
+
+                //forward button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(15);
+                boardButton.setTable(PocketAccounterGeneral.INCOME);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insert(boardButton);
+
+                //other all nulls
+                for (int i=16; i<40; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(i);
+                    boardButton.setTable(PocketAccounterGeneral.INCOME);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insert(boardButton);
+                }
+
+                // ---------------- first expense page -----------------
+                categories = daoSession.getRootCategoryDao()
+                        .queryBuilder().where(RootCategoryDao.Properties.Type.eq(PocketAccounterGeneral.EXPENSE))
+                        .list();
+                for (int i=0; i<14; i++) {
+                    if (i < 14) {
+                        boardButton = new BoardButton();
                         boardButton.setCategoryId(categories.get(i).getId());
-                        boardButton.setPos(expenses);
+                        boardButton.setPos(i);
                         boardButton.setTable(PocketAccounterGeneral.EXPENSE);
                         boardButton.setType(PocketAccounterGeneral.CATEGORY);
-                        boardButton.__setDaoSession(daoSession);
-                        daoSession.getBoardButtonDao().insert(boardButton);
-                        expenses++;
+                        daoSession.getBoardButtonDao().insertOrReplace(boardButton);
                     }
+                }
+                //back button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[5]);
+                boardButton.setPos(14);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                //forward button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(15);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                // ------- second expense page ------------------
+                //remain two categories
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(categories.get(14).getId());
+                boardButton.setPos(16);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(categories.get(15).getId());
+                boardButton.setPos(17);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                //eight pages
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[1]);
+                boardButton.setPos(18);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[2]);
+                boardButton.setPos(19);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[3]);
+                boardButton.setPos(20);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[5]);
+                boardButton.setPos(21);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[6]);
+                boardButton.setPos(22);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[10]);
+                boardButton.setPos(23);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[11]);
+                boardButton.setPos(24);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(pageIds[0]);
+                boardButton.setPos(25);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.PAGE);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                //four operations
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[0]);
+                boardButton.setPos(26);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[1]);
+                boardButton.setPos(27);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[2]);
+                boardButton.setPos(28);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[3]);
+                boardButton.setPos(29);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[5]);
+                boardButton.setPos(30);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(31);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                //third expense page
+                for (int i = 0; i < 14; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(32+i);
+                    boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+                }
+
+                //back button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[5]);
+                boardButton.setPos(46);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                //forward button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(47);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+
+                //fourth expense page
+                for (int i = 0; i < 14; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(48+i);
+                    boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+                }
+
+                //back button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[5]);
+                boardButton.setPos(62);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+                //forward button
+                boardButton = new BoardButton();
+                boardButton.setCategoryId(operationIds[4]);
+                boardButton.setPos(63);
+                boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                boardButton.setType(PocketAccounterGeneral.FUNCTION);
+                daoSession.getBoardButtonDao().insertOrReplace(boardButton);
+                //other all nulls
+                for (int i=64; i<160; i++) {
+                    boardButton = new BoardButton();
+                    boardButton.setCategoryId(null);
+                    boardButton.setPos(i);
+                    boardButton.setTable(PocketAccounterGeneral.EXPENSE);
+                    boardButton.setType(PocketAccounterGeneral.CATEGORY);
+                    daoSession.getBoardButtonDao().insertOrReplace(boardButton);
                 }
             }
         }

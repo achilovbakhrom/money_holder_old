@@ -109,7 +109,7 @@ public class PocketAccounter extends AppCompatActivity {
     @Inject SharedPreferences preferences;
     @Inject ToolbarManager toolbarManager;
     @Inject SettingsManager settingsManager;
-    @Inject @Named(value = "display_formmatter") SimpleDateFormat format;
+    @Inject @Named(value = "display_formatter") SimpleDateFormat format;
     @Inject DrawerInitializer drawerInitializer;
     @Inject DataCache dataCache;
     PocketAccounterActivityComponent component;

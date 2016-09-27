@@ -79,16 +79,6 @@ public class PocketAccounterActivityModule {
     }
 
     @Provides
-    @Named(value = "common_formatter")
-    public SimpleDateFormat getCommonFormatter() {
-        return new SimpleDateFormat("dd.MM.yyyy");
-    }
-    @Provides
-    @Named(value = "display_formmatter")
-    public SimpleDateFormat getDisplayFormatter() {
-        return new SimpleDateFormat("dd LLLL, yyyy");
-    }
-    @Provides
     public DrawerInitializer getDrawerInitializer() {
         if (drawerInitializer == null)
             drawerInitializer = new DrawerInitializer(this.pocketAccounter, paFragmentManager);

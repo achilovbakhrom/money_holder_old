@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,12 +47,16 @@ public class MainPageFragment extends Fragment {
     private RelativeLayout rlRecordExpanses, rlRecordIncomes, rlRecordBalance;
     private RecordExpanseView expenseView;
     private RecordIncomesView incomeView;
+    private Map<String, Double> balance;
+    private Object lock = new Object();
     @Inject ReportManager reportManager;
     @Inject DataCache dataCache;
     @Inject CommonOperations commonOperations;
     @Inject ToolbarManager toolbarManager;
-    @Inject @Named(value = "display_formmatter") SimpleDateFormat simpleDateFormat;
+    @Inject @Named(value = "display_formatter") SimpleDateFormat simpleDateFormat;
     @Inject PAFragmentManager paFragmentManager;
+    @Inject @Named(value = "begin") Calendar begin;
+    @Inject @Named(value = "end") Calendar end;
     public MainPageFragment(Context context, Calendar day) {
         this.day = (Calendar) day.clone();
         this.pocketAccounter = (PocketAccounter) context;
@@ -122,30 +127,40 @@ public class MainPageFragment extends Fragment {
         incomeView.setLayoutParams(lpIncomes);
         rlRecordIncomes.removeAllViews();
         rlRecordIncomes.addView(incomeView);
-        calculateBalance();  }
+        calculateBalance();
+    }
     public void update() {
         toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
         calculateBalance();
+        expenseView.invalidate();
+        incomeView.invalidate();
+    }
+    public void updatePageChanges() {
+        expenseView.updatePageCountAndPosition();
+        expenseView.invalidate();
+        incomeView.updatePageCountAndPosition();
+        incomeView.invalidate();
     }
     public void calculateBalance() {
-        Calendar begin = (Calendar) day.clone();
+        begin.setTimeInMillis(day.getTimeInMillis());
         begin.set(Calendar.HOUR_OF_DAY, 0);
         begin.set(Calendar.MINUTE, 0);
         begin.set(Calendar.SECOND, 0);
         begin.set(Calendar.MILLISECOND, 0);
-        Calendar end = (Calendar) day.clone();
+        end.setTimeInMillis(day.getTimeInMillis());
         end.set(Calendar.HOUR_OF_DAY, 23);
-        end.set(Calendar.HOUR_OF_DAY, 59);
-        end.set(Calendar.HOUR_OF_DAY, 59);
-        end.set(Calendar.HOUR_OF_DAY, 59);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 59);
+        balance = reportManager.calculateBalance(begin, end);
         DecimalFormat decFormat = new DecimalFormat("0.00");
-        Map<String, Double> balance = reportManager.calculateBalance(begin, end);
         String abbr = commonOperations.getMainCurrency().getAbbr();
         for (String key : balance.keySet()) {
             switch (key) {
                 case PocketAccounterGeneral.INCOMES:
                     tvRecordIncome.setText(decFormat.format(balance.get(key)) + abbr);
                     break;
+
                 case PocketAccounterGeneral.EXPENSES:
                     tvRecordExpanse.setText(decFormat.format(balance.get(key)) + abbr);
                     break;
@@ -154,6 +169,7 @@ public class MainPageFragment extends Fragment {
                     break;
             }
         }
+
     }
 
     public static float dpToPx(Context context, float valueInDp) {
@@ -161,5 +177,5 @@ public class MainPageFragment extends Fragment {
         return TypedValue.applyDimension(COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
     public Calendar getDay() {return day;}
-    public void setDay(Calendar day) {this.day = (Calendar) day.clone();}
+    public void setDay(Calendar day) {this.day = day;}
 }

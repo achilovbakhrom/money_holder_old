@@ -76,7 +76,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
     @Inject
     PAFragmentManager paFragmentManager;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     @Inject
     DaoSession daoSession;

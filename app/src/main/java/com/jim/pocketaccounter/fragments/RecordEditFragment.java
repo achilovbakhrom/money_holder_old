@@ -204,7 +204,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         public void run() {
                             ((PocketAccounter) getContext()).getSupportFragmentManager().popBackStack();
                             if (parent == PocketAccounterGeneral.MAIN) {
-                                paFragmentManager.initialize(dataCache.getBeginDate(), dataCache.getEndDate());
+                                paFragmentManager.displayMainWindow();
                             } else {
 //                                paFragmentManager.displayFragment(new RecordDetailFragment(date));
                             }
@@ -1182,6 +1182,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             savingRecord.setAllTickets(myTickets);
             savingRecord.setComment(comment_add.getText().toString());
             logicManager.insertRecord(savingRecord);
+            dataCache.updateOneDay(date);
         }
         else {
             if(fromEdit){
@@ -1216,7 +1217,6 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         }
         else {
             paFragmentManager.displayMainWindow();
-            paFragmentManager.initialize(dataCache.getBeginDate(), dataCache.getEndDate());
             paFragmentManager.getFragmentManager().popBackStack();
         }
     }
@@ -1334,9 +1334,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 RelativeLayout headermain = (RelativeLayout) mainView.findViewById(R.id.headermain);
                 keyforback = true;
                 PocketAccounter.isCalcLayoutOpen=false;
-
-
-                    (new Handler()).postDelayed(new Runnable() {
+                   (new Handler()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -1353,12 +1351,9 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
 
                         }
                     }, 300);
-
                 comment.setVisibility(View.VISIBLE);
                 mainView.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
                 mainView.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
-
-
                 mainView.findViewById(R.id.scroleditext).setVisibility(View.GONE);
                 mainView.findViewById(R.id.commenee).setVisibility(View.GONE);
                 mainView.findViewById(R.id.savepanel).setVisibility(View.GONE);
@@ -1368,7 +1363,6 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 } else {
                     comment.setText(getString(R.string.add_comment));
                 }
-
                 headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
             }
             else{
@@ -1383,11 +1377,9 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             myListPhoto.setVisibility(View.VISIBLE);
                             linbutview.setVisibility(View.VISIBLE);
                             }
-
                                 catch (Exception o){
                                     o.printStackTrace();
                                 }
-
                             }
                     }, 300);
                 comment.setVisibility(View.VISIBLE);

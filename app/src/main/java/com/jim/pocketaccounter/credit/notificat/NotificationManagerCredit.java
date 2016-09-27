@@ -34,7 +34,7 @@ public class NotificationManagerCredit {
     @Inject
     SharedPreferences sharedPreferences;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     private Context context;
     private int OK = 0;

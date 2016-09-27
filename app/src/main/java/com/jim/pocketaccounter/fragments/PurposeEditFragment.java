@@ -75,7 +75,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     @Inject
     DaoSession daoSession;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     @Inject
     PAFragmentManager paFragmentManager;

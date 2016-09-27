@@ -19,6 +19,7 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 import java.util.Calendar;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
@@ -32,13 +33,10 @@ public class PAFragmentManager {
     private FragmentManager fragmentManager;
     private int lastPos = 5000;
     private Boolean direction = null;
-
-    @Inject
-    ReportManager reportManager;
-    @Inject
-    CommonOperations commonOperations;
-    @Inject
-    DataCache dataCache;
+    @Inject ReportManager reportManager;
+    @Inject CommonOperations commonOperations;
+    @Inject DataCache dataCache;
+    @Inject @Named(value = "end") Calendar end;
     private MainPageFragment nextPage;
     public PAFragmentManager(PocketAccounter activity) {
         this.activity = activity;
@@ -84,7 +82,7 @@ public class PAFragmentManager {
                     ((MainPageFragment) fragmentManager.findFragmentByTag(nextPage.getTag())).setDay(day);
                     direction = !direction;
                 }
-                MainPageFragment page = (MainPageFragment) getFragmentManager().findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+position);
+                final MainPageFragment page = (MainPageFragment) getFragmentManager().findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+position);
                 MainPageFragment prevFragment;
                 if (lastPos>position && !direction) {
                     prevFragment = ((MainPageFragment)getFragmentManager().findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+(position+1)));
@@ -97,14 +95,20 @@ public class PAFragmentManager {
                 if (lastPos<position && direction) {
                     prevFragment = ((MainPageFragment)getFragmentManager().findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+(position-1)));
                     if (prevFragment.getDay().compareTo(page.getDay()) >= 0) {
-                        Calendar day = (Calendar) prevFragment.getDay().clone();
+                        final Calendar day = (Calendar) prevFragment.getDay().clone();
                         day.add(Calendar.DAY_OF_MONTH, 1);
-                        page.setDay(day);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                page.setDay(day);
+                            }
+                        }).run();
                     }
                 }
                 if (page != null) {
                     page.update();
-                    dataCache.getEndDate().setTimeInMillis(page.getDay().getTimeInMillis());
+                    dataCache.setEndDate(page.getDay());
+                    dataCache.updatePercents();
                 }
                 lastPos = position;
             }
@@ -114,9 +118,28 @@ public class PAFragmentManager {
         });
     }
 
+    public void updateAllFragmentsOnViewPager() {
+        int size = fragmentManager.getFragments().size();
+        for (int i = 0; i < size; i++) {
+            Fragment fragment = fragmentManager.getFragments().get(i);
+            if (fragment != null && fragment.getClass().getName().matches(MainPageFragment.class.getName())) {
+                ((MainPageFragment) fragment).update();
+            }
+        }
+    }
 
+    public void updateAllFragmentsPageChanges() {
+        int size = fragmentManager.getFragments().size();
+        for (int i = 0; i < size; i++) {
+            Fragment fragment = fragmentManager.getFragments().get(i);
+            if (fragment != null && fragment.getClass().getName().matches(MainPageFragment.class.getName())) {
+                ((MainPageFragment) fragment).updatePageChanges();
+            }
+        }
+    }
 
     public void displayMainWindow() {
+        activity.treatToolbar();
 //        main.setVisibility(View.VISIBLE);
         activity.findViewById(R.id.rlRecordTable).setVisibility(View.VISIBLE);
         PRESSED = false;
@@ -125,11 +148,6 @@ public class PAFragmentManager {
                 fragmentManager.popBackStack();
             initialize(dataCache.getBeginDate(), dataCache.getEndDate());
         }
-    }
-
-    public static float dpToPx(Context context, float valueInDp) {
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        return TypedValue.applyDimension(COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 
     public void displayFragment(Fragment fragment) {
@@ -164,10 +182,9 @@ public class PAFragmentManager {
         }
         @Override
         public Fragment getItem(int position) {
-            Log.d("sss", "getItem() pos: "+position);
-            Calendar date = (Calendar)dataCache.getEndDate().clone();
-            date.add(Calendar.DAY_OF_MONTH, position-5000);
-            Fragment fragment = new MainPageFragment(activity, (Calendar) date.clone());
+            Calendar end = Calendar.getInstance();
+            end.add(Calendar.DAY_OF_MONTH, position-5000);
+            Fragment fragment = new MainPageFragment(activity, end);
             nextPage = (MainPageFragment) fragment;
             return fragment;
         }
@@ -180,153 +197,5 @@ public class PAFragmentManager {
         public int getItemPosition(Object object){
             return POSITION_NONE;
         }
-    }
-
-
-    public void remoteBackPress() {
-////        if(calcEventBackPressed!=null){
-////            if(calcEventBackPressed.isOpenLayout()){
-////                calcEventBackPressed.backpressToCalc();
-////                return;
-////            }
-////        }
-//
-//        if (isCalcLayoutOpen && getSupportFragmentManager().findFragmentById(R.id.flMain).getClass()
-//                .getName().matches("com.jim.pocketaccounter.RecordEditFragment")) {
-
-//            RecordEditFragment recordEditFragment = (RecordEditFragment) getSupportFragmentManager().findFragmentById(R.id.flMain);
-//            recordEditFragment.closeLayout();
-//            return;
-//
-//        }
-//        PRESSED = false;
-//        android.support.v4.app.Fragment temp00 = getSupportFragmentManager().
-//                findFragmentById(R.id.flMain);
-//        if (!drawer.isClosed()) {
-//            drawer.closeLeftSide();
-//        } else if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-//            final AlertDialog.Builder builder = new AlertDialog.Builder(PocketAccounter.this);
-//            builder.setMessage(getString(R.string.dou_you_want_quit))
-//                    .setPositiveButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                        }
-//                    }).setNegativeButton(getString(R.string.exit), new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    dialog.cancel();
-//                    finish();
-//                }
-//            });
-//            builder.create().show();
-//        } else {
-//            if (temp00.getTag() != null) {
-//                if (temp00.getTag().equals(AddCreditFragment.OPENED_TAG) && AddCreditFragment.to_open_dialog) {
-//                    //Sardor
-//                    final AlertDialog.Builder builder = new AlertDialog.Builder(PocketAccounter.this);
-//                    builder.setMessage(getString(R.string.dou_you_want_discard))
-//                            .setPositiveButton(getString(R.string.cancel1), new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                }
-//                            }).setNegativeButton(getString(R.string.discard), new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int id) {
-//                            dialog.cancel();
-//                            getSupportFragmentManager().popBackStack();
-//
-//                        }
-//                    });
-//                    builder.create().show();
-//                } else {
-//                    if (temp00.getTag().matches("Addcredit")) {
-//                        PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight).setVisibility(View.GONE);
-//                        PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight).setOnClickListener(null);
-//                        getSupportFragmentManager().popBackStack();
-//                        return;
-//                    }
-//                    if (temp00.getTag().matches("InfoFragment")) {
-//                        PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight).setVisibility(View.GONE);
-//                        PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight).setOnClickListener(null);
-//                        getSupportFragmentManager().popBackStack();
-//                        return;
-//                    }
-//
-//
-//                    if (temp00.getTag().matches(com.jim.pocketaccounter.debt.PockerTag.Edit)) {
-//                        getSupportFragmentManager().popBackStack();
-//                        replaceFragment(new CreditTabLay(), com.jim.pocketaccounter.debt.PockerTag.CREDITS);
-//                        return;
-//                    }
-//
-//                    Log.d("gogogo", "onBackPressed: ");
-//                    AddCreditFragment.to_open_dialog = true;
-//                    getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//                    initialize(date);
-//                    String tag = getSupportFragmentManager().findFragmentById(R.id.flMain).getTag();
-//
-//                    switch (tag) {
-//                        case com.jim.pocketaccounter.debt.PockerTag.ACCOUNT_MANAGEMENT:
-//                        case PockerTag.ACCOUNT:
-//                        case PockerTag.CATEGORY:
-//                        case PockerTag.CURRENCY:
-//                        case PockerTag.CREDITS:
-//                        case PockerTag.REPORT_ACCOUNT:
-//                        case PockerTag.REPORT_INCOM_EXPENSE:
-//                        case PockerTag.REPORT_CATEGORY:
-//                        case PockerTag.DEBTS: {
-//                            findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                            initialize(date);
-//                            break;
-//                        }
-//                    }
-//                }
-//            } else {
-//                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//                if (getSupportFragmentManager().findFragmentById(R.id.flMain) != null) {
-//                    if (fragmentManager.findFragmentById(R.id.flMain).getTag() == null) {
-//                        switch (fragmentManager.findFragmentById(R.id.flMain).getClass().getName()) {
-//                            case "com.jim.pocketaccounter.RecordEditFragment": {
-//                                if (getSupportFragmentManager().getBackStackEntryCount() == 2) {
-//                                    replaceFragment(new RecordDetailFragment(date));
-//                                    break;
-//                                }
-//                            }
-//                            case "com.jim.pocketaccounter.AccountManagementFragment":
-//                            case "com.jim.pocketaccounter.RecordDetailFragment":
-//                                initialize(date);
-//                                break;
-//                            case "com.jim.pocketaccounter.CurrencyEditFragment":
-//                            case "com.jim.pocketaccounter.CurrencyChooseFragment":
-//                                findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                                replaceFragment(new CurrencyFragment(), PockerTag.CURRENCY);
-//                                break;
-//                            case "com.jim.pocketaccounter.RootCategoryEditFragment": {
-//                                replaceFragment(new CategoryFragment(), PockerTag.CATEGORY);
-//                                break;
-//                            }
-//                            case "com.jim.pocketaccounter.debt.InfoDebtBorrowFragment":
-//                            case "com.jim.pocketaccounter.debt.AddBorrowFragment": {
-//                                DebtBorrowFragment fragment = new DebtBorrowFragment();
-//                                fragment.setArguments(fragmentManager.findFragmentById(R.id.flMain).getArguments());
-//                                replaceFragment(fragment, PockerTag.DEBTS);
-//                                break;
-//                            }
-//                            case "com.jim.pocketaccounter.SMSParseEditFragment": {
-//                                replaceFragment(new SMSParseFragment(), PockerTag.DEBTS);
-//                            }
-//                        }
-//                        return;
-//                    }
-//                    if (fragmentManager.findFragmentById(R.id.flMain).getTag().matches(PockerTag.ACCOUNT)) {
-//                        replaceFragment(new AccountFragment(), PockerTag.ACCOUNT);
-//                    } else if (fragmentManager.findFragmentById(R.id.flMain).getTag().matches(PockerTag.DEBTS)) {
-//                        replaceFragment(new DebtBorrowFragment(), PockerTag.DEBTS);
-//                    } else if (fragmentManager.findFragmentById(R.id.flMain).getTag().matches(PockerTag.CURRENCY)) {
-//                        replaceFragment(new CurrencyFragment(), PockerTag.CURRENCY);
-//                    } else if (fragmentManager.findFragmentById(R.id.flMain).getTag().matches(PockerTag.CATEGORY)) {
-//                        replaceFragment(new CategoryFragment(), PockerTag.CATEGORY);
-//                    } else if (fragmentManager.findFragmentById(R.id.flMain).getTag().matches(PockerTag.ACCOUNT)) {
-//                        replaceFragment(new AccountFragment(), PockerTag.ACCOUNT);
-//                    }
-//                }
-//            }
-//        }
     }
 }

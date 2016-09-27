@@ -64,7 +64,7 @@ public class BorrowFragment extends Fragment {
     @Inject
     DatePicker datePicker;
     @Inject
-    @Named(value = "display_formmatter")
+    @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
     @Inject
     PAFragmentManager paFragmentManager;
