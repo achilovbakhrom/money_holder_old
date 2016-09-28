@@ -446,6 +446,11 @@ public class LogicManager {
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
+    public int deleteRecking(Recking recking) {
+        reckingDao.delete(recking);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
     public int insertReckingCredit(ReckingCredit reckingCredit) {
         reckingCreditDao.insertOrReplace(reckingCredit);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
@@ -455,23 +460,31 @@ public class LogicManager {
         reckingCreditDao.delete(reckingCredit);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
-
-    public int insertAccountOperation (AccountOperation accountOperation) {
+    public int insertAccountOperation(AccountOperation accountOperation) {
         accountOperationDao.insertOrReplace(accountOperation);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }
 
-    public int deleteAccountOperation (AccountOperation accountOperation) {
+    public int deleteAccountOperation(AccountOperation accountOperation) {
         accountOperationDao.delete(accountOperation);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
-    public int insertAutoMarket (AutoMarket autoMarket) {
-        autoMarketDao.insertOrReplace(autoMarket);
-        return LogicManagerConstants.SAVED_SUCCESSFULL;
+    public int insertAutoMarket(AutoMarket autoMarket) {
+        autoMarket.__setDaoSession(daoSession);
+        Query<AutoMarket> query = autoMarketDao.queryBuilder()
+                .where(autoMarketDao.queryBuilder()
+                        .and(AutoMarketDao.Properties.CatId.eq(autoMarket.getCatId()),
+                                AutoMarketDao.Properties.CatSubId.eq(autoMarket.getSubCategory()==null ? "" : autoMarket.getCatSubId()))).build();
+
+        if (query.list() != null && query.list().isEmpty()) {
+            autoMarketDao.insertOrReplace(autoMarket);
+            return LogicManagerConstants.SAVED_SUCCESSFULL;
+        }
+        return LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS;
     }
 
-    public int deleteAutoMarket (AutoMarket autoMarket) {
+    public int deleteAutoMarket(AutoMarket autoMarket) {
         autoMarketDao.delete(autoMarket);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }

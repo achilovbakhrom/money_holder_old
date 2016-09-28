@@ -31,6 +31,18 @@
     <style name="MineCustomTabText" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">@dimen/twelve_sp</item>
     </style>
+
+
+    <style name="boldText">
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="normalText">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#C0C0C0</item>
+    </style>
+
     <style name="FlatButton" parent="Theme.AppCompat.Light">
         <item name="colorControlHighlight">@color/green_light</item>
     </style>

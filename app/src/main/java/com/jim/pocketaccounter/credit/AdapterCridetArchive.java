@@ -59,6 +59,8 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         cardDetials = new ArrayList<>();
+        cardDetials = creditDetialsDao.queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).build().list();
         cardDetials = creditDetialsDao.queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
         this.context = This;
         formater = new DecimalFormat("0.##");

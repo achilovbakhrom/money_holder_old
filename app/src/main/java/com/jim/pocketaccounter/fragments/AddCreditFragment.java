@@ -47,7 +47,6 @@ import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.RootCategory;
-import com.jim.pocketaccounter.debt.PockerTag;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.finance.IconAdapterAccount;

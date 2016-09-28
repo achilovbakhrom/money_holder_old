@@ -66,10 +66,12 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
 
         tabLayout = (TabLayout) view.findViewById(R.id.tlDebtBorrowFragment);
         viewPager = (ViewPager) view.findViewById(R.id.vpDebtBorrowFragment);
+
         toolbarManager.setTitle(getResources().getString(R.string.debts_title));
         toolbarManager.setSubtitle("");
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
         toolbarManager.setSpinnerVisibility(View.GONE);
+
         fb = (FloatingActionButton) view.findViewById(R.id.fbDebtBorrowFragment);
         fb.setOnClickListener(this);
         return view;
@@ -131,10 +133,12 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
         if (v.getId() == R.id.fbDebtBorrowFragment) {
             switch (viewPager.getCurrentItem()) {
                 case BORROW_FRAGMENT: {
+                    paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(AddBorrowFragment.getInstance(BORROW_FRAGMENT, null));
                     break;
                 }
                 case DEBT_FRAGMENT: {
+                    paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(AddBorrowFragment.getInstance(DEBT_FRAGMENT, null));
                     break;
                 }

@@ -990,7 +990,6 @@
     <string name="notifications">Notifications</string>
     <bool name="notif_default">true</bool>
     <bool name="secure_default">false</bool>
-    <bool name="widget_def">false</bool>
     <string name="notifications_summary">Daily notification ON/OFF</string>
     <string name="planning_before_default">10</string>
     <string name="general_notif">general_notif</string>
@@ -1241,6 +1240,7 @@
     <string name="all_transfer_operitions_you_can_see_bla_bla_bla_hullas_transactisiya_haqida">All money transfers are fixed in the balance</string>
     <string name="this_is_money_transfer_form_from_nsome_to_some_accaunt">Money transfer from one account to another</string>
     <string name="widget_settings">Widget Settings</string>
+    <bool name="widget_def">true</bool>
     <string name="main_diagramm">Chart</string>
     <string name="period_of_diagramm">Period</string>
     <string name="choose_type_sms">Select type of SMS</string>
@@ -1437,6 +1437,7 @@
         <item>icons_316</item>
         <item>icons_317</item>
     </string-array>
+
     <string-array name="page_names">
         <item>Валюты</item>
         <item>Категории</item>
@@ -1478,6 +1479,16 @@
         <item>icons_109</item>
         <item>icons_110</item>
         <item>icons_111</item>
+    </string-array>
+
+    <string-array name="week_day_auto">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
     </string-array>
     <string-array name="date_picker_period_spinner">
         <item>This Month</item>

@@ -15,26 +15,37 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import javax.inject.Inject;
 
 
 public class CategoryReportView extends LinearLayout {
+    @Inject
+    ReportManager reportManager;
+
     private PieChart pieChart;
-    private CategoryReportDatas categoryReportDatas;
     private int type;
-    private ArrayList<CategoryDataRow> datas;
+    private ArrayList<ReportObject> datas;
     private Calendar begin, end;
     public CategoryReportView(Context context, int type, Calendar begin, Calendar end) {
         super(context);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+
         this.type = type;
-        this.begin = (Calendar) begin.clone();
-        this.end = (Calendar) end.clone();
+        this.begin = begin;
+        this.end = end;
         pieChart = new PieChart(context);
         pieChart.setUsePercentValues(true);
         pieChart.setDescription("");
@@ -78,30 +89,31 @@ public class CategoryReportView extends LinearLayout {
     public CategoryReportView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
-    public ArrayList<CategoryDataRow> getDatas() {return datas;}
+    public ArrayList<ReportObject> getDatas() {return datas;}
     public void invalidate(Calendar begin, Calendar end) {
         this.begin = (Calendar) begin.clone();
         this.end = (Calendar) end.clone();
-        categoryReportDatas = new CategoryReportDatas(getContext(), begin, end);
-//        if (type == PocketAccounterGeneral.INCOME) {
-//            pieChart.setCenterText(getResources().getString(R.string.income));
+//        categoryReportDatas = new CategoryReportDatas(getContext(), begin, end);
+        if (type == PocketAccounterGeneral.INCOME) {
+            pieChart.setCenterText(getResources().getString(R.string.income));
 //            datas = categoryReportDatas.makeIncomeReport();
-//        }
-//        else {
-//            pieChart.setCenterText(getResources().getString(R.string.expanse));
-//            datas = categoryReportDatas.makeExpanseReport();
-//        }
-        drawReport(datas);
-
-    }
-    public void drawReport(ArrayList<CategoryDataRow> datas) {
-        ArrayList<Entry> yVals = new ArrayList<Entry>();
-        for (int i = 0; i < datas.size(); i++) {
-            yVals.add(new Entry((float) datas.get(i).getTotalAmount(), i));
+            datas = (ArrayList<ReportObject>) reportManager.getIncomes(begin, end);
         }
-        ArrayList<String> xVals = new ArrayList<String>();
+        else {
+            pieChart.setCenterText(getResources().getString(R.string.expanse));
+//            datas = categoryReportDatas.makeExpanseReport();
+            datas = (ArrayList<ReportObject>) reportManager.getExpances(begin, end);
+        }
+        drawReport(datas);
+    }
+    public void drawReport(ArrayList<ReportObject> datas) {
+        List<PieEntry> yVals = new ArrayList<PieEntry>();
+        for (int i = 0; i < datas.size(); i++) {
+            yVals.add(new PieEntry((float) datas.get(i).getAmount(), i));
+        }
+        ArrayList<String> xVals = new ArrayList<>();
         for (int i = 0; i < datas.size(); i++)
-            xVals.add(datas.get(i).getCategory().getName());
+            xVals.add(datas.get(i).getDescription());
         PieDataSet dataSet = new PieDataSet(yVals, "");
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
@@ -118,7 +130,8 @@ public class CategoryReportView extends LinearLayout {
             colors.add(c);
         colors.add(ColorTemplate.getHoloBlue());
         dataSet.setColors(colors);
-        PieData data = new PieData(xVals, dataSet);
+//        PieData data = new PieData(xVals, dataSet);
+        PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
         data.setValueTextColor(ContextCompat.getColor(getContext(), R.color.toolbar_text_color));

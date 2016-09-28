@@ -169,14 +169,29 @@ public class BorrowFragment extends Fragment {
                 view.rl.setBackgroundResource(R.color.grey_light_red);
                 view.fl.setBackgroundResource(R.color.grey_light_red);
             }
-            view.BorrowPersonName.setText(person.getPerson().getName());
-            view.BorrowPersonNumber.setText(person.getPerson().getPhoneNumber());
-            view.BorrowPersonDateGet.setText(dateFormat.format(person.getTakenDate().getTime()));
-            if (person.getReturnDate() == null) {
-                view.BorrowPersonDateRepeat.setText(R.string.no_date_selected);
-            } else {
-                view.BorrowPersonDateRepeat.setText(dateFormat.format(person.getReturnDate().getTime()));
-            }
+            try {
+                view.BorrowPersonName.setText(person.getPerson().getName());
+                view.BorrowPersonNumber.setText(person.getPerson().getPhoneNumber());
+                view.BorrowPersonDateGet.setText(dateFormat.format(person.getTakenDate().getTime()));
+                if (person.getReturnDate() == null) {
+                    view.BorrowPersonDateRepeat.setText(R.string.no_date_selected);
+                } else {
+                    view.BorrowPersonDateRepeat.setText(dateFormat.format(person.getReturnDate().getTime()));
+                }
+                if (person.getPerson().getPhoto().matches("") || person.getPerson().getPhoto().matches("0")) {
+                    view.BorrowPersonPhotoPath.setImageResource(R.drawable.no_photo);
+                } else {
+                    try {
+                        view.BorrowPersonPhotoPath.setImageBitmap(queryContactImage(Integer.parseInt(person.getPerson().getPhoto())));
+                    } catch (Exception e) {
+                        Bitmap bit = BitmapFactory.decodeFile(person.getPerson().getPhoto());
+                        view.BorrowPersonPhotoPath.setImageBitmap(bit);
+                    }
+                }
+                if (person.getPerson().getPhoneNumber().matches("")) {
+                    view.call.setVisibility(View.INVISIBLE);
+                }
+            } catch (NullPointerException e) {}
             double qq = 0;
             if (person.getReckings() != null) {
                 for (Recking rk : person.getReckings()) {
@@ -188,16 +203,6 @@ public class BorrowFragment extends Fragment {
                 view.BorrowPersonSumm.setText(getResources().getString(R.string.repaid));
             } else
                 view.BorrowPersonSumm.setText(ss + person.getCurrency().getAbbr());
-            if (person.getPerson().getPhoto().matches("") || person.getPerson().getPhoto().matches("0")) {
-                view.BorrowPersonPhotoPath.setImageResource(R.drawable.no_photo);
-            } else {
-                try {
-                    view.BorrowPersonPhotoPath.setImageBitmap(queryContactImage(Integer.parseInt(person.getPerson().getPhoto())));
-                } catch (Exception e) {
-                    Bitmap bit = BitmapFactory.decodeFile(person.getPerson().getPhoto());
-                    view.BorrowPersonPhotoPath.setImageBitmap(bit);
-                }
-            }
 
             view.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -218,10 +223,6 @@ public class BorrowFragment extends Fragment {
                 if (total >= person.getAmount()) {
                     view.pay.setText(getString(R.string.archive));
                 } else view.pay.setText(getString(R.string.payy));
-            }
-
-            if (person.getPerson().getPhoneNumber().matches("")) {
-                view.call.setVisibility(View.INVISIBLE);
             }
 
             view.call.setOnClickListener(new View.OnClickListener() {

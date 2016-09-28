@@ -32,13 +32,19 @@ public class PocketAccounterApplication extends Application {
                 .builder()
                 .pocketAccounterApplicationModule(new PocketAccounterApplicationModule(this))
                 .build();
+
+        String  currentDBPath= "//data//" + getPackageName().toString()
+                + "//databases//" + Configuration.OLD_DB_NAME;
+
         pocketAccounterApplicationComponent.inject(this);
+        SystemConfigurator configurator = new SystemConfigurator(this);
+        configurator.migrateDatabase(currentDBPath);
         keyIsMegraded=sharedPreferences.getBoolean("migrated",false);
         if(!keyIsMegraded){
             try {
-                SystemConfigurator configurator = new SystemConfigurator(this);
-                configurator.configurate();
-                keyIsMegraded=true;
+//                SystemConfigurator config= new SystemConfigurator(this);
+//                config.configurate();
+//                keyIsMegraded=true;
             }
             catch (Exception o){
                 o.printStackTrace();

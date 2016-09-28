@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
 
+import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
@@ -29,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,10 @@ public class ReportManager {
     private CreditDetialsDao creditDetialsDao;
     private AccountDao accountDao;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+    private List<ReportObject> incomes;
+    private List<ReportObject> expances;
+
     public ReportManager(Context context) {
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         this.context = context;
@@ -63,7 +67,19 @@ public class ReportManager {
         accountDao = daoSession.getAccountDao();
     }
 
-    public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ... classes) {
+//    public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar b, Calendar e, Class... classes) {
+//        Calendar begin = (Calendar) b.clone();
+//        begin.set(Calendar.HOUR_OF_DAY, 0);
+//        begin.set(Calendar.MINUTE, 0);
+//        begin.set(Calendar.SECOND, 0);
+//        begin.set(Calendar.MILLISECOND, 0);
+//        Calendar end = (Calendar) e.clone();
+//        end.set(Calendar.HOUR_OF_DAY, 23);
+//        end.set(Calendar.MINUTE, 59);
+//        end.set(Calendar.SECOND, 59);
+//        end.set(Calendar.MILLISECOND, 59);
+//    }
+    public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ...classes) {
         List<ReportObject> result = new ArrayList<>();
         for (Class cl : classes) {
             if (cl.getName().matches(Account.class.getName())) {
@@ -75,7 +91,7 @@ public class ReportManager {
                         ReportObject reportObject = new ReportObject();
                         reportObject.setType(PocketAccounterGeneral.INCOME);
                         reportObject.setAccount(account);
-                        reportObject.setDate(account.getCalendar());
+                        reportObject.setDate((Calendar) account.getCalendar().clone());
                         if (toMainCurrency) {
                             reportObject.setCurrency(commonOperations.getMainCurrency());
                             reportObject.setAmount(commonOperations.getCost(account.getCalendar(),
@@ -90,8 +106,7 @@ public class ReportManager {
                 }
             }
             if (cl.getName().matches(AccountOperation.class.getName())) {
-                List<AccountOperation> accountOperationList = accountOperationsDao.loadAll();
-                for (AccountOperation accountOperations : accountOperationList) {
+                for (AccountOperation accountOperations : accountOperationsDao.loadAll()) {
                     if (accountOperations.getDate().compareTo(begin) >= 0 &&
                             accountOperations.getDate().compareTo(end) <= 0) {
                         ReportObject reportObject = new ReportObject();
@@ -124,7 +139,7 @@ public class ReportManager {
                         ReportObject reportObject = new ReportObject();
                         reportObject.setType(financeRecord.getCategory().getType());
                         reportObject.setAccount(financeRecord.getAccount());
-                        reportObject.setDate(financeRecord.getDate());
+                        reportObject.setDate((Calendar) financeRecord.getDate().clone());
                         if (toMainCurrency) {
                             reportObject.setCurrency(commonOperations.getMainCurrency());
                             reportObject.setAmount(commonOperations.getCost(financeRecord.getDate(), financeRecord.getCurrency(), financeRecord.getAmount()));
@@ -153,7 +168,7 @@ public class ReportManager {
                             reportObject.setDescription(context.getResources().getString(R.string.debt_statistics));
                             reportObject.setType(PocketAccounterGeneral.INCOME);
                         }
-                        reportObject.setDate(debtBorrow.getTakenDate());
+                        reportObject.setDate((Calendar) debtBorrow.getTakenDate().clone());
                         reportObject.setAccount(debtBorrow.getAccount());
                         if (toMainCurrency) {
                             reportObject.setAmount(commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), debtBorrow.getAmount()));
@@ -187,7 +202,8 @@ public class ReportManager {
                                     break;
                                 }
                             }
-                            if (account == null) throw new RuntimeException("Account not found in class: " + getClass().getName() + ". Method: getRecordObjects();");
+                            if (account == null)
+                                throw new RuntimeException("Account not found in class: " + getClass().getName() + ". Method: getRecordObjects();");
                             reportObject.setAccount(account);
                             if (toMainCurrency) {
                                 reportObject.setAmount(commonOperations.getCost(calendar,
@@ -222,9 +238,10 @@ public class ReportManager {
                                     break;
                                 }
                             }
-                            if (account == null) throw new RuntimeException("Account not found in class: " +
-                                                                            getClass().getName() +
-                                                                            ". Method: getRecordObjects();");
+                            if (account == null)
+                                throw new RuntimeException("Account not found in class: " +
+                                        getClass().getName() +
+                                        ". Method: getRecordObjects();");
                             reportObject.setAccount(account);
                             if (toMainCurrency) {
                                 reportObject.setCurrency(commonOperations.getMainCurrency());
@@ -263,6 +280,11 @@ public class ReportManager {
 
     public double calculateLimitAccountsAmount(Account account) {
         List<ReportObject> list = null;
+        list = getReportObjects(false, getFirstDay(), Calendar.getInstance(),
+                Account.class,
+                FinanceRecord.class,
+                DebtBorrow.class,
+                CreditDetials.class);
         end.setTimeInMillis(System.currentTimeMillis());
         list = getReportObjects(false, getFirstDay(), end,
                                         Account.class,
@@ -305,8 +327,7 @@ public class ReportManager {
     }
 
     public Map<Currency, Double> getRemain(Account account) {
-        end.setTimeInMillis(System.currentTimeMillis());
-        List<ReportObject> list = getReportObjects(false, account.getCalendar(), end,
+        List<ReportObject> list = getReportObjects(false, account.getCalendar(), Calendar.getInstance(),
                 Account.class,
                 FinanceRecord.class,
                 DebtBorrow.class,
@@ -391,5 +412,105 @@ public class ReportManager {
                 .whereOr(AccountOperationDao.Properties.SourceId.eq(id),
                         AccountOperationDao.Properties.TargetId.eq(id))
                 .list();
+    }
+
+    private void getIncomeExpanceDates(Calendar begin, Calendar end) {
+        incomes = new ArrayList<>();
+        expances = new ArrayList<>();
+        // Finance Record
+        for (FinanceRecord fr : daoSession.getFinanceRecordDao().loadAll()) {
+            if (fr.getDate().compareTo(begin) > 0 && fr.getDate().compareTo(end) < 0) {
+                ReportObject reportObject = new ReportObject();
+                reportObject.setDate(fr.getDate());
+                reportObject.setAmount(fr.getAmount());
+                reportObject.setCurrency(fr.getCurrency());
+                reportObject.setAccount(fr.getAccount());
+                reportObject.setDescription(fr.getCategory().getName() + "," + fr.getSubCategory().getName());
+                if (fr.getCategory().getType() == PocketAccounterGeneral.INCOME) {
+                    reportObject.setType(PocketAccounterGeneral.INCOME);
+                    incomes.add(reportObject);
+                } else {
+                    reportObject.setType(PocketAccounterGeneral.EXPENSE);
+                    expances.add(reportObject);
+                }
+            }
+        }
+
+        // Debt Borrows
+        for (DebtBorrow db : debtBorrowDao.queryBuilder().list()) {
+            if (db.getTakenDate().compareTo(begin) > 0 && db.getTakenDate().compareTo(end) < 0) {
+                ReportObject reportObject = new ReportObject();
+                reportObject.setAccount(db.getAccount());
+                reportObject.setCurrency(db.getCurrency());
+                reportObject.setAmount(db.getAmount());
+                reportObject.setDate(db.getTakenDate());
+                reportObject.setDescription(context.getResources().getString(R.string.borrow_recking_statistics));
+                if (db.getType() == PocketAccounterGeneral.INCOME) {
+                    reportObject.setType(PocketAccounterGeneral.INCOME);
+                    incomes.add(reportObject);
+                    for (Recking recking : db.getReckings()) {
+                        if (recking.getPayDate().compareTo(begin) > 0 && recking.getPayDate().compareTo(end) < 0) {
+                            ReportObject rerObj = new ReportObject();
+                            rerObj.setDate(recking.getPayDate());
+                            rerObj.setAmount(recking.getAmount());
+                            rerObj.setCurrency(db.getCurrency());
+                            rerObj.setAccount(accountDao.load(recking.getAccountId()));
+                            rerObj.setType(PocketAccounterGeneral.EXPENSE);
+                            rerObj.setDescription(context.getResources().getString(R.string.debt_recking_statistics));
+                            expances.add(rerObj);
+                        }
+                    }
+                } else {
+                    reportObject.setType(PocketAccounterGeneral.EXPENSE);
+                    expances.add(reportObject);
+                    for (Recking recking : db.getReckings()) {
+                        if (recking.getPayDate().compareTo(begin) > 0 && recking.getPayDate().compareTo(end) < 0) {
+                            ReportObject rerObj = new ReportObject();
+                            rerObj.setDate(recking.getPayDate());
+                            rerObj.setAmount(recking.getAmount());
+                            rerObj.setCurrency(db.getCurrency());
+                            rerObj.setAccount(accountDao.load(recking.getAccountId()));
+                            rerObj.setType(PocketAccounterGeneral.INCOME);
+                            rerObj.setDescription(context.getResources().getString(R.string.borrow_recking_statistics));
+                            incomes.add(rerObj);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Credit
+        for (CreditDetials cr : creditDetialsDao.loadAll()) {
+            for (ReckingCredit reckingCredit : cr.getReckings()) {
+                if (reckingCredit.getPayDate().compareTo(begin) > 0 && reckingCredit.getPayDate().compareTo(end) < 0) {
+                    ReportObject reportObject = new ReportObject();
+                    reportObject.setType(PocketAccounterGeneral.EXPENSE);
+                    reportObject.setAmount(reckingCredit.getAmount());
+                    reportObject.setDate(reckingCredit.getPayDate());
+                    reportObject.setCurrency(cr.getValyute_currency());
+                    reportObject.setAccount(accountDao.load(reckingCredit.getAccountId()));
+                    reportObject.setDescription(cr.getCredit_name());
+                    expances.add(reportObject);
+                }
+            }
+        }
+    }
+
+    public List<ReportObject> getIncomes(Calendar begin, Calendar end) {
+//        if (incomes != null)
+//            return incomes;
+//        else {
+        getIncomeExpanceDates(begin, end);
+        return incomes;
+//        }
+    }
+
+    public List<ReportObject> getExpances(Calendar begin, Calendar end) {
+//        if (expances != null)
+//            return expances;
+//        else {
+        getIncomeExpanceDates(begin, end);
+        return expances;
+//        }
     }
 }

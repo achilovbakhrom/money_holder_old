@@ -22,8 +22,6 @@ public class AutoMarket {
     @NotNull
     private String id;
     @Property
-    private String name;
-    @Property
     private double amount;
     @Property
     private String curId;
@@ -61,7 +59,7 @@ public class AutoMarket {
     private transient DaoSession daoSession;
     @Keep
     public AutoMarket() {
-        id = UUID.randomUUID().toString();
+        id = "auto:" + UUID.randomUUID().toString();
     }
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
@@ -252,24 +250,17 @@ public class AutoMarket {
     public void setAmount(double amount) {
         this.amount = amount;
     }
-    public String getName() {
-        return this.name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
     public String getId() {
         return this.id;
     }
     public void setId(String id) {
         this.id = id;
     }
-    @Generated(hash = 1652558840)
-    public AutoMarket(@NotNull String id, String name, double amount, String curId,
+    @Generated(hash = 1576085201)
+    public AutoMarket(@NotNull String id, double amount, String curId,
             String accountId, String catId, String catSubId, boolean type,
             String dates) {
         this.id = id;
-        this.name = name;
         this.amount = amount;
         this.curId = curId;
         this.accountId = accountId;

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,13 +25,19 @@ import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 public class TableView extends LinearLayout {
+    @Inject
+    CommonOperations commonOperations;
+
     private Bitmap operation;
     private TextView tvFirstTitle, tvSecondTitle, tvThirdTitle, tvFourthTitle;
     private RecyclerView rvTable;
@@ -52,6 +59,7 @@ public class TableView extends LinearLayout {
         init();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public TableView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -176,7 +184,9 @@ public class TableView extends LinearLayout {
                         lvReportByIncomeExpanseInfo.setAdapter(adapter);
                         TextView tvReportByIncomeExpanseTotalIncome = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseTotalIncome);
                         DecimalFormat decimalFormat = new DecimalFormat("0.00##");
-//                        tvReportByIncomeExpanseTotalIncome.setText(decimalFormat.format(row.getTotalExpanse()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
+
+//                        commonOperations.getCost(row.getDate(), row, row.getTotalExpanse());
+//                        tvReportByIncomeExpanseTotalIncome.setText(decimalFormat.format(row.getTotalExpanse()) + commonOperations.getMainCurrency().getAbbr());
 //                        TextView tvReportByIncomeExpanseExpanse = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseExpanse);
 //                        tvReportByIncomeExpanseExpanse.setText(decimalFormat.format(row.getTotalIncome()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
 //                        TextView tvReportByIncomeExpanseProfit = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseProfit);
@@ -189,7 +199,7 @@ public class TableView extends LinearLayout {
             DecimalFormat decimalFormat = new DecimalFormat("0.00");
 //            String abbr = PocketAccounter.financeManager.getMainCurrency().getAbbr();
             if (isFirstBitmap) {
-                AccountDataRow row = (AccountDataRow) result.get(position);
+                ReportObject row = (ReportObject) result.get(position);
                 holder.tvTableFirstCol.setVisibility(GONE);
                 holder.ivTableItem.setVisibility(VISIBLE);
                 if (row.getType() == PocketAccounterGeneral.INCOME) {
@@ -204,10 +214,13 @@ public class TableView extends LinearLayout {
                 holder.tvTableSecondCol.setText(format.format(row.getDate().getTime()));
 //                abbr = row.getCurrency().getAbbr();
 //                holder.tvTableThirdCol.setText(decimalFormat.format(row.getAmount()) + abbr);
-                String text = row.getCategory().getName();
-                if (row.getSubCategory() != null)
-                    text = text + ", " + row.getSubCategory().getName();
+                String text = row.getDescription();
+//                if (row.getDescription() != null)
+//                    text = text + ", " + row.getDescription();
                 holder.tvTableFourthCol.setText(text);
+                if (row.getAmount() == ((int) row.getAmount()))
+                    holder.tvTableThirdCol.setText(((int) row.getAmount()) + row.getCurrency().getAbbr());
+                else holder.tvTableThirdCol.setText(row.getAmount() + row.getCurrency().getAbbr());
             } else {
                 IncomeExpanseDataRow row = (IncomeExpanseDataRow) result.get(position);
                 holder.tvTableFirstCol.setVisibility(VISIBLE);

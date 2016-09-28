@@ -41,9 +41,9 @@ public class ReportByAccount {
         this.currency = currency;
         this.context = context;
     }
-//
-//    public ArrayList<AccountDataRow> makeAccountReport() {
-//        ArrayList<AccountDataRow> result = new ArrayList<>();
+
+//    public ArrayList<ReportObject> makeAccountReport() {
+//        ArrayList<ReportObject> result = new ArrayList<>();
 //        //acumluate income expense data
 //        ArrayList<FinanceRecord> temp = PocketAccounter.financeManager.getRecords();
 //        ArrayList<FinanceRecord> records = new ArrayList<>();

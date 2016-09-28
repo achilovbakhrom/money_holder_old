@@ -82,7 +82,7 @@ public class DebtBorrow {
                       Calendar returnDate, String id,
                       Account account, Currency currency,
                       double amount, int type, boolean calculate) {
-        this.perId = person.getId();
+        setPerson(person);
         this.takenDate = takenDate;
         this.returnDate = returnDate;
         this.id = id;

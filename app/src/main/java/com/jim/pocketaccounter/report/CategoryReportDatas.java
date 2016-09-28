@@ -6,10 +6,12 @@ import android.util.Log;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.CreditDetials;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.ParseException;
@@ -17,11 +19,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 public class CategoryReportDatas {
+    @Inject
+    DaoSession daoSession;
+
     private Calendar begin, end;
     private ArrayList<FinanceRecord> periodDatas = new ArrayList<FinanceRecord>();
     private ArrayList<DebtBorrow> debtBorrows;
     private Context context;
+
     public CategoryReportDatas(Context context, Calendar begin, Calendar end) {
         this.context = context;
         this.begin = (Calendar) begin.clone();
@@ -40,19 +48,20 @@ public class CategoryReportDatas {
 //                periodDatas.add(PocketAccounter.financeManager.getRecords().get(i));
 //        }
     }
-//    public CategoryReportDatas(Context context) {
+
+    //    public CategoryReportDatas(Context context) {
 //        this.context = context;
 //        for (int i=0; i< PocketAccounter.financeManager.getRecords().size(); i++)
 //            periodDatas.add(PocketAccounter.financeManager.getRecords().get(i));
 //    }
-//    private ArrayList<CategoryDataRow> makeWholeReport() {
-//        ArrayList<CategoryDataRow> result  = new ArrayList<CategoryDataRow>();
+//    private ArrayList<ReportObject> makeWholeReport() {
+//        ArrayList<ReportObject> result  = new ArrayList<>();
 //        //income expanses begin
 //        for (int i=0; i<periodDatas.size(); i++) {
 //            boolean categoryFound = false;
 //            int foundCategoryPosition = 0;
 //            for (int j=0; j<result.size(); j++) {
-//                if (result.get(j).getCategory().getId().matches(periodDatas.get(i).getCategory().getId())) {
+//                if (result.get(j).getDescription().matches(periodDatas.get(i).getCategory().getName() + ", " + periodDatas.get(i).getSubCategory().getName())) {
 //                    categoryFound = true;
 //                    foundCategoryPosition = j;
 //                    break;
@@ -223,21 +232,13 @@ public class CategoryReportDatas {
 //        //debt borrows end
 //        return result;
 //    }
+//
 //    public ArrayList<CategoryDataRow> makeExpanseReport() {
 //        ArrayList<CategoryDataRow> result = new ArrayList<>();
 //        ArrayList<CategoryDataRow> temp = makeWholeReport();
-//        for (int i=0; i<temp.size(); i++) {
-//            Log.d("sss", ""+temp.get(i).getCategory().getName());
+//        for (int i = 0; i < temp.size(); i++) {
+//            Log.d("sss", "" + temp.get(i).getCategory().getName());
 //            if (temp.get(i).getCategory().getType() == PocketAccounterGeneral.EXPENSE)
-//                result.add(temp.get(i));
-//        }
-//        return result;
-//    }
-//    public ArrayList<CategoryDataRow> makeIncomeReport() {
-//        ArrayList<CategoryDataRow> result = new ArrayList<>();
-//        ArrayList<CategoryDataRow> temp = makeWholeReport();
-//        for (int i=0; i<temp.size(); i++) {
-//            if (temp.get(i).getCategory().getType() == PocketAccounterGeneral.INCOME)
 //                result.add(temp.get(i));
 //        }
 //        return result;

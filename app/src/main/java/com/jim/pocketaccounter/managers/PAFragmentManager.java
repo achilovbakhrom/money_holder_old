@@ -1,6 +1,8 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -10,11 +12,21 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.debt.DebtBorrowFragment;
+import com.jim.pocketaccounter.debt.PocketClassess;
+import com.jim.pocketaccounter.fragments.AccountFragment;
+import com.jim.pocketaccounter.fragments.AutoMarketFragment;
+import com.jim.pocketaccounter.fragments.CategoryFragment;
+import com.jim.pocketaccounter.fragments.CreditTabLay;
+import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.MainPageFragment;
+import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import java.util.Calendar;
 
@@ -38,6 +50,9 @@ public class PAFragmentManager {
     @Inject DataCache dataCache;
     @Inject @Named(value = "end") Calendar end;
     private MainPageFragment nextPage;
+        private FrameLayout main;
+    private boolean keyboardVisible = false;
+
     public PAFragmentManager(PocketAccounter activity) {
         this.activity = activity;
         ((PocketAccounterApplication) activity.getApplicationContext()).component().inject(this);
@@ -138,6 +153,7 @@ public class PAFragmentManager {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void displayMainWindow() {
         activity.treatToolbar();
 //        main.setVisibility(View.VISIBLE);
@@ -150,8 +166,13 @@ public class PAFragmentManager {
         }
     }
 
+    public static float dpToPx(Context context, float valueInDp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(COMPLEX_UNIT_DIP, valueInDp, metrics);
+    }
+
     public void displayFragment(Fragment fragment) {
-        activity.findViewById(R.id.rlRecordTable).setVisibility(View.GONE);
+//        main.setVisibility(View.GONE);
         if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;
@@ -164,7 +185,7 @@ public class PAFragmentManager {
     }
 
     public void displayFragment(Fragment fragment, String tag) {
-        activity.findViewById(R.id.rlRecordTable).setVisibility(View.GONE);
+//        main.setVisibility(View.GONE);
         if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;
@@ -196,6 +217,41 @@ public class PAFragmentManager {
         @Override
         public int getItemPosition(Object object){
             return POSITION_NONE;
+        }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void remoteBackPress() {
+        String fragName = getFragmentManager().findFragmentById(R.id.flMain).getClass().getName();
+        int count = getFragmentManager().getBackStackEntryCount();
+        while (count > 0) {
+            getFragmentManager().popBackStack();
+            count--;
+        }
+        if (fragName.matches(PocketClassess.DEBTBORROW_FRAG) || fragName.matches(PocketClassess.AUTOMARKET_FRAG)
+                || fragName.matches(PocketClassess.CURRENCY_FRAG) || fragName.matches(PocketClassess.CATEGORY_FRAG)
+                || fragName.matches(PocketClassess.ACCOUNT_FRAG) || fragName.matches(PocketClassess.CREDIT_FRAG)
+                || fragName.matches(PocketClassess.PURPOSE_FRAG) || fragName.matches(PocketClassess.REPORT_ACCOUNT)
+                || fragName.matches(PocketClassess.REPORT_CATEGORY)) {
+//            main.setVisibility(View.VISIBLE);
+            displayMainWindow();
+        } else if (fragName.matches(PocketClassess.ADD_DEBTBORROW) || fragName.matches(PocketClassess.INFO_DEBTBORROW)) {
+            displayFragment(new DebtBorrowFragment());
+        } else if (fragName.matches(PocketClassess.ADD_AUTOMARKET) || fragName.matches(PocketClassess.INFO_DEBTBORROW)) {
+            displayFragment(new AutoMarketFragment());
+        } else if (fragName.matches(PocketClassess.CURRENCY_CHOOSE) || fragName.matches(PocketClassess.CURRENCY_EDIT)) {
+            displayFragment(new CurrencyFragment());
+        } else if (fragName.matches(PocketClassess.CATEGORY_INFO) || fragName.matches(PocketClassess.ADD_CATEGORY)) {
+            displayFragment(new CategoryFragment());
+        } else if (fragName.matches(PocketClassess.ACCOUNT_EDIT) || fragName.matches(PocketClassess.ACCOUNT_INFO)) {
+            displayFragment(new AccountFragment());
+        } else if (fragName.matches(PocketClassess.ADD_AUTOMARKET)) {
+            displayFragment(new AutoMarketFragment());
+        } else if (fragName.matches(PocketClassess.INFO_CREDIT) || fragName.matches(PocketClassess.ADD_CREDIT)) {
+            displayFragment(new CreditTabLay());
+        } else if (fragName.matches(PocketClassess.INFO_PURPOSE) || fragName.matches(PocketClassess.ADD_PURPOSE)) {
+            displayFragment(new PurposeFragment());
         }
     }
 }

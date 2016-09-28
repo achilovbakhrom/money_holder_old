@@ -193,8 +193,9 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                     @Override
                     public void OnTransferDialogSave() {
-                        Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
-                        myAdapter.notifyDataSetChanged();
+                        myAdapter = new MyAdapter();
+                        Toast.makeText(getContext(), "" + reportManager.getAccountOpertions(purpose).size(), Toast.LENGTH_SHORT).show();
+                        recyclerView.setAdapter(myAdapter);
                     }
                 });
                 break;
@@ -206,8 +207,9 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                     @Override
                     public void OnTransferDialogSave() {
-                        Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
-                        myAdapter.notifyDataSetChanged();
+                        myAdapter = new MyAdapter();
+                        Toast.makeText(getContext(), "" + reportManager.getAccountOpertions(purpose).size(), Toast.LENGTH_SHORT).show();
+                        recyclerView.setAdapter(myAdapter);
                     }
                 });
                 break;
@@ -233,15 +235,14 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         public void deleteOperation() {
             for (int i = tek.length - 1; i >= 0; i--) {
                 if (tek[i]) {
-                    logicManager.deleteAccountOperation(allPurposes.get(allPurposes.indexOf(purposes.get(i))));
+                    logicManager.deleteAccountOperation(purposes.get(i));
+                    Log.d("sss2", "pos = " + i);
                 }
             }
             allPurposes = (ArrayList<AccountOperation>) reportManager.getAccountOpertions(purpose);
             purposes = (ArrayList<AccountOperation>) allPurposes.clone();
+            tek = new boolean[purposes.size()];
             refreshFilterPurpose();
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(2016, Calendar.JANUARY, 31);
-            calendar.add(Calendar.MONTH, 1);
 
 //            ReckingDao reckingDao = daoSession.getReckingDao();
 //            Query<Recking> reckingQuery = reckingDao.queryBuilder().join(Account.class, ReckingDao.Properties.AccountId)
@@ -259,7 +260,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     }
                 }
             }
-            notifyDataSetChanged();
         }
 
         public void onBindViewHolder(final ViewHolder view, final int position) {
@@ -306,7 +306,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             view.itemView.setOnClickListener(null);
             if (MODE) {
                 view.checkBox.setVisibility(View.VISIBLE);
-                view.checkBox.setChecked(tek[position]);
                 view.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -316,8 +315,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 view.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        tek[position] = !tek[position];
-                        view.checkBox.setChecked(tek[position]);
+                        view.checkBox.setChecked(!tek[position]);
                     }
                 });
             }

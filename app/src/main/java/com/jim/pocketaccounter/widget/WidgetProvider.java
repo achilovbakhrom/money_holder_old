@@ -36,12 +36,6 @@ import com.jim.pocketaccounter.database.Recking;
 //import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
-import com.jim.pocketaccounter.modulesandcomponents.components.DaggerPocketAccounterActivityComponent;
-import com.jim.pocketaccounter.modulesandcomponents.components.DaggerPocketAccounterApplicationComponent;
-import com.jim.pocketaccounter.modulesandcomponents.components.PocketAccounterActivityComponent;
-import com.jim.pocketaccounter.modulesandcomponents.components.PocketAccounterApplicationComponent;
-import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
-import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterApplicationModule;
 import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 

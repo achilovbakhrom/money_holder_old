@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/fourtyfive_dp"
+    android:layout_marginTop="@dimen/five_dp"
+    android:paddingBottom="@dimen/five_dp"
+    >
+
+    <FrameLayout
+        android:layout_width="2px"
+        android:layout_height="match_parent"
+        android:background="#cfcbcb"
+        android:layout_marginTop="@dimen/three_dp"
+        android:layout_marginBottom="@dimen/three_dp"
+        android:id="@+id/flItemDay"
+        />
+
+    <TextView
+        android:id="@+id/tvItemDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/ten_dp"
+        android:paddingRight="@dimen/ten_dp"
+        android:text="Mon"
+        android:textColor="@color/black_for_secondary_text"
+        android:textSize="@dimen/sixteen_sp" />
+
+</RelativeLayout>

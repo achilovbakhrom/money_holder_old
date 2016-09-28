@@ -80,9 +80,9 @@ public class BarReportView extends LinearLayout {
     public ArrayList<IncomeExpanseDataRow> getDatas() {return datas;}
     public void drawReport() {
         ArrayList<String> xVals = new ArrayList<String>();
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+//        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         for (int i=0; i<datas.size(); i++) {
-            xVals.add(format.format(datas.get(i).getDate().getTime()));
+//            xVals.add(format.format(datas.get(i).getDate().getTime()));
         }
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
         ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
@@ -103,9 +103,9 @@ public class BarReportView extends LinearLayout {
         dataSets.add(set1);
         dataSets.add(set2);
         dataSets.add(set3);
-        BarData data = new BarData(xVals, dataSets);
+        BarData data = new BarData(dataSets);
         data.setValueFormatter(new DecFormat());
-        data.setGroupSpace(80f);
+//        data.setGroupSpace(80f);
         barChart.setData(data);
         barChart.invalidate();
     }

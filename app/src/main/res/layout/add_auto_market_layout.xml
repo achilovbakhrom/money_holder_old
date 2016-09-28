@@ -1,172 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivAddAutoMarketCategory"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="10dp"
+            android:padding="10dp"
+            android:src="@android:drawable/ic_menu_camera" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvAddAutoMarketCatName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/tvAddAutoMarketSubCatName"
+                android:layout_marginBottom="4dp"
+                android:gravity="left"
+                android:text="Home"
+                android:textColor="#414141"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvAddAutoMarketSubCatName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="14dp"
+                android:gravity="left"
+                android:text="Repair"
+                android:textColor="#000000"
+                android:textSize="24sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/linlay_first"
+        android:background="#414141" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp"
         >
 
-        <EditText
+        <TextView
+            android:id="@+id/tvSum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:text="Summa"
+            android:textColor="#414141"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@color/green_light_forline" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp">
+
+        <EditText
+            android:id="@+id/etAddAutoMarketAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|left"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:inputType="numberDecimal"
             android:hint="Enter amount"
-            android:id="@+id/etAutoMarketAddAmount"
-            />
+            android:textColor="#414141"
+            android:textSize="18sp" />
 
-        <LinearLayout
+        <Spinner
+            android:id="@+id/spAddAutoMarketCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center|right" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp">
+
+        <TextView
+            android:id="@+id/tvPer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:gravity="left"
+            android:text="Period"
+            android:textColor="#414141"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:background="@color/green_light_forline" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp">
+
+        <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3"
-            >
-
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/spAutoMarketAddAcc"
-                android:layout_weight="2"
-                />
-
-            <Spinner
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/spAutoMarketAddCur"
-                android:layout_weight="1"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:id="@+id/rgMonthWeek"
+            android:layout_gravity="center"
             android:gravity="center"
-            >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Category"
-                    />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ivAddAutoMarketCategory"
-                    android:src="@drawable/icons_1"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="home"
-                    android:id="@+id/tvAddAutoMarketCatName"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_weight="1"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sub category"
-                    />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/ivAddAutoMarketSubCategory"
-                    android:src="@drawable/icons_1"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="home"
-                    android:id="@+id/tvAddAutoMarketSubCatName"
-                    />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
             >
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:id="@+id/rgAutoMarketAdd"
-                >
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/rbAutoMarketAddWeek"
-                    android:layout_marginRight="25dp"
-                    />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/rbAutoMarketAddMonth"
-                    android:layout_marginLeft="25dp"
-                    />
-
-            </RadioGroup>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            >
-
-            <Button
+            <RadioButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnAutoMarketAddWeek"
-                android:layout_marginRight="20dp"
-                android:text="Week"
+                android:layout_height="match_parent"
+                android:id="@+id/rbtnAddAutoMarketWeek"
+                android:text="Week days"
                 />
 
-            <Button
+            <RadioButton
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnAutoMarketAddMonth"
-                android:layout_marginLeft="20dp"
-                android:text="month"
+                android:layout_height="match_parent"
+                android:id="@+id/rbtnAddAutoMarketMonth"
+                android:text="Months"
+                android:layout_marginLeft="@dimen/fifteen_dp"
                 />
 
-        </LinearLayout>
+        </RadioGroup>
 
     </LinearLayout>
 
-</RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/six_dp"
+        android:layout_gravity="center"
+        android:id="@+id/rvAddAutoMarketPerItems"
+        android:background="@drawable/days_shape"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp"/>
+
+
+</LinearLayout>

@@ -48,20 +48,20 @@ public class SystemConfigurator {
     DaoSession daoSession;
     @Inject
     SharedPreferences preferences;
-
     public SystemConfigurator(Context context) {
         this.context = context;
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
-
+//        currencyDao = daoSession.getCurrencyDao();
+//        currencyCostDao = daoSession.getCurrencyCostDao();
+//        accountDao = daoSession.getAccountDao();
+//        debtBorrowDao = daoSession.getDebtBorrowDao();
+//        creditDetialsDao = daoSession.getCreditDetialsDao();
+//        subCategoryDao = daoSession.getSubCategoryDao();
+//        rootCategoryDao = daoSession.getRootCategoryDao();
     }
-    public void configurate() {
-        migrateDatabase();
-    }
-    private void migrateDatabase() {
 
-        String  currentDBPath= "//data//" + context.getPackageName().toString()
-                + "//databases//" + Configuration.OLD_DB_NAME;
-        File oldDBFile = new File(Environment.getDataDirectory(), currentDBPath);
+    public void migrateDatabase(String fileName) {
+        File oldDBFile = new File(Environment.getDataDirectory(), fileName);
         if (oldDBFile.exists()) {
             SQLiteDatabase old = SQLiteDatabase.openDatabase(oldDBFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
             Cursor cursor = old.query("currency_table", null, null, null, null, null, null);
@@ -72,6 +72,7 @@ public class SystemConfigurator {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 Currency newCurrency = new Currency(cursor.getString(cursor.getColumnIndex("currency_name")));
+                newCurrency.__setDaoSession(daoSession);
                 newCurrency.setAbbr(cursor.getString(cursor.getColumnIndex("currency_sign")));
                 String currId = cursor.getString(cursor.getColumnIndex("currency_id"));
                 newCurrency.setId(currId);
@@ -88,10 +89,12 @@ public class SystemConfigurator {
                             e.printStackTrace();
 
                         }
+                        newCurrencyCost.__setDaoSession(daoSession);
                         newCurrencyCost.setCost(costCursor.getDouble(costCursor.getColumnIndex("cost")));
                         newCurrencyCost.__setDaoSession(daoSession);
                         newCurrency.__setDaoSession(daoSession);
                         newCurrency.getCosts().add(newCurrencyCost);
+//                        currencyCostDao.insertOrReplace(newCurrencyCost);
                     }
                     costCursor.moveToNext();
                 }
@@ -106,6 +109,7 @@ public class SystemConfigurator {
             catCursor.moveToFirst();
             while(!catCursor.isAfterLast()) {
                 RootCategory newCategory = new RootCategory();
+                newCategory.__setDaoSession(daoSession);
                 newCategory.setName(catCursor.getString(catCursor.getColumnIndex("category_name")));
                 String catId = catCursor.getString(catCursor.getColumnIndex("category_id"));
                 newCategory.setId(catId);
@@ -121,6 +125,7 @@ public class SystemConfigurator {
                         newSubCategory.setParentId(catId);
                         newSubCategory.setIcon(subcatCursor.getString(subcatCursor.getColumnIndex("icon")));
                         subCats.add(newSubCategory);
+//                        subCategoryDao.insertOrReplace(newSubCategory);
                     }
                     subcatCursor.moveToNext();
                 }
@@ -333,7 +338,6 @@ public class SystemConfigurator {
             }
 
             //loading credits
-            //TODO ARCHIVE TABLEDAN OLIB BITTA QIB QOYISH KERE
             ArrayList<CreditDetials> creditDetialses = new ArrayList<>();
             Cursor curCreditTable = old.query("credit_table", null, null, null, null, null, null);
             Cursor curCreditRecking = old.query("credit_recking_table", null, null, null, null, null, null);

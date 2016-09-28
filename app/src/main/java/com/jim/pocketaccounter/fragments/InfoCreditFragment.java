@@ -12,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,7 @@ import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
-import com.jim.pocketaccounter.debt.PockerTag;
+import com.jim.pocketaccounter.debt.PocketClassess;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
@@ -193,7 +192,7 @@ public class InfoCreditFragment extends Fragment {
                             AddCreditFragment forEdit=new AddCreditFragment();
                             forEdit.setDateFormatModes(modeOfMain,positionOfBourdMain);
                             forEdit.shareForEdit(currentCredit);
-                            openFragment(forEdit, PockerTag.Edit);
+                            openFragment(forEdit);
                         }
                         else {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -613,10 +612,12 @@ public class InfoCreditFragment extends Fragment {
         dialog.show();
     }
 
-    public void openFragment(Fragment fragment,String tag) {
+    public void openFragment(Fragment fragment) {
         if (fragment != null) {
-            final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter)context).getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.add(R.id.flMain, fragment,tag);
+            final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter)context)
+                    .getSupportFragmentManager().beginTransaction()
+                    .setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//            ft.add(R.id.flMain);
             ft.commit();
         }
     }

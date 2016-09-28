@@ -2,7 +2,6 @@ package com.jim.pocketaccounter.fragments;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,9 +16,6 @@ import android.widget.Toast;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.LinearManagerWithOutEx;
-import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
@@ -29,8 +25,6 @@ import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.TransferDialog;
 
 import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 /**

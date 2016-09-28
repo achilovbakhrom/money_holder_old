@@ -45,6 +45,9 @@ import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
+import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
+import com.jim.pocketaccounter.fragments.ReportByCategory;
+import com.jim.pocketaccounter.fragments.SMSParseFragment;
 import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
 import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.CircleImageView;
@@ -409,16 +412,23 @@ public class DrawerInitializer {
                                 break;
                             case 10:
                             case 11:
-//                                fragmentManager.displayFragment(new ReportByAccountFragment());
+                                fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;
                             case 12:
-//                                fragmentManager.displayFragment(new TableBarFragment());
+                                fragmentManager.displayFragment(new ReportByCategory());
                                 break;
                             case 13:
-//                                fragmentManager.displayFragment(new ReportByCategory());
+//                                fragmentManager.displayFragment(new TableBarFragment());
                                 break;
                             case 14:
-//                                fragmentManager.displayFragment(new SMSParseFragment());
+                                fragmentManager.displayFragment(new SMSParseFragment());
+
+//                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
+//                                PocketAccounter.openActivity=true;
+//                                for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
+//                                    fragmentManager.popBackStack();
+//                                }
+//                                startActivityForResult(zssettings, key_for_restat);
                                 break;
                             case 15:
 

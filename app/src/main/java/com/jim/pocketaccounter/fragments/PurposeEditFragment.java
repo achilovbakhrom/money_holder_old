@@ -124,24 +124,30 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (purpose == null)
-                    purpose = new Purpose();
-                purpose.setDescription(purposeName.getText().toString());
-                purpose.setIcon(choosenIcon);
-                purpose.setPeriodPos(periodPurpose.getSelectedItemPosition());
-                purpose.setPurpose(Double.parseDouble(amountPurpose.getText().toString()));
-                purpose.setBegin(begCalendar);
-                purpose.setEnd(endCalendar);
-                switch (logicManager.insertPurpose(purpose)) {
-                    case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
-                        Toast.makeText(getContext(), "such name have", Toast.LENGTH_SHORT).show();
-                        break;
-                    }
-                    case LogicManagerConstants.SAVED_SUCCESSFULL: {
-                        Toast.makeText(getContext(), "saved success", Toast.LENGTH_SHORT).show();
-                        paFragmentManager.getFragmentManager().popBackStack();
-                        paFragmentManager.displayFragment(new PurposeFragment());
-                        break;
+                if (amountPurpose.getText().toString().isEmpty()) {
+                    amountPurpose.setError("Enter amount");
+                } else if (purposeName.getText().toString().isEmpty()) {
+                    amountPurpose.setError(null);
+                    purposeName.setError("Enter purpose name");
+                } else{
+                    if (purpose == null)
+                        purpose = new Purpose();
+                    purpose.setDescription(purposeName.getText().toString());
+                    purpose.setIcon(choosenIcon);
+                    purpose.setPeriodPos(periodPurpose.getSelectedItemPosition());
+                    purpose.setPurpose(Double.parseDouble(amountPurpose.getText().toString()));
+                    purpose.setBegin(begCalendar);
+                    purpose.setEnd(endCalendar);
+                    switch (logicManager.insertPurpose(purpose)) {
+                        case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
+                            Toast.makeText(getContext(), "such name have", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                        case LogicManagerConstants.SAVED_SUCCESSFULL: {
+                            paFragmentManager.getFragmentManager().popBackStack();
+                            paFragmentManager.displayFragment(new PurposeFragment());
+                            break;
+                        }
                     }
                 }
             }
