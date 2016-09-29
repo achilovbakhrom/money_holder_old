@@ -2,9 +2,12 @@ package com.jim.pocketaccounter.database;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+
+import java.util.UUID;
 
 /**
  * Created by DEV on 07.08.2016.
@@ -15,9 +18,16 @@ public class PhotoDetails {
     String photopath;
     @Property
     String photopathCache;
-    @Id
     @Property
     String recordId;
+    @Id
+    @Property
+    private String id;
+
+    @Keep
+    public PhotoDetails () {
+        id = UUID.randomUUID().toString();
+    }
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -81,13 +91,25 @@ public class PhotoDetails {
     public void setPhotopath(String photopath) {
         this.photopath = photopath;
     }
-    @Generated(hash = 13191626)
+    public String getId() {
+        return this.id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    @Keep
     public PhotoDetails(String photopath, String photopathCache, String recordId) {
         this.photopath = photopath;
         this.photopathCache = photopathCache;
         this.recordId = recordId;
+        this.id =  UUID.randomUUID().toString();
     }
-    @Generated(hash = 1285452818)
-    public PhotoDetails() {
+    @Generated(hash = 1077554308)
+    public PhotoDetails(String photopath, String photopathCache, String recordId, String id) {
+        this.photopath = photopath;
+        this.photopathCache = photopathCache;
+        this.recordId = recordId;
+        this.id = id;
     }
+  
 }

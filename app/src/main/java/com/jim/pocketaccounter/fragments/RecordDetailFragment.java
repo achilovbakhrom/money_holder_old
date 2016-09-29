@@ -119,6 +119,12 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+
+        Log.d("resulttt", "onActivityResult: Otlab ketib qoldi");
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ivToolbarMostRight:
@@ -167,6 +173,7 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 holder.rlVisibleWhenHaveComment.setVisibility(View.VISIBLE);
             }
             boolean keyik=true;
+            Log.d("trannn", result.get(position).getAllTickets().size()+"");
             for (PhotoDetails temp:result.get(position).getAllTickets()){
                 File tmpFile=new File(temp.getPhotopath());
                 File tmpCacheFile=new File(temp.getPhotopathCache());

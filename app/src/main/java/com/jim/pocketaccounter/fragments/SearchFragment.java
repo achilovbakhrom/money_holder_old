@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -45,8 +46,13 @@ import com.jim.pocketaccounter.database.ReckingCreditDao;
 import com.jim.pocketaccounter.database.ReckingDao;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.RootCategoryDao;
+import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.database.SubCategoryDao;
+import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.SearchResultConten;
 
@@ -69,7 +75,7 @@ import static com.jim.pocketaccounter.utils.ContenerStaticSearchVariables.*;
 public class SearchFragment extends Fragment {
     RecyclerView rvSearchItems;
     RVAdapterSearch rvAdapterSearch = new RVAdapterSearch();
-    String prevSearchString="";
+    String prevSearchString = "";
     SimpleDateFormat dateformarter;
     DecimalFormat formater;
     @Inject
@@ -78,29 +84,33 @@ public class SearchFragment extends Fragment {
     CommonOperations comonOperation;
     @Inject
     PAFragmentManager paFragmentManager;
-     List<SearchResultConten> searchItemsToSend;
-     List<SearchResultConten> searchItemsToSendForUse;
+    @Inject
+    ToolbarManager toolbarManager;
+    List<SearchResultConten> searchItemsToSend;
+    List<SearchResultConten> searchItemsToSendForUse;
 
 
     public SearchFragment() {
         // Required empty public constructor
-        dateformarter=new  SimpleDateFormat("dd.MM.yyyy");
-        formater=new DecimalFormat("0.00##");
+        dateformarter = new SimpleDateFormat("dd.MM.yyyy");
+        formater = new DecimalFormat("0.00##");
 
     }
-    public TextChangeListnerW getListnerChange(){
+
+    public TextChangeListnerW getListnerChange() {
         return new TextChangeListnerW() {
             @Override
             public void onTextChange(String searchString) {
-                if(!prevSearchString.equals(searchString)){
+                if (!prevSearchString.equals(searchString)) {
                     changeListForResult(searchString);
-                    prevSearchString=searchString;
+                    prevSearchString = searchString;
 
                 }
             }
         };
     }
-    public interface TextChangeListnerW{
+
+    public interface TextChangeListnerW {
         void onTextChange(String searchString);
     }
 
@@ -109,13 +119,15 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
     }
+
     String[] tempIcons;
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
 //        setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        rvSearchItems =(RecyclerView) view.findViewById(R.id.recyc_item_search);
+        rvSearchItems = (RecyclerView) view.findViewById(R.id.recyc_item_search);
         LinearManagerWithOutEx llm = new LinearManagerWithOutEx(getContext());
         rvSearchItems.setLayoutManager(llm);
         rvSearchItems.setAdapter(rvAdapterSearch);
@@ -123,8 +135,8 @@ public class SearchFragment extends Fragment {
         rvSearchItems.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_MOVE){
-                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(container.getWindowToken(), 0);
                 }
                 return false;
@@ -134,169 +146,197 @@ public class SearchFragment extends Fragment {
 
         return view;
     }
-    public void changeListForResult(String searchSt){
+
+    public void changeListForResult(String searchSt) {
 
 
-        if(searchItemsToSend==null){
-            searchItemsToSend=new ArrayList<>();
+        if (searchItemsToSend == null) {
+            searchItemsToSend = new ArrayList<>();
         }
-        if(searchItemsToSendForUse==null){
-            searchItemsToSendForUse=new ArrayList<>();
+        if (searchItemsToSendForUse == null) {
+            searchItemsToSendForUse = new ArrayList<>();
         }
 
-        if(searchSt.length()==1){
+        if (searchSt.length() == 1) {
             searchItemsToSend.clear();
 
             /*Credit Search*/
-            QueryBuilder<CreditDetials> queryBuilderCred=daoSession.getCreditDetialsDao().queryBuilder();
+            QueryBuilder<CreditDetials> queryBuilderCred = daoSession.getCreditDetialsDao().queryBuilder();
             queryBuilderCred.whereOr(
-                    CreditDetialsDao.Properties.Take_time.like("%" + searchSt+ "%"),
+                    CreditDetialsDao.Properties.Take_time.like("%" + searchSt + "%"),
                     CreditDetialsDao.Properties.Credit_name.like("%" + searchSt.toLowerCase() + "%"),
                     CreditDetialsDao.Properties.Credit_name.like("%" + searchSt.toUpperCase() + "%"),
                     CreditDetialsDao.Properties.Value_of_credit_with_procent.like("%" + searchSt.toLowerCase() + "%"),
                     CreditDetialsDao.Properties.Value_of_credit_with_procent.like("%" + searchSt.toUpperCase() + "%"));
-            List<CreditDetials> cd=queryBuilderCred.build().list();
-            for (CreditDetials temp:cd) {
-                if(temp.getKey_for_archive())
-                    searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(),temp.getValue_of_credit_with_procent(),CREDIT_ARCHIVE,temp.getTake_time(),temp,temp.getIcon_ID(),(temp.getKey_for_include())?getString(R.string.include_balance):getString(R.string.some_credit),temp.getValyute_currency(),null));
+            List<CreditDetials> cd = queryBuilderCred.build().list();
+            for (CreditDetials temp : cd) {
+                if (temp.getKey_for_archive())
+                    searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(), temp.getValue_of_credit_with_procent(), CREDIT_ARCHIVE, temp.getTake_time(), temp, temp.getIcon_ID(), (temp.getKey_for_include()) ? getString(R.string.include_balance) : getString(R.string.some_credit), temp.getValyute_currency(), null));
                 else
-                    searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(),temp.getValue_of_credit_with_procent(),CREDIT_VAR,temp.getTake_time(),temp,temp.getIcon_ID(),(temp.getKey_for_include())?getString(R.string.cred_include_bal):getString(R.string.cred_not_include_bal),temp.getValyute_currency(),null));
+                    searchItemsToSend.add(new SearchResultConten(temp.getCredit_name(), temp.getValue_of_credit_with_procent(), CREDIT_VAR, temp.getTake_time(), temp, temp.getIcon_ID(), (temp.getKey_for_include()) ? getString(R.string.cred_include_bal) : getString(R.string.cred_not_include_bal), temp.getValyute_currency(), null));
             }
 
             /*Credit Recking Search*/
-            QueryBuilder<ReckingCredit> queryBuilder=daoSession.getReckingCreditDao().queryBuilder();
+            QueryBuilder<ReckingCredit> queryBuilder = daoSession.getReckingCreditDao().queryBuilder();
             queryBuilder.whereOr(
-                    ReckingCreditDao.Properties.PayDate.like("%" + searchSt+ "%"),
+                    ReckingCreditDao.Properties.PayDate.like("%" + searchSt + "%"),
                     ReckingCreditDao.Properties.Comment.like("%" + searchSt.toLowerCase() + "%"),
                     ReckingCreditDao.Properties.Comment.like("%" + searchSt.toUpperCase() + "%"),
-                    ReckingCreditDao.Properties.Amount.like("%" + searchSt+ "%"),
-                    queryBuilder.join(ReckingCreditDao.Properties.MyCredit_id,CreditDetials.class, CreditDetialsDao.Properties.MyCredit_id)
-                            .or(CreditDetialsDao.Properties.Credit_name.like("%" + searchSt.toLowerCase() + "%"),CreditDetialsDao.Properties.Credit_name.like("%" + searchSt.toUpperCase() + "%")),
-                    queryBuilder.join(ReckingCreditDao.Properties.AccountId,Account.class, AccountDao.Properties.Id)
-                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
-                   );
-            List<ReckingCredit> rk=queryBuilder.build().list();
-            for (ReckingCredit temp:rk) {
-                CreditDetials creditDetialse=daoSession.getCreditDetialsDao().load(temp.getMyCredit_id());
-                Account acc=daoSession.getAccountDao().load(temp.getAccountId());
-                searchItemsToSend.add(new SearchResultConten(creditDetialse.getCredit_name(),temp.getAmount()*-1d,CREDIT_RECKING, temp.getPayDate(),temp,creditDetialse.getIcon_ID(),temp.getComment(),creditDetialse.getValyute_currency(),acc));
+                    ReckingCreditDao.Properties.Amount.like("%" + searchSt + "%"),
+                    queryBuilder.join(ReckingCreditDao.Properties.MyCredit_id, CreditDetials.class, CreditDetialsDao.Properties.MyCredit_id)
+                            .or(CreditDetialsDao.Properties.Credit_name.like("%" + searchSt.toLowerCase() + "%"), CreditDetialsDao.Properties.Credit_name.like("%" + searchSt.toUpperCase() + "%")),
+                    queryBuilder.join(ReckingCreditDao.Properties.AccountId, Account.class, AccountDao.Properties.Id)
+                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
+            );
+            List<ReckingCredit> rk = queryBuilder.build().list();
+            for (ReckingCredit temp : rk) {
+                CreditDetials creditDetialse = daoSession.getCreditDetialsDao().load(temp.getMyCredit_id());
+                Account acc = daoSession.getAccountDao().load(temp.getAccountId());
+                searchItemsToSend.add(new SearchResultConten(creditDetialse.getCredit_name(), temp.getAmount() * -1d, CREDIT_RECKING, temp.getPayDate(), temp, creditDetialse.getIcon_ID(), temp.getComment(), creditDetialse.getValyute_currency(), acc));
             }
 
             /*Finance Record Search*/
-            QueryBuilder<FinanceRecord> queryBuilderFinance=daoSession.getFinanceRecordDao().queryBuilder();
-            queryBuilderFinance.whereOr(
-                    FinanceRecordDao.Properties.Date.like("%" + searchSt+ "%"),
-                    FinanceRecordDao.Properties.Amount.like("%" + searchSt+ "%"),
-                    FinanceRecordDao.Properties.Comment.like("%" + searchSt.toLowerCase()+ "%"),
-                    FinanceRecordDao.Properties.Comment.like("%" + searchSt.toUpperCase()+ "%"),
-                    queryBuilderFinance.join(FinanceRecordDao.Properties.CategoryId,   RootCategory.class, RootCategoryDao.Properties.Id)
-                            .or(RootCategoryDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),RootCategoryDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%")),
-                    queryBuilderFinance.join(FinanceRecordDao.Properties.AccountId,Account.class, AccountDao.Properties.Id)
-                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
+            QueryBuilder<FinanceRecord> queryBuilderFinance1 = daoSession.getFinanceRecordDao().queryBuilder();
+            queryBuilderFinance1.whereOr(
+                    FinanceRecordDao.Properties.Date.like("%" + searchSt + "%"),
+                    FinanceRecordDao.Properties.Amount.like("%" + searchSt + "%"),
+                    FinanceRecordDao.Properties.Comment.like("%" + searchSt.toLowerCase() + "%"),
+                    FinanceRecordDao.Properties.Comment.like("%" + searchSt.toUpperCase() + "%"),
+                    queryBuilderFinance1.join(FinanceRecordDao.Properties.CategoryId, RootCategory.class, RootCategoryDao.Properties.Id)
+                            .or(RootCategoryDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), RootCategoryDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%")),
+                    queryBuilderFinance1.join(FinanceRecordDao.Properties.AccountId, Account.class, AccountDao.Properties.Id)
+                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
+
             );
-            List<FinanceRecord> fcats=queryBuilderFinance.build().list();
-            for (FinanceRecord temp:fcats) {
-                if(temp.getCategory().getType()== PocketAccounterGeneral.INCOME)
-                searchItemsToSend.add(new SearchResultConten(temp.getCategory().getName(),temp.getAmount(),SIMPLE_RECKING,temp.getDate(),temp,temp.getCategory().getIcon(),temp.getComment(),temp.getCurrency(),temp.getAccount()));
-                if(temp.getCategory().getType()== PocketAccounterGeneral.EXPENSE)
-                    searchItemsToSend.add(new SearchResultConten(temp.getCategory().getName(),temp.getAmount()*-1d,SIMPLE_RECKING,temp.getDate(),temp,temp.getCategory().getIcon(),temp.getComment(),temp.getCurrency(),temp.getAccount()));
+
+            QueryBuilder<FinanceRecord> queryBuilderFinance2 = daoSession.getFinanceRecordDao().queryBuilder();
+            queryBuilderFinance2.where(FinanceRecordDao.Properties.SubCategoryId.isNotNull()).where(
+                    queryBuilderFinance2.join(FinanceRecordDao.Properties.SubCategoryId, SubCategory.class, SubCategoryDao.Properties.Id)
+                            .or(SubCategoryDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), SubCategoryDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
+
+            );
+
+            List<FinanceRecord> fcats1 = queryBuilderFinance1.build().list();
+            List<FinanceRecord> fcats2 = queryBuilderFinance2.build().list();
+            if (fcats2.size() != 0)
+                for (int t = fcats2.size() - 1; t >= 0; t--) {
+                    for (FinanceRecord item : fcats1) {
+                         if (!item.equals(fcats2.get(t))) {
+                            fcats2.add(item);
+                        }
+                    }
+                }
+
+            for (FinanceRecord temp : fcats1) {
+                if (temp.getCategory().getType() == PocketAccounterGeneral.INCOME) {
+
+                    if (temp.getSubCategory() == null) {
+                        searchItemsToSend.add(new SearchResultConten(temp.getCategory().getName(), temp.getAmount(), SIMPLE_RECKING, temp.getDate(), temp, temp.getCategory().getIcon(), temp.getComment(), temp.getCurrency(), temp.getAccount()));
+
+                    } else {
+                        searchItemsToSend.add(new SearchResultConten(temp.getCategory().getName() + ",\n" + temp.getSubCategory().getName(), temp.getAmount(), SIMPLE_RECKING, temp.getDate(), temp, temp.getSubCategory().getIcon(), temp.getComment(), temp.getCurrency(), temp.getAccount()));
+
+                    }
+
+                }
+                if (temp.getCategory().getType() == PocketAccounterGeneral.EXPENSE) {
+                    if (temp.getSubCategory() == null)
+                        searchItemsToSend.add(new SearchResultConten(temp.getCategory().getName(), temp.getAmount() * -1d, SIMPLE_RECKING, temp.getDate(), temp, temp.getCategory().getIcon(), temp.getComment(), temp.getCurrency(), temp.getAccount()));
+                    else
+                        searchItemsToSend.add(new SearchResultConten(temp.getCategory().getName() + ",\n" + temp.getSubCategory().getName(), temp.getAmount() * -1d, SIMPLE_RECKING, temp.getDate(), temp, temp.getSubCategory().getIcon(), temp.getComment(), temp.getCurrency(), temp.getAccount()));
+                }
 
             }
 
             /*Debt Borrow Record Search*/
-            QueryBuilder<DebtBorrow> queryBuilderDebtBorrow=daoSession.getDebtBorrowDao().queryBuilder();
+            QueryBuilder<DebtBorrow> queryBuilderDebtBorrow = daoSession.getDebtBorrowDao().queryBuilder();
             queryBuilderDebtBorrow.whereOr(
-                    DebtBorrowDao.Properties.TakenDate.like("%" + searchSt+ "%"),
-                    DebtBorrowDao.Properties.Amount.like("%"+searchSt+"%"),
-                    queryBuilderDebtBorrow.join(DebtBorrowDao.Properties.PerId,   Person.class, PersonDao.Properties.Id)
-                            .or(PersonDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),PersonDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%")),
-                    queryBuilderDebtBorrow.join(DebtBorrowDao.Properties.AccountId,   Account.class, AccountDao.Properties.Id)
-                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
+                    DebtBorrowDao.Properties.TakenDate.like("%" + searchSt + "%"),
+                    DebtBorrowDao.Properties.Amount.like("%" + searchSt + "%"),
+                    queryBuilderDebtBorrow.join(DebtBorrowDao.Properties.PerId, Person.class, PersonDao.Properties.Id)
+                            .or(PersonDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), PersonDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%")),
+                    queryBuilderDebtBorrow.join(DebtBorrowDao.Properties.AccountId, Account.class, AccountDao.Properties.Id)
+                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
 
-                    );
-            List<DebtBorrow> dbors=queryBuilderDebtBorrow.build().list();
-            for (DebtBorrow temp:dbors) {
-                if(temp.getType()==DebtBorrow.DEBT)
-                    if(temp.getTo_archive()){
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(),temp.getAmount()*-1d,DEBT_ARCHIVE,temp.getTakenDate(),temp,temp.getPerson().getPhoto(),(temp.getCalculate())?getString(R.string.debt_com):getString(R.string.debt_comment_not_icluded),temp.getCurrency(),temp.getAccount()));
-                    }
-                    else
-                    searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(),temp.getAmount()*-1d,DEBT_VAR,temp.getTakenDate(),temp,temp.getPerson().getPhoto(),(temp.getCalculate())?getString(R.string.debt_coment):getString(R.string.debt_comment_to),temp.getCurrency(),temp.getAccount()));
-                if(temp.getType()==DebtBorrow.BORROW)
-                    if(temp.getTo_archive()){
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(),temp.getAmount(),BORROW_ARCHIVE,temp.getTakenDate(),temp,temp.getPerson().getPhoto(),(temp.getCalculate())?getString(R.string.borrow_com):getString(R.string.borrow_comment_not_icl_arch),temp.getCurrency(),temp.getAccount()));
-                    }
-                    else
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(),temp.getAmount(),BORROW_VAR,temp.getTakenDate(),temp,temp.getPerson().getPhoto(),(temp.getCalculate())?getString(R.string.borrow_comment):getString(R.string.borrow_coment_incl),temp.getCurrency(),temp.getAccount()));
-            }   
-            QueryBuilder<Recking> queryBuilderDebtBorrowRecking=daoSession.getReckingDao().queryBuilder();
-            Join anmeJoin=queryBuilderDebtBorrowRecking.join(ReckingDao.Properties.DebtBorrowsId,DebtBorrow.class, DebtBorrowDao.Properties.Id);
+            );
+            List<DebtBorrow> dbors = queryBuilderDebtBorrow.build().list();
+            for (DebtBorrow temp : dbors) {
+                if (temp.getType() == DebtBorrow.DEBT)
+                    if (temp.getTo_archive()) {
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount() * -1d, DEBT_ARCHIVE, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.debt_com) : getString(R.string.debt_comment_not_icluded), temp.getCurrency(), temp.getAccount()));
+                    } else
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount() * -1d, DEBT_VAR, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.debt_coment) : getString(R.string.debt_comment_to), temp.getCurrency(), temp.getAccount()));
+
+                if (temp.getType() == DebtBorrow.BORROW)
+                    if (temp.getTo_archive()) {
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount(), BORROW_ARCHIVE, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.borrow_com) : getString(R.string.borrow_comment_not_icl_arch), temp.getCurrency(), temp.getAccount()));
+                    } else
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount(), BORROW_VAR, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.borrow_comment) : getString(R.string.borrow_coment_incl), temp.getCurrency(), temp.getAccount()));
+            }
+            QueryBuilder<Recking> queryBuilderDebtBorrowRecking = daoSession.getReckingDao().queryBuilder();
+            Join anmeJoin = queryBuilderDebtBorrowRecking.join(ReckingDao.Properties.DebtBorrowsId, DebtBorrow.class, DebtBorrowDao.Properties.Id);
             queryBuilderDebtBorrowRecking.whereOr(
-                    ReckingDao.Properties.Amount.like("%"+searchSt+"%"),
-                    ReckingDao.Properties.PayDate.like("%"+searchSt+"%"),
-                    queryBuilderDebtBorrowRecking.join(ReckingDao.Properties.AccountId,   Account.class, AccountDao.Properties.Id)
-                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%")),
-                    queryBuilderDebtBorrowRecking.join(anmeJoin,DebtBorrowDao.Properties.PerId,   Person.class, PersonDao.Properties.Id)
-                            .or(PersonDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"),PersonDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
-                    );
-            List<Recking> rcDebtBo=queryBuilderDebtBorrowRecking.build().list();
-            for (Recking temp:rcDebtBo) {
+                    ReckingDao.Properties.Amount.like("%" + searchSt + "%"),
+                    ReckingDao.Properties.PayDate.like("%" + searchSt + "%"),
+                    queryBuilderDebtBorrowRecking.join(ReckingDao.Properties.AccountId, Account.class, AccountDao.Properties.Id)
+                            .or(AccountDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), AccountDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%")),
+                    queryBuilderDebtBorrowRecking.join(anmeJoin, DebtBorrowDao.Properties.PerId, Person.class, PersonDao.Properties.Id)
+                            .or(PersonDao.Properties.Name.like("%" + searchSt.toLowerCase() + "%"), PersonDao.Properties.Name.like("%" + searchSt.toUpperCase() + "%"))
+            );
+            List<Recking> rcDebtBo = queryBuilderDebtBorrowRecking.build().list();
+            for (Recking temp : rcDebtBo) {
                 DebtBorrow debtBorrowTemp = daoSession.getDebtBorrowDao().load(temp.getDebtBorrowsId());
-                Account acc=daoSession.getAccountDao().load(temp.getAccountId());
-                if(debtBorrowTemp.getType()==DebtBorrow.DEBT)
-                    searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(),temp.getAmount(),DEBT_RECKING,temp.getPayDate(),temp,debtBorrowTemp.getPerson().getPhoto(),temp.getComment(),debtBorrowTemp.getCurrency(),acc));
-                else if(debtBorrowTemp.getType()==DebtBorrow.BORROW)
-                    searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(),temp.getAmount(),BORROW_RECKING,temp.getPayDate(),temp,debtBorrowTemp.getPerson().getPhoto(),temp.getComment(),debtBorrowTemp.getCurrency(),acc));
+                Account acc = daoSession.getAccountDao().load(temp.getAccountId());
+                if (debtBorrowTemp.getType() == DebtBorrow.DEBT)
+                    searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(), temp.getAmount(), DEBT_RECKING, temp.getPayDate(), temp, debtBorrowTemp.getPerson().getPhoto(), temp.getComment(), debtBorrowTemp.getCurrency(), acc));
+                else if (debtBorrowTemp.getType() == DebtBorrow.BORROW)
+                    searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(), temp.getAmount(), BORROW_RECKING, temp.getPayDate(), temp, debtBorrowTemp.getPerson().getPhoto(), temp.getComment(), debtBorrowTemp.getCurrency(), acc));
 
             }
 
-            if(searchItemsToSend!=null)
+            if (searchItemsToSend != null)
                 Collections.sort(searchItemsToSend, new Comparator<SearchResultConten>() {
                     @Override
-                    public int compare(SearchResultConten con1, SearchResultConten con2)
-                    {
-                        return  con2.getMyDate().compareTo(con1.getMyDate());
+                    public int compare(SearchResultConten con1, SearchResultConten con2) {
+                        return con2.getMyDate().compareTo(con1.getMyDate());
                     }
                 });
+            searchItemsToSend.size();
 
-            rvAdapterSearch.setDataList(searchItemsToSend,getActivity(),searchSt);
-        }
-        else{
+            rvAdapterSearch.setDataList(searchItemsToSend, getActivity(), searchSt);
+        } else {
             searchItemsToSendForUse.clear();
-            for (SearchResultConten temp:searchItemsToSend) {
-                if(temp.getStNameOfItem().toLowerCase().contains(searchSt.toLowerCase())){
+            for (SearchResultConten temp : searchItemsToSend) {
+                if (temp.getStNameOfItem().toLowerCase().contains(searchSt.toLowerCase())) {
                     searchItemsToSendForUse.add(temp);
                     continue;
                 }
-                if(temp.getAccount()!=null)
-                if (temp.getAccount().getName().toLowerCase().contains(searchSt.toLowerCase())){
-                    searchItemsToSendForUse.add(temp);
-                    continue;
-                }
+                if (temp.getAccount() != null)
+                    if (temp.getAccount().getName().toLowerCase().contains(searchSt.toLowerCase())) {
+                        searchItemsToSendForUse.add(temp);
+                        continue;
+                    }
 
-                if(temp.getComment()!=null)
-                    if(!temp.getComment().equals(""))
-                        if (temp.getComment().toLowerCase().contains(searchSt.toLowerCase())){
+                if (temp.getComment() != null)
+                    if (!temp.getComment().equals(""))
+                        if (temp.getComment().toLowerCase().contains(searchSt.toLowerCase())) {
                             searchItemsToSendForUse.add(temp);
                             continue;
                         }
 
-                if(formater.format(temp.getdAmount()).toLowerCase().contains(searchSt.toLowerCase())){
+                if (formater.format(temp.getdAmount()).toLowerCase().contains(searchSt.toLowerCase())) {
                     searchItemsToSendForUse.add(temp);
                     continue;
                 }
-                if(dateformarter.format(temp.getMyDate().getTime()).toLowerCase().contains(searchSt.toLowerCase())){
+                if (dateformarter.format(temp.getMyDate().getTime()).toLowerCase().contains(searchSt.toLowerCase())) {
                     searchItemsToSendForUse.add(temp);
                     continue;
                 }
             }
 
 
-
-            rvAdapterSearch.setDataList(searchItemsToSendForUse,getActivity(),searchSt);
+            rvAdapterSearch.setDataList(searchItemsToSendForUse, getActivity(), searchSt);
         }
-
-
 
         rvAdapterSearch.notifyDataSetChanged();
 
@@ -308,32 +348,33 @@ public class SearchFragment extends Fragment {
         super.onDetach();
     }
 
-    private class RVAdapterSearch extends RecyclerView.Adapter<RVAdapterSearch.SearchItemViewHolder>{
+    private class RVAdapterSearch extends RecyclerView.Adapter<RVAdapterSearch.SearchItemViewHolder> {
         List<SearchResultConten> searchItems;
         Context context;
         String seq;
-        private final String COLOR_SEQ="#e2e2e2";
-        public void setDataList(List<SearchResultConten> searchItems,Context context,String seq){
-            this.searchItems=searchItems;
-            this.context=context;
-            this.seq=seq;
+        private final String COLOR_SEQ = "#e2e2e2";
+
+        public void setDataList(List<SearchResultConten> searchItems, Context context, String seq) {
+            this.searchItems = searchItems;
+            this.context = context;
+            this.seq = seq;
         }
 
         @Override
         public SearchItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-           View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item,parent,false);
-            SearchItemViewHolder vh=new SearchItemViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_item, parent, false);
+            SearchItemViewHolder vh = new SearchItemViewHolder(view);
             return vh;
         }
 
         @Override
-        public void onBindViewHolder(SearchItemViewHolder holder, int position) {
-            final SearchResultConten item=searchItems.get(position);
+        public void onBindViewHolder(SearchItemViewHolder holder, final int position) {
+            final SearchResultConten item = searchItems.get(position);
 
             /*Set icon*/
-            if(item.getStTypeSearch()==DEBT_ARCHIVE||item.getStTypeSearch()==DEBT_RECKING
-                    ||item.getStTypeSearch()==DEBT_VAR||item.getStTypeSearch()==BORROW_ARCHIVE
-                    ||item.getStTypeSearch()==BORROW_RECKING||item.getStTypeSearch()==BORROW_VAR){
+            if (item.getStTypeSearch() == DEBT_ARCHIVE || item.getStTypeSearch() == DEBT_RECKING
+                    || item.getStTypeSearch() == DEBT_VAR || item.getStTypeSearch() == BORROW_ARCHIVE
+                    || item.getStTypeSearch() == BORROW_RECKING || item.getStTypeSearch() == BORROW_VAR) {
 
                 if (!item.getIcon().equals("") && !item.getIcon().matches("0")) {
                     try {
@@ -346,66 +387,79 @@ public class SearchFragment extends Fragment {
                 }
 
 
-            }
-            else{
-                if(item.isItIconWithId()) {
+            } else {
+                if (item.isItIconWithId()) {
                     holder.iconik.setImageResource(item.getIcon_Id());
-                }
-                else if (item.getIcon()!=null)
-                    holder.iconik.setImageResource(getResources().getIdentifier(item.getIcon(),"drawable",context.getPackageName()));
+                } else if (item.getIcon() != null)
+                    holder.iconik.setImageResource(getResources().getIdentifier(item.getIcon(), "drawable", context.getPackageName()));
                 else
-                    holder.iconik.setImageResource(getResources().getIdentifier("icons_2","drawable",context.getPackageName()));
+                    holder.iconik.setImageResource(getResources().getIdentifier("icons_2", "drawable", context.getPackageName()));
             }
 
             /*Set date*/
-            if(item.getMyDate()!=null)
-                comonOperation.ColorSubSeq(dateformarter.format(item.getMyDate().getTime()),seq,COLOR_SEQ,holder.date);
+            if (item.getMyDate() != null)
+                comonOperation.ColorSubSeq(dateformarter.format(item.getMyDate().getTime()), seq, COLOR_SEQ, holder.date);
 
             /*Set name of item*/
-            comonOperation.ColorSubSeq(item.getStNameOfItem(),seq,"#e2e2e2",holder.name);
+            comonOperation.ColorSubSeq(item.getStNameOfItem(), seq, "#e2e2e2", holder.name);
 
             /*Set item amount*/
-            if(item.getdAmount()==0){
-                comonOperation.ColorSubSeq(formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,COLOR_SEQ,holder.ammount);
+            if (item.getdAmount() == 0) {
+                comonOperation.ColorSubSeq(formater.format(item.getdAmount()) + item.getCurrency().getAbbr(), seq, COLOR_SEQ, holder.ammount);
 
             }
-            if (item.getdAmount()>0){
+            if (item.getdAmount() > 0) {
                 holder.ammount.setTextColor(Color.parseColor("#028929"));
-                comonOperation.ColorSubSeq("+"+formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,COLOR_SEQ,holder.ammount);
-            }
-            else {
+                comonOperation.ColorSubSeq("+" + formater.format(item.getdAmount()) + item.getCurrency().getAbbr(), seq, COLOR_SEQ, holder.ammount);
+            } else {
                 holder.ammount.setTextColor(Color.parseColor("#b82101"));
-                comonOperation.ColorSubSeq(formater.format(item.getdAmount())+item.getCurrency().getAbbr(),seq,COLOR_SEQ,holder.ammount);
+                comonOperation.ColorSubSeq(formater.format(item.getdAmount()) + item.getCurrency().getAbbr(), seq, COLOR_SEQ, holder.ammount);
 
             }
             /*Set type*/
-            comonOperation.ColorSubSeq(item.getTypeInString(context),seq,COLOR_SEQ,holder.type);
+            comonOperation.ColorSubSeq(item.getTypeInString(context), seq, COLOR_SEQ, holder.type);
 
             /*Set Comment*/
-            if(item.getComment()!=null){
-                if(item.getComment().length()!=0) {
+            if (item.getComment() != null) {
+                if (item.getComment().length() != 0) {
                     comonOperation.ColorSubSeq(item.getComment(), seq, COLOR_SEQ, holder.comment);
                     holder.relativeLayout.setVisibility(View.VISIBLE);
                     holder.forgoneLine.setVisibility(View.VISIBLE);
-                }
-                else {
+                } else {
                     holder.relativeLayout.setVisibility(View.GONE);
                     holder.forgoneLine.setVisibility(View.GONE);
                 }
-            }
-            else {
+            } else {
                 holder.relativeLayout.setVisibility(View.GONE);
                 holder.forgoneLine.setVisibility(View.GONE);
             }
 
             /*Set Onclick Listner*/
-            switch (item.getStTypeSearch()){
+            switch (item.getStTypeSearch()) {
                 case SIMPLE_RECKING:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
 //                            paFragmentManager.displayFragment(n);
-                            Toast.makeText(context, "Simple Racking", Toast.LENGTH_SHORT).show();
+                            Handler hand = new Handler();
+                            hand.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
+                                    toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            paFragmentManager.displayMainWindow();
+                                        }
+                                    });
+                                    toolbarManager.closeSearchFragment(false, false);
+                                    paFragmentManager.displayFragment(new RecordEditFragment(null, ((FinanceRecord) item.getParrentObject()).getDate(), ((FinanceRecord) item.getParrentObject()), PocketAccounterGeneral.DETAIL));
+
+                                }
+                            }, 500);
+
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         }
                     });
                     break;
@@ -413,25 +467,27 @@ public class SearchFragment extends Fragment {
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(context, "CREDIT_VAR", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            Handler hand = new Handler();
+                            hand.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(((CreditDetials) item.getParrentObject()).getKey_for_archive()){
+                                        InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
+                                        temp.setConteentFragment((CreditDetials) item.getParrentObject());
+                                        toolbarManager.closeSearchFragment(false, true);
+                                        paFragmentManager.displayFragment(temp);
+                                    }
+                                    else {
+                                        InfoCreditFragment temp = new InfoCreditFragment();
+                                        temp.setDefaultContent(((CreditDetials) item.getParrentObject()));
+                                        toolbarManager.closeSearchFragment(false, true);
+                                        paFragmentManager.displayFragment(temp);
+                                    }
+                                }
+                            }, 500);
 
-                    break;
-                case DEBT_VAR:
-                    holder.mainItemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(context, "DEBT_VAR", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    break;
-                case BORROW_VAR:
-                    holder.mainItemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(context, "BORROW_VAR", Toast.LENGTH_SHORT).show();
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         }
                     });
 
@@ -440,25 +496,79 @@ public class SearchFragment extends Fragment {
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(context, "CREDIT_RECKING", Toast.LENGTH_SHORT).show();
+                            Handler hand = new Handler();
+                            hand.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ReckingCredit reckingCredit=(ReckingCredit) item.getParrentObject();
+                                    CreditDetials parentCreditDetials = daoSession.getCreditDetialsDao().load(reckingCredit.getMyCredit_id());
+                                    if(parentCreditDetials.getKey_for_archive()){
+                                        InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
+                                        temp.setConteentFragment(parentCreditDetials);
+                                        paFragmentManager.displayFragment(temp);
+                                        toolbarManager.closeSearchFragment(false, true);
+                                    }
+                                    else {
+                                        InfoCreditFragment temp = new InfoCreditFragment();
+                                        temp.setDefaultContent(parentCreditDetials);
+                                        paFragmentManager.displayFragment(temp);
+                                        toolbarManager.closeSearchFragment(false, true);
+                                    }
+
+                                }
+                            }, 500);
+
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                         }
                     });
 
                     break;
-                case DEBT_RECKING:
+                case DEBT_VAR:
+                case BORROW_VAR:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(context, "DEBT_RECKING", Toast.LENGTH_SHORT).show();
+
+                            Handler hand = new Handler();
+                            hand.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Fragment infoDebtBorrowFragment = InfoDebtBorrowFragment.getInstance(((DebtBorrow) item.getParrentObject()).getId(),
+                                            ((DebtBorrow) item.getParrentObject()).getType());
+                                    paFragmentManager.displayFragment(infoDebtBorrowFragment);
+                                    Toast.makeText(context, "BORROW_VAR", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 500);
+
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
                         }
                     });
 
                     break;
+
+                case DEBT_RECKING:
                 case BORROW_RECKING:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(context, "BORROW_RECKING", Toast.LENGTH_SHORT).show();
+                            Handler hand = new Handler();
+                            hand.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Recking recking = (Recking) item.getParrentObject();
+                                    Fragment infoDebtBorrowFragment = InfoDebtBorrowFragment.getInstance(recking.getDebtBorrowsId(),
+                                            daoSession.getDebtBorrowDao().load(recking.getDebtBorrowsId()).getType());
+                                    paFragmentManager.displayFragment(infoDebtBorrowFragment);
+                                    Toast.makeText(context, "BORROW_RECKING", Toast.LENGTH_SHORT).show();
+                                }
+                            }, 500);
+
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
                         }
                     });
 
@@ -467,21 +577,21 @@ public class SearchFragment extends Fragment {
             }
 
             /*Account seting*/
-            if (item.getAccount()==null){
+            if (item.getAccount() == null) {
                 holder.ifNotHaveAccount.setVisibility(View.GONE);
 
-            }
-            else{
+            } else {
                 holder.ifNotHaveAccount.setVisibility(View.VISIBLE);
-                comonOperation.ColorSubSeq(item.getAccount().getName(),seq,COLOR_SEQ,holder.accountName);
+                comonOperation.ColorSubSeq(item.getAccount().getName(), seq, COLOR_SEQ, holder.accountName);
             }
 
         }
 
         @Override
         public int getItemCount() {
-            return (searchItems==null)?0:searchItems.size();
+            return (searchItems == null) ? 0 : searchItems.size();
         }
+
         private Bitmap queryContactImage(int imageDataRow) {
             Cursor c = getContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
                     ContactsContract.CommonDataKinds.Photo.PHOTO
@@ -501,6 +611,7 @@ public class SearchFragment extends Fragment {
                 return null;
             }
         }
+
         public class SearchItemViewHolder extends RecyclerView.ViewHolder {
             ImageView iconik;
             TextView name;
@@ -513,19 +624,20 @@ public class SearchFragment extends Fragment {
             LinearLayout mainItemView;
             TextView accountName;
             RelativeLayout ifNotHaveAccount;
+
             SearchItemViewHolder(View itemView) {
                 super(itemView);
-                iconik=(ImageView) itemView.findViewById(R.id.ivRecordDetail);
-                name=(TextView) itemView.findViewById(R.id.tvRecordDetailCategoryName);
-                ammount=(TextView) itemView.findViewById(R.id.tvRecordDetailCategoryAmount);
-                type=(TextView) itemView.findViewById(R.id.type_search_item);
-                date=(TextView) itemView.findViewById(R.id.dateToSearch);
-                comment=(TextView) itemView.findViewById(R.id.tvComment);
-                accountName=(TextView) itemView.findViewById(R.id.accountName);
-                forgoneLine=(FrameLayout) itemView.findViewById(R.id.for_gone_a);
-                mainItemView=(LinearLayout) itemView.findViewById(R.id.mainview);
-                relativeLayout=(RelativeLayout) itemView.findViewById(R.id.visibleIfCommentHave);
-                ifNotHaveAccount=(RelativeLayout) itemView.findViewById(R.id.relativeLayout6);
+                iconik = (ImageView) itemView.findViewById(R.id.ivRecordDetail);
+                name = (TextView) itemView.findViewById(R.id.tvRecordDetailCategoryName);
+                ammount = (TextView) itemView.findViewById(R.id.tvRecordDetailCategoryAmount);
+                type = (TextView) itemView.findViewById(R.id.type_search_item);
+                date = (TextView) itemView.findViewById(R.id.dateToSearch);
+                comment = (TextView) itemView.findViewById(R.id.tvComment);
+                accountName = (TextView) itemView.findViewById(R.id.accountName);
+                forgoneLine = (FrameLayout) itemView.findViewById(R.id.for_gone_a);
+                mainItemView = (LinearLayout) itemView.findViewById(R.id.mainview);
+                relativeLayout = (RelativeLayout) itemView.findViewById(R.id.visibleIfCommentHave);
+                ifNotHaveAccount = (RelativeLayout) itemView.findViewById(R.id.relativeLayout6);
             }
         }
     }

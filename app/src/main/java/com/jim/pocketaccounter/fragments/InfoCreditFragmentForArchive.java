@@ -85,6 +85,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
     DecimalFormat  formater;
     AdapterCridetArchive.ListnerDel A1;
     int POSITIOn;
+    boolean fromSearch=false;
     public InfoCreditFragmentForArchive() {
         // Required empty public constructor
     }
@@ -94,7 +95,11 @@ public class InfoCreditFragmentForArchive extends Fragment {
         formater=new DecimalFormat("0.##");
         POSITIOn=position;
     }
-
+    public void setConteentFragment(CreditDetials temp){
+        currentCredit=temp;
+        formater=new DecimalFormat("0.##");
+        fromSearch=true;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,6 +167,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
                                 }
                             }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            if(!fromSearch)
                             A1.delete_item(POSITIOn);
                             getActivity().getSupportFragmentManager().popBackStack ();
                         }
@@ -177,6 +183,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
                                 }
                             }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            if(!fromSearch)
                             A1.delete_item(POSITIOn);
                             getActivity().getSupportFragmentManager().popBackStack ();
                         }

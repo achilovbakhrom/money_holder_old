@@ -76,7 +76,7 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:layout_marginRight="@dimen/sixteen_dp"
-                            android:gravity="top|right"
+                            android:gravity="bottom|right"
                             android:layout_alignTop="@+id/linearLayout6"
                             android:layout_alignBottom="@+id/linearLayout6" />
 
@@ -96,7 +96,7 @@
                                 android:id="@+id/tvRecordDetailCategoryName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
-                                android:text="Food"
+                                android:text=""
                                 android:textStyle="bold"
                                 android:textSize="@dimen/sixteen_dp"
                                 android:textColor="@color/black_for_glavniy_text"/>

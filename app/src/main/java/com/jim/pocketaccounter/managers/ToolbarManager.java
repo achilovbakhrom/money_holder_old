@@ -182,7 +182,7 @@ public class ToolbarManager {
 
      }
     Runnable runForItClose;
-    public void closeSearchTools(final boolean firstIconActive, final boolean secondIconActive){
+    public void closeSearchFragment(final boolean firstIconActive,final boolean secondIconActive){
 
         whenKeyboardClosed=new Handler();
         runForItClose=new Runnable() {
@@ -190,6 +190,51 @@ public class ToolbarManager {
             public void run() {
                 if(!keyboardIsOpen){
                     setImageToHomeButton(R.drawable.ic_back_button);
+                    searchEditToolbar.setVisibility(View.GONE);
+                    ivToolbarStart.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openSearchTools();
+                        }
+                    });
+
+                    if(firstIconActive)  ivToolbarFirst.setVisibility(View.VISIBLE);
+                    else ivToolbarFirst.setVisibility(View.GONE);
+                    if(secondIconActive) ivToolbarSecond.setVisibility(View.VISIBLE);
+                    else ivToolbarSecond.setVisibility(View.GONE);
+
+                    ivToolbarStart.setImageResource(R.drawable.ic_search_black_24dp);
+                    toolbar.setTitle(context.getResources().getString(R.string.app_name));
+                    toolbar.setSubtitle(format.format(Calendar.getInstance().getTime()));
+
+                }
+                else{
+                    InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if(imm==null)
+                        return;
+                    imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), 0);
+                    whenKeyboardClosed.postDelayed(runForItClose,100);
+                }
+            }
+        };
+
+        if(keyboardIsOpen){
+            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if(imm==null)
+                return;
+            imm.hideSoftInputFromWindow(searchEditToolbar.getWindowToken(), 0);
+        }
+
+        whenKeyboardClosed.postDelayed(runForItClose,200);
+    }
+    public void closeSearchTools(final boolean firstIconActive, final boolean secondIconActive){
+
+        whenKeyboardClosed=new Handler();
+        runForItClose=new Runnable() {
+            @Override
+            public void run() {
+                if(!keyboardIsOpen){
+
                     searchEditToolbar.setVisibility(View.GONE);
                     ivToolbarStart.setOnClickListener(new View.OnClickListener() {
                         @Override

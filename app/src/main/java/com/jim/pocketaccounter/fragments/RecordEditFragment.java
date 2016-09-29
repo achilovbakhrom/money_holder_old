@@ -917,20 +917,24 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         PocketAccounter.openActivity=true;
         startActivityForResult(i, RESULT_LOAD_IMAGE);
     }
-
+    boolean weNeedUpdate=false;
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
             if(requestCode==REQUEST_DELETE_PHOTOS&&data!=null&&resultCode==RESULT_OK){
         if((int)data.getExtras().get(PhotoAdapter.COUNT_DELETES)!=0){
             for (int i = 0; i < (int)data.getExtras().get(PhotoAdapter.COUNT_DELETES); i++) {
                 for (int j = myTickets.size()-1; j>=0; j--) {
-                    if(myTickets.get(j).getPhotopath().matches((String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH+i))){
+                    if(myTickets.get(j).getPhotopath().matches( (String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH+i))){
                         myTicketsFromBackRoll.remove(myTickets.get(j));
+                        daoSession.getPhotoDetailsDao().delete(myTickets.get(j));
                         myTickets.remove(j);
                         myTickedAdapter.notifyItemRemoved(j);
                     }
                 }
             }
+            weNeedUpdate=true;
+
+
             (new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -1014,6 +1018,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     else
                         temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
                     myTickets.add(temp);
+                    Log.d("testtt", "onActivityResult: "+myTickets.size());
                     myTickedAdapter.notifyDataSetChanged();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -1181,6 +1186,10 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 savingRecord.setRecordId(uid_code);
             savingRecord.setAllTickets(myTickets);
             savingRecord.setComment(comment_add.getText().toString());
+            if(record!=null){
+                daoSession.getPhotoDetailsDao().deleteInTx(myTicketsFromBackRoll);
+            }
+            daoSession.getPhotoDetailsDao().insertInTx(myTickets);
             logicManager.insertRecord(savingRecord);
             dataCache.updateOneDay(date);
         }
@@ -1323,6 +1332,16 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     }
                 }
             })).start();
+        }
+        if(weNeedUpdate){
+            //TODO NASIMXON YORDAM
+            if (parent != PocketAccounterGeneral.MAIN) {
+                if (((PocketAccounter) getContext()).getSupportFragmentManager().getBackStackEntryCount() != 0) {
+                    FragmentManager fm = ((PocketAccounter) getContext()).getSupportFragmentManager();
+                    for (int i = 0; i < fm.getBackStackEntryCount(); i++) fm.popBackStack();
+                    paFragmentManager.displayFragment(new RecordDetailFragment(date));
+                }
+            }
         }
         PocketAccounter.isCalcLayoutOpen=false;
         mainView=null;

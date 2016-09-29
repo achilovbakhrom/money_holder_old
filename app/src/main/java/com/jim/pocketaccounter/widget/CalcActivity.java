@@ -1088,7 +1088,7 @@ package com.jim.pocketaccounter.widget;
                             m, true);
 
                     bitmapCache=Bitmap.createBitmap(bitmapCache,
-                            0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
+                               0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
                             m, true);
 
                     String path = android.os.Environment
@@ -1253,7 +1253,11 @@ package com.jim.pocketaccounter.widget;
                     newRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
                     newRecord.setRecordId(uid_code);
                     newRecord.setAllTickets(myTickets);
+                    for (PhotoDetails photoDetails:myTickets){
+                        Log.d("testtt", ""+photoDetails.getRecordId()+" == "+uid_code+"   ;   " +photoDetails.getPhotopath());
+                    }
                     newRecord.setComment(comment_add.getText().toString());
+                    daoSession.getPhotoDetailsDao().insertInTx(myTickets);
                     daoSession.getFinanceRecordDao().insertOrReplace(newRecord);
                 db.close();
                 (new Thread(new Runnable() {

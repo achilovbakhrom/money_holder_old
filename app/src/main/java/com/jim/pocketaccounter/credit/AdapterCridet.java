@@ -181,7 +181,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 InfoCreditFragment temp = new InfoCreditFragment();
                 temp.setConteent(itemCr, pos, new InfoCreditFragment.ConWithFragments() {
                     @Override
-                    public void change_item(CreditDetials changed_item, int position) {
+                    public void change_item(CreditDetials creditDetials, int position) {
 //                        updateList();
                         double obswiy = 0;
                          notifyItemChanged(position);
@@ -190,16 +190,13 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                     @Override
                     public void to_Archive(int position) {
-                        CreditDetials toArc = cardDetials.get(position);
-                        toArc.setKey_for_archive(true);
-                        logicManager.insertCredit(toArc);
+
                         svyaz.itemInsertedToArchive();
                         notifyItemChanged(position);
                     }
 
                     @Override
                     public void delete_item(int position) {
-                        logicManager.deleteCredit(cardDetials.get(position));
                         updateList();
                         notifyItemRemoved(position);
                     }

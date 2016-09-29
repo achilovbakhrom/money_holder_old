@@ -153,7 +153,6 @@ public class PAFragmentManager {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void displayMainWindow() {
         activity.treatToolbar();
 //        main.setVisibility(View.VISIBLE);

@@ -119,6 +119,7 @@ public class InfoCreditFragment extends Fragment {
     private boolean[] isCheks;
     private  int positionOfBourdMain;
     private int modeOfMain;
+    boolean fromSearch=false;
     public InfoCreditFragment() {
         // Required empty public constructor
     }
@@ -133,6 +134,10 @@ public class InfoCreditFragment extends Fragment {
         currentCredit=temp;
         this.positionOfBourdMain=positionOfBourd;
         this.modeOfMain=modeOfMain;
+    }
+    public void setDefaultContent(CreditDetials temp){
+        currentCredit = temp;
+        fromSearch=true;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -203,9 +208,14 @@ public class InfoCreditFragment extends Fragment {
                                         }
                                     }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
-                                    if(!fromMainWindow)
-                                    A1.delete_item(currentPOS);
-                                    else {
+                                    if(!fromMainWindow){
+                                        logicManager.deleteCredit(currentCredit);
+                                        A1.delete_item(currentPOS);
+                                    }
+                                    else if(fromSearch){
+                                        logicManager.deleteCredit(currentCredit);
+                                    }
+                                    else{
                                         logicManager.deleteCredit(currentCredit);
                                         if(modeOfMain==PocketAccounterGeneral.EXPANSE_MODE)
                                             logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,positionOfBourdMain,null);
@@ -243,15 +253,18 @@ public class InfoCreditFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(toArcive&&!delete_flag){
+                    currentCredit.setKey_for_archive(true);
+                    logicManager.insertCredit(currentCredit);
                     if(!fromMainWindow)
                     {
                         A1.to_Archive(currentPOS);
                         paFragmentManager.getFragmentManager().popBackStack();
 
                     }
+                    else if(fromSearch){
+                        paFragmentManager.getFragmentManager().popBackStack();
+                    }
                     else {
-                        currentCredit.setKey_for_archive(true);
-                        logicManager.insertCredit(currentCredit);
                         if(modeOfMain==PocketAccounterGeneral.EXPANSE_MODE)
                             logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,positionOfBourdMain,null);
                         else
@@ -456,7 +469,7 @@ public class InfoCreditFragment extends Fragment {
     }
 
     public interface ConWithFragments {
-        void change_item(CreditDetials changed_item, int position);
+        void change_item(CreditDetials creditDetials, int position);
 
         void to_Archive(int position);
 
@@ -598,7 +611,10 @@ public class InfoCreditFragment extends Fragment {
                             isCheks[i] = false;
                         }
                         if(!fromMainWindow)
-                        A1.change_item(currentCredit, currentPOS);
+                        A1.change_item(currentCredit,currentPOS);
+                        else if(fromSearch){
+
+                        }
                         adapRecyc.notifyDataSetChanged();
                         dialog.dismiss();
                     }

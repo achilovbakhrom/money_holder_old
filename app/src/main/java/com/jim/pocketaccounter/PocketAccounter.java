@@ -279,7 +279,6 @@ public class PocketAccounter extends AppCompatActivity {
         db.close();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
