@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/ten_dp"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDialogSmsParseIncome"
+            android:text="@string/income"
+            android:layout_weight="1"
+            android:textColor="@color/green_light_monoxrom"
+            android:gravity="center"
+            android:textSize="@dimen/sixteen_sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDialogSmsParseExpanse"
+            android:text="@string/expanse"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="@dimen/sixteen_sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDialogSmsParseCurs"
+            android:text="@string/currencies"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textSize="@dimen/sixteen_sp"
+            />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rvDialogSmsParseKeys"
+        android:paddingTop="@dimen/five_dp"
+        android:paddingBottom="@dimen/five_dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:layout_gravity="bottom"
+        >
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etDialogSmsParseNew"
+            android:layout_weight="5"
+            android:layout_marginRight="@dimen/five_dp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="add"
+            android:layout_marginLeft="@dimen/five_dp"
+            android:layout_weight="1"
+            android:id="@+id/btnDialogSmsKeyAdd"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete"
+            android:id="@+id/btnDialogSmsKeysDelete"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

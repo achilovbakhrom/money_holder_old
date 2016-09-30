@@ -48,6 +48,7 @@ import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
 import com.jim.pocketaccounter.fragments.ReportByCategory;
 import com.jim.pocketaccounter.fragments.SMSParseFragment;
+import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
 import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.CircleImageView;
@@ -421,7 +422,7 @@ public class DrawerInitializer {
 //                                fragmentManager.displayFragment(new TableBarFragment());
                                 break;
                             case 14:
-                                fragmentManager.displayFragment(new SMSParseFragment());
+                                fragmentManager.displayFragment(new SmsParseMainFragment());
 
 //                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
 //                                PocketAccounter.openActivity=true;

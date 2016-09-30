@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/five_dp"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvSmsParseDialogItemNumber"
+        android:text="+998974406272"
+        android:layout_weight="1"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvSmsParseDialogItemDate"
+        android:text="23.03.2016"
+        android:layout_weight="1"
+        android:textSize = "14sp"
+        android:gravity="right"
+        />
+
+</LinearLayout>

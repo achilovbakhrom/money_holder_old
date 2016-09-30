@@ -19,9 +19,13 @@ public class SmsParseObject {
     private String expenseWords = "";
     @Property
     private String amountWords = "";
-    @ToOne
+    @Property
+    private String accountId;
+    @ToOne(joinProperty = "accountId")
     private Account account;
-    @ToOne
+    @Property
+    private String currencyId;
+    @ToOne(joinProperty = "currencyId")
     private Currency currency;
     @Property
     private int type;
@@ -59,61 +63,63 @@ public class SmsParseObject {
         myDao.delete(this);
     }
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 509189523)
+    @Generated(hash = 1889019422)
     public void setCurrency(Currency currency) {
         synchronized (this) {
             this.currency = currency;
-            currency__refreshed = true;
+            currencyId = currency == null ? null : currency.getId();
+            currency__resolvedKey = currencyId;
         }
     }
-    /** To-one relationship, returned entity is not refreshed and may carry only the PK property. */
-    @Generated(hash = 257181933)
-    public Currency peakCurrency() {
-        return currency;
-    }
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 878915352)
+    @Generated(hash = 376477166)
     public Currency getCurrency() {
-        if (currency != null || !currency__refreshed) {
+        String __key = this.currencyId;
+        if (currency__resolvedKey == null || currency__resolvedKey != __key) {
+            final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             CurrencyDao targetDao = daoSession.getCurrencyDao();
-            targetDao.refresh(currency);
-            currency__refreshed = true;
+            Currency currencyNew = targetDao.load(__key);
+            synchronized (this) {
+                currency = currencyNew;
+                currency__resolvedKey = __key;
+            }
         }
         return currency;
     }
-    @Generated(hash = 131953365)
-    private transient boolean currency__refreshed;
+    @Generated(hash = 1170963677)
+    private transient String currency__resolvedKey;
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1942461383)
+    @Generated(hash = 1910176546)
     public void setAccount(Account account) {
         synchronized (this) {
             this.account = account;
-            account__refreshed = true;
+            accountId = account == null ? null : account.getId();
+            account__resolvedKey = accountId;
         }
     }
-    /** To-one relationship, returned entity is not refreshed and may carry only the PK property. */
-    @Generated(hash = 1320961525)
-    public Account peakAccount() {
-        return account;
-    }
     /** To-one relationship, resolved on first access. */
-    @Generated(hash = 899885349)
+    @Generated(hash = 1230349477)
     public Account getAccount() {
-        if (account != null || !account__refreshed) {
+        String __key = this.accountId;
+        if (account__resolvedKey == null || account__resolvedKey != __key) {
+            final DaoSession daoSession = this.daoSession;
             if (daoSession == null) {
                 throw new DaoException("Entity is detached from DAO context");
             }
             AccountDao targetDao = daoSession.getAccountDao();
-            targetDao.refresh(account);
-            account__refreshed = true;
+            Account accountNew = targetDao.load(__key);
+            synchronized (this) {
+                account = accountNew;
+                account__resolvedKey = __key;
+            }
         }
         return account;
     }
-    @Generated(hash = 1833446427)
-    private transient boolean account__refreshed;
+    @Generated(hash = 1221310859)
+    private transient String account__resolvedKey;
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1939383941)
     public void __setDaoSession(DaoSession daoSession) {
@@ -131,6 +137,18 @@ public class SmsParseObject {
     }
     public void setType(int type) {
         this.type = type;
+    }
+    public String getCurrencyId() {
+        return this.currencyId;
+    }
+    public void setCurrencyId(String currencyId) {
+        this.currencyId = currencyId;
+    }
+    public String getAccountId() {
+        return this.accountId;
+    }
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
     public String getAmountWords() {
         return this.amountWords;
@@ -162,14 +180,17 @@ public class SmsParseObject {
     public void setId(Long id) {
         this.id = id;
     }
-    @Generated(hash = 152815887)
+    @Generated(hash = 496845812)
     public SmsParseObject(Long id, String number, String incomeWords,
-            String expenseWords, String amountWords, int type) {
+            String expenseWords, String amountWords, String accountId,
+            String currencyId, int type) {
         this.id = id;
         this.number = number;
         this.incomeWords = incomeWords;
         this.expenseWords = expenseWords;
         this.amountWords = amountWords;
+        this.accountId = accountId;
+        this.currencyId = currencyId;
         this.type = type;
     }
     @Generated(hash = 1140750388)

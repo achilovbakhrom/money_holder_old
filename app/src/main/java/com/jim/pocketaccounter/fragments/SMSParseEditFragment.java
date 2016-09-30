@@ -1,50 +1,49 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.SmsParseKeys;
+import com.jim.pocketaccounter.database.SmsParseKeysDao;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-
-import static android.app.Activity.RESULT_OK;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class SMSParseEditFragment extends Fragment implements View.OnClickListener {
@@ -55,12 +54,18 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
     @Inject
     ToolbarManager toolbarManager;
 
-    private final int PERMISSION_REQUEST_CONTACT = 5;
-    private int PICK_CONTACT = 10;
-
     private SmsParseObject object;
-    private TextView smsContent;
     private FloatingActionButton floatingActionButton;
+    Dialog dialog;
+    MyDialogKeys myDialogKeys;
+
+    private Spinner spCurrency;
+    private Spinner spAccount;
+    private EditText amount;
+    private Button record;
+    private TextView operation;
+    private TextView curName;
+    private RecyclerView rvStrings;
 
     @SuppressLint("ValidFragment")
     public SMSParseEditFragment(SmsParseObject object) {
@@ -70,83 +75,332 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         View rootView = inflater.inflate(R.layout.sms_parse_edit_moder, container, false);
-        smsContent = (TextView) rootView.findViewById(R.id.tvSmsParsingAddText);
+//        date = (EditText) rootView.findViewById(R.id.etSmsParseDate);
+//        spOperation = (Spinner) rootView.findViewById(R.id.spSmsParseAddIncExp);
+        spCurrency = (Spinner) rootView.findViewById(R.id.spSmsParseAddCurs);
+        spAccount = (Spinner) rootView.findViewById(R.id.spSmsParseAddAccount);
+        amount = (EditText) rootView.findViewById(R.id.etSmsParseAddAmount);
+        record = (Button) rootView.findViewById(R.id.btnSmsParseAddOk);
+        operation = (TextView) rootView.findViewById(R.id.tvSmsParseAddOperation);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fbSmsParseChange);
+        curName = (TextView) rootView.findViewById(R.id.tvSmsParseAddCurName);
+
+        rvStrings = (RecyclerView) rootView.findViewById(R.id.rvSmsParseAddString);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        rvStrings.setLayoutManager(layoutManager);
+
+        List<String> curs = new ArrayList<>();
+        for (Currency cr : daoSession.getCurrencyDao().loadAll()) {
+            curs.add(cr.getAbbr());
+        }
+        ArrayAdapter<String> adapterCur = new ArrayAdapter<>(getContext()
+                , android.R.layout.simple_list_item_1, curs);
+        spCurrency.setAdapter(adapterCur);
+
+        List<String> accs = new ArrayList<>();
+        for (Account ac : daoSession.getAccountDao().loadAll()) {
+            accs.add(ac.getName());
+        }
+        ArrayAdapter<String> adapterAcc = new ArrayAdapter<>(getContext()
+                , android.R.layout.simple_list_item_1, accs);
+        spAccount.setAdapter(adapterAcc);
+
         floatingActionButton.setOnClickListener(this);
-        return rootView;
-    }
 
-    private void getContact() {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        intent.setType(ContactsContract.Contacts.CONTENT_TYPE);
-        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
-        startActivityForResult(intent, PICK_CONTACT);
-    }
-
-    public void askForContactPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                        android.Manifest.permission.READ_CONTACTS)) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Contacts access needed");
-                    builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setMessage("please confirm Contacts access");//TODO put real question
-                    builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        @TargetApi(Build.VERSION_CODES.M)
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            requestPermissions(
-                                    new String[]
-                                            {android.Manifest.permission.READ_CONTACTS}
-                                    , PERMISSION_REQUEST_CONTACT);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
+        toolbarManager.setImageToSecondImage(R.drawable.cloud5);
+        toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog = new Dialog(getActivity());
+                View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_sms_key_words, null);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(dialogView);
+                final TextView income = (TextView) dialogView.findViewById(R.id.tvDialogSmsParseIncome);
+                final TextView expance = (TextView) dialogView.findViewById(R.id.tvDialogSmsParseExpanse);
+                final TextView curs = (TextView) dialogView.findViewById(R.id.tvDialogSmsParseCurs);
+                Button delete = (Button) dialogView.findViewById(R.id.btnDialogSmsKeysDelete);
+                Button add = (Button) dialogView.findViewById(R.id.btnDialogSmsKeyAdd);
+                final EditText etAdd = (EditText) dialogView.findViewById(R.id.etDialogSmsParseNew);
+                final RecyclerView recyclerView = (RecyclerView) dialogView.findViewById(R.id.rvDialogSmsParseKeys);
+                RecyclerView.LayoutManager lM = new LinearLayoutManager(getContext());
+                recyclerView.setLayoutManager(lM);
+                myDialogKeys = new MyDialogKeys(0);
+                recyclerView.setAdapter(myDialogKeys);
+                income.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        income.setTextColor(ContextCompat.getColor(getContext(), R.color.green_light_monoxrom));
+                        expance.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
+                        curs.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
+                        myDialogKeys = new MyDialogKeys(0);
+                        recyclerView.setAdapter(myDialogKeys);
+                    }
+                });
+                expance.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        income.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
+                        expance.setTextColor(ContextCompat.getColor(getContext(), R.color.green_light_monoxrom));
+                        curs.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
+                        myDialogKeys = new MyDialogKeys(1);
+                        recyclerView.setAdapter(myDialogKeys);
+                    }
+                });
+                curs.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        income.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
+                        expance.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
+                        curs.setTextColor(ContextCompat.getColor(getContext(), R.color.green_light_monoxrom));
+                        myDialogKeys = new MyDialogKeys(2);
+                        recyclerView.setAdapter(myDialogKeys);
+                    }
+                });
+                add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (etAdd.getText().toString().isEmpty()) {
+                            etAdd.setError("Enter key");
+                        } else {
+                            etAdd.setError(null);
+                            myDialogKeys.addkey(etAdd.getText().toString());
+                            etAdd.setText("");
                         }
-                    });
-                    builder.show();
-                } else {
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{android.Manifest.permission.READ_CONTACTS},
-                            PERMISSION_REQUEST_CONTACT);
-                }
-            } else {
-                getContact();
+                    }
+                });
+                delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        myDialogKeys.deleteWords();
+                    }
+                });
+                int width = getResources().getDisplayMetrics().widthPixels;
+                dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                dialog.show();
             }
-        } else {
-            getContact();
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_CONTACT && resultCode == RESULT_OK) {
-            Uri contactUri = data.getData();
-            String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER,
-                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                    ContactsContract.CommonDataKinds.Phone.PHOTO_ID
-            };
-            Cursor cursor = getContext().getContentResolver().query(contactUri, projection,
-                    null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                String number = cursor.getString(numberIndex);
-                String name = cursor.getString(nameIndex);
-            }
-        }
+        });
+        return rootView;
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fbSmsParseChange: {
-                String s = "";
-                for (Sms sms : getAllSms()) {
-                    s += sms.body + sms.getNumber() + "\n-------------------\n";
-                }
-                smsContent.setText(s);
+                dialog = new Dialog(getActivity());
+                View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_sms_parse_numbers, null);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(dialogView);
+                final RecyclerView recyclerView = (RecyclerView) dialogView.findViewById(R.id.rvSmsParseDialog);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                recyclerView.setLayoutManager(layoutManager);
+                MyAdapter myAdapter = new MyAdapter();
+                recyclerView.setAdapter(myAdapter);
+                int width = getResources().getDisplayMetrics().widthPixels;
+                dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                dialog.show();
                 break;
             }
         }
+    }
+
+    private class MyAdapter extends RecyclerView.Adapter<SMSParseEditFragment.ViewHolder> {
+        private List<Sms> smsList;
+
+        public MyAdapter() {
+            smsList = getAllSms();
+        }
+
+        public int getItemCount() {
+            return smsList.size();
+        }
+
+        public void onBindViewHolder(final SMSParseEditFragment.ViewHolder view, final int position) {
+            view.number.setText(smsList.get(position).getNumber());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            Date date = new Date();
+            date.setTime(Long.parseLong(smsList.get(position).getDate()));
+            view.date.setText(simpleDateFormat.format(date.getTime()));
+            view.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    smsBodyParse(smsList.get(position).getBody());
+                    dialog.dismiss();
+                }
+            });
+        }
+        public SMSParseEditFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dialog_sms_parsing, parent, false);
+            return new SMSParseEditFragment.ViewHolder(view);
+        }
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView number;
+        private TextView date;
+
+        public ViewHolder(View view) {
+            super(view);
+            number = (TextView) view.findViewById(R.id.tvSmsParseDialogItemNumber);
+            date = (TextView) view.findViewById(R.id.tvSmsParseDialogItemDate);
+        }
+    }
+
+    private class MyDialogKeys extends RecyclerView.Adapter<SMSParseEditFragment.ViewHolderKeys> {
+        private List<SmsParseKeys> smsKeys;
+        private boolean tek[];
+        private int type;
+        private int MODE = 0;
+
+        public MyDialogKeys(int type) {
+            this.type = type;
+            smsKeys = daoSession.getSmsParseKeysDao().queryBuilder()
+                    .where(SmsParseKeysDao.Properties.Type.eq(type)).list();
+            tek = new boolean[smsKeys.size()];
+            MODE = 0;
+        }
+
+        public void addkey(String key) {
+            SmsParseKeys smsParseKeys = new SmsParseKeys();
+            smsParseKeys.setType(type);
+            smsParseKeys.setNameKey(key);
+            smsKeys.add(0, smsParseKeys);
+            daoSession.getSmsParseKeysDao().insertOrReplace(smsParseKeys);
+            notifyItemInserted(0);
+        }
+
+        public void deleteWords () {
+            if (MODE == 1) {
+                for (int i = tek.length - 1; i >= 0; i--) {
+                    if (tek[i]) {
+                        daoSession.getSmsParseKeysDao().delete(smsKeys.get(i));
+                        smsKeys.remove(i);
+                        notifyItemRemoved(i);
+                    }
+                }
+            }else {
+                MODE = 1;
+                notifyDataSetChanged();
+            }
+        }
+
+        public int getItemCount() {
+            return smsKeys.size();
+        }
+
+        public int getMODE() {
+            return MODE;
+        }
+
+        public void setMODE(int MODE) {
+            this.MODE = MODE;
+        }
+
+        public void onBindViewHolder(final SMSParseEditFragment.ViewHolderKeys view, final int position) {
+            view.checkBox.setVisibility(View.GONE);
+            if (MODE == 1) {
+                view.checkBox.setVisibility(View.VISIBLE);
+                view.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        view.checkBox.setChecked(!tek[position]);
+                    }
+                });
+                view.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        tek[position] = !tek[position];
+                    }
+                });
+            }
+            view.textView.setText(smsKeys.get(position).getNameKey());
+        }
+
+        public SMSParseEditFragment.ViewHolderKeys onCreateViewHolder(ViewGroup parent, int var2) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sms_keys_layout, parent, false);
+            return new SMSParseEditFragment.ViewHolderKeys(view);
+        }
+    }
+
+    public class ViewHolderKeys extends RecyclerView.ViewHolder {
+        public CheckBox checkBox;
+        public TextView textView;
+
+        public ViewHolderKeys(View view) {
+            super(view);
+            checkBox = (CheckBox) view.findViewById(R.id.chbItemDialogSmsKeys);
+            textView = (TextView) view.findViewById(R.id.tvItemDialogSmsKeys);
+        }
+    }
+
+    private class MyAdapterString extends RecyclerView.Adapter<SMSParseEditFragment.ViewHolderString> {
+        private List<String> strings;
+
+        public MyAdapterString(List<String> strings) {
+            this.strings = strings;
+        }
+
+        @Override
+        public int getItemCount() {
+            return strings.size();
+        }
+
+        public void onBindViewHolder(final SMSParseEditFragment.ViewHolderString view, final int position) {
+            view.textView.setText(strings.get(position));
+            for (SmsParseKeys smsParseKey : daoSession.getSmsParseKeysDao().queryBuilder().
+                    where(SmsParseKeysDao.Properties.Type.eq(2)).list()) {
+                if (smsParseKey.getNameKey().startsWith(strings.get(position))
+                        || strings.get(position).startsWith(smsParseKey.getNameKey())
+                        || strings.get(position).contains(smsParseKey.getNameKey())
+                        || smsParseKey.getNameKey().contains(strings.get(position))) {
+                    curName.setText(strings.get(position));
+                }
+            }
+        }
+
+        public SMSParseEditFragment.ViewHolderString onCreateViewHolder(ViewGroup parent, int var2) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(android.R.layout.simple_spinner_item, parent, false);
+            return new SMSParseEditFragment.ViewHolderString(view);
+        }
+    }
+
+    public class ViewHolderString extends RecyclerView.ViewHolder {
+        public TextView textView;
+
+        public ViewHolderString(View view) {
+            super(view);
+            textView = (TextView) view.findViewById(android.R.id.text1);
+        }
+    }
+
+    private void smsBodyParse(String body) {
+        List<String> words = new ArrayList<>();
+        String[] strings = body.split(" ");
+//        String patternAmount = "([0,9] + [.,])?([0,9])";
+//        Pattern pattern = Pattern.compile(patternAmount);
+//        for (String s : strings) {
+//            Matcher matcher = pattern.matcher(s);
+//            if (matcher.find()) {
+//                matcher.group(0);
+//
+//            }
+//        }
+        for (String s : strings) {
+            if (s.split(" ").length == 1 && s.split("\n").length == 1) {
+                words.add(s);
+            } else {
+                if (s.split(" ").length == 1) {
+                    for (String s1 : s.split("\n")) {
+                        words.add(s1);
+                    }
+                } else {
+                    for (String s1 : s.split(" ")) {
+                        words.add(s1);
+                    }
+                }
+            }
+        }
+        rvStrings.setAdapter(new MyAdapterString(words));
     }
 
     public List<Sms> getAllSms() {
@@ -161,14 +415,13 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
 
         if (c.moveToFirst()) {
             for (int i = 0; i < totalSMS; i++) {
-
                 objSms = new Sms();
                 objSms.setId(c.getString(c.getColumnIndexOrThrow("_id")));
                 objSms.setNumber(c.getString(c
                         .getColumnIndexOrThrow("address")));
                 objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
 //                objSms.setReadState(c.getString(c.getColumnIndex("read")));
-//                objSms.setTime(c.getString(c.getColumnIndexOrThrow("date")));
+                objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
                 if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
                     objSms.setFolderName("inbox");
                 } else {
@@ -179,9 +432,6 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
                 c.moveToNext();
             }
         }
-        // else {
-        // throw new RuntimeException("You have no SMS");
-        // }
         c.close();
 
         return lstSms;
@@ -192,6 +442,7 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
         private String number;
         private String id;
         private String folderName;
+        private String date;
 
         public String getBody() {
             return body;
@@ -199,6 +450,14 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
 
         public void setBody(String body) {
             this.body = body;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
         }
 
         public String getNumber() {
@@ -225,5 +484,4 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
             this.folderName = folderName;
         }
     }
-
 }
