@@ -3,7 +3,7 @@ package com.jim.pocketaccounter.fragments;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -35,6 +35,8 @@ import java.util.Calendar;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import static java.security.AccessController.getContext;
 
 public class ReportByCategoryIncomesFragment extends Fragment implements OnChartValueSelectedListener {
     @Inject
@@ -72,6 +74,7 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
 //    public void onValueSelected(final Entry e, int dataSetIndex, Highlight h) {
 //        final ReportObject row = categoryReportView.getDatas().get(e.getXIndex());
 //        final Dialog dialog=new Dialog(getActivity());
+//        View dialogView = getActivity().getLayoutInflater().inflate(R.layout.report_by_category_info, null);
 //        View dialogView = getActivity().getLayoutInflater().inflate(R.layout.report_by_category_info, null);
 //        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        dialog.setContentView(dialogView);
@@ -122,7 +125,6 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
 //        dialog.show();
 //    }
     private void init() {
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String setting = sharedPreferences.getString("report_filter", "0");
         begin = Calendar.getInstance();
         end = Calendar.getInstance();
@@ -148,21 +150,20 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
     }
 
     @Override
-    public void onValueSelected(Entry e, Highlight h) {
-        final ReportObject row = categoryReportView.getDatas().get(h.getDataIndex());
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        final CategoryDataRow row = categoryReportView.getDatas().get(dataSetIndex);
         final Dialog dialog=new Dialog(getActivity());
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.report_by_category_info, null);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(dialogView);
         TextView tvReportByCategoryRootCatName = (TextView) dialogView.findViewById(R.id.tvReportByCategoryRootCatName);
-        tvReportByCategoryRootCatName.setText(row.getDescription());
+        tvReportByCategoryRootCatName.setText(row.getCategory().getName());
         ImageView ivReportByCategoryRootCat = (ImageView) dialogView.findViewById(R.id.ivReportByCategoryRootCat);
         int resId=getResources().getIdentifier("icons_9", "drawable", getContext().getPackageName());
-//        if(row.getCategory().getIcon()!=null){
-//            resId = getResources().getIdentifier(row.getCategory().getIcon(), "drawable", getContext().getPackageName());
-//        }
-
-//        ivReportByCategoryRootCat.setImageResource(resId);
+        if(row.getCategory().getIcon()!=null){
+            resId = getResources().getIdentifier(row.getCategory().getIcon(), "drawable", getContext().getPackageName());
+        }
+        ivReportByCategoryRootCat.setImageResource(resId);
         ListView lvReportByCategoryInfo = (ListView) dialogView.findViewById(R.id.lvReportByCategoryInfo);
         ImageView ivReportByCategoryClose = (ImageView) dialogView.findViewById(R.id.ivReportByCategoryClose);
         ivReportByCategoryClose.setOnClickListener(new View.OnClickListener() {
@@ -174,18 +175,18 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
         TextView tvReportByCategoryPeriod = (TextView) dialogView.findViewById(R.id.tvReportByCategoryPeriod);
         Calendar begin = categoryReportView.getBeginTime();
         Calendar end = categoryReportView.getEndTime();
-//        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         String text = format.format(begin.getTime())+" - "+format.format(end.getTime());
         tvReportByCategoryPeriod.setText(text);
-//        if (row.getSubCats().size() == 1 && row.getSubCats().get(0).getSubCategory().getId().matches(getResources().getString(R.string.no_category)))
-//            lvReportByCategoryInfo.setVisibility(View.GONE);
-//        else {
-//            ReportByCategoryDialogAdapter adapter = new ReportByCategoryDialogAdapter(getContext(), row.getSubCats());
-//            lvReportByCategoryInfo.setAdapter(adapter);
-//        }
+        if (row.getSubCats().size() == 1 && row.getSubCats().get(0).getSubCategory().getId().matches(getResources().getString(R.string.no_category)))
+            lvReportByCategoryInfo.setVisibility(View.GONE);
+        else {
+            ReportByCategoryDialogAdapter adapter = new ReportByCategoryDialogAdapter(getContext(), row.getSubCats());
+            lvReportByCategoryInfo.setAdapter(adapter);
+        }
         TextView tvReportByCategoryInfoTotal = (TextView) dialogView.findViewById(R.id.tvReportByCategoryInfoTotal);
         DecimalFormat decimalFormat = new DecimalFormat("0.00##");
-        tvReportByCategoryInfoTotal.setText(decimalFormat.format(row.getAmount())+ commonOperations.getMainCurrency().getAbbr());
+        tvReportByCategoryInfoTotal.setText(decimalFormat.format(row.getTotalAmount())
+                + commonOperations.getMainCurrency().getAbbr());
         TextView tvReportByCategoryInfoAverage = (TextView) dialogView.findViewById(R.id.tvReportByCategoryInfoAverage);
         int countOfDays = 0;
         Calendar beg = (Calendar) begin.clone();
@@ -193,7 +194,7 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
             countOfDays++;
             beg.add(Calendar.DAY_OF_MONTH, 1);
         }
-        double average = row.getAmount()/countOfDays;
+        double average = row.getTotalAmount()/countOfDays;
         tvReportByCategoryInfoAverage.setText(decimalFormat.format(average)+commonOperations.getMainCurrency().getAbbr());
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;

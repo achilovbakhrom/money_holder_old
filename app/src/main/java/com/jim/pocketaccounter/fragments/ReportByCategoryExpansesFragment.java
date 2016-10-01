@@ -160,21 +160,21 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
     }
 
     @Override
-    public void onValueSelected(Entry e, Highlight h) {
-        final ReportObject row = categoryReportView.getDatas().get(h.getDataIndex());
+    public void onValueSelected(Entry e, int dataIndex, Highlight h) {
+        final CategoryDataRow row = categoryReportView.getDatas().get(dataIndex);
         final Dialog dialog=new Dialog(getActivity());
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.report_by_category_info, null);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(dialogView);
         TextView tvReportByCategoryRootCatName = (TextView) dialogView.findViewById(R.id.tvReportByCategoryRootCatName);
-//        tvReportByCategoryRootCatName.setText(row.getCategory().getName());
-        tvReportByCategoryRootCatName.setText(row.getDescription());
+        tvReportByCategoryRootCatName.setText(row.getCategory().getName());
+        tvReportByCategoryRootCatName.setText(row.getCategory().getName());
         ImageView ivReportByCategoryRootCat = (ImageView) dialogView.findViewById(R.id.ivReportByCategoryRootCat);
         int resId=getResources().getIdentifier("icons_9", "drawable", getContext().getPackageName());
-//        if(row.getCategory().getIcon()!=null){
-//            resId = getResources().getIdentifier(row.getCategory().getIcon(), "drawable", getContext().getPackageName());
-//        }
-//        ivReportByCategoryRootCat.setImageResource(resId);
+        if(row.getCategory().getIcon()!=null){
+            resId = getResources().getIdentifier(row.getCategory().getIcon(), "drawable", getContext().getPackageName());
+        }
+        ivReportByCategoryRootCat.setImageResource(resId);
         ListView lvReportByCategoryInfo = (ListView) dialogView.findViewById(R.id.lvReportByCategoryInfo);
         ImageView ivReportByCategoryClose = (ImageView) dialogView.findViewById(R.id.ivReportByCategoryClose);
         ivReportByCategoryClose.setOnClickListener(new View.OnClickListener() {
@@ -186,18 +186,17 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
         TextView tvReportByCategoryPeriod = (TextView) dialogView.findViewById(R.id.tvReportByCategoryPeriod);
         Calendar begin = (Calendar)categoryReportView.getBeginTime().clone();
         Calendar end = (Calendar)categoryReportView.getEndTime().clone();
-//        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
         String text = format.format(begin.getTime())+" - "+format.format(end.getTime());
         tvReportByCategoryPeriod.setText(text);
-//        if (row.getSubCats().size() == 1 && row.getSubCats().get(0).getSubCategory().getId().matches(getResources().getString(R.string.no_category)))
-//            lvReportByCategoryInfo.setVisibility(View.GONE);
-//        else {
-//            ReportByCategoryDialogAdapter adapter = new ReportByCategoryDialogAdapter(getContext(), row.getSubCats());
-//            lvReportByCategoryInfo.setAdapter(adapter);
-//        }
+        if (row.getSubCats().size() == 1 && row.getSubCats().get(0).getSubCategory().getId().matches(getResources().getString(R.string.no_category)))
+            lvReportByCategoryInfo.setVisibility(View.GONE);
+        else {
+            ReportByCategoryDialogAdapter adapter = new ReportByCategoryDialogAdapter(getContext(), row.getSubCats());
+            lvReportByCategoryInfo.setAdapter(adapter);
+        }
         TextView tvReportByCategoryInfoTotal = (TextView) dialogView.findViewById(R.id.tvReportByCategoryInfoTotal);
         DecimalFormat decimalFormat = new DecimalFormat("0.00##");
-        tvReportByCategoryInfoTotal.setText(decimalFormat.format(row.getAmount())+ commonOperations.getMainCurrency().getAbbr());
+        tvReportByCategoryInfoTotal.setText(decimalFormat.format(row.getTotalAmount())+ commonOperations.getMainCurrency().getAbbr());
         TextView tvReportByCategoryInfoAverage = (TextView) dialogView.findViewById(R.id.tvReportByCategoryInfoAverage);
         int countOfDays = 0;
         Calendar beg = (Calendar) begin.clone();
@@ -205,7 +204,7 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
             countOfDays++;
             beg.add(Calendar.DAY_OF_MONTH, 1);
         }
-        double average = row.getAmount()/countOfDays;
+        double average = row.getTotalAmount()/countOfDays;
         tvReportByCategoryInfoAverage.setText(decimalFormat.format(average)+commonOperations.getMainCurrency().getAbbr());
         DisplayMetrics dm = getResources().getDisplayMetrics();
         int width = dm.widthPixels;

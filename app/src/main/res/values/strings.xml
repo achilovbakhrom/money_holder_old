@@ -1510,4 +1510,6 @@
     <string name="all_incomes">All incomes:</string>
     <string name="all_expense">All expense:</string>
     <string name="processed">Processed:</string>
+    <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
+    <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
 </resources>

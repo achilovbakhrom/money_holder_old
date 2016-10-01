@@ -96,10 +96,10 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	DataCache dataCache;
 	@Inject	CommonOperations commonOperations;
-	@Inject	WarningDialog warningDialog;
+//	@Inject	WarningDialog warningDialog;
 	@Inject	LogicManager logicManager;
-	@Inject	OperationsListDialog operationsListDialog;
-	@Inject	TransferDialog transferDialog;
+//	@Inject	OperationsListDialog operationsListDialog;
+//	@Inject	TransferDialog transferDialog;
 	@Inject @Named(value = "begin") Calendar begin;
 	@Inject @Named(value = "end") Calendar end;
 	@Inject @Named(value = "common_formatter") SimpleDateFormat simpleDateFormat;
@@ -107,7 +107,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		super(context);
 		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
 		this.date = date;
-		twoDp = getResources().getDimension(R.dimen.two_dp);
+		twoDp = getResources().getDimension(R.dimen.four_dp)/getResources().getDisplayMetrics().density;
 		workspaceCornerRadius = getResources().getDimension(R.dimen.five_dp);
 		workspaceMargin = getResources().getDimension(R.dimen.twenty_dp);
 		gestureDetector = new GestureDetectorCompat(getContext(),this);
@@ -171,7 +171,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	private void drawIndicator() {
 		if (tableCount == 1) return;
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		float y = 4.25f*twoDp, x;
+		float y = 7.25f*twoDp, x;
 		if (tableCount % 2 == 0) {
 			x = workspace.centerX()-4*twoDp-tableCount*twoDp-(tableCount/2-1)*twoDp;
 			for (int i=0; i<tableCount; i++) {
@@ -391,6 +391,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 
 	private void openTypeChooseDialog(final int pos) {
 		String[] items = getResources().getStringArray(R.array.board_operation_names_long_press);
+		final OperationsListDialog operationsListDialog = new OperationsListDialog(getContext());
 		operationsListDialog.setAdapter(items);
 		operationsListDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -619,10 +620,12 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 								case 2:
 									Account account = daoSession.getAccountDao().loadAll().isEmpty() ?
 											null : daoSession.getAccountDao().loadAll().get(0);
+									final TransferDialog transferDialog = new TransferDialog(getContext());
 									transferDialog.setAccountOrPurpose(account.getId(), true);
 									transferDialog.show();
 									break;
 								case 3:
+									final WarningDialog warningDialog = new WarningDialog(getContext());
 									warningDialog.setText(getContext().getString(R.string.whole_day_datas_deleting));
 									warningDialog.setOnYesButtonListener(new OnClickListener() {
 										@Override
@@ -773,6 +776,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			items[0] = change;
 			items[1] = clear;
 		}
+		final OperationsListDialog operationsListDialog = new OperationsListDialog(getContext());
 		operationsListDialog.setAdapter(items);
 		operationsListDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -833,6 +837,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		final String id = daoSession.getBoardButtonDao().queryBuilder()
 				.where(BoardButtonDao.Properties.Pos.eq(pos))
 				.list().get(0).getCategoryId();
+		final WarningDialog warningDialog = new WarningDialog(getContext());
 		warningDialog.setText(getContext().getString(R.string.clear_warning));
 		warningDialog.setOnYesButtonListener(new OnClickListener() {
 			@Override

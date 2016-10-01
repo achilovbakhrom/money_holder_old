@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main">
+    android:id="@+id/main"
+    android:background="#ffffff">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff"
         android:id="@+id/change"
         android:orientation="vertical">
         <!--android:background="@drawable/record_bg"-->
@@ -16,139 +16,102 @@
             android:layout_height="wrap_content">
 
         </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlRecordBalance"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:background="@color/belt_balanse"
-            >
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            android:id="@+id/rlRecordBalance">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/ten_dp">
+                    <TextView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_marginBottom="@dimen/two_dp"
+                        android:layout_marginLeft="@dimen/sixteen_dp"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:layout_marginTop="@dimen/five_dp"
+                        android:gravity="center_horizontal"
+                        android:text="@string/income"
+                        android:textColor="@color/toolbar_text_color"
+                        android:textSize="@dimen/fourteen_sp" />
 
-                        <TextView
-                            android:id="@+id/tvRecordIncomeTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginBottom="@dimen/two_dp"
-                            android:layout_marginLeft="@dimen/sixteen_dp"
-                            android:layout_marginRight="@dimen/ten_dp"
-                            android:layout_marginTop="@dimen/five_dp"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="@string/income"
-                            android:textColor="@color/toolbar_text_color"
-                            android:textSize="@dimen/fourteen_sp" />
-
-                        <TextView
-                            android:id="@+id/tvRecordIncome"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginLeft="@dimen/sixteen_dp"
-                            android:layout_marginRight="@dimen/ten_dp"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text=""
-                            android:textColor="@color/green_just"
-                            android:textSize="@dimen/twelve_sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tvRecordIncome"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvRecordBalanseTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginBottom="@dimen/two_dp"
-                            android:layout_marginLeft="@dimen/sixteen_dp"
-                            android:layout_marginRight="@dimen/ten_dp"
-                            android:layout_marginTop="@dimen/five_dp"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="@string/balanse"
-                            android:textColor="@color/toolbar_text_color"
-                            android:textSize="@dimen/fourteen_sp" />
-
-                        <TextView
-                            android:id="@+id/tvRecordBalanse"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginLeft="@dimen/sixteen_dp"
-                            android:layout_marginRight="@dimen/ten_dp"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text=""
-                            android:textColor="@color/toolbar_text_color"
-                            android:textSize="@dimen/twelve_sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvRecordExpanseTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginBottom="@dimen/two_dp"
-                            android:layout_marginLeft="@dimen/sixteen_dp"
-                            android:layout_marginRight="@dimen/sixteen_dp"
-                            android:layout_marginTop="@dimen/five_dp"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text="@string/expanse"
-                            android:textColor="@color/toolbar_text_color"
-                            android:textSize="@dimen/fourteen_sp" />
-
-                        <TextView
-                            android:id="@+id/tvRecordExpanse"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginLeft="@dimen/sixteen_dp"
-                            android:layout_marginRight="@dimen/sixteen_dp"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text=""
-                            android:textColor="@color/red"
-                            android:textSize="@dimen/twelve_sp" />
-                    </LinearLayout>
+                        android:layout_marginLeft="@dimen/sixteen_dp"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="@color/green_just"
+                        android:textSize="@dimen/twelve_sp" />
                 </LinearLayout>
-                <TextView
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/eighteen_sp"
-                    android:textColor="#a9a9a9"
-                    android:text=". . ."
-                    android:textSize="12dp"
-                    android:paddingBottom="@dimen/five_dp"
-                    android:gravity="center"
-                    />
-            </LinearLayout>
-        </RelativeLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/ten_dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/two_dp"
+                        android:layout_marginLeft="@dimen/sixteen_dp"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:layout_marginTop="@dimen/five_dp"
+                        android:gravity="center_horizontal"
+                        android:text="@string/balanse"
+                        android:textColor="@color/toolbar_text_color"
+                        android:textSize="@dimen/fourteen_sp" />
+
+                    <TextView
+                        android:id="@+id/tvRecordBalanse"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/sixteen_dp"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:gravity="center_horizontal"
+                        android:textColor="@color/toolbar_text_color"
+                        android:textSize="@dimen/twelve_sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="@dimen/ten_dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/two_dp"
+                        android:layout_marginLeft="@dimen/sixteen_dp"
+                        android:layout_marginRight="@dimen/sixteen_dp"
+                        android:layout_marginTop="@dimen/five_dp"
+                        android:gravity="center_horizontal"
+                        android:text="@string/expanse"
+                        android:textColor="@color/toolbar_text_color"
+                        android:textSize="@dimen/fourteen_sp" />
+
+                    <TextView
+                        android:id="@+id/tvRecordExpanse"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/sixteen_dp"
+                        android:layout_marginRight="@dimen/sixteen_dp"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/twelve_sp" />
+                </LinearLayout>
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/rlRecordIncomes"
             android:layout_width="match_parent"

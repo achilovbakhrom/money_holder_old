@@ -20,11 +20,17 @@ import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.ReckingCreditDao;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.report.CategoryDataRow;
 import com.jim.pocketaccounter.report.ReportObject;
+import com.jim.pocketaccounter.report.SubCategoryWitAmount;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
+import org.greenrobot.greendao.query.WhereCondition;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -82,7 +88,7 @@ public class ReportManager {
     public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ...classes) {
         List<ReportObject> result = new ArrayList<>();
         for (Class cl : classes) {
-            if (cl.getName().matches(Account.class.getName())) {
+            if (cl.getName().equals(Account.class.getName())) {
                 List<Account> accounts = accountDao.loadAll();
                 for (Account account : accounts) {
                     if (account.getAmount() != 0 &&
@@ -105,7 +111,7 @@ public class ReportManager {
                     }
                 }
             }
-            if (cl.getName().matches(AccountOperation.class.getName())) {
+            if (cl.getName().equals(AccountOperation.class.getName())) {
                 for (AccountOperation accountOperations : accountOperationsDao.loadAll()) {
                     if (accountOperations.getDate().compareTo(begin) >= 0 &&
                             accountOperations.getDate().compareTo(end) <= 0) {
@@ -131,7 +137,7 @@ public class ReportManager {
                     }
                 }
             }
-            if (cl.getName().matches(FinanceRecord.class.getName())) {
+            if (cl.getName().equals(FinanceRecord.class.getName())) {
                 List<FinanceRecord> financeRecordList = financeRecordDao.loadAll();
                 for (FinanceRecord financeRecord : financeRecordList) {
                     if (financeRecord.getDate().compareTo(begin) >= 0 &&
@@ -153,7 +159,7 @@ public class ReportManager {
                     }
                 }
             }
-            if (cl.getName().matches(DebtBorrow.class.getName())) {
+            if (cl.getName().equals(DebtBorrow.class.getName())) {
                 List<DebtBorrow> debtBorrowList = debtBorrowDao.loadAll();
                 for (DebtBorrow debtBorrow : debtBorrowList) {
                     if (!debtBorrow.getCalculate()) continue;
@@ -197,7 +203,7 @@ public class ReportManager {
                             Account account = null;
                             List<Account> accountList = accountDao.loadAll();
                             for (Account acc : accountList) {
-                                if (acc.getId().matches(recking.getAccountId())) {
+                                if (acc.getId().equals(recking.getAccountId())) {
                                     account = acc;
                                     break;
                                 }
@@ -219,7 +225,7 @@ public class ReportManager {
                     }
                 }
             }
-            if (cl.getName().matches(CreditDetials.class.getName())) {
+            if (cl.getName().equals(CreditDetials.class.getName())) {
                 List<CreditDetials> creditDetialsList = creditDetialsDao.loadAll();
                 for (CreditDetials creditDetials : creditDetialsList) {
                     if (!creditDetials.getKey_for_include()) continue;
@@ -233,7 +239,7 @@ public class ReportManager {
                             Account account = null;
                             List<Account> accountList = accountDao.loadAll();
                             for (Account acc : accountList) {
-                                if (acc.getId().matches(reckingCredit.getAccountId())) {
+                                if (acc.getId().equals(reckingCredit.getAccountId())) {
                                     account = acc;
                                     break;
                                 }
@@ -278,30 +284,192 @@ public class ReportManager {
         return result;
     }
 
-    public double calculateLimitAccountsAmount(Account account) {
-        List<ReportObject> list = null;
-        list = getReportObjects(false, getFirstDay(), Calendar.getInstance(),
-                Account.class,
-                FinanceRecord.class,
-                DebtBorrow.class,
-                CreditDetials.class);
-        end.setTimeInMillis(System.currentTimeMillis());
-        list = getReportObjects(false, getFirstDay(), end,
-                                        Account.class,
-                                        FinanceRecord.class,
-                                        DebtBorrow.class,
-                                        CreditDetials.class);
-        double result = 0.0d;
-        for (ReportObject reportObject : list) {
-            if (reportObject.getAccount().getId().matches(account.getId()) &&
-                    reportObject.getCurrency().getId().matches(account.getStartMoneyCurrency().getId())) {
-
-                if (reportObject.getType() == PocketAccounterGeneral.INCOME)
-                    result = result + reportObject.getAmount();
-                else
-                    result = result - reportObject.getAmount();
+    public ArrayList<CategoryDataRow> getReportByCategories(Calendar begin, Calendar end) {
+        ArrayList<CategoryDataRow> result  = new ArrayList<>();
+        //income expanses begin
+        List<FinanceRecord> financeRecords = daoSession.getFinanceRecordDao().loadAll();
+        for (FinanceRecord financeRecord : financeRecords) {
+            boolean categoryFound = false;
+            CategoryDataRow foundCategory = null;
+            for (CategoryDataRow categoryDataRow : result) {
+                if (categoryDataRow.getCategory().getId().equals(financeRecord.getCategoryId())) {
+                    categoryFound = true;
+                    foundCategory = categoryDataRow;
+                    break;
+                }
+            }
+            if (categoryFound) {
+                if (financeRecord.getSubCategory() == null) {
+                    boolean nullSubcatFound = false;
+                    int nullSubcatPosition = 0;
+                    for (int j = 0; j < foundCategory.getSubCats().size(); j++) {
+                        if (foundCategory.getSubCats()
+                                        .get(j)
+                                        .getSubCategory()
+                                        .getId()
+                                        .equals(context.getResources().getString(R.string.no_category))) {
+                            nullSubcatPosition = j;
+                            nullSubcatFound = true;
+                            break;
+                        }
+                    }
+                    if (nullSubcatFound)
+                        foundCategory.getSubCats()
+                                .get(nullSubcatPosition)
+                                .setAmount(foundCategory.getSubCats().get(nullSubcatPosition).getAmount()+commonOperations.getCost(financeRecord));
+                    else {
+                        SubCategoryWitAmount newSubCategoryWithAmount = new SubCategoryWitAmount();
+                        SubCategory noSubCategory = new SubCategory();
+                        noSubCategory.setId(context.getResources().getString(R.string.no_category));
+                        newSubCategoryWithAmount.setSubCategory(noSubCategory);
+                        newSubCategoryWithAmount.setAmount(commonOperations.getCost(financeRecord));
+                        foundCategory.getSubCats().add(newSubCategoryWithAmount);
+                    }
+                }
+                else {
+                    boolean subcatFound = false;
+                    int foundSubcatPosition = 0;
+                    for (int j=0; j<foundCategory.getSubCats().size(); j++) {
+                        if (foundCategory.getSubCats().get(j).getSubCategory().getId().equals(financeRecord.getSubCategory().getId())) {
+                            subcatFound = true;
+                            foundSubcatPosition = j;
+                            break;
+                        }
+                    }
+                    if (subcatFound) {
+                        foundCategory.getSubCats()
+                                .get(foundSubcatPosition)
+                                .setAmount(foundCategory.getSubCats().get(foundSubcatPosition).getAmount()+commonOperations.getCost(financeRecord));
+                    }
+                    else {
+                        SubCategoryWitAmount newSubCategoryWithAmount = new SubCategoryWitAmount();
+                        newSubCategoryWithAmount.setSubCategory(financeRecord.getSubCategory());
+                        newSubCategoryWithAmount.setAmount(commonOperations.getCost(financeRecord));
+                        foundCategory.getSubCats().add(newSubCategoryWithAmount);
+                    }
+                }
+                double amount = 0.0;
+                for (int j=0; j<foundCategory.getSubCats().size(); j++)
+                    amount = amount + foundCategory.getSubCats().get(j).getAmount();
+                foundCategory.setTotalAmount(amount);
+            }
+            else {
+                CategoryDataRow newCategoryDataRow = new CategoryDataRow();
+                newCategoryDataRow.setCategory(financeRecord.getCategory());
+                newCategoryDataRow.setTotalAmount(commonOperations.getCost(financeRecord));
+                SubCategoryWitAmount newSubCategoryWithAmount = new SubCategoryWitAmount();
+                if (financeRecord.getSubCategory() == null) {
+                    SubCategory noSubCategory = new SubCategory();
+                    noSubCategory.setId(context.getResources().getString(R.string.no_category));
+                    newSubCategoryWithAmount.setSubCategory(noSubCategory);
+                    newSubCategoryWithAmount.setAmount(commonOperations.getCost(financeRecord));
+                }
+                else {
+                    newSubCategoryWithAmount.setSubCategory(financeRecord.getSubCategory());
+                    newSubCategoryWithAmount.setAmount(commonOperations.getCost(financeRecord));
+                }
+                newCategoryDataRow.getSubCats().add(newSubCategoryWithAmount);
+                newCategoryDataRow.setTotalAmount(commonOperations.getCost(financeRecord));
+                result.add(newCategoryDataRow);
             }
         }
+        //end income expanses
+
+        //credit begin
+        double creditTotalPaid = 0.0;
+
+        List<CreditDetials> temp = daoSession.getCreditDetialsDao()
+                                            .queryBuilder()
+                                            .where(CreditDetialsDao.Properties.Key_for_include.eq(true))
+                                            .list();
+        List<CreditDetials> credits = new ArrayList<>();
+        for (CreditDetials creditDetials : temp) {
+            for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+                if (reckingCredit.getPayDate().compareTo(begin)>=0 && reckingCredit.getPayDate().compareTo(end)<=0)
+                    credits.add(creditDetials);
+            }
+        }
+
+        for (int i=0; i<credits.size(); i++) {
+            for (int j=0; j<credits.get(i).getReckings().size(); j++) {
+                if (credits.get(i).getReckings().get(j).getPayDate().compareTo(begin)>=0 && credits.get(i).getReckings().get(j).getPayDate().compareTo(end)<=0)
+                    creditTotalPaid = creditTotalPaid
+                            + commonOperations.getCost(credits.get(i).getReckings().get(j).getPayDate(),
+                            credits.get(i).getValyute_currency(), credits.get(i).getReckings().get(j).getAmount());
+            }
+            if (creditTotalPaid != 0) {
+                CategoryDataRow creditDataRow = new CategoryDataRow();
+                RootCategory creditCategory = new RootCategory();
+                creditCategory.setType(PocketAccounterGeneral.EXPENSE);
+                creditCategory.setName(credits.get(i).getCredit_name());
+                creditDataRow.setCategory(creditCategory);
+                creditDataRow.setTotalAmount(creditTotalPaid);
+                result.add(creditDataRow);
+            }
+            creditTotalPaid = 0.0;
+        }
+        //credit end
+
+        //debt borrows begin
+        List<DebtBorrow> debtBorrows = daoSession
+                .getDebtBorrowDao()
+                .queryBuilder()
+                .where(DebtBorrowDao.Properties.Calculate.eq(true), DebtBorrowDao.Properties.TakenDate.eq(dateFormat.format(begin.getTime())))
+                .list();
+        for (int i=0; i<debtBorrows.size(); i++) {
+            RootCategory category = new RootCategory();
+            if (debtBorrows.get(i).getType() == DebtBorrow.BORROW) {
+                category.setType(PocketAccounterGeneral.EXPENSE);
+                category.setName(context.getResources().getString(R.string.borrow_statistics));
+            } else {
+                category.setType(PocketAccounterGeneral.INCOME);
+                category.setName(context.getResources().getString(R.string.debt_statistics));
+            }
+            CategoryDataRow categoryDataRow = new CategoryDataRow();
+            categoryDataRow.setTotalAmount(commonOperations.getCost(debtBorrows.get(i).getTakenDate(), debtBorrows.get(i).getCurrency(), debtBorrows.get(i).getAmount()));
+            categoryDataRow.setCategory(category);
+            result.add(categoryDataRow);
+        }
+        debtBorrows.clear();
+        List<DebtBorrow> temporary = daoSession
+                .getDebtBorrowDao()
+                .queryBuilder()
+                .where(DebtBorrowDao.Properties.Calculate.eq(true))
+                .list();
+        for (int i=0; i<temporary.size(); i++) {
+            for (int j=0; j<temporary.get(i).getReckings().size(); j++) {
+                if (begin.compareTo(temporary.get(i).getReckings().get(j).getPayDate())<=0
+                        && end.compareTo(temporary.get(i).getReckings().get(j).getPayDate())>=0) {
+                    debtBorrows.add(temporary.get(i));
+                    break;
+                }
+            }
+        }
+        for (int i=0; i<debtBorrows.size(); i++) {
+            RootCategory category = new RootCategory();
+            double totalAmount = 0.0;
+            for (int j=0; j<debtBorrows.get(i).getReckings().size(); j++) {
+                if (begin.compareTo(debtBorrows.get(i).getReckings().get(j).getPayDate())<=0
+                        && end.compareTo(debtBorrows.get(i).getReckings().get(j).getPayDate()) >= 0) {
+                    totalAmount = totalAmount + commonOperations.getCost(debtBorrows.get(i).getReckings().get(j).getPayDate(),
+                            debtBorrows.get(i).getCurrency(),
+                            debtBorrows.get(i).getReckings().get(j).getAmount());
+                }
+            }
+            if (debtBorrows.get(i).getType() == DebtBorrow.BORROW) {
+                category.setName(context.getResources().getString(R.string.borrow_recking_statistics));
+                category.setType(PocketAccounterGeneral.INCOME);
+            }
+            else {
+                category.setName(context.getResources().getString(R.string.debt_recking_statistics));
+                category.setType(PocketAccounterGeneral.EXPENSE);
+            }
+            CategoryDataRow categoryDataRow = new CategoryDataRow();
+            categoryDataRow.setCategory(category);
+            categoryDataRow.setTotalAmount(totalAmount);
+            result.add(categoryDataRow);
+        }
+        //debt borrows end
         return result;
     }
 
@@ -334,11 +502,11 @@ public class ReportManager {
                 CreditDetials.class);
         Map<Currency, Double> result = new HashMap<>();
         for(ReportObject reportObject : list) {
-            if (reportObject.getAccount().getId().matches(account.getId())) {
+            if (reportObject.getAccount().getId().equals(account.getId())) {
                 Currency temp = null;
                 boolean found = false;
                 for (Currency currency : result.keySet()) {
-                    if (currency.getId().matches(reportObject.getCurrency().getId())) {
+                    if (currency.getId().equals(reportObject.getCurrency().getId())) {
                         found = true;
                         temp = currency;
                         break;
@@ -371,7 +539,7 @@ public class ReportManager {
                 DebtBorrow.class,
                 CreditDetials.class);
         for (ReportObject reportObject : allObjects) {
-            if (reportObject.getAccount().getId().matches(account.getId()))
+            if (reportObject.getAccount().getId().equals(account.getId()))
                 result.add(reportObject);
         }
         return result;
@@ -382,7 +550,7 @@ public class ReportManager {
     public List<FinanceRecord> getCategoryOperations(RootCategory rootCategory, Calendar begin, Calendar end) {
         List<FinanceRecord> result = new ArrayList<>();
         for (FinanceRecord financeRecord : financeRecordDao.loadAll()) {
-            if (financeRecord.getCategory().getId().matches(rootCategory.getId()) &&
+            if (financeRecord.getCategory().getId().equals(rootCategory.getId()) &&
                     financeRecord.getDate().compareTo(begin) >= 0 && financeRecord.getDate().compareTo(end) <= 0)
                 result.add(financeRecord);
         }
@@ -403,7 +571,7 @@ public class ReportManager {
 
     public List<AccountOperation> getAccountOpertions (Object object) {
         String id = "";
-        if (object.getClass().getName().matches(Purpose.class.getName())) {
+        if (object.getClass().getName().equals(Purpose.class.getName())) {
             id = ((Purpose) object).getId();
         } else {
             id = ((Account) object).getId();

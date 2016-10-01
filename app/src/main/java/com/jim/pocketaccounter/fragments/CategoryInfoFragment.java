@@ -53,27 +53,16 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class CategoryInfoFragment extends Fragment {
-	@Inject
-	WarningDialog warningDialog;
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    DaoSession daoSession;
-	@Inject
-	ReportManager reportManager;
-	@Inject
-	@Named(value = "display_formatter")
-	SimpleDateFormat dateFormat;
-	@Inject
-	CommonOperations commonOperations;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	OperationsListDialog operationsListDialog;
-	@Inject
-	FilterDialog filterDialog;
+	@Inject	WarningDialog warningDialog;
+    @Inject LogicManager logicManager;
+    @Inject ToolbarManager toolbarManager;
+    @Inject DaoSession daoSession;
+	@Inject	ReportManager reportManager;
+	@Inject	@Named(value = "display_formatter")	SimpleDateFormat dateFormat;
+	@Inject	CommonOperations commonOperations;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	OperationsListDialog operationsListDialog;
+	@Inject	FilterDialog filterDialog;
 	private RootCategory rootCategory;
 	private FABIcon fabCategoryIcon;
 	private TextView tvCategoryInfoName;
@@ -86,7 +75,6 @@ public class CategoryInfoFragment extends Fragment {
 	public CategoryInfoFragment(RootCategory rootCategory) {
 		this.rootCategory = rootCategory;
 	}
-
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_info_layout, container, false);
@@ -100,6 +88,7 @@ public class CategoryInfoFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.getFragmentManager().popBackStack();
+				paFragmentManager.displayFragment(new CategoryFragment());
 			}
 		});
 		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
@@ -139,7 +128,7 @@ public class CategoryInfoFragment extends Fragment {
 		});
 		refreshOperationsList(filterDialog.getBeginDate(), filterDialog.getEndDate());
 		tvCategoryInfoTotal = (TextView) rootView.findViewById(R.id.tvCategoryInfoTotal);
-		tvCategoryInfoTotal.setText(getResources().getString(R.string.total)+": "+Double.toString(
+		tvCategoryInfoTotal.setText(getResources().getString(R.string.total)+" "+Double.toString(
 				reportManager.getTotalAmountByCategory(rootCategory, filterDialog.getBeginDate(), filterDialog.getEndDate()))+
 				commonOperations.getMainCurrency().getAbbr());
 		tvCategoryInfoSubcategories = (TextView) rootView.findViewById(R.id.tvCategoryInfoSubcategories);

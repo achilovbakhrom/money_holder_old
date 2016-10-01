@@ -51,29 +51,17 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class AccountInfoFragment extends Fragment {
-	@Inject
-	WarningDialog warningDialog;
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    DaoSession daoSession;
-	@Inject
-	ReportManager reportManager;
-	@Inject
-	@Named(value = "display_formatter")
-	SimpleDateFormat dateFormat;
-	@Inject
-	CommonOperations commonOperations;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	OperationsListDialog operationsListDialog;
-	@Inject
-	FilterDialog filterDialog;
-	@Inject
-	TransferDialog transferDialog;
+	@Inject	WarningDialog warningDialog;
+    @Inject LogicManager logicManager;
+    @Inject ToolbarManager toolbarManager;
+    @Inject DaoSession daoSession;
+	@Inject ReportManager reportManager;
+	@Inject	@Named(value = "display_formatter")	SimpleDateFormat dateFormat;
+	@Inject	CommonOperations commonOperations;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	OperationsListDialog operationsListDialog;
+	@Inject	FilterDialog filterDialog;
+	@Inject	TransferDialog transferDialog;
 	private Account account;
 	private FABIcon fabAccountIcon;
 	private TextView tvAccountNameInfo;
@@ -101,6 +89,7 @@ public class AccountInfoFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.getFragmentManager().popBackStack();
+				paFragmentManager.displayFragment(new AccountFragment());
 			}
 		});
 		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
@@ -199,7 +188,10 @@ public class AccountInfoFragment extends Fragment {
 						List<Account> accounts = new ArrayList<Account>();
 						accounts.add(account);
 						if (LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT == logicManager.deleteAccount(accounts)){
-							Toast.makeText(getContext(), getResources().getString(R.string.must_be_one_currency), Toast.LENGTH_SHORT).show();
+							Toast.makeText(getContext(), R.string.account_deleting_error, Toast.LENGTH_SHORT).show();
+						} else {
+							paFragmentManager.getFragmentManager().popBackStack();
+							paFragmentManager.displayFragment(new AccountFragment());
 						}
 						break;
 				}
@@ -212,7 +204,6 @@ public class AccountInfoFragment extends Fragment {
 	private void refreshOperationsList() {
 		List<ReportObject> objects = reportManager.getAccountOperations(account, account.getCalendar(), Calendar.getInstance());
 		AccountOperationsAdapter accountOperationsAdapter = new AccountOperationsAdapter(objects);
-		Log.d("sss", "" + objects.size());
 		rvAccountDetailsInfo.setAdapter(accountOperationsAdapter);
 	}
 

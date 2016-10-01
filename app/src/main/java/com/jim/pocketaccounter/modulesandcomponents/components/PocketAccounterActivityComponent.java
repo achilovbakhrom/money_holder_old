@@ -48,6 +48,7 @@ import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
 import com.jim.pocketaccounter.report.CategoryReportView;
+import com.jim.pocketaccounter.report.ReportByCategoryDialogAdapter;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;
@@ -110,6 +111,7 @@ public interface PocketAccounterActivityComponent {
     void inject(CategoryReportView categoryReportView);
     void inject(SMSParseFragment smsParseFragment);
     void inject(SMSParseEditFragment smsParseEditFragment);
+    void inject(ReportByCategoryDialogAdapter reportByCategoryDialogAdapter);
     void inject(SmsParseMainFragment smsParseMainFragment);
     //    void inject(LogicManager logicManager);
 }

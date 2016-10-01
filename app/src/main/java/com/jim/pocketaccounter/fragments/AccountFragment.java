@@ -59,41 +59,29 @@ import javax.inject.Named;
 public class AccountFragment extends Fragment {
 	private FABIcon fabAccountAdd;
     private RecyclerView recyclerView;
-	@Inject
-	WarningDialog warningDialog;
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    DaoSession daoSession;
-	@Inject
-	ReportManager reportManager;
-	@Inject
-	@Named(value = "display_formatter")
-	SimpleDateFormat dateFormat;
-	@Inject
-	CommonOperations commonOperations;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	DrawerInitializer drawerInitializer;
-	@Inject
-	TransferDialog transferDialog;
+	@Inject	WarningDialog warningDialog;
+    @Inject LogicManager logicManager;
+    @Inject ToolbarManager toolbarManager;
+    @Inject DaoSession daoSession;
+	@Inject ReportManager reportManager;
+	@Inject @Named(value = "display_formatter") SimpleDateFormat dateFormat;
+	@Inject	CommonOperations commonOperations;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	DrawerInitializer drawerInitializer;
+	@Inject	TransferDialog transferDialog;
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_layout, container, false);
 		rootView.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(PocketAccounter.keyboardVisible){
-					InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);}
+				InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
 			}
 		},100);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
 		toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
-		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
+		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				drawerInitializer.getDrawer().openLeftSide();
@@ -101,14 +89,7 @@ public class AccountFragment extends Fragment {
 		});
         toolbarManager.setTitle(getResources().getString(R.string.accounts));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-		toolbarManager.setImageToSecondImage(R.drawable.transfer_money);
-		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
-			}
-		});
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
         toolbarManager.setSpinnerVisibility(View.GONE);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvAccounts);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -117,7 +98,6 @@ public class AccountFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.displayFragment(new AccountEditFragment(null));
-
 			}
 		});
         refreshList();
@@ -166,7 +146,7 @@ public class AccountFragment extends Fragment {
 				@Override
 				public void onClick(View v) {
 					transferDialog.show();
-					transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
+					transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
 					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 						@Override
 						public void OnTransferDialogSave() {
@@ -178,14 +158,33 @@ public class AccountFragment extends Fragment {
 			view.earn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					transferDialog.show();
-					transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
-					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
-						@Override
-						public void OnTransferDialogSave() {
-							Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
-						}
-					});
+					if (daoSession.getPurposeDao().loadAll().isEmpty()) {
+						warningDialog.setText(getString(R.string.purpose_list_is_empty));
+						warningDialog.setOnYesButtonListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								paFragmentManager.getFragmentManager().popBackStack();
+								paFragmentManager.displayFragment(new PurposeFragment());
+								warningDialog.dismiss();
+							}
+						});
+						warningDialog.setOnNoButtonClickListener(new OnClickListener() {
+							@Override
+							public void onClick(View v) {
+								warningDialog.dismiss();
+							}
+						});
+						warningDialog.show();
+					} else {
+						transferDialog.show();
+						transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
+						transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+							@Override
+							public void OnTransferDialogSave() {
+
+							}
+						});
+					}
 				}
 			});
         }
@@ -203,7 +202,6 @@ public class AccountFragment extends Fragment {
         TextView tvContent;
 		TextView pay;
 		TextView earn;
-
 		View view;
         public ViewHolder(View view) {
             super(view);

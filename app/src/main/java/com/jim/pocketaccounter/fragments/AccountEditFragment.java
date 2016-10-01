@@ -55,22 +55,13 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class AccountEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    DaoSession daoSession;
-	@Inject
-	@Named(value = "display_formatter")
-	SimpleDateFormat dateFormat;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	IconChooseDialog iconChooseDialog;
-	@Inject
-	DatePicker datePicker;
-
+    @Inject LogicManager logicManager;
+    @Inject ToolbarManager toolbarManager;
+    @Inject DaoSession daoSession;
+	@Inject	@Named(value = "display_formatter")	SimpleDateFormat dateFormat;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	IconChooseDialog iconChooseDialog;
+	@Inject	DatePicker datePicker;
 	private Account account;
 	private EditText etAccountEditName;
 	private FABIcon fabAccountIcon;
@@ -81,8 +72,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 	private Spinner spStartMoneyCurrency;
 	private CheckBox chbAccountNoneZero;
 	private String choosenIcon = "icons_1";
-	private Calendar begin = Calendar.getInstance();
-	private Calendar end = Calendar.getInstance();
+	private TextView tvNoneMinusAccountTitle, tvStartSumAccountTitle;
 	@SuppressLint("ValidFragment")
 	public AccountEditFragment(Account account) {
 		this.account = account;
@@ -94,9 +84,8 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 		rootView.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(PocketAccounter.keyboardVisible){
-					InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);}
+				InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
 			}
 		},100);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
@@ -105,6 +94,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.getFragmentManager().popBackStack();
+				paFragmentManager.displayFragment(new AccountFragment());
 			}
 		});
         toolbarManager.setTitle(getResources().getString(R.string.addedit));
@@ -171,11 +161,22 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 		spStartMoneyCurrency = (Spinner) rootView.findViewById(R.id.spStartMoneyCurrency);
 		spStartMoneyCurrency.setAdapter(arrayAdapter);
 		spStartMoneyCurrency.setSelection(mainCurrencyPos);
-
-
+		tvStartSumAccountTitle = (TextView) rootView.findViewById(R.id.tvStartSumAccountTitle);
+		tvStartSumAccountTitle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				chbAccountStartSumEnabled.toggle();
+			}
+		});
 		//4 account none zero
 		chbAccountNoneZero = (CheckBox) rootView.findViewById(R.id.noneZeroAccount);
-
+		tvNoneMinusAccountTitle = (TextView) rootView.findViewById(R.id.tvNoneMinusAccountTitle);
+		tvNoneMinusAccountTitle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				chbAccountNoneZero.toggle();
+			}
+		});
 		if (account != null) {
 			etAccountEditName.setText(account.getName());
 			resId = getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
@@ -209,13 +210,18 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.ivToolbarMostRight:
+				InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 				if (etAccountEditName.getText().toString().matches("")) {
 					etAccountEditName.setError(getString(R.string.enter_name_error));
 					return;
 				}
-				Account account = null;
-				if (account == null)
+				Account account;
+				if (this.account == null) {
 					account = new Account();
+					account.setId(UUID.randomUUID().toString());
+					account.setCalendar(Calendar.getInstance());
+				}
 				else
 					account = this.account;
 				account.setName(etAccountEditName.getText().toString());
@@ -226,16 +232,23 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
 					account.setAmount(0);
 				account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
 						.get(spStartMoneyCurrency.getSelectedItemPosition()));
-				account.setId(UUID.randomUUID().toString());
-				account.setCalendar(Calendar.getInstance());
 				account.setIcon(choosenIcon);
 				account.setNoneMinusAccount(chbAccountNoneZero.isChecked());
-				if (logicManager.insertAccount(account) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
-					etAccountEditName.setError(getString(R.string.such_account_name_exists_error));
-					return;
-				}
-				else
+				if (this.account != null) {
+					daoSession.getAccountDao().insertOrReplace(account);
 					paFragmentManager.getFragmentManager().popBackStack();
+					paFragmentManager.displayFragment(new AccountFragment());
+				}
+				else {
+					if (logicManager.insertAccount(account) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
+						etAccountEditName.setError(getString(R.string.such_account_name_exists_error));
+						return;
+					}
+					else {
+						paFragmentManager.getFragmentManager().popBackStack();
+						paFragmentManager.displayFragment(new AccountFragment());
+					}
+				}
 				break;
 		}
 	}

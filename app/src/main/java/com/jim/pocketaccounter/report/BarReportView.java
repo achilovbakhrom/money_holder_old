@@ -103,7 +103,7 @@ public class BarReportView extends LinearLayout {
         dataSets.add(set1);
         dataSets.add(set2);
         dataSets.add(set3);
-        BarData data = new BarData(dataSets);
+        BarData data = new BarData(xVals, dataSets);
         data.setValueFormatter(new DecFormat());
 //        data.setGroupSpace(80f);
         barChart.setData(data);

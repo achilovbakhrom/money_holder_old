@@ -15,6 +15,7 @@ import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
+import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -51,6 +52,8 @@ public class SystemConfigurator {
     public SystemConfigurator(Context context) {
         this.context = context;
         ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
+        DaoMaster.DevOpenHelper db = new DaoMaster.DevOpenHelper(context, "PocketAccounterDatabase");
+//        db.getWritableDatabase().setVer
 //        currencyDao = daoSession.getCurrencyDao();
 //        currencyCostDao = daoSession.getCurrencyCostDao();
 //        accountDao = daoSession.getAccountDao();
@@ -64,6 +67,7 @@ public class SystemConfigurator {
         File oldDBFile = new File(Environment.getDataDirectory(), fileName);
         if (oldDBFile.exists()) {
             SQLiteDatabase old = SQLiteDatabase.openDatabase(oldDBFile.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
+
             Cursor cursor = old.query("currency_table", null, null, null, null, null, null);
             Cursor costCursor = old.query("currency_costs_table", null, null, null, null, null, null);
             //loading currencies

@@ -18,6 +18,7 @@ import android.util.DisplayMetrics;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
+import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
@@ -168,15 +169,19 @@ public class CommonOperations {
         textView.setText(ss);
     }
 
-    public int betweenDays(Calendar begin, Calendar end) {
+    public long betweenDays(Calendar begin, Calendar end) {
         Calendar b = (Calendar) begin.clone();
+        b.set(Calendar.HOUR_OF_DAY, 0);
+        b.set(Calendar.MINUTE, 0);
+        b.set(Calendar.SECOND, 0);
+        b.set(Calendar.MILLISECOND, 0);
         Calendar e = (Calendar) end.clone();
-        int result = 0;
-        while (b.compareTo(e) <= 0) {
-            b.add(Calendar.DAY_OF_MONTH, 1);
-            result++;
-        }
-        return result;
+        e.set(Calendar.HOUR_OF_DAY, 0);
+        e.set(Calendar.MINUTE, 0);
+        e.set(Calendar.SECOND, 0);
+        e.set(Calendar.MILLISECOND, 0);
+        long day = 24L*60L*60L*1000L;
+        return (e.getTimeInMillis() - b.getTimeInMillis())/day;
     }
 
 
@@ -217,6 +222,20 @@ public class CommonOperations {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return output;
+    }
+
+    public Calendar getFirstDay() {
+        Calendar calendar = null;
+        List<Account> accounts = daoSession.getAccountDao().loadAll();
+        for (Account account : accounts) {
+            if (calendar == null)
+                calendar = (Calendar) account.getCalendar().clone();
+            else {
+                if (calendar.compareTo(account.getCalendar()) >= 0)
+                    calendar = (Calendar) account.getCalendar().clone();
+            }
+        }
+        return  calendar;
     }
 
     public boolean compareTimeInOneDay(Calendar source, Calendar target){

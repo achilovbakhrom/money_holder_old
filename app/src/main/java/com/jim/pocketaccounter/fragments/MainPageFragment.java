@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -44,7 +45,8 @@ public class MainPageFragment extends Fragment {
     private PocketAccounter pocketAccounter;
     private boolean keyboardVisible = false;
     private TextView tvRecordIncome, tvRecordExpanse, tvRecordBalanse;
-    private RelativeLayout rlRecordExpanses, rlRecordIncomes, rlRecordBalance;
+    private RelativeLayout rlRecordExpanses, rlRecordIncomes;
+    private LinearLayout rlRecordBalance;
     private RecordExpanseView expenseView;
     private RecordIncomesView incomeView;
     private Map<String, Double> balance;
@@ -89,7 +91,7 @@ public class MainPageFragment extends Fragment {
         }
         rlRecordExpanses = (RelativeLayout) rootView.findViewById(R.id.rlRecordExpanses);
         rlRecordIncomes = (RelativeLayout) rootView.findViewById(R.id.rlRecordIncomes);
-        rlRecordBalance = (RelativeLayout) rootView.findViewById(R.id.rlRecordBalance);
+        rlRecordBalance = (LinearLayout) rootView.findViewById(R.id.rlRecordBalance);
         tvRecordIncome = (TextView) rootView.findViewById(R.id.tvRecordIncome);
         tvRecordExpanse = (TextView) rootView.findViewById(R.id.tvRecordExpanse);
         tvRecordBalanse = (TextView) rootView.findViewById(R.id.tvRecordBalanse);
@@ -129,6 +131,13 @@ public class MainPageFragment extends Fragment {
         rlRecordIncomes.addView(incomeView);
         calculateBalance();
     }
+    public void updateCalendarChanged() {
+        day.setTimeInMillis(dataCache.getEndDate().getTimeInMillis());
+        toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
+        calculateBalance();
+        expenseView.invalidate();
+        incomeView.invalidate();
+    }
     public void update() {
         toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
         calculateBalance();
@@ -142,17 +151,7 @@ public class MainPageFragment extends Fragment {
         incomeView.invalidate();
     }
     public void calculateBalance() {
-        begin.setTimeInMillis(day.getTimeInMillis());
-        begin.set(Calendar.HOUR_OF_DAY, 0);
-        begin.set(Calendar.MINUTE, 0);
-        begin.set(Calendar.SECOND, 0);
-        begin.set(Calendar.MILLISECOND, 0);
-        end.setTimeInMillis(day.getTimeInMillis());
-        end.set(Calendar.HOUR_OF_DAY, 23);
-        end.set(Calendar.MINUTE, 59);
-        end.set(Calendar.SECOND, 59);
-        end.set(Calendar.MILLISECOND, 59);
-        balance = reportManager.calculateBalance(begin, end);
+        balance = reportManager.calculateBalance(dataCache.getBeginDate(), dataCache.getEndDate());
         DecimalFormat decFormat = new DecimalFormat("0.00");
         String abbr = commonOperations.getMainCurrency().getAbbr();
         for (String key : balance.keySet()) {
@@ -177,5 +176,7 @@ public class MainPageFragment extends Fragment {
         return TypedValue.applyDimension(COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
     public Calendar getDay() {return day;}
-    public void setDay(Calendar day) {this.day = day;}
+    public void setDay(Calendar day) {
+        this.day = day;
+    }
 }
