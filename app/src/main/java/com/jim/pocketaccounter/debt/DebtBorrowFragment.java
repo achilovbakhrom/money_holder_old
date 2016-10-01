@@ -63,7 +63,6 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);}
             }
         },100);
-
         tabLayout = (TabLayout) view.findViewById(R.id.tlDebtBorrowFragment);
         viewPager = (ViewPager) view.findViewById(R.id.vpDebtBorrowFragment);
 

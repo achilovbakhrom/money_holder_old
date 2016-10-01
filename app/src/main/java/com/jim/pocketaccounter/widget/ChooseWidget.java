@@ -61,7 +61,7 @@ public class ChooseWidget extends AppCompatActivity implements  AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_widget);
 
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(getApplicationContext(), "pocketaccounter-db");
+        DaoMaster.DevOpenHelper helper = new DatabaseMigration(getApplicationContext(), "PocketAccounterDatabase");
          db = helper.getReadableDb();
         daoSession = new DaoMaster(db).newSession();
         listCategory=daoSession.getRootCategoryDao().loadAll();

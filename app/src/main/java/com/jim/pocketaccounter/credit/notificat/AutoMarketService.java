@@ -38,8 +38,8 @@ public class AutoMarketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "pocketaccounter-db");
-        Database db = helper.getEncryptedWritableDb("super-secret");
+        DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "PocketAccounterDatabase");
+        Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         autoMarketDao = daoSession.getAutoMarketDao();
         financeRecordDao = daoSession.getFinanceRecordDao();

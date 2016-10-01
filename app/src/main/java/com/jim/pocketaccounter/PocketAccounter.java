@@ -245,8 +245,8 @@ public class PocketAccounter extends AppCompatActivity {
 
     private void checkAutoMarket() {
         Log.d("sss", "" + (daoSession == null));
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "pocketaccounter-db");
-        Database db = helper.getEncryptedWritableDb("super-secret");
+        DaoMaster.OpenHelper helper = new DatabaseMigration(this, "PocketAccounterDatabase");
+        Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         for (AutoMarket au : daoSession.getAutoMarketDao().loadAll()) {
             String[] days = au.getDates().split(",");

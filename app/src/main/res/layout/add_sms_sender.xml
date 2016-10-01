@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/bitmap_size"
+                android:paddingRight="@dimen/sixteen_dp"
+                android:paddingTop="@dimen/sixteen_dp"
+                android:background="#fafffd"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sender: "
+                    android:textSize="@dimen/twenty_dp"
+                    android:textColor="@color/black_for_glavniy_text"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/sixteen_dp"
+                        android:hint="(number or name of sender)"
+                        android:textColorHint="#d1d1d1"
+                        android:layout_marginBottom="@dimen/sixteen_dp"
+                        android:id="@+id/editText2"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:layout_toLeftOf="@+id/imageView9"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+                    <ImageView
+                        android:layout_width="@dimen/fifty_dp"
+                        android:layout_height="@dimen/thirty_dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_email_black_24dp"
+                        android:layout_alignBottom="@+id/editText2"
+                        android:layout_alignParentTop="true"
+                        android:id="@+id/imageView9" />
+                </RelativeLayout>
+
+            </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="@color/green_light_forline"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/sixteen_dp"
+                android:paddingRight="@dimen/sixteen_dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/twenty_dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:text="Type operation"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="@dimen/eighteen_sp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/one_dp"
+                            android:background="@color/green_light_forline" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/five_dp"
+                        android:orientation="horizontal">
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:checked="true"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:text="Income"/>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:layout_weight="1"
+                            android:text="Expanse"/>
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/sixteen_dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:text="Account"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="@dimen/eighteen_sp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/one_dp"
+                            android:background="@color/green_light_forline" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/eight_dp">
+
+                    <TextView
+                        android:id="@+id/procent_credit"
+                        android:paddingTop="@dimen/two_dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginRight="@dimen/six_dp"
+                        android:layout_toLeftOf="@+id/spinner_procent"
+                        android:layout_toStartOf="@+id/spinner_procent"
+                        android:elevation="0dp"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:text="Select for this number :"
+                        android:textSize="@dimen/fourteen_dp"
+                        />
+
+                    <Spinner
+                        android:id="@+id/spinner_Account"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+
+                        ></Spinner>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/sixteen_dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:text="@string/period_of_credit"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="@dimen/eighteen_sp" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/one_dp"
+                            android:background="@color/green_light_forline" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="@dimen/eight_dp">
+
+                    <TextView
+                        android:paddingTop="@dimen/two_dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginRight="@dimen/six_dp"
+                        android:layout_toLeftOf="@+id/spinner_procent"
+                        android:layout_toStartOf="@+id/spinner_procent"
+                        android:elevation="0dp"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:text="Select for this number :"
+                        android:textSize="@dimen/fourteen_dp"
+                        />
+
+                    <Spinner
+                        android:id="@+id/spinner_for_currency"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+
+                        ></Spinner>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/sixteen_dp"
+                android:layout_height="2px"
+                android:layout_marginLeft="@dimen/sixteen_dp"
+                android:layout_marginRight="@dimen/sixteen_dp"
+                android:background="@color/green_light_forline"
+                />
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</LinearLayout>

@@ -65,7 +65,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_credit_tab_lay, container, false);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-        toolbarManager.setImageToSecondImage(R.id.addcomment);
+        toolbarManager.setImageToSecondImage(R.drawable.key_sms);
         toolbarManager.setOnSecondImageClickListener(this);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         tabLayout = (TabLayout) rootView.findViewById(R.id.sliding_tabs);

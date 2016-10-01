@@ -1505,4 +1505,9 @@
     <string name="limit_page">Limit count must be between 1 and 10</string>
     <string name="in_windows_incomes_bottom_window">In windows Incomes (bottom window)</string>
     <string name="balance_invis">Balance detials invisible</string>
+    <string name="info_toliq">Information</string>
+    <string name="account_for_parsing">Account for parsing:</string>
+    <string name="all_incomes">All incomes:</string>
+    <string name="all_expense">All expense:</string>
+    <string name="processed">Processed:</string>
 </resources>

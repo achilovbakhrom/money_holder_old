@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000"
+        android:layout_marginLeft="@dimen/eight_dp"
+        android:layout_marginRight="@dimen/eight_dp"
+        android:layout_marginBottom="@dimen/sevent_dp"
+        android:layout_marginTop="@dimen/two_dp"
+        card:cardMaxElevation="@dimen/ten_dp"
+        card:cardElevation="@dimen/five_dp"
+        card:cardCornerRadius="@dimen/eight_dp"
+        android:layout_gravity="center_horizontal">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/sixteen_dp"
+                android:paddingRight="@dimen/sixteen_dp"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/ten_dp"
+                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/five_dp"
+                        android:id="@+id/rlSmsSender">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Reciver: "
+                            android:textSize="@dimen/twenty_dp"
+                            android:textColor="@color/for_darker"
+                            android:id="@+id/tvRecived"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_toLeftOf="@+id/tvSmsSenderNumber"
+                            android:layout_toStartOf="@+id/tvSmsSenderNumber" />
+
+                        <ImageView
+                            android:layout_width="@dimen/twenty_dp"
+                            android:layout_height="@dimen/twenty_dp"
+                            android:src="@drawable/ic_mode_edit_black_24dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:id="@+id/imageView7"
+                            android:layout_marginLeft="@dimen/five_dp"
+                            android:layout_alignBottom="@+id/tvSmsSenderNumber"
+                            android:layout_alignParentTop="true" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="8080"
+                            android:textSize="@dimen/twenty_dp"
+                            android:textColor="@color/for_darker"
+                            android:gravity="bottom"
+                            android:id="@+id/tvSmsSenderNumber"
+                            android:layout_alignParentTop="true"
+                            android:layout_toLeftOf="@+id/imageView7"
+                            android:layout_toStartOf="@+id/imageView7" />
+                    </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rlSmsSender"
+                    android:layout_marginTop="@dimen/five_dp"
+                    android:id="@+id/prosesedRl">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Not processed: "
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/for_darker"
+                        android:id="@+id/tvNotProssesed"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12 messages"
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/red"
+                        android:gravity="bottom"
+                        android:id="@+id/tvMessage"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+                        </RelativeLayout>
+
+                </RelativeLayout>
+            </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="@color/green_light_forline"
+                android:layout_marginTop="@dimen/four_dp"/>
+            <LinearLayout
+                android:id="@+id/llItemInfoView"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/grey_light_sms_item"
+                android:paddingTop="@dimen/five_dp"
+                >
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/five_dp"
+                    android:paddingLeft="@dimen/sixteen_dp"
+                    android:paddingRight="@dimen/sixteen_dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/account_for_parsing"
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/for_darker"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mobile banking"
+                        android:textSize="@dimen/twelve_sp"
+                        android:gravity="bottom"
+                        android:textColor="@color/for_darker"
+                        android:id="@+id/tvAccount"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/five_dp"
+                    android:paddingLeft="@dimen/sixteen_dp"
+                    android:paddingRight="@dimen/sixteen_dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/all_incomes"
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/for_darker"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="300$"
+                        android:textSize="@dimen/twelve_sp"
+                        android:gravity="bottom"
+                        android:textColor="@color/for_darker"
+                        android:id="@+id/tvAllIncomes"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/five_dp"
+                    android:paddingLeft="@dimen/sixteen_dp"
+                    android:paddingRight="@dimen/sixteen_dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/all_expense"
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/for_darker"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1820$"
+                        android:textSize="@dimen/twelve_sp"
+                        android:gravity="bottom"
+                        android:textColor="@color/for_darker"
+                        android:id="@+id/tvAllExpense"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/five_dp"
+                    android:paddingLeft="@dimen/sixteen_dp"
+                    android:paddingRight="@dimen/sixteen_dp"
+                    android:paddingBottom="@dimen/eight_dp"
+
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/processed"
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/for_darker"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1 messages"
+                        android:textSize="@dimen/twelve_sp"
+                        android:gravity="bottom"
+                        android:textColor="@color/for_darker"
+                        android:id="@+id/tvProcessed"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
+                </RelativeLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="2px"
+                    android:background="@color/green_light_forline"
+                    android:layout_marginTop="@dimen/four_dp"/>
+
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/sixteen_dp"
+                android:paddingRight="@dimen/sixteen_dp"
+                android:paddingBottom="@dimen/ten_dp"
+                android:paddingTop="@dimen/six_dp"
+                android:id="@+id/rlDebtBorrowTop"
+                android:background="@color/grey_light2">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/relativeLayout"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/info_toliq"
+                        android:textSize="@dimen/twelve_sp"
+                        android:textColor="@color/for_darker"
+                        android:id="@+id/dateay"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_toStartOf="@+id/ivInfoIcon"
+                        android:layout_toLeftOf="@+id/ivInfoIcon"
+                        android:layout_alignBottom="@+id/ivInfoIcon" />
+                    <ImageView
+                        android:layout_width="@dimen/twenty_dp"
+                        android:layout_height="@dimen/twenty_dp"
+                        android:src="@drawable/infoo"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/ivInfoIcon" />
+
+
+
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</LinearLayout>

@@ -68,4 +68,5 @@
     <item name="bar_income" type="color">#8bc34a</item>
     <item name="bar_expanse" type="color">#ee746d</item>
     <item name="bar_profit" type="color">#f7c95c</item>
+    <item name="grey_light_sms_item" type="color">#fdfdfd</item>
 </resources>

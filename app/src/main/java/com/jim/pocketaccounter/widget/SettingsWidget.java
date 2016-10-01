@@ -260,7 +260,7 @@ public class SettingsWidget extends AppCompatActivity {
     Database db;
     private void RefreshList(){
         String butID_1,butID_2,butID_3,butID_4;
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(getApplicationContext(), "pocketaccounter-db");
+        DaoMaster.DevOpenHelper helper = new DatabaseMigration(getApplicationContext(), "PocketAccounterDatabase");
         db = helper.getReadableDb();
         DaoSession daoSession = new DaoMaster(db).newSession();
 

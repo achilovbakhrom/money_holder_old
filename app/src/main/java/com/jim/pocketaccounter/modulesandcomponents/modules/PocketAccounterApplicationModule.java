@@ -38,7 +38,7 @@ public class PocketAccounterApplicationModule {
     private SimpleDateFormat displayFormatter, commonFormatter;
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
+        DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "PocketAccounterDatabase");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
@@ -52,7 +52,7 @@ public class PocketAccounterApplicationModule {
     @Provides
     public DaoSession getDaoSession() {
         if (daoSession == null) {
-            DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "pocketaccounter-db");
+            DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "PocketAccounterDatabase");
             Database db = helper.getWritableDb();
             daoSession = new DaoMaster(db).newSession();
         }

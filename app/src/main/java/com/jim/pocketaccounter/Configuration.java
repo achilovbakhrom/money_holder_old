@@ -5,6 +5,6 @@ package com.jim.pocketaccounter;
  */
 
 public class Configuration {
-    public static final String OLD_DB_NAME = "PocketAccounterDatabase";
-    public static final String DB_NAME = "pocketaccounter-db";
+    public static final String OLD_DB_NAME = "PocketAccounterDatabase_db";
+    public static final String DB_NAME = "PocketAccounterDatabase";
 }
