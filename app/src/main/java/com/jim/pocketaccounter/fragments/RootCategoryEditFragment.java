@@ -105,11 +105,13 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 				v.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						if (editMode == PocketAccounterGeneral.NO_MODE)
-							paFragmentManager.displayFragment(new CategoryFragment());
-						else {
-							paFragmentManager.displayMainWindow();
+						if (editMode == PocketAccounterGeneral.NO_MODE) {
 							paFragmentManager.getFragmentManager().popBackStack();
+							paFragmentManager.displayFragment(new CategoryFragment());
+						}
+						else {
+							paFragmentManager.getFragmentManager().popBackStack();
+							paFragmentManager.displayMainWindow();
 						}
 					}
 				},50);
@@ -340,10 +342,45 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 			else
 				rootCategory = category;
 			rootCategory.setName(etCatEditName.getText().toString());
-			if (chbCatEditIncome.isChecked())
+			if (chbCatEditIncome.isChecked()) {
+				if (category != null && rootCategory.getType() == PocketAccounterGeneral.EXPENSE) {
+					List<BoardButton> list = daoSession.getBoardButtonDao()
+							.queryBuilder()
+							.where(BoardButtonDao.Properties.CategoryId.eq(categoryId),
+									BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
+							.list();
+					for (BoardButton boardButton : list) {
+						logicManager.changeBoardButton(boardButton.getTable(), boardButton.getPos(), null);
+						BitmapFactory.Options options = new BitmapFactory.Options();
+						options.inPreferredConfig = Bitmap.Config.RGB_565;
+						Bitmap scaled = BitmapFactory.decodeResource(getResources(), R.drawable.no_category, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int) getResources().getDimension(R.dimen.thirty_dp),
+								(int) getResources().getDimension(R.dimen.thirty_dp), false);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+
+				}
 				rootCategory.setType(PocketAccounterGeneral.INCOME);
-			else
+			}
+			else {
+				if (category != null && rootCategory.getType() == PocketAccounterGeneral.INCOME) {
+					List<BoardButton> list = daoSession.getBoardButtonDao()
+							.queryBuilder()
+							.where(BoardButtonDao.Properties.CategoryId.eq(categoryId),
+									BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.INCOME))
+							.list();
+					for (BoardButton boardButton : list) {
+						logicManager.changeBoardButton(boardButton.getTable(), boardButton.getPos(), null);
+						BitmapFactory.Options options = new BitmapFactory.Options();
+						options.inPreferredConfig = Bitmap.Config.RGB_565;
+						Bitmap scaled = BitmapFactory.decodeResource(getResources(), R.drawable.no_category, options);
+						scaled = Bitmap.createScaledBitmap(scaled, (int) getResources().getDimension(R.dimen.thirty_dp),
+								(int) getResources().getDimension(R.dimen.thirty_dp), false);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+				}
 				rootCategory.setType(PocketAccounterGeneral.EXPENSE);
+			}
 			rootCategory.setIcon(selectedIcon);
 			if (subCategories != null && logicManager.insertSubCategory(subCategories) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
 				Toast.makeText(getContext(), R.string.such_subcat_exist, Toast.LENGTH_SHORT).show();
@@ -351,12 +388,19 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 			}
 			rootCategory.setSubCategories(subCategories);
 			rootCategory.setId(categoryId);
-			logicManager.insertRootCategory(rootCategory);
+			if (category != null)
+				daoSession.getRootCategoryDao().insertOrReplace(rootCategory);
+			else {
+				if (logicManager.insertRootCategory(rootCategory) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS ) {
+					Toast.makeText(getContext(), R.string.category_name_error, Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}
 			if (editMode == PocketAccounterGeneral.NO_MODE) {
 				paFragmentManager.displayFragment(new CategoryFragment());
+				paFragmentManager.getFragmentManager().popBackStack();
 			}
 			else {
-				//TODO daravotka borakan
 				logicManager.changeBoardButton(rootCategory.getType(),
 						pos, categoryId);
 				BitmapFactory.Options options = new BitmapFactory.Options();

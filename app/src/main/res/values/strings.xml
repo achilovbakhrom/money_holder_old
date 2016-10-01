@@ -1480,7 +1480,6 @@
         <item>icons_110</item>
         <item>icons_111</item>
     </string-array>
-
     <string-array name="week_day_auto">
         <item>Mon</item>
         <item>Tue</item>
@@ -1505,4 +1504,6 @@
     <string name="limit_page">Limit count must be between 1 and 10</string>
     <string name="in_windows_incomes_bottom_window">In windows Incomes (bottom window)</string>
     <string name="balance_invis">Balance detials invisible</string>
+    <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
+    <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
 </resources>

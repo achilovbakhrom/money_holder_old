@@ -94,15 +94,15 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private float twoDp;
 	private int tableCount;
 	private int currentPage;
+	private int buttonsSize;
+	private int beltBalance;
+	private float oneDp;
 	@Inject	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	LogicManager logicManager;
-	@Inject	WarningDialog warningDialog;
 	@Inject	DataCache dataCache;
 	@Inject	CommonOperations commonOperations;
 	@Inject SharedPreferences sharedPreferences;
-	@Inject OperationsListDialog operationsListDialog;
-	@Inject TransferDialog transferDialog;
 	@Inject @Named(value = "begin") Calendar begin;
 	@Inject @Named(value = "end") Calendar end;
 	@Inject @Named(value = "common_formatter") SimpleDateFormat simpleDateFormat;
@@ -113,9 +113,12 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		gestureDetector = new GestureDetectorCompat(getContext(),this);
 		workspaceCornerRadius = getResources().getDimension(R.dimen.five_dp);
 		workspaceMargin = getResources().getDimension(R.dimen.twenty_dp);
+		oneDp = getResources().getDimension(R.dimen.one_dp);
 		updatePageCountAndPosition();
 		setClickable(true);
-		twoDp = getResources().getDimension(R.dimen.two_dp);
+		buttonsSize =  PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT;
+		beltBalance = ContextCompat.getColor(getContext(), R.color.belt_balanse);
+		twoDp = getResources().getDimension(R.dimen.four_dp)/getResources().getDisplayMetrics().density;
 	}
 	public void updatePageCountAndPosition() {
 		this.tableCount = sharedPreferences.getInt("key_for_window_top", 4);
@@ -190,7 +193,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 							  getWidth()-workspaceMargin,
 							  getHeight()-workspaceMargin);
 		drawButtons();
-//		drawPercents();
+		drawPercents();
 		drawWorkspaceShader();
 		drawIndicator();
 	}
@@ -198,7 +201,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private void drawIndicator() {
 		if (tableCount == 1) return;
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		float y = 4.25f*twoDp, x;
+		float y = 7.25f*twoDp, x;
 		if (tableCount % 2 == 0) {
 			x = workspace.centerX()-4*twoDp-tableCount*twoDp-(tableCount/2-1)*twoDp;
 			for (int i=0; i<tableCount; i++) {
@@ -229,7 +232,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		float width, height;
 		width = workspace.width()/4;
 		height = workspace.height()/4;
-		final int buttonsSize = PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT;
 		float left, top, right, bottom;
 		for (int i=0; i<buttonsSize; i++) {
 			left = workspace.left+(i%4)*width;
@@ -240,8 +242,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			buttons.get(i).drawButton(canvas);
 		}
 		Paint borderPaint = new Paint();
-		borderPaint.setColor(ContextCompat.getColor(getContext(), R.color.belt_balanse));
-		borderPaint.setStrokeWidth(getResources().getDimension(R.dimen.one_dp));
+		borderPaint.setColor(beltBalance);
+		borderPaint.setStrokeWidth(oneDp);
 		for (int i=0; i<3; i++) {
 			canvas.drawLine(workspace.left,
 					workspace.top+(i+1)*width,
@@ -420,6 +422,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 								case 2:
 									Account account = daoSession.getAccountDao().loadAll().isEmpty() ?
 											null : daoSession.getAccountDao().loadAll().get(0);
+									final TransferDialog transferDialog = new TransferDialog(getContext());
 									transferDialog.setAccountOrPurpose(account.getId(), true);
 									transferDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 										@Override
@@ -432,6 +435,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 									transferDialog.show();
 									break;
 								case 3:
+									final WarningDialog warningDialog = new WarningDialog(getContext());
 									warningDialog.setText(getContext().getString(R.string.whole_day_datas_deleting));
 									warningDialog.setOnYesButtonListener(new OnClickListener() {
 										@Override
@@ -592,6 +596,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			items[0] = change;
 			items[1] = clear;
 		}
+		final OperationsListDialog operationsListDialog = new OperationsListDialog(getContext());
 		operationsListDialog.setAdapter(items);
 		operationsListDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -635,6 +640,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 
 	private void openTypeChooseDialog(final int pos) {
 		String[] items = getResources().getStringArray(R.array.board_operation_names_long_press);
+		final OperationsListDialog operationsListDialog = new OperationsListDialog(getContext());
 		operationsListDialog.setAdapter(items);
 		operationsListDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -803,6 +809,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		final String id = daoSession.getBoardButtonDao().queryBuilder()
 							.where(BoardButtonDao.Properties.Pos.eq(pos))
 							.list().get(0).getCategoryId();
+		final WarningDialog warningDialog = new WarningDialog(getContext());
 		warningDialog.setText(getContext().getString(R.string.clear_warning));
 		warningDialog.setOnYesButtonListener(new OnClickListener() {
 			@Override

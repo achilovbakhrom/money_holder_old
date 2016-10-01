@@ -2,7 +2,9 @@ package com.jim.pocketaccounter.utils.cache;
 
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.util.LruCache;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -11,12 +13,14 @@ import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -32,6 +36,8 @@ public class DataCache {
     private LruCache<Integer, Bitmap> elements;
     private LruCache<String, List<BoardButtonPercent>> percents;
     private Calendar beginDate, endDate;
+    private UpdatePercentsTask updatePercentsTask;
+    private SimpleDateFormat simpleDateFormat;
     @Inject SharedPreferences sharedPreferences;
     @Inject DaoSession daoSession;
     @Inject CommonOperations commonOperations;
@@ -40,6 +46,7 @@ public class DataCache {
     @Named(value = "end") @Inject Calendar end;
     public DataCache(PocketAccounterApplication application) {
         application.component().inject(this);
+        simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         initBeginAndEndDates();
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 16;
@@ -125,14 +132,8 @@ public class DataCache {
         end.set(Calendar.MINUTE, 59);
         end.set(Calendar.SECOND, 59);
         end.set(Calendar.MILLISECOND, 59);
-        List<FinanceRecord> tempFinances = daoSession.getFinanceRecordDao().loadAll();
-        List<FinanceRecord> financeRecords = new ArrayList<>();
-        for (FinanceRecord record : tempFinances) {
-            if (record.getDate().compareTo(begin) >= 0 &&
-                    record.getDate().compareTo(end) <= 0) {
-                financeRecords.add(record);
-            }
-        }
+        List<FinanceRecord> financeRecords = daoSession.getFinanceRecordDao()
+                .queryBuilder().where(FinanceRecordDao.Properties.Date.eq(simpleDateFormat.format(begin.getTime()))).list();
         List<CreditDetials> tempCredits = daoSession.getCreditDetialsDao().loadAll();
         List<CreditDetials> creditDetialList= new ArrayList<>();
         for (CreditDetials creditDetial : tempCredits) {
@@ -355,7 +356,8 @@ public class DataCache {
     }
 
     public void updatePercents() {
-        new Thread(new Runnable() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Map<String, List<BoardButtonPercent>> snapshot = percents.snapshot();
@@ -403,7 +405,7 @@ public class DataCache {
                     }
                 }
             }
-        }).run();
+        }, 500);
     }
 
     public Double getPercent(Integer table, Calendar day, Integer position) {
@@ -444,10 +446,17 @@ public class DataCache {
     }
 
     public void setBeginDate(Calendar beginDate) {
-        this.beginDate.setTimeInMillis(new Long(beginDate.getTimeInMillis()));
+        this.beginDate.setTimeInMillis(beginDate.getTimeInMillis());
     }
 
     public void setEndDate(Calendar endDate) {
-        this.endDate.setTimeInMillis(new Long(endDate.getTimeInMillis()));
+        this.endDate.setTimeInMillis(endDate.getTimeInMillis());
+    }
+    class UpdatePercentsTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            return null;
+        }
     }
 }

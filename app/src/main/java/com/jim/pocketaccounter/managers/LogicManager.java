@@ -143,7 +143,7 @@ public class LogicManager {
 
     public int deleteAccount(List<Account> accounts) {
         List<Account> allAccounts = accountDao.loadAll();
-        if (allAccounts.size() < 2 || accounts.size() == accounts.size())
+        if (allAccounts.size() < 2 || allAccounts.size() == accounts.size())
             return LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT;
         for (Account account : accounts) {
             for (FinanceRecord record : recordDao.loadAll()) {

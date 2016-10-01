@@ -9,6 +9,30 @@
         <item>Суббота</item>
         <item>Воскресенье</item>
     </string-array>
+    <string-array name="period_purpose">
+        <item>no period</item>
+        <item>week</item>
+        <item>mounth</item>
+        <item>year</item>
+        <item>beetwen date</item>
+    </string-array>
+    <string-array name="week_day_auto">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+    <string-array name="date_picker_period_spinner">
+        <item>This Month</item>
+        <item>Last 3 days</item>
+        <item>This Week</item>
+        <item>Month, Year</item>
+        <item>Year</item>
+        <item>Period</item>
+    </string-array>
     <string-array name="drawer_cats">
         <item>Главная</item>
         <item>Финансы</item>
@@ -1359,6 +1383,8 @@
     <string name="add_category">Добавить категорию</string>
     <string name="debt_borrow_list_is_empty">Список долгов и займов пуст!</string>
     <string name="credit_list_is_empty">Список кредитов пуст!</string>
+    <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
+    <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
     <!--operations-->
     <string-array name="operation_category">
         <item>Выбрать из существующих</item>
@@ -1437,4 +1463,46 @@
         <item>icons_110</item>
         <item>icons_111</item>
     </string-array>
+    <string name="accountdo">Account:</string>
+    <string name="balance_invis">Balance detials invisible</string>
+    <string name="borrow_arch">BORROW in Archive</string>
+    <string name="borrow_com">This Borrow included in the balance. But now the record in archive</string>
+    <string name="borrow_coment_incl">This Borrow Not included in the balance</string>
+    <string name="borrow_comment">This Borrow included in the balance</string>
+    <string name="borrow_comment_not_icl_arch">This Borrow Not included in the balance. But now the record in archive</string>
+    <string name="borrow_reckings_var">Borrow recking</string>
+    <string name="borrow_var">Borrow</string>
+    <string name="choose_type_p">Choose type action</string>
+    <string name="count_pages">Count pages</string>
+    <string name="cred_arch">Credit Archive</string>
+    <string name="cred_include_bal">This credit include the balance</string>
+    <string name="cred_not_include_bal">This Credit Not include the balance</string>
+    <string name="credit_reckings_var">Credit recking</string>
+    <string name="credit_var">Credit</string>
+    <string name="date_with_two_dots">Date:</string>
+    <string name="debt_com">This Debt included in the balance. But now the record in archive</string>
+    <string name="debt_coment">This Debt included in the balance</string>
+    <string name="debt_comment_not_icluded">This Debt Not included in the balance. But now the record in archive</string>
+    <string name="debt_arch">Debt in Archive</string>
+    <string name="debt_comment_to">This Debt Not included in the balance</string>
+    <string name="debt_reckings_var">Debt recking</string>
+    <string name="debt_var">Debt</string>
+    <string name="export_exel">Export Exel</string>
+    <string name="filter">Filter</string>
+    <string name="how_much_pages_you_need">How much pages you need?</string>
+    <string name="in_window_expense_top_window">In window Expenses (top window)</string>
+    <string name="in_windows_incomes_bottom_window">In windows Incomes (bottom window)</string>
+    <string name="include_balance">This Credit included in the balance. But now the record in archive</string>
+    <string name="limit_page">Limit count must be between 1 and 10</string>
+    <string name="minusable_account">Счет может быть минусовым</string>
+    <string name="none_minusable_account">Не минусовой счет</string>
+    <string name="not_exist">Not exist</string>
+    <string name="not_set">Не установлен</string>
+    <string name="pages_about">Expanse and Income pages</string>
+    <string name="simple_recking">Daily recking</string>
+    <string name="some_credit">This Credit Not included in the balance. But now the record in archive</string>
+    <string name="to_earn">В копилку</string>
+    <string name="type">Type:</string>
+    <string name="whole_day_datas_deleting">Записи за текущий день будут удалены!</string>
+    <string name="search">Search</string>
 </resources>

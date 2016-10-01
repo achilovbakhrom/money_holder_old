@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -44,11 +46,13 @@ import com.jim.pocketaccounter.database.DaoSession;
 //import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.components.DaggerPocketAccounterActivityComponent;
 import com.jim.pocketaccounter.utils.CircleImageView;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
 import com.jim.pocketaccounter.utils.password.OnPasswordRightEntered;
@@ -110,23 +114,15 @@ public class PocketAccounter extends AppCompatActivity {
     public static boolean PRESSED = false;
     int WidgetID;
     public static boolean keyboardVisible = false;
-    @Inject
-    PAFragmentManager paFragmentManager;
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    SharedPreferences preferences;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    SettingsManager settingsManager;
-    @Inject
-    @Named(value = "display_formatter")
-    SimpleDateFormat format;
-    @Inject
-    DrawerInitializer drawerInitializer;
-    @Inject
-    DataCache dataCache;
+    @Inject PAFragmentManager paFragmentManager;
+    @Inject DaoSession daoSession;
+    @Inject SharedPreferences preferences;
+    @Inject ToolbarManager toolbarManager;
+    @Inject SettingsManager settingsManager;
+    @Inject @Named(value = "display_formatter") SimpleDateFormat format;
+    @Inject DrawerInitializer drawerInitializer;
+    @Inject DataCache dataCache;
+    @Inject CommonOperations commonOperations;
     PocketAccounterActivityComponent component;
 
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
@@ -144,62 +140,14 @@ public class PocketAccounter extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        keyFromCalc=false;
-//        settingsManager.setup();
         setContentView(R.layout.pocket_accounter);
         component((PocketAccounterApplication) getApplication()).inject(this);
         toolbarManager.init();
         date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize(date, date);
+        paFragmentManager.initialize();
         dataCache.getCategoryEditFragmentDatas().setDate(date);
         pwPassword = (PasswordWindow) findViewById(R.id.pwPassword);
-
-//        rlRecordsMain = (RelativeLayout) findViewById(R.id.rlRecordExpanses);
-//        tvRecordIncome = (TextView) findViewById(R.id.tvRecordIncome);
-//        tvRecordBalanse = (TextView) findViewById(R.id.tvRecordBalanse);
-//        rlRecordIncomes = (RelativeLayout) findViewById(R.id.rlRecordIncomes);
-//        ivToolbarMostRight = (ImageView) findViewById(R.id.ivToolbarMostRight);
-//        spToolbar = (Spinner) toolbar.findViewById(R.id.spToolbar);
-//        ivToolbarExcel = (ImageView) findViewById(R.id.ivToolbarExcel);
-//        rlRecordBalance = (RelativeLayout) findViewById(R.id.rlRecordBalance);
-//        rlRecordBalance.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (PRESSED) return;
-//                replaceFragment(new RecordDetailFragment(date));
-//                PRESSED = true;
-//            }
-//        });
-//        pwPassword = (PasswordWindow) findViewById(R.id.pwPassword);
-//
-//        tvRecordExpanse = (TextView) findViewById(R.id.tvRecordExpanse);
-//        date = Calendar.getInstance();
-//        initialize(date);
-//        notific = new NotificationManagerCredit(PocketAccounter.this);
-//
-//        switch (getIntent().getIntExtra("TIP", 0)) {
-//            case AlarmReceiver.TO_DEBT:
-//                replaceFragment(new DebtBorrowFragment(), PockerTag.DEBTS);
-//                break;
-//            case AlarmReceiver.TO_CRIDET:
-//                replaceFragment(new CreditTabLay(), PockerTag.CREDITS);
-//                break;
-//        }
-//        boolean notif = prefs.getBoolean("general_notif", true);
-//        if (!notif) {
-//            (new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    try {
-//                        notific.cancelAllNotifs();
-//                    } catch (Exception o) {
-//                    }
-//                }
-//            })).start();
-//        }
-//
-//
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean("secure", false)) {
             pwPassword.setVisibility(View.VISIBLE);
@@ -237,14 +185,8 @@ public class PocketAccounter extends AppCompatActivity {
         return date;
     }
 
-    private Calendar beginDate;
-    private Calendar endDate;
-    private int state = 0;
-    private EditText startTimeFilter;
-    private EditText endTimeFilter;
 
     private void checkAutoMarket() {
-        Log.d("sss", "" + (daoSession == null));
         DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "pocketaccounter-db");
         Database db = helper.getEncryptedWritableDb("super-secret");
         daoSession = new DaoMaster(db).newSession();
@@ -283,7 +225,7 @@ public class PocketAccounter extends AppCompatActivity {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
-        toolbarManager.setSubtitle(format.format(date.getTime()));
+        toolbarManager.setSubtitle(format.format(dataCache.getEndDate().getTime()));
 
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
@@ -295,264 +237,56 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
         toolbarManager.setSearchView(drawerInitializer, format, paFragmentManager, findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
-//        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                beginDate = (Calendar) Calendar.getInstance().clone();
-                endDate = (Calendar) Calendar.getInstance().clone();
                 final Dialog dialog = new Dialog(PocketAccounter.this);
                 final View dialogView = getLayoutInflater().inflate(R.layout.date_picker, null);
-                dialogView.findViewById(R.id.dp).setVisibility(View.VISIBLE);
-                dialogView.findViewById(R.id.rlDatePickerPeriod).setVisibility(View.GONE);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(dialogView);
                 final DatePicker dp = (DatePicker) dialogView.findViewById(R.id.dp);
                 ImageView ivDatePickOk = (ImageView) dialogView.findViewById(R.id.ivDatePickOk);
-                final Button btnAll = (Button) dialogView.findViewById(R.id.btnDatePickerAll);
-                final Button btnDay = (Button) dialogView.findViewById(R.id.btnDatePickerDay);
-                final Button btnPeriod = (Button) dialogView.findViewById(R.id.btnDatePickerPeriod);
-                final RelativeLayout rlDatePickerPeriod = (RelativeLayout) dialogView.findViewById(R.id.rlDatePickerPeriod);
-                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
-                final String[] year = new String[51];
-                for (int i = 0; i < 51; i++) {
-                    year[i] = (i + 2000) + "";
-                }
-                final Spinner yearFilter = (Spinner) dialogView.findViewById(R.id.spDatePickerPeriodYear);
-                ArrayAdapter<String> yearAdapter = new ArrayAdapter<String>(dialogView.getContext(), R.layout.spiner_gravity_right, year);
-                yearFilter.setAdapter(yearAdapter);
-                yearFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        beginDate.set(Calendar.YEAR, Integer.parseInt(yearFilter.getSelectedItem().toString()));
-                        beginDate.set(Calendar.MONTH, Calendar.JANUARY);
-                        beginDate.set(Calendar.DAY_OF_MONTH, 1);
-                        endDate = (Calendar) beginDate.clone();
-                        endDate.set(Calendar.MONTH, Calendar.DECEMBER);
-                        endDate.set(Calendar.DAY_OF_MONTH, 31);
-                        Log.d("yeaar begin", "" + beginDate.getTime());
-                        Log.d("yeaar end", "" + endDate.getTime());
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-                for (int i = 0; i < year.length; i++) {
-                    if (year[i].matches("" + Calendar.getInstance().get(Calendar.YEAR))) {
-                        yearFilter.setSelection(i);
-                    }
-                }
-                final Spinner monthFilter = (Spinner) dialogView.findViewById(R.id.spDatePickerPeriodMonth);
-                final String[] months = dialogView.getResources().getStringArray(R.array.months);
-                ArrayAdapter<String> yearMonthAdapter = new ArrayAdapter<String>(dialogView.getContext(), R.layout.spiner_gravity_right, months);
-                monthFilter.setAdapter(yearMonthAdapter);
-                monthFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        beginDate.set(Calendar.MONTH, monthFilter.getSelectedItemPosition());
-                        beginDate.set(Calendar.DAY_OF_MONTH, 1);
-                        endDate = (Calendar) beginDate.clone();
-                        endDate.set(Calendar.DAY_OF_MONTH, beginDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                        Log.d("month begin", "" + beginDate.getTime());
-                        Log.d("month end", "" + endDate.getTime());
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-
-                for (int i = 0; i < months.length; i++) {
-                    if (i == Calendar.getInstance().get(Calendar.MONTH)) {
-                        monthFilter.setSelection(i);
-                    }
-                }
-
-                startTimeFilter = (EditText) dialogView.findViewById(R.id.etDatePickerPeriodStart);
-                endTimeFilter = (EditText) dialogView.findViewById(R.id.etDatePickerPeriodEnd);
-                startTimeFilter.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                            Calendar calendar = Calendar.getInstance();
-//                            Dialog mDialog = new DatePickerDialog(dialogView.getContext(),
-//                                    getBeginListener, calendar.get(Calendar.YEAR),
-//                                    calendar.get(Calendar.MONTH), calendar
-//                                    .get(Calendar.DAY_OF_MONTH));
-//                            mDialog.show();
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                endTimeFilter.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                            Calendar calendar = Calendar.getInstance();
-                            Dialog mDialog = new DatePickerDialog(dialogView.getContext(),
-                                    getEndListener, calendar.get(Calendar.YEAR),
-                                    calendar.get(Calendar.MONTH), calendar
-                                    .get(Calendar.DAY_OF_MONTH));
-                            mDialog.show();
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                Spinner spDatePickerPeriod = (Spinner) dialogView.findViewById(R.id.spDatePickerPeriod);
-                ArrayAdapter<?> adapter = ArrayAdapter.createFromResource(dialogView.getContext(), R.array.date_picker_period_spinner, android.R.layout.simple_spinner_item);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spDatePickerPeriod.setAdapter(adapter);
-                spDatePickerPeriod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    public void onItemSelected(AdapterView<?> parent, View itemSelected, int selectedItemPosition, long selectedId) {
-                        switch (selectedItemPosition) {
-                            case 0: { //This Month
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
-                                beginDate = (Calendar) Calendar.getInstance().clone();
-                                endDate = (Calendar) Calendar.getInstance().clone();
-                                beginDate.set(Calendar.DAY_OF_MONTH, 1);
-                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
-                                beginDate.set(Calendar.MINUTE, 0);
-                                beginDate.set(Calendar.SECOND, 0);
-                                beginDate.set(Calendar.MILLISECOND, 0);
-                                endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                                endDate.set(Calendar.HOUR_OF_DAY, 23);
-                                endDate.set(Calendar.MINUTE, 59);
-                                endDate.set(Calendar.SECOND, 59);
-                                endDate.set(Calendar.MILLISECOND, 59);
-                                break;
-                            }
-                            case 1: { //3 days
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
-                                beginDate = (Calendar) Calendar.getInstance().clone();
-                                endDate = (Calendar) Calendar.getInstance().clone();
-                                beginDate.set(Calendar.DAY_OF_YEAR, endDate.get(Calendar.DAY_OF_YEAR) - 2);
-                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
-                                beginDate.set(Calendar.MINUTE, 0);
-                                beginDate.set(Calendar.SECOND, 0);
-                                beginDate.set(Calendar.MILLISECOND, 0);
-                                endDate.set(Calendar.HOUR_OF_DAY, 23);
-                                endDate.set(Calendar.MINUTE, 59);
-                                endDate.set(Calendar.SECOND, 59);
-                                endDate.set(Calendar.MILLISECOND, 59);
-                                break;
-                            }
-                            case 2: { // 7 days - week
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
-                                beginDate = (Calendar) Calendar.getInstance().clone();
-                                endDate = (Calendar) Calendar.getInstance().clone();
-                                beginDate.set(Calendar.DAY_OF_YEAR, endDate.get(Calendar.DAY_OF_YEAR) - 6);
-                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
-                                beginDate.set(Calendar.MINUTE, 0);
-                                beginDate.set(Calendar.SECOND, 0);
-                                beginDate.set(Calendar.MILLISECOND, 0);
-                                endDate.set(Calendar.HOUR_OF_DAY, 23);
-                                endDate.set(Calendar.MINUTE, 59);
-                                endDate.set(Calendar.SECOND, 59);
-                                endDate.set(Calendar.MILLISECOND, 59);
-                                break;
-                            }
-                            case 3: {//month year
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.VISIBLE);
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.rlDatePickerPeriodMonth).setVisibility(View.VISIBLE);
-                                dialogView.findViewById(R.id.rlDatePickerPeriodYear).setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case 4: { //year
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.VISIBLE);
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.rlDatePickerPeriodMonth).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.rlDatePickerPeriodYear).setVisibility(View.VISIBLE);
-                                break;
-                            }
-                            case 5: { //period
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodMonthYear).setVisibility(View.VISIBLE);
-                                dialogView.findViewById(R.id.linlayDatePickerPeriodPer).setVisibility(View.VISIBLE);
-                                dialogView.findViewById(R.id.rlDatePickerPeriodMonth).setVisibility(View.GONE);
-                                dialogView.findViewById(R.id.rlDatePickerPeriodYear).setVisibility(View.GONE);
-                                break;
-                            }
-                        }
-                    }
-
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-                btnAll.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        state = 2;
-                        AccountDao accountDao = daoSession.getAccountDao();
-                        List<Account> accounts = accountDao.loadAll();
-                        beginDate = (Calendar) accounts.get(0).getCalendar().clone();
-                        endDate = (Calendar) Calendar.getInstance().clone();
-
-                        Log.d("begin", "" + beginDate.getTime());
-                        Log.d("end", "" + endDate.getTime());
-                        dialog.dismiss();
-                    }
-                });
-                btnDay.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        state = 0;
-                        btnAll.setTextColor(Color.BLACK);
-                        btnDay.setTextColor(getResources().getColor(R.color.green_light));
-                        btnPeriod.setTextColor(Color.BLACK);
-                        dp.setVisibility(View.VISIBLE);
-                        rlDatePickerPeriod.setVisibility(View.GONE);
-                    }
-                });
-                btnPeriod.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        state = 1;
-                        dp.setVisibility(View.GONE);
-                        rlDatePickerPeriod.setVisibility(View.VISIBLE);
-                        btnAll.setTextColor(Color.BLACK);
-                        btnDay.setTextColor(Color.BLACK);
-                        btnPeriod.setTextColor(getResources().getColor(R.color.green_light));
-                    }
-                });
                 ivDatePickOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        switch (state) {
-                            case 0: {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.set(Calendar.YEAR, dp.getYear());
-                                calendar.set(Calendar.MONTH, dp.getMonth());
-                                calendar.set(Calendar.DAY_OF_MONTH, dp.getDayOfMonth());
-                                beginDate = (Calendar) calendar.clone();
-                                endDate = (Calendar) calendar.clone();
-                                beginDate.set(Calendar.HOUR_OF_DAY, 0);
-                                beginDate.set(Calendar.MINUTE, 0);
-                                beginDate.set(Calendar.SECOND, 0);
-                                beginDate.set(Calendar.MILLISECOND, 0);
-                                endDate.set(Calendar.HOUR_OF_DAY, 23);
-                                endDate.set(Calendar.MINUTE, 59);
-                                endDate.set(Calendar.SECOND, 59);
-                                endDate.set(Calendar.MILLISECOND, 59);
-                                Log.d("Calendar begin", "" + beginDate.getTime());
-                                Log.d("Calendar end", "" + endDate.getTime());
-                                break;
+                        int key = preferences.getInt("balance_solve", 0);
+                        Calendar begin, end = Calendar.getInstance();
+                        if (key == 0) {
+                            Calendar firstDay = commonOperations.getFirstDay();
+                            if (firstDay == null) {
+                                firstDay = Calendar.getInstance();
+                                firstDay.set(2016, Calendar.JANUARY, 1);
                             }
-                            case 1: {
-                                Log.d("Period begin", "" + beginDate.getTime());
-                                Log.d("Period end", "" + endDate.getTime());
-                                break;
-                            }
-                            case 2: {
-                                break;
-                            }
+                            begin = (Calendar) firstDay.clone();
+                            end.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth());
                         }
+                        else {
+                            begin = Calendar.getInstance();
+                            begin.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth());
+                            begin.set(Calendar.HOUR_OF_DAY, 0);
+                            begin.set(Calendar.MINUTE, 0);
+                            begin.set(Calendar.SECOND, 0);
+                            begin.set(Calendar.MILLISECOND, 0);
+                            end.set(dp.getYear(), dp.getMonth(), dp.getDayOfMonth());
+                            end.set(Calendar.HOUR_OF_DAY, 23);
+                            end.set(Calendar.MINUTE, 59);
+                            end.set(Calendar.SECOND, 59);
+                            end.set(Calendar.MILLISECOND, 59);
+                        }
+                        dataCache.setBeginDate(begin);
+                        dataCache.setEndDate(end);
+                        long countOfDays = 0;
+                        if (end.compareTo(Calendar.getInstance()) >= 0) {
+                            countOfDays = commonOperations.betweenDays(Calendar.getInstance(), end);
+                            paFragmentManager.getLvpMain().setCurrentItem(5000 + (int)countOfDays, false);
+                        }
+                        else {
+                            countOfDays = commonOperations.betweenDays(end, Calendar.getInstance());
+                            paFragmentManager.getLvpMain().setCurrentItem(5000 - (int)countOfDays, false);
+                        }
+                        if (paFragmentManager.getCurrentFragment() != null)
+                            paFragmentManager.getCurrentFragment().update();
                         dialog.dismiss();
                     }
                 });
@@ -576,37 +310,6 @@ public class PocketAccounter extends AppCompatActivity {
         } else
             super.onBackPressed();
     }
-
-    DatePickerDialog.OnDateSetListener getBeginListener = new DatePickerDialog.OnDateSetListener() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
-        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
-            beginDate.set(arg1, arg2, arg3);
-            if (beginDate.compareTo(endDate) >= 0) {
-                beginDate = (Calendar) endDate.clone();
-            }
-            startTimeFilter.setText(dateFormat.format(beginDate.getTime()));
-        }
-    };
-
-    public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
-        beginDate.set(arg1, arg2, arg3);
-        if (beginDate.compareTo(endDate) >= 0) {
-            beginDate = (Calendar) endDate.clone();
-        }
-        startTimeFilter.setText(format.format(beginDate.getTime()));
-    }
-
-    DatePickerDialog.OnDateSetListener getEndListener = new DatePickerDialog.OnDateSetListener() {
-        public void onDateSet(DatePicker arg0, int arg1, int arg2, int arg3) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            endDate.set(arg1, arg2, arg3);
-            if (beginDate.compareTo(endDate) >= 0) {
-                endDate = (Calendar) beginDate.clone();
-            }
-            endTimeFilter.setText(dateFormat.format(endDate.getTime()));
-        }
-    };
 //
 //    public Calendar getDate() {
 //        return date;

@@ -79,7 +79,7 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 for (int i = 0; i < size; i++) {
                     ((PocketAccounter)getContext()).getSupportFragmentManager().popBackStack();
                 }
-                paFragmentManager.initialize(dataCache.getBeginDate(), dataCache.getEndDate());
+                paFragmentManager.initialize();
             }
         });
         toolbarManager.setTitle(getResources().getString(R.string.records));

@@ -4,11 +4,9 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="vertical">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <TextView
             android:id="@+id/tvCurrencyExchangeListItem"
             android:layout_width="wrap_content"
@@ -18,7 +16,6 @@
             android:layout_marginTop="@dimen/ten_dp"
             android:layout_weight="1"
             android:text="@string/choose_date" />
-
         <ImageView
             android:id="@+id/ivDatePickCancel"
             android:layout_width="@dimen/twentyfive_dp"
@@ -27,7 +24,6 @@
             android:layout_margin="@dimen/four_dp"
             android:layout_marginLeft="@dimen/ten_dp"
             android:src="@drawable/cancel_sign" />
-
         <ImageView
             android:id="@+id/ivDatePickOk"
             android:layout_width="@dimen/twentyeight_dp"
@@ -37,192 +33,17 @@
             android:layout_marginRight="@dimen/sixteen_dp"
             android:padding="@dimen/four_dp"
             android:src="@drawable/check_sign" />
-
     </LinearLayout>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
         android:background="@color/lv_border" />
-
-    <RelativeLayout
+    <DatePicker
+        android:id="@+id/dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <DatePicker
-            android:id="@+id/dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_marginBottom="@dimen/four_dp"
-            android:layout_marginTop="@dimen/sixteen_dp"
-            android:calendarViewShown="false"
-            android:visibility="gone" />
-
-        <RelativeLayout
-            android:id="@+id/rlDatePickerPeriod"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true">
-
-            <Spinner
-                android:id="@+id/spDatePickerPeriod"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:padding="@dimen/eight_dp" />
-
-            <LinearLayout
-                android:id="@+id/linlayDatePickerPeriodMonthYear"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/spDatePickerPeriod"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/rlDatePickerPeriodMonth"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tvDatePickerPeriodMonth"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginLeft="@dimen/six_dp"
-                        android:text="@string/mont"
-                        android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="@dimen/sixteen_sp" />
-
-                    <Spinner
-                        android:id="@+id/spDatePickerPeriodMonth"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_below="@+id/tvDatePickerPeriodMonth"
-                        android:layout_centerInParent="true"
-                        android:text="oy" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rlDatePickerPeriodYear"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tvDatePickerPeriodYear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginLeft="@dimen/six_dp"
-                        android:text="@string/yearr"
-                        android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="@dimen/sixteen_sp" />
-
-                    <Spinner
-                        android:id="@+id/spDatePickerPeriodYear"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_below="@+id/tvDatePickerPeriodYear"
-                        android:layout_centerInParent="true"
-                        android:text="oy" />
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:id="@+id/linlayDatePickerPeriodPer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_marginLeft="@dimen/six_dp"
-                            android:text="Start"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/sixteen_sp" />
-
-                        <EditText
-                            android:id="@+id/etDatePickerPeriodStart"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginRight="@dimen/six_dp"
-                            android:text="start day" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_marginLeft="@dimen/six_dp"
-                            android:text="End"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/sixteen_sp" />
-
-                        <EditText
-                            android:id="@+id/etDatePickerPeriodEnd"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginRight="@dimen/six_dp"
-                            android:text="end day" />
-                    </RelativeLayout>
-
-                </LinearLayout>
-            </LinearLayout>
-        </RelativeLayout>
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!--style="?android:attr/borderlessButtonStyle"-->
-        <Button
-            android:id="@+id/btnDatePickerAll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:text="All"
-            android:textSize="@dimen/eighteen_sp"
-            android:theme="@style/FlatButton" />
-
-        <Button
-            android:id="@+id/btnDatePickerDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:text="Day"
-            android:textColor="@color/green_light"
-            android:textSize="@dimen/eighteen_sp"
-            android:theme="@style/FlatButton" />
-        <!--style="?android:attr/borderlessButtonStyle"-->
-        <Button
-            android:id="@+id/btnDatePickerPeriod"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:text="Period"
-            android:textSize="@dimen/eighteen_sp"
-            android:theme="@style/FlatButton" />
-    </LinearLayout>
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:calendarViewShown="false"/>
 </LinearLayout>

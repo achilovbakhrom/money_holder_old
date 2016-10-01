@@ -46,6 +46,8 @@ public class RecordButtonExpanse {
 	private float aLetterHeight;
 //	private Calendar date;
 	private BitmapFactory.Options options;
+	private int thirtyDp, toolbarTextColor, tenSp;
+	String[] operationIds, operationIcons, operationNames, pageIcons, pageIds, pageNames;
 	@Inject DaoSession daoSession;
 	@Inject	DataCache dataCache;
 	public RecordButtonExpanse(Context context, int type, Calendar date) {
@@ -53,9 +55,11 @@ public class RecordButtonExpanse {
 		((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
 		options = new BitmapFactory.Options();
 		options.inPreferredConfig = Bitmap.Config.RGB_565;
+		thirtyDp = (int) context.getResources().getDimension(R.dimen.thirty_dp);
 //		this.date = Calendar.getInstance();
 		date.setTimeInMillis(date.getTimeInMillis());
 		clearance = context.getResources().getDimension(R.dimen.one_dp);
+		tenSp = (int) context.getResources().getDimension(R.dimen.ten_sp);
 		shape = new Path();
 		this.type = type;
 		Paint paint = new Paint();
@@ -64,6 +68,13 @@ public class RecordButtonExpanse {
 		paint.getTextBounds("A", 0, "A".length(), bounds);
 		aLetterHeight = bounds.height();
 		container = new RectF();
+		operationIds = context.getResources().getStringArray(R.array.operation_ids);
+		operationIcons = context.getResources().getStringArray(R.array.operation_icons);
+		operationNames = context.getResources().getStringArray(R.array.operation_names);
+		pageIds = context.getResources().getStringArray(R.array.page_ids);
+		pageIcons = context.getResources().getStringArray(R.array.page_icons);
+		pageNames = context.getResources().getStringArray(R.array.page_names);
+		toolbarTextColor = ContextCompat.getColor(context, R.color.toolbar_text_color);
 	}
 	public synchronized void setBounds(float left, float top, float right, float bottom, float radius) {
 		container.set(left, top, right, bottom);
@@ -213,7 +224,7 @@ public class RecordButtonExpanse {
 		else
 			shadow = dataCache.getElements().get(PocketAccounterGeneral.UP_LEFT_BOTTOM);
 	}
-	public synchronized void drawButton(Canvas canvas) {
+	public void drawButton(Canvas canvas) {
 		Bitmap scaled = null;
 		Paint bitmapPaint = new Paint();
 		bitmapPaint.setAntiAlias(true);
@@ -424,7 +435,7 @@ public class RecordButtonExpanse {
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
 						int resId = context.getResources().getIdentifier(category.getIcon(), "drawable", context.getPackageName());
 						scaled = BitmapFactory.decodeResource(context.getResources(), resId, options);
-						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
 					else
@@ -438,7 +449,7 @@ public class RecordButtonExpanse {
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
 						int resId = context.getResources().getIdentifier(creditDetials.getIcon_ID(), "drawable", context.getPackageName());
 						scaled = BitmapFactory.decodeResource(context.getResources(), resId, options);
-						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
 					else
@@ -454,9 +465,7 @@ public class RecordButtonExpanse {
 
 					break;
 				case PocketAccounterGeneral.FUNCTION:
-					String[] operationIds = context.getResources().getStringArray(R.array.operation_ids);
-					String[] operationIcons = context.getResources().getStringArray(R.array.operation_icons);
-					String[] operationNames = context.getResources().getStringArray(R.array.operation_names);
+
 					String icon = null;
 					for (int i = 0; i < operationIds.length; i++) {
 						if (operationIds[i].matches(boardButton.getCategoryId())) {
@@ -468,16 +477,13 @@ public class RecordButtonExpanse {
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
 						int id = context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
 						scaled = BitmapFactory.decodeResource(context.getResources(), id, options);
-						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
 					else
 						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 					break;
 				case PocketAccounterGeneral.PAGE:
-					String[] pageIds = context.getResources().getStringArray(R.array.page_ids);
-					String[] pageIcons = context.getResources().getStringArray(R.array.page_icons);
-					String[] pageNames = context.getResources().getStringArray(R.array.page_names);
 					icon = null;
 					for (int i = 0; i < pageIds.length; i++) {
 						if (pageIds[i].matches(boardButton.getCategoryId())) {
@@ -489,7 +495,7 @@ public class RecordButtonExpanse {
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
 						int id = context.getResources().getIdentifier(icon, "drawable", context.getPackageName());
 						scaled = BitmapFactory.decodeResource(context.getResources(), id, options);
-						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
 					else
@@ -498,7 +504,7 @@ public class RecordButtonExpanse {
 			}
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint();
-			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
+			textPaint.setColor(toolbarTextColor);
 			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
 			textPaint.setAntiAlias(true);
 			Rect bounds = new Rect();
@@ -516,15 +522,15 @@ public class RecordButtonExpanse {
 		} else {
 			if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
 				scaled = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_category, options);
-				scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
+				scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 				dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 			}
 			else
 				scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint();
-			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
-			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
+			textPaint.setColor(toolbarTextColor);
+			textPaint.setTextSize(tenSp);
 			String text = context.getResources().getString(R.string.add);
 			textPaint.setAntiAlias(true);
 			Rect bounds = new Rect();

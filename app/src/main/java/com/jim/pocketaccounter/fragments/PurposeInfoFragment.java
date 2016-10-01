@@ -1,5 +1,6 @@
 package com.jim.pocketaccounter.fragments;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ import javax.inject.Named;
 /**
  * Created by root on 9/7/16.
  */
+@SuppressLint("ValidFragment")
 public class PurposeInfoFragment extends Fragment implements View.OnClickListener {
     @Inject
     ToolbarManager toolbarManager;

@@ -9,18 +9,27 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.managers.CommonOperations;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+
 
 @SuppressLint("ViewHolder")
 public class ReportByCategoryDialogAdapter extends BaseAdapter {
-	private ArrayList<SubCategoryWitAmount> result;
+	private List<SubCategoryWitAmount> result;
 	private LayoutInflater inflater;
-	public ReportByCategoryDialogAdapter(Context context, ArrayList<SubCategoryWitAmount> result) {
+	@Inject
+	CommonOperations commonOperations;
+	public ReportByCategoryDialogAdapter(Context context, List<SubCategoryWitAmount> result) {
 	    this.result = result;
 	    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
 	}
 	@Override
 	public int getCount() {
@@ -41,7 +50,8 @@ public class ReportByCategoryDialogAdapter extends BaseAdapter {
 		tvReportByCategoryListSubCatName.setText("- "+result.get(position).getSubCategory().getName());
 		TextView tvReportByCategoryListSubCatAmount = (TextView) view.findViewById(R.id.tvReportByCategoryListSubCatAmount);
 		DecimalFormat format = new DecimalFormat("0.00##");
-//		tvReportByCategoryListSubCatAmount.setText(format.format(result.get(position).getAmount())+ PocketAccounter.financeManager.getMainCurrency().getAbbr());
+		tvReportByCategoryListSubCatAmount.setText(format.format(result.get(position).getAmount()) +
+				commonOperations.getMainCurrency().getAbbr());
 		return view;
 	}
 }

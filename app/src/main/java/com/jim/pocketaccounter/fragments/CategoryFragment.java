@@ -45,20 +45,13 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	private RecyclerView rvCategories;
 	private CheckBox chbCatIncomes, chbCatExpanses;
 	private FABIcon fabCategoryAdd;
-	@Inject
-	LogicManager logicManager;
-	@Inject
-	ToolbarManager toolbarManager;
-	@Inject
-	DrawerInitializer drawerInitializer;
-	@Inject
-	SubCatAddEditDialog subCatAddEditDialog;
-	@Inject
-	DaoSession daoSession;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	DataCache dataCache;
+	@Inject	LogicManager logicManager;
+	@Inject	ToolbarManager toolbarManager;
+	@Inject	DrawerInitializer drawerInitializer;
+	@Inject	SubCatAddEditDialog subCatAddEditDialog;
+	@Inject	DaoSession daoSession;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	DataCache dataCache;
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_layout, container, false);
@@ -148,6 +141,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 							if (logicManager.insertSubCategory(subCategories) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS)
 								Toast.makeText(getContext(), R.string.such_subcat_exist,
 										Toast.LENGTH_SHORT).show();
+							subCatAddEditDialog.dismiss();
 						}
 					});
 					subCatAddEditDialog.show();
