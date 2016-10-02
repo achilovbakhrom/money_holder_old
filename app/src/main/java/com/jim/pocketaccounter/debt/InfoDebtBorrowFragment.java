@@ -601,7 +601,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
         }
 
         public void onBindViewHolder(final InfoDebtBorrowFragment.ViewHolder view, final int position) {
-            view.infoDate.setText(getString(R.string.pay_daet) + list.get(position).getPayDate());
+            view.infoDate.setText(getString(R.string.pay_daet) + dateFormat.format(list.get(position).getPayDate().getTime()));
             view.infoSumm.setText((list.get(position).getAmount() == ((int) list.get(position).getAmount())
                     ? ("" + ((int) list.get(position).getAmount())) : ("" + list.get(position).getAmount()))
                     + "" + debtBorrow.getCurrency().getAbbr());

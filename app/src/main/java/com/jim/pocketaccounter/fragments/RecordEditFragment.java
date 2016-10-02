@@ -47,6 +47,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
@@ -73,9 +74,12 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.transitionseverywhere.AutoTransition;
 import com.transitionseverywhere.Transition;
 import com.transitionseverywhere.TransitionManager;
+
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
+
 import org.greenrobot.greendao.query.Query;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -89,14 +93,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+
 import javax.inject.Inject;
+
 import static android.app.Activity.RESULT_OK;
 import static com.jim.pocketaccounter.debt.AddBorrowFragment.RESULT_LOAD_IMAGE;
 import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
 
 @SuppressLint("ValidFragment")
 public class RecordEditFragment extends Fragment implements OnClickListener {
-    private boolean keyforback=false;
+    private boolean keyforback = false;
     private TextView tvRecordEditDisplay;
     private ImageView ivToolbarMostRight, ivRecordEditCategory, ivRecordEditSubCategory, ivToolbaExcel;
     private Spinner spRecordEdit, spToolbar;
@@ -118,17 +124,17 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
     private Animation buttonClick;
     private TextView comment;
     private EditText comment_add;
-    private String oraliqComment="";
-    boolean keykeboard=false;
-    private boolean keyForDeleteAllPhotos=true;
+    private String oraliqComment = "";
+    boolean keykeboard = false;
+    private boolean keyForDeleteAllPhotos = true;
     static final int REQUEST_IMAGE_CAPTURE = 112;
     private String uid_code;
     RecyclerView myListPhoto;
     ArrayList<PhotoDetails> myTickets;
     ArrayList<PhotoDetails> myTicketsFromBackRoll;
     PhotoAdapter myTickedAdapter;
-    boolean fromEdit=false;
-    boolean openAddingDialog=false;
+    boolean fromEdit = false;
+    boolean openAddingDialog = false;
     View mainView;
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 18;
     @Inject
@@ -147,6 +153,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
     SubCatAddEditDialog subCatAddEditDialog;
     @Inject
     DataCache dataCache;
+
     @SuppressLint("ValidFragment")
     public RecordEditFragment(RootCategory category, Calendar date, FinanceRecord record, int parent) {
         this.parent = parent;
@@ -157,15 +164,18 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         this.cameCategory = category;
         this.record = record;
     }
-    public  interface OpenIntentFromAdapter{
+
+    public interface OpenIntentFromAdapter {
         void startActivityFromFragmentForResult(Intent intent);
     }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
-        mainView = inflater.inflate(R.layout.record_edit_modern, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        if (parent == PocketAccounterGeneral.MAIN)
+            paFragmentManager.setMainReturn(true);
+        mainView = inflater.inflate(R.layout.record_edit_modern, container, false);
         this.date = dataCache.getEndDate();
-
         if (cameCategory != null) {
 
             Query<RootCategory> query = daoSession.getRootCategoryDao().queryBuilder()
@@ -191,13 +201,12 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (openAddingDialog){
+                if (openAddingDialog) {
                     closeLayout();
                     return;
-                }
-                else {
+                } else {
                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if(imm==null) return;
+                    if (imm == null) return;
                     imm.hideSoftInputFromWindow(mainView.getWindowToken(), 0);
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
@@ -206,9 +215,8 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             if (parent == PocketAccounterGeneral.MAIN) {
                                 paFragmentManager.displayMainWindow();
                             } else {
-//                                paFragmentManager.displayFragment(new RecordDetailFragment(date));
+                                paFragmentManager.displayFragment(new RecordDetailFragment(date));
                             }
-
                         }
                     }, 100);
                 }
@@ -226,23 +234,20 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 editor.putString("editor_sp", ((TextView) view.findViewById(R.id.tvAccountListName)).getText().toString());
                 try {
                     editor.commit();
-                }catch (Exception o){
+                } catch (Exception o) {
                     editor.apply();
                 }
                 account = accountList.get(position);
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
-        int pos=0;
+        int pos = 0;
         for (Account temp : accountList) {
-            if(temp.getName().matches(sharedPreferences.getString("editor_sp", ""))){
+            if (temp.getName().matches(sharedPreferences.getString("editor_sp", ""))) {
                 try {
                     spToolbar.setSelection(pos);
-                }
-                catch (Exception o){
+                } catch (Exception o) {
                     o.printStackTrace();
                 }
             }
@@ -267,6 +272,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 currency = currencyList.get(position);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -274,7 +280,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         comment = (TextView) mainView.findViewById(R.id.textView18);
         comment_add = (EditText) mainView.findViewById(R.id.comment_add);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        uid_code= "record_" + UUID.randomUUID().toString();
+        uid_code = "record_" + UUID.randomUUID().toString();
         buttonClick = AnimationUtils.loadAnimation(getContext(), R.anim.button_click);
 
         ivRecordEditCategory = (ImageView) mainView.findViewById(R.id.ivRecordEditCategory);
@@ -297,14 +303,13 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             ivRecordEditCategory.setImageResource(resId);
         }
         if (record != null) {
-            fromEdit=true;
+            fromEdit = true;
             int resId = getResources().getIdentifier(record.getCategory().getIcon(), "drawable", getContext().getPackageName());
             ivRecordEditCategory.setImageResource(resId);
             if (record.getSubCategory() != null) {
                 resId = getResources().getIdentifier(record.getSubCategory().getIcon(), "drawable", getContext().getPackageName());
                 ivRecordEditSubCategory.setImageResource(resId);
-            }
-            else
+            } else
                 ivRecordEditSubCategory.setImageResource(R.drawable.category_not_selected);
             tvRecordEditDisplay.setText(decimalFormat.format(record.getAmount()));
 
@@ -320,26 +325,26 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     break;
                 }
             }
-            myTickets= (ArrayList<PhotoDetails>) record.getAllTickets()/*.clone()*/;
-            myTicketsFromBackRoll= (ArrayList<PhotoDetails>) myTickets.clone();
-            if(record.getComment()!=null&&!record.getComment().matches("")){
-                oraliqComment=record.getComment();
+            myTickets = (ArrayList<PhotoDetails>) record.getAllTickets()/*.clone()*/;
+            myTicketsFromBackRoll = (ArrayList<PhotoDetails>) myTickets.clone();
+            if (record.getComment() != null && !record.getComment().matches("")) {
+                oraliqComment = record.getComment();
                 comment.setText(oraliqComment);
                 comment_add.setText(oraliqComment);
             }
         }
-        if(myTickets==null)
-        myTickets=new ArrayList<>();
-        if(myTicketsFromBackRoll==null)
-            myTicketsFromBackRoll=new ArrayList<>();
+        if (myTickets == null)
+            myTickets = new ArrayList<>();
+        if (myTicketsFromBackRoll == null)
+            myTicketsFromBackRoll = new ArrayList<>();
         LinearLayoutManager layoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         myListPhoto = (RecyclerView) mainView.findViewById(R.id.recycler_calc);
         myListPhoto.setLayoutManager(layoutManager);
-        myTickedAdapter =new PhotoAdapter(myTickets, getContext(), new OpenIntentFromAdapter() {
+        myTickedAdapter = new PhotoAdapter(myTickets, getContext(), new OpenIntentFromAdapter() {
             @Override
             public void startActivityFromFragmentForResult(Intent intent) {
-                PocketAccounter.openActivity=true;
+                PocketAccounter.openActivity = true;
                 startActivityForResult(intent, PhotoAdapter.REQUEST_DELETE_PHOTOS);
             }
         });
@@ -401,7 +406,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 lastDot = false;
             }
         };
-        for (int id:numericButtons)
+        for (int id : numericButtons)
             view.findViewById(id).setOnClickListener(listener);
     }
 
@@ -460,52 +465,50 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 builder.setTitle(getString(R.string.choesetypeing))
                         .setItems(R.array.adding_ticket_type, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                               if(which==0){
-                                   if (ContextCompat.checkSelfPermission(getContext(),
-                                           android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                           != PackageManager.PERMISSION_GRANTED) {
-                                       if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                               android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                                           ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-                                                   new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                   MY_PERMISSIONS_REQUEST_CAMERA);
-                                       } else {
-                                           ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-                                                   new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                   MY_PERMISSIONS_REQUEST_CAMERA);
-                                     }
-                                   } else {
-                                       getPhoto();
-                                   }
-                               }
-                                else if(which==1){
-                                   Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                   if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
-                                       if (ContextCompat.checkSelfPermission(getContext(),
-                                               android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                               != PackageManager.PERMISSION_GRANTED) {
-                                           if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                                                   android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                                               ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-                                                       new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                       MY_PERMISSIONS_REQUEST_CAMERA);
-                                           } else {
-                                               ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-                                                       new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                       MY_PERMISSIONS_REQUEST_CAMERA);
-                                           }
-                                       }
-                                        else {
-                                           File f = new File(getContext().getExternalFilesDir(null),"temp.jpg");
-                                           takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                           PocketAccounter.openActivity=true;
-                                           startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                                       }
-                                   }
-                               }
+                                if (which == 0) {
+                                    if (ContextCompat.checkSelfPermission(getContext(),
+                                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                            != PackageManager.PERMISSION_GRANTED) {
+                                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                            ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                    MY_PERMISSIONS_REQUEST_CAMERA);
+                                        } else {
+                                            ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                    MY_PERMISSIONS_REQUEST_CAMERA);
+                                        }
+                                    } else {
+                                        getPhoto();
+                                    }
+                                } else if (which == 1) {
+                                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                    if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                                        if (ContextCompat.checkSelfPermission(getContext(),
+                                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                                != PackageManager.PERMISSION_GRANTED) {
+                                            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                        MY_PERMISSIONS_REQUEST_CAMERA);
+                                            } else {
+                                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                        MY_PERMISSIONS_REQUEST_CAMERA);
+                                            }
+                                        } else {
+                                            File f = new File(getContext().getExternalFilesDir(null), "temp.jpg");
+                                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                            PocketAccounter.openActivity = true;
+                                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                                        }
+                                    }
+                                }
                             }
                         });
-                 builder.create().show();
+                builder.create().show();
             }
         });
         view.findViewById(R.id.rlBackspaceSign).setOnClickListener(new OnClickListener() {
@@ -537,12 +540,12 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         comment.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                LinearLayout linbutview=(LinearLayout) view.findViewById(R.id.numbersbut);
+                LinearLayout linbutview = (LinearLayout) view.findViewById(R.id.numbersbut);
                 TransitionManager.beginDelayedTransition(linbutview);
                 linbutview.setVisibility(View.GONE);
-                keyforback=false;
-                openAddingDialog=true;
-                PocketAccounter.isCalcLayoutOpen=true;
+                keyforback = false;
+                openAddingDialog = true;
+                PocketAccounter.isCalcLayoutOpen = true;
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -550,11 +553,11 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         comment_add.requestFocus();
                         final InputMethodManager inputMethodManager = (InputMethodManager) getContext()
                                 .getSystemService(Context.INPUT_METHOD_SERVICE);
-                        if(inputMethodManager==null)
+                        if (inputMethodManager == null)
                             return;
                         inputMethodManager.showSoftInput(comment_add, InputMethodManager.SHOW_IMPLICIT);
                     }
-                },200);
+                }, 200);
 
 
             }
@@ -562,13 +565,13 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         view.findViewById(R.id.savesecbut).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                keyForDeleteAllPhotos=false;
-                if(keykeboard){
-                    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if(imm==null)
+                keyForDeleteAllPhotos = false;
+                if (keykeboard) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm == null)
                         return;
                     imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
-                    PocketAccounter.isCalcLayoutOpen=false;
+                    PocketAccounter.isCalcLayoutOpen = false;
 
                     (new Handler()).postDelayed(new Runnable() {
                         @Override
@@ -579,9 +582,8 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             }
                             createNewRecord();
                         }
-                    },300);
-                }
-                else{
+                    }, 300);
+                } else {
                     v.startAnimation(buttonClick);
                     if (lastDot || lastOperator) {
                         return;
@@ -597,17 +599,17 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             public void onGlobalLayout() {
                 int heightDiff = view.getRootView().getHeight() - view.getHeight();
                 if (heightDiff > commonOperations.convertDpToPixel(200)) {
-                    if(keykeboard!=true){
-                        keykeboard=true;
+                    if (keykeboard != true) {
+                        keykeboard = true;
                         final Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                RelativeLayout headermain= (RelativeLayout) view.findViewById(R.id.headermain);
-                                AutoTransition cus=new AutoTransition();
+                                RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
+                                AutoTransition cus = new AutoTransition();
                                 cus.setDuration(200);
                                 cus.setStartDelay(0);
-                                TransitionManager.beginDelayedTransition(headermain,cus);
+                                TransitionManager.beginDelayedTransition(headermain, cus);
                                 headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
                                 comment.setVisibility(View.GONE);
                                 view.findViewById(R.id.addphotopanel).setVisibility(View.GONE);
@@ -619,20 +621,19 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             }
                         }, 50);
                     }
-                }
-                else {
-                    if(keykeboard){
-                        keykeboard=false;
-                        if (keyforback){
+                } else {
+                    if (keykeboard) {
+                        keykeboard = false;
+                        if (keyforback) {
                             final Handler handler = new Handler();
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AutoTransition cus=new AutoTransition();
+                                    AutoTransition cus = new AutoTransition();
                                     cus.setDuration(300);
                                     cus.setStartDelay(0);
-                                    LinearLayout linbutview=(LinearLayout) view.findViewById(R.id.numbersbut);
-                                    TransitionManager.beginDelayedTransition(linbutview,cus);
+                                    LinearLayout linbutview = (LinearLayout) view.findViewById(R.id.numbersbut);
+                                    TransitionManager.beginDelayedTransition(linbutview, cus);
                                     TransitionManager.beginDelayedTransition(myListPhoto);
                                     myListPhoto.setVisibility(View.VISIBLE);
                                     linbutview.setVisibility(View.VISIBLE);
@@ -647,26 +648,25 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         view.findViewById(R.id.addcomment).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddingDialog=false;
+                openAddingDialog = false;
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
-                    if(keykeboard) {
+                    if (keykeboard) {
                         RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
                         keyforback = true;
-                            (new Handler()).postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
+                        (new Handler()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
                                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                    if(imm==null)
+                                    if (imm == null)
                                         return;
                                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                    }
-                                    catch (Exception o){
-                                        o.printStackTrace();
-                                    }
+                                } catch (Exception o) {
+                                    o.printStackTrace();
                                 }
-                            }, 120);
-                        PocketAccounter.isCalcLayoutOpen=false;
+                            }
+                        }, 120);
+                        PocketAccounter.isCalcLayoutOpen = false;
                         comment.setVisibility(View.VISIBLE);
                         view.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
                         view.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
@@ -680,24 +680,22 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             comment.setText(getString(R.string.add_comment));
                         }
                         headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
-                    }
-                    else{
+                    } else {
                         RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
                         keyforback = true;
-                            (new Handler()).postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        LinearLayout linbutview=(LinearLayout) view.findViewById(R.id.numbersbut);
-                                        myListPhoto.setVisibility(View.VISIBLE);
-                                        linbutview.setVisibility(View.VISIBLE);
-                                        }
-                                        catch (Exception o){
-                                            o.printStackTrace();
-                                    }
-
+                        (new Handler()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    LinearLayout linbutview = (LinearLayout) view.findViewById(R.id.numbersbut);
+                                    myListPhoto.setVisibility(View.VISIBLE);
+                                    linbutview.setVisibility(View.VISIBLE);
+                                } catch (Exception o) {
+                                    o.printStackTrace();
                                 }
-                            }, 120);
+
+                            }
+                        }, 120);
                         comment.setVisibility(View.VISIBLE);
                         view.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
                         view.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
@@ -712,38 +710,36 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         }
                         headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
                     }
-                }
-                else
-                if(keykeboard) {
+                } else if (keykeboard) {
                     RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
                     AutoTransition cus = new AutoTransition();
                     keyforback = true;
-                    PocketAccounter.isCalcLayoutOpen=false;
+                    PocketAccounter.isCalcLayoutOpen = false;
                     cus.addListener(new Transition.TransitionListener() {
                         @Override
                         public void onTransitionStart(Transition transition) {
 
                         }
+
                         @Override
                         public void onTransitionEnd(Transition transition) {
-                            if(mainView==null){
+                            if (mainView == null) {
                                 return;
                             }
-                               (new Handler()).postDelayed(new Runnable() {
-                                   @Override
-                                   public void run() {
-                                       try {
-                                           InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                           if(imm==null) return;
-                                           imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            (new Handler()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        if (imm == null) return;
+                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-                                       }
-                                       catch (Exception o){
-                                           o.printStackTrace();
-                                       }
-                                   }
-                               }, 120);
-                         }
+                                    } catch (Exception o) {
+                                        o.printStackTrace();
+                                    }
+                                }
+                            }, 120);
+                        }
 
                         @Override
                         public void onTransitionCancel(Transition transition) {
@@ -777,8 +773,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     }
 
                     headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
-                }
-                else{
+                } else {
                     RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
                     AutoTransition cus = new AutoTransition();
                     keyforback = true;
@@ -790,21 +785,20 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
 
                         @Override
                         public void onTransitionEnd(Transition transition) {
-                            if(mainView==null){
+                            if (mainView == null) {
                                 return;
                             }
                             try {
 
-                                AutoTransition cus=new AutoTransition();
+                                AutoTransition cus = new AutoTransition();
                                 cus.setDuration(300);
                                 cus.setStartDelay(0);
-                                LinearLayout linbutview=(LinearLayout) view.findViewById(R.id.numbersbut);
+                                LinearLayout linbutview = (LinearLayout) view.findViewById(R.id.numbersbut);
                                 TransitionManager.beginDelayedTransition(myListPhoto);
                                 myListPhoto.setVisibility(View.VISIBLE);
-                                TransitionManager.beginDelayedTransition(linbutview,cus);
+                                TransitionManager.beginDelayedTransition(linbutview, cus);
                                 linbutview.setVisibility(View.VISIBLE);
-                            }
-                            catch (Exception o){
+                            } catch (Exception o) {
                                 o.printStackTrace();
                             }
 
@@ -860,10 +854,10 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         view.findViewById(R.id.imOK).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                keyForDeleteAllPhotos=false;
-                if(keykeboard){
-                    InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if(imm==null)
+                keyForDeleteAllPhotos = false;
+                if (keykeboard) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm == null)
                         return;
                     imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                     (new Handler()).postDelayed(new Runnable() {
@@ -875,9 +869,8 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             }
                             createNewRecord();
                         }
-                    },300);
-                }
-                else{
+                    }, 300);
+                } else {
                     v.startAnimation(buttonClick);
                     if (lastDot || lastOperator) {
                         return;
@@ -914,46 +907,48 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         Intent i = new Intent(
                 Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        PocketAccounter.openActivity=true;
+        PocketAccounter.openActivity = true;
         startActivityForResult(i, RESULT_LOAD_IMAGE);
     }
-    boolean weNeedUpdate=false;
+
+    boolean weNeedUpdate = false;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
-            if(requestCode==REQUEST_DELETE_PHOTOS&&data!=null&&resultCode==RESULT_OK){
-        if((int)data.getExtras().get(PhotoAdapter.COUNT_DELETES)!=0){
-            for (int i = 0; i < (int)data.getExtras().get(PhotoAdapter.COUNT_DELETES); i++) {
-                for (int j = myTickets.size()-1; j>=0; j--) {
-                    if(myTickets.get(j).getPhotopath().matches( (String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH+i))){
-                        myTicketsFromBackRoll.remove(myTickets.get(j));
-                        daoSession.getPhotoDetailsDao().delete(myTickets.get(j));
-                        myTickets.remove(j);
-                        myTickedAdapter.notifyItemRemoved(j);
+        if (requestCode == REQUEST_DELETE_PHOTOS && data != null && resultCode == RESULT_OK) {
+            if ((int) data.getExtras().get(PhotoAdapter.COUNT_DELETES) != 0) {
+                for (int i = 0; i < (int) data.getExtras().get(PhotoAdapter.COUNT_DELETES); i++) {
+                    for (int j = myTickets.size() - 1; j >= 0; j--) {
+                        if (myTickets.get(j).getPhotopath().matches((String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH + i))) {
+                            myTicketsFromBackRoll.remove(myTickets.get(j));
+                            daoSession.getPhotoDetailsDao().delete(myTickets.get(j));
+                            myTickets.remove(j);
+                            myTickedAdapter.notifyItemRemoved(j);
+                        }
                     }
                 }
+                weNeedUpdate = true;
+
+
+                (new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < (int) data.getExtras().get(PhotoAdapter.COUNT_DELETES); i++) {
+                            File fileForDelete = new File((String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH + i));
+                            File fileForDeleteCache = new File((String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE + i));
+                            try {
+                                fileForDelete.delete();
+                                fileForDeleteCache.delete();
+                            } catch (Exception o) {
+                                o.printStackTrace();
+                            }
+                        }
+                    }
+                })).start();
             }
-            weNeedUpdate=true;
+        }
 
-
-            (new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (int i = 0; i < (int)data.getExtras().get(PhotoAdapter.COUNT_DELETES); i++) {
-                       File fileForDelete=new File((String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH+i));
-                       File fileForDeleteCache=new File((String) data.getExtras().get(PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE+i));
-                       try {
-                           fileForDelete.delete();
-                           fileForDeleteCache.delete();
-                       }
-                       catch (Exception o){
-                           o.printStackTrace();
-                       }
-                    }
-                }
-            })).start();
-        }}
-
-        if(requestCode == RESULT_LOAD_IMAGE && null != data) {
+        if (requestCode == RESULT_LOAD_IMAGE && null != data) {
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
             Cursor cursor = getActivity().getContentResolver().query(selectedImage,
@@ -963,18 +958,18 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             String picturePath = cursor.getString(columnIndex);
             cursor.close();
             File fileDir = new File(picturePath);
-            if(!fileDir.exists()) return;
+            if (!fileDir.exists()) return;
             try {
                 Bitmap bitmap;
                 Bitmap bitmapCache;
-                bitmap = decodeFile(fileDir) ;
-                bitmapCache=decodeFileToCache(fileDir);
+                bitmap = decodeFile(fileDir);
+                bitmapCache = decodeFileToCache(fileDir);
                 Matrix m = new Matrix();
-                m.postRotate( neededRotation(fileDir) );
+                m.postRotate(neededRotation(fileDir));
                 bitmap = Bitmap.createBitmap(bitmap,
                         0, 0, bitmap.getWidth(), bitmap.getHeight(),
                         m, true);
-                bitmapCache=Bitmap.createBitmap(bitmapCache,
+                bitmapCache = Bitmap.createBitmap(bitmapCache,
                         0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
                         m, true);
                 String path = android.os.Environment
@@ -985,27 +980,27 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         .getExternalStorageDirectory()
                         + File.separator
                         + "MoneyHolder" + File.separator + ".cache";
-                File pathik=new File(path);
-                if(!pathik.exists()){
+                File pathik = new File(path);
+                if (!pathik.exists()) {
                     pathik.mkdirs();
-                    File file = new File(pathik,".nomedia");
+                    File file = new File(pathik, ".nomedia");
                     file.createNewFile();
                 }
-                File path_cache_file=new File(path_cache);
-                if(!path_cache_file.exists()){
+                File path_cache_file = new File(path_cache);
+                if (!path_cache_file.exists()) {
                     path_cache_file.mkdirs();
-                    File file = new File(path_cache_file,".nomedia");
+                    File file = new File(path_cache_file, ".nomedia");
                     file.createNewFile();
                 }
                 OutputStream outFile = null;
                 OutputStream outFileCache = null;
-                SimpleDateFormat sp=new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
-                String filename="ticket-"+sp.format(System.currentTimeMillis())  + ".jpg";
-                File file = new File(path,filename);
-                File fileTocache = new File(path_cache,filename);
+                SimpleDateFormat sp = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+                String filename = "ticket-" + sp.format(System.currentTimeMillis()) + ".jpg";
+                File file = new File(path, filename);
+                File fileTocache = new File(path_cache, filename);
                 try {
                     outFile = new FileOutputStream(file);
-                    outFileCache=new FileOutputStream(fileTocache);
+                    outFileCache = new FileOutputStream(fileTocache);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outFile);
                     bitmapCache.compress(Bitmap.CompressFormat.JPEG, 100, outFileCache);
                     outFile.flush();
@@ -1013,12 +1008,12 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     outFile.close();
                     outFileCache.close();
                     PhotoDetails temp;
-                    if(record!=null)
-                        temp =new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),record.getRecordId());
+                    if (record != null)
+                        temp = new PhotoDetails(file.getAbsolutePath(), fileTocache.getAbsolutePath(), record.getRecordId());
                     else
-                        temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
+                        temp = new PhotoDetails(file.getAbsolutePath(), fileTocache.getAbsolutePath(), uid_code);
                     myTickets.add(temp);
-                    Log.d("testtt", "onActivityResult: "+myTickets.size());
+                    Log.d("testtt", "onActivityResult: " + myTickets.size());
                     myTickedAdapter.notifyDataSetChanged();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -1032,19 +1027,19 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             }
         }
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            File fileDir = new File(getContext().getExternalFilesDir(null),"temp.jpg");
-            if(!fileDir.exists()) return;
+            File fileDir = new File(getContext().getExternalFilesDir(null), "temp.jpg");
+            if (!fileDir.exists()) return;
             try {
                 Bitmap bitmap;
                 Bitmap bitmapCache;
-                bitmap = decodeFile(fileDir) ;
-                bitmapCache=decodeFileToCache(fileDir);
+                bitmap = decodeFile(fileDir);
+                bitmapCache = decodeFileToCache(fileDir);
                 Matrix m = new Matrix();
-                m.postRotate( neededRotation(fileDir) );
+                m.postRotate(neededRotation(fileDir));
                 bitmap = Bitmap.createBitmap(bitmap,
                         0, 0, bitmap.getWidth(), bitmap.getHeight(),
                         m, true);
-                bitmapCache=Bitmap.createBitmap(bitmapCache,
+                bitmapCache = Bitmap.createBitmap(bitmapCache,
                         0, 0, bitmapCache.getWidth(), bitmapCache.getHeight(),
                         m, true);
                 String path = android.os.Environment
@@ -1056,27 +1051,27 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         + File.separator
                         + "MoneyHolder" + File.separator + ".cache";
                 fileDir.delete();
-                File pathik=new File(path);
-                if(!pathik.exists()){
+                File pathik = new File(path);
+                if (!pathik.exists()) {
                     pathik.mkdirs();
-                    File file = new File(pathik,".nomedia");
+                    File file = new File(pathik, ".nomedia");
                     file.createNewFile();
                 }
-                File path_cache_file=new File(path_cache);
-                if(!path_cache_file.exists()){
+                File path_cache_file = new File(path_cache);
+                if (!path_cache_file.exists()) {
                     path_cache_file.mkdirs();
-                    File file = new File(path_cache_file,".nomedia");
+                    File file = new File(path_cache_file, ".nomedia");
                     file.createNewFile();
                 }
                 OutputStream outFile = null;
                 OutputStream outFileCache = null;
-                SimpleDateFormat sp=new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
-                String filename="ticket-"+sp.format(System.currentTimeMillis())  + ".jpg";
-                File file = new File(path,filename);
-                File fileTocache = new File(path_cache,filename);
+                SimpleDateFormat sp = new SimpleDateFormat("dd-MM-yyyy-HH:mm:ss");
+                String filename = "ticket-" + sp.format(System.currentTimeMillis()) + ".jpg";
+                File file = new File(path, filename);
+                File fileTocache = new File(path_cache, filename);
                 try {
                     outFile = new FileOutputStream(file);
-                    outFileCache=new FileOutputStream(fileTocache);
+                    outFileCache = new FileOutputStream(fileTocache);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outFile);
                     bitmapCache.compress(Bitmap.CompressFormat.JPEG, 100, outFileCache);
                     outFile.flush();
@@ -1084,10 +1079,10 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     outFile.close();
                     outFileCache.close();
                     PhotoDetails temp;
-                    if(record!=null)
-                        temp =new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),record.getRecordId());
+                    if (record != null)
+                        temp = new PhotoDetails(file.getAbsolutePath(), fileTocache.getAbsolutePath(), record.getRecordId());
                     else
-                         temp=new PhotoDetails(file.getAbsolutePath(),fileTocache.getAbsolutePath(),uid_code);
+                        temp = new PhotoDetails(file.getAbsolutePath(), fileTocache.getAbsolutePath(), uid_code);
                     myTickets.add(temp);
                     myTickedAdapter.notifyDataSetChanged();
                 } catch (FileNotFoundException e) {
@@ -1102,6 +1097,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             }
         }
     }
+
     @Override
     public void onClick(View view) {
         view.startAnimation(buttonClick);
@@ -1155,7 +1151,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             value = value.substring(0, 14);
         if (account.getNoneMinusAccount()) {
             double accounted = logicManager.isLimitAccess(account, date)
-                    -Double.parseDouble(tvRecordEditDisplay.getText().toString());
+                    - Double.parseDouble(tvRecordEditDisplay.getText().toString());
             if (accounted < 0) {
                 Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
                 return;
@@ -1163,7 +1159,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         }
         if (account.getIsLimited()) {
             if (-account.getLimite() > logicManager.isLimitAccess(account, date)
-                    -Double.parseDouble(tvRecordEditDisplay.getText().toString())) {
+                    - Double.parseDouble(tvRecordEditDisplay.getText().toString())) {
                 Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -1180,37 +1176,35 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             savingRecord.setAccount(account);
             savingRecord.setCurrency(currency);
             savingRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
-            if(record!=null)
+            if (record != null)
                 savingRecord.setRecordId(record.getRecordId());
             else
                 savingRecord.setRecordId(uid_code);
             savingRecord.setAllTickets(myTickets);
             savingRecord.setComment(comment_add.getText().toString());
-            if(record!=null){
+            if (record != null) {
                 daoSession.getPhotoDetailsDao().deleteInTx(myTicketsFromBackRoll);
             }
             daoSession.getPhotoDetailsDao().insertInTx(myTickets);
             logicManager.insertRecord(savingRecord);
             dataCache.updateOneDay(date);
-        }
-        else {
-            if(fromEdit){
+        } else {
+            if (fromEdit) {
                 record.setAllTickets(myTicketsFromBackRoll);
-                for (PhotoDetails temp:myTicketsFromBackRoll) {
+                for (PhotoDetails temp : myTicketsFromBackRoll) {
                     myTickets.remove(temp);
                 }
             }
             (new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    for (PhotoDetails temp:myTickets) {
-                        File forDeleteTicket=new File(temp.getPhotopath());
-                        File forDeleteTicketCache=new File(temp.getPhotopathCache());
+                    for (PhotoDetails temp : myTickets) {
+                        File forDeleteTicket = new File(temp.getPhotopath());
+                        File forDeleteTicketCache = new File(temp.getPhotopathCache());
                         try {
                             forDeleteTicket.delete();
                             forDeleteTicketCache.delete();
-                        }
-                        catch (Exception o){
+                        } catch (Exception o) {
                             o.printStackTrace();
                         }
                     }
@@ -1223,8 +1217,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 for (int i = 0; i < fm.getBackStackEntryCount(); i++) fm.popBackStack();
                 paFragmentManager.displayFragment(new RecordDetailFragment(date));
             }
-        }
-        else {
+        } else {
             paFragmentManager.displayMainWindow();
             paFragmentManager.getFragmentManager().popBackStack();
         }
@@ -1288,8 +1281,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         }
                     });
                     subCatAddEditDialog.show();
-                }
-                else if (subCategories.get(position).getId().matches(getResources().getString(R.string.no_category)))
+                } else if (subCategories.get(position).getId().matches(getResources().getString(R.string.no_category)))
                     subCategory = null;
                 else
                     subCategory = subCategories.get(position);
@@ -1307,33 +1299,32 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        if(keyForDeleteAllPhotos){
-            if(fromEdit){
-            for (PhotoDetails temp:myTicketsFromBackRoll) {
-                myTickets.remove(temp);
-            }
+        if (keyForDeleteAllPhotos) {
+            if (fromEdit) {
+                for (PhotoDetails temp : myTicketsFromBackRoll) {
+                    myTickets.remove(temp);
+                }
                 record.setAllTickets(myTicketsFromBackRoll);
             }
             (new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    for (PhotoDetails temp:myTickets) {
-                        File forDeleteTicket=new File(temp.getPhotopath());
-                        File forDeleteTicketCache=new File(temp.getPhotopathCache());
+                    for (PhotoDetails temp : myTickets) {
+                        File forDeleteTicket = new File(temp.getPhotopath());
+                        File forDeleteTicketCache = new File(temp.getPhotopathCache());
                         try {
                             forDeleteTicket.delete();
                             forDeleteTicketCache.delete();
-                        }
-                        catch (Exception o){
+                        } catch (Exception o) {
                             o.printStackTrace();
                         }
                     }
                 }
             })).start();
         }
-        if(weNeedUpdate){
+        if (weNeedUpdate) {
             //TODO NASIMXON YORDAM
             if (parent != PocketAccounterGeneral.MAIN) {
                 if (((PocketAccounter) getContext()).getSupportFragmentManager().getBackStackEntryCount() != 0) {
@@ -1343,33 +1334,33 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 }
             }
         }
-        PocketAccounter.isCalcLayoutOpen=false;
-        mainView=null;
+        PocketAccounter.isCalcLayoutOpen = false;
+        mainView = null;
     }
-    public void closeLayout(){
-        openAddingDialog=false;
+
+    public void closeLayout() {
+        openAddingDialog = false;
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
-            if(keykeboard) {
+            if (keykeboard) {
                 RelativeLayout headermain = (RelativeLayout) mainView.findViewById(R.id.headermain);
                 keyforback = true;
-                PocketAccounter.isCalcLayoutOpen=false;
-                   (new Handler()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                if(imm==null)
-                                    return;
-                                imm.hideSoftInputFromWindow(mainView.getWindowToken(), 0);
+                PocketAccounter.isCalcLayoutOpen = false;
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            if (imm == null)
+                                return;
+                            imm.hideSoftInputFromWindow(mainView.getWindowToken(), 0);
 
-                            }
-                            catch (Exception o){
-                                o.printStackTrace();
-                            }
-
-
+                        } catch (Exception o) {
+                            o.printStackTrace();
                         }
-                    }, 300);
+
+
+                    }
+                }, 300);
                 comment.setVisibility(View.VISIBLE);
                 mainView.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
                 mainView.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
@@ -1383,24 +1374,22 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     comment.setText(getString(R.string.add_comment));
                 }
                 headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
-            }
-            else{
+            } else {
                 RelativeLayout headermain = (RelativeLayout) mainView.findViewById(R.id.headermain);
                 keyforback = true;
-                PocketAccounter.isCalcLayoutOpen=false;
-                    (new Handler()).postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            try{
-                            LinearLayout linbutview=(LinearLayout) mainView.findViewById(R.id.numbersbut);
+                PocketAccounter.isCalcLayoutOpen = false;
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            LinearLayout linbutview = (LinearLayout) mainView.findViewById(R.id.numbersbut);
                             myListPhoto.setVisibility(View.VISIBLE);
                             linbutview.setVisibility(View.VISIBLE);
-                            }
-                                catch (Exception o){
-                                    o.printStackTrace();
-                                }
-                            }
-                    }, 300);
+                        } catch (Exception o) {
+                            o.printStackTrace();
+                        }
+                    }
+                }, 300);
                 comment.setVisibility(View.VISIBLE);
                 mainView.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
                 mainView.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
@@ -1415,20 +1404,20 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 }
                 headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
             }
-        }
-        else {
-            if(keykeboard) {
+        } else {
+            if (keykeboard) {
                 RelativeLayout headermain = (RelativeLayout) mainView.findViewById(R.id.headermain);
                 AutoTransition cus = new AutoTransition();
                 keyforback = true;
-                PocketAccounter.isCalcLayoutOpen=false;
+                PocketAccounter.isCalcLayoutOpen = false;
                 cus.addListener(new Transition.TransitionListener() {
                     @Override
                     public void onTransitionStart(Transition transition) {
                     }
+
                     @Override
                     public void onTransitionEnd(Transition transition) {
-                        if(mainView==null){
+                        if (mainView == null) {
                             return;
                         }
                         (new Handler()).postDelayed(new Runnable() {
@@ -1436,11 +1425,10 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                             public void run() {
                                 try {
                                     InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                    if(imm==null)
+                                    if (imm == null)
                                         return;
                                     imm.hideSoftInputFromWindow(mainView.getWindowToken(), 0);
-                                }
-                                catch (Exception o){
+                                } catch (Exception o) {
                                     o.printStackTrace();
                                 }
                             }
@@ -1451,10 +1439,12 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                     public void onTransitionCancel(Transition transition) {
 
                     }
+
                     @Override
                     public void onTransitionPause(Transition transition) {
 
                     }
+
                     @Override
                     public void onTransitionResume(Transition transition) {
 
@@ -1477,43 +1467,45 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 }
 
                 headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
-            }
-            else{
+            } else {
                 RelativeLayout headermain = (RelativeLayout) mainView.findViewById(R.id.headermain);
                 AutoTransition cus = new AutoTransition();
                 keyforback = true;
-                PocketAccounter.isCalcLayoutOpen=false;
+                PocketAccounter.isCalcLayoutOpen = false;
                 cus.addListener(new Transition.TransitionListener() {
                     @Override
                     public void onTransitionStart(Transition transition) {
 
                     }
+
                     @Override
                     public void onTransitionEnd(Transition transition) {
-                        if(mainView==null){
+                        if (mainView == null) {
                             return;
                         }
-                        try{
-                            AutoTransition cus=new AutoTransition();
+                        try {
+                            AutoTransition cus = new AutoTransition();
                             cus.setDuration(300);
                             cus.setStartDelay(0);
-                            LinearLayout linbutview=(LinearLayout) mainView.findViewById(R.id.numbersbut);
+                            LinearLayout linbutview = (LinearLayout) mainView.findViewById(R.id.numbersbut);
                             TransitionManager.beginDelayedTransition(myListPhoto);
                             myListPhoto.setVisibility(View.VISIBLE);
-                            TransitionManager.beginDelayedTransition(linbutview,cus);
+                            TransitionManager.beginDelayedTransition(linbutview, cus);
                             linbutview.setVisibility(View.VISIBLE);
-                        }
-                        catch (Exception o){
+                        } catch (Exception o) {
                             o.printStackTrace();
                         }
                     }
+
                     @Override
                     public void onTransitionCancel(Transition transition) {
                     }
+
                     @Override
                     public void onTransitionPause(Transition transition) {
 
                     }
+
                     @Override
                     public void onTransitionResume(Transition transition) {
 
@@ -1548,9 +1540,9 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (takePictureIntent.resolveActivity(getContext().getPackageManager()) != null) {
-                        File f = new File(getContext().getExternalFilesDir(null),"temp.jpg");
+                        File f = new File(getContext().getExternalFilesDir(null), "temp.jpg");
                         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                        PocketAccounter.openActivity=true;
+                        PocketAccounter.openActivity = true;
                         startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                     }
                     return;
@@ -1575,6 +1567,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         }
         return null;
     }
+
     private Bitmap decodeFileToCache(File f) {
         try {
             BitmapFactory.Options o = new BitmapFactory.Options();
@@ -1592,18 +1585,20 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         return null;
     }
 
-    public static int neededRotation(File ff)
-    {
+    public static int neededRotation(File ff) {
         try {
             ExifInterface exif = new ExifInterface(ff.getAbsolutePath());
             int orientation = exif.getAttributeInt(
                     ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_270)
-            { return 270; }
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_180)
-            { return 180; }
-            if (orientation == ExifInterface.ORIENTATION_ROTATE_90)
-            { return 90; }
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                return 270;
+            }
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                return 180;
+            }
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                return 90;
+            }
             return 0;
         } catch (FileNotFoundException e) {
             e.printStackTrace();

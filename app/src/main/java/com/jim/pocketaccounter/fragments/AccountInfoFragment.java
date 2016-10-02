@@ -51,17 +51,29 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class AccountInfoFragment extends Fragment {
-	@Inject	WarningDialog warningDialog;
-    @Inject LogicManager logicManager;
-    @Inject ToolbarManager toolbarManager;
-    @Inject DaoSession daoSession;
-	@Inject ReportManager reportManager;
-	@Inject	@Named(value = "display_formatter")	SimpleDateFormat dateFormat;
-	@Inject	CommonOperations commonOperations;
-	@Inject	PAFragmentManager paFragmentManager;
-	@Inject	OperationsListDialog operationsListDialog;
-	@Inject	FilterDialog filterDialog;
-	@Inject	TransferDialog transferDialog;
+	@Inject
+	WarningDialog warningDialog;
+    @Inject
+    LogicManager logicManager;
+    @Inject
+    ToolbarManager toolbarManager;
+    @Inject
+    DaoSession daoSession;
+	@Inject
+	ReportManager reportManager;
+	@Inject
+	@Named(value = "display_formatter")
+	SimpleDateFormat dateFormat;
+	@Inject
+	CommonOperations commonOperations;
+	@Inject
+	PAFragmentManager paFragmentManager;
+	@Inject
+	OperationsListDialog operationsListDialog;
+	@Inject
+	FilterDialog filterDialog;
+	@Inject
+	TransferDialog transferDialog;
 	private Account account;
 	private FABIcon fabAccountIcon;
 	private TextView tvAccountNameInfo;
@@ -89,7 +101,6 @@ public class AccountInfoFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.getFragmentManager().popBackStack();
-				paFragmentManager.displayFragment(new AccountFragment());
 			}
 		});
 		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
@@ -204,6 +215,7 @@ public class AccountInfoFragment extends Fragment {
 	private void refreshOperationsList() {
 		List<ReportObject> objects = reportManager.getAccountOperations(account, account.getCalendar(), Calendar.getInstance());
 		AccountOperationsAdapter accountOperationsAdapter = new AccountOperationsAdapter(objects);
+		Log.d("sss", "" + objects.size());
 		rvAccountDetailsInfo.setAdapter(accountOperationsAdapter);
 	}
 

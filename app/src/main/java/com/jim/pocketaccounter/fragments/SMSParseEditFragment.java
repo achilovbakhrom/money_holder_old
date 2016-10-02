@@ -35,6 +35,7 @@ import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -262,8 +263,8 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
 
         public void addkey(String key) {
             SmsParseKeys smsParseKeys = new SmsParseKeys();
-            smsParseKeys.setType(type);
-            smsParseKeys.setNameKey(key);
+//            smsParseKeys.setType(type);
+//            smsParseKeys.setNameKey(key);
             smsKeys.add(0, smsParseKeys);
             daoSession.getSmsParseKeysDao().insertOrReplace(smsParseKeys);
             notifyItemInserted(0);
@@ -313,7 +314,7 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
                     }
                 });
             }
-            view.textView.setText(smsKeys.get(position).getNameKey());
+//            view.textView.setText(smsKeys.get(position).getNameKey());
         }
 
         public SMSParseEditFragment.ViewHolderKeys onCreateViewHolder(ViewGroup parent, int var2) {
@@ -349,12 +350,12 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
             view.textView.setText(strings.get(position));
             for (SmsParseKeys smsParseKey : daoSession.getSmsParseKeysDao().queryBuilder().
                     where(SmsParseKeysDao.Properties.Type.eq(2)).list()) {
-                if (smsParseKey.getNameKey().startsWith(strings.get(position))
-                        || strings.get(position).startsWith(smsParseKey.getNameKey())
-                        || strings.get(position).contains(smsParseKey.getNameKey())
-                        || smsParseKey.getNameKey().contains(strings.get(position))) {
-                    curName.setText(strings.get(position));
-                }
+//                if (smsParseKey.getNameKey().startsWith(strings.get(position))
+//                        || strings.get(position).startsWith(smsParseKey.getNameKey())
+//                        || strings.get(position).contains(smsParseKey.getNameKey())
+//                        || smsParseKey.getNameKey().contains(strings.get(position))) {
+//                    curName.setText(strings.get(position));
+//                }
             }
         }
 
@@ -376,15 +377,6 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
     private void smsBodyParse(String body) {
         List<String> words = new ArrayList<>();
         String[] strings = body.split(" ");
-//        String patternAmount = "([0,9] + [.,])?([0,9])";
-//        Pattern pattern = Pattern.compile(patternAmount);
-//        for (String s : strings) {
-//            Matcher matcher = pattern.matcher(s);
-//            if (matcher.find()) {
-//                matcher.group(0);
-//
-//            }
-//        }
         for (String s : strings) {
             if (s.split(" ").length == 1 && s.split("\n").length == 1) {
                 words.add(s);
@@ -400,6 +392,27 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
                 }
             }
         }
+//       income-expance-amount
+        SmsParseObject smsParseObject = new SmsParseObject();
+        String amount = "";
+        for (int i = 0; i < words.size(); i ++) {
+            for (SmsParseKeys keys : daoSession.getSmsParseKeysDao().loadAll()) {
+//                if (keys.getNameKey().startsWith(words.get(i))
+//                        || words.get(i).startsWith(keys.getNameKey())
+//                        || words.get(i).endsWith(keys.getNameKey())
+//                        || keys.getNameKey().endsWith(words.get(i))) {
+//                    if (keys.getType() == SmsParseMainFragment.INCOME) {
+//                        smsParseObject.setType(PocketAccounterGeneral.INCOME);
+//                    } else if (keys.getType() == SmsParseMainFragment.EXPANCE) {
+//                        smsParseObject.setType(PocketAccounterGeneral.EXPENSE);
+//                    } else if (keys.getNameKey().matches(words.get(i))) {
+//                        amount = words.get(i - 1);
+//                    } else if (words.get(i).endsWith(keys.getNameKey())) {
+//                        amount = words.get(i).substring(0, words.get(i).indexOf(keys.getNameKey()));
+                    }
+                }
+//            }
+//        }
         rvStrings.setAdapter(new MyAdapterString(words));
     }
 
@@ -427,13 +440,11 @@ public class SMSParseEditFragment extends Fragment implements View.OnClickListen
                 } else {
                     objSms.setFolderName("sent");
                 }
-
                 lstSms.add(objSms);
                 c.moveToNext();
             }
         }
         c.close();
-
         return lstSms;
     }
 

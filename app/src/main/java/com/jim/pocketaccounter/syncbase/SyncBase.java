@@ -64,7 +64,6 @@ public class SyncBase {
             builder.setMessage(R.string.connection_faild)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-
                             dialog.dismiss();
                         }
                     });
@@ -114,7 +113,7 @@ public class SyncBase {
               @Override
               public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                   SQLiteDatabase received = SQLiteDatabase.openDatabase(fileDirectory.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-                  Log.e("ttt", received.getVersion()+" version");
+//                  Log.e("ttt", received.getVersion()+" version");
                   if (current.getVersion() > received.getVersion()) {
                       if (received.getVersion() == 2) {
                           received.execSQL("CREATE TABLE sms_parsing_table ("
@@ -135,9 +134,7 @@ public class SyncBase {
                           upgradeFromThreeToFour(received);
                           upgradeFromFourToFive(received);
                       }
-
                       if (received.getVersion() == 4){
-
                           upgradeFromFourToFive(received);
                       }
                       received.setVersion(current.getVersion());
@@ -177,10 +174,6 @@ public class SyncBase {
 
               }
           });
-
-
-
-
        } catch (Exception e) {
            even.onFailed(e.getMessage());
            e.printStackTrace();

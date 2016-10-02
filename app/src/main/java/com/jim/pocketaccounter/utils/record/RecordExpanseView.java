@@ -23,8 +23,10 @@ import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
+import com.jim.pocketaccounter.fragments.AddAutoMarketFragment;
 import com.jim.pocketaccounter.fragments.AddCreditFragment;
 import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
@@ -61,6 +63,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Vibrator;
 import android.support.annotation.UiThread;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
@@ -383,7 +386,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 									break;
 								case 6:
 									paFragmentManager.displayFragment(new DebtBorrowFragment());
-
 									break;
 								case 7:
 									//report by account
@@ -668,13 +670,18 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 								case 1:
 									switch (position) {
 										case 0:
+											paFragmentManager.setMainReturn(true);
 											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, pos, date));
 											break;
 										case 1:
+											paFragmentManager.setMainReturn(true);
 											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.EXPANSE_MODE,pos));
 											break;
 										case 2:
-
+											paFragmentManager.setMainReturn(true);
+											AddBorrowFragment fragment = (AddBorrowFragment) AddBorrowFragment.getInstance(DebtBorrow.BORROW, null);
+											fragment.setMainView(pos, DebtBorrow.BORROW);
+											paFragmentManager.displayFragment(fragment);
 											break;
 									}
 									break;

@@ -68,7 +68,6 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onEnabled(context);
         SharedPreferences sPref;
         sPref = context.getSharedPreferences("infoFirst", MODE_PRIVATE);
-
     }
 
     @Override

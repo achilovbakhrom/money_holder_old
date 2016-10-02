@@ -1,50 +1,39 @@
 package com.jim.pocketaccounter.utils;
 
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.widget.Toast;
 
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.SmsParseObject;
-//import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.database.FinanceRecord;
-import com.jim.pocketaccounter.database.RootCategory;
-import com.jim.pocketaccounter.widget.WidgetKeys;
-import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.UUID;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class SMSMonitor extends BroadcastReceiver {
-    private static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String SMS_EXTRA_NAME = "pdus";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent.getExtras() == null) return;
-//        FinanceManager manager = new FinanceManager(context);
-//        ArrayList<SmsParseObject> objects = manager.getSmsObjects();
-        if (intent != null && intent.getAction() != null &&
-                ACTION.compareToIgnoreCase(intent.getAction()) == 0) {
-            Object[] pduArray = (Object[]) intent.getExtras().get("pdus");
-
-            SmsMessage[] messages = new SmsMessage[pduArray.length];
-            for (int i = 0; i < pduArray.length; i++) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    String format = intent.getExtras().getString("format");
-                    messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i], format);
-                }
-                else {
-                    messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
-                }
+//        if (intent.getExtras() == null) return;
+////        FinanceManager manager = new FinanceManager(context);
+////        ArrayList<SmsParseObject> objects = manager.getSmsObjects();
+//        if (intent != null && intent.getAction() != null &&
+//                ACTION.compareToIgnoreCase(intent.getAction()) == 0) {
+//            Object[] pduArray = (Object[]) intent.getExtras().get("pdus");
+//
+//            SmsMessage[] messages = new SmsMessage[pduArray.length];
+//            for (int i = 0; i < pduArray.length; i++) {
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    String format = intent.getExtras().getString("format");
+//                    messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i], format);
+//                }
+//                else {
+//                    messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
+//                }
 //                for (int j=0; j<objects.size(); j++) {
 //                    if (messages[i].getDisplayOriginatingAddress().contains(objects.get(j).getNumber())) {
 //                        String messageBody = messages[i].getMessageBody();
@@ -199,9 +188,33 @@ public class SMSMonitor extends BroadcastReceiver {
 //                        }
 //                    }
 //                }
+//            }
+//        }
+//        abortBroadcast();
+        // Get the SMS map from Intent
+        Bundle extras = intent.getExtras();
+        String messages = "";
+        if ( extras != null )
+        {
+            // Get received SMS array
+            Object[] smsExtra = (Object[]) extras.get( SMS_EXTRA_NAME );
+            // Get ContentResolver object for pushing encrypted SMS to the incoming folder
+            ContentResolver contentResolver = context.getContentResolver();
+
+            for ( int i = 0; i < smsExtra.length; ++i ) {
+                SmsMessage sms = SmsMessage.createFromPdu((byte[])smsExtra[i]);
+                String body = sms.getMessageBody().toString();
+                String address = sms.getOriginatingAddress();
+                messages += "SMS from " + address + " :\n";
+                messages += body + "\n";
+                // Here you can add any your code to work with incoming SMS
+                // I added encrypting of all received SMS
+//                putSmsToDatabase( contentResolver, sms );
+                Toast.makeText( context, "chisad" + messages, Toast.LENGTH_SHORT ).show();
             }
+            // Display SMS message
+//            Toast.makeText( context, messages, Toast.LENGTH_SHORT ).show();
         }
-        abortBroadcast();
     }
     private double parseDouble(String amount) {
         if (amount.indexOf('.') == -1 && amount.indexOf(',') == -1) return Double.parseDouble(amount);

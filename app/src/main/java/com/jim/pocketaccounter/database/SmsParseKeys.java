@@ -1,5 +1,8 @@
 package com.jim.pocketaccounter.database;
 
+import com.jim.pocketaccounter.utils.ListConvertor;
+
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Keep;
@@ -14,9 +17,11 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class SmsParseKeys {
     @Property
-    private String nameKey;
+    private String number;
     @Property
     private int type;
+    @Convert(converter = ListConvertor.class, columnType = String.class)
+    private String[] templates;
     @Property
     @Id
     private String id;
@@ -25,9 +30,9 @@ public class SmsParseKeys {
         id = UUID.randomUUID().toString();
     }
     @Keep
-    public SmsParseKeys(String nameKey) {
+    public SmsParseKeys(String number) {
         id = UUID.randomUUID().toString();
-        this.nameKey = nameKey;
+        this.number = number;
     }
     public String getId() {
         return this.id;
@@ -35,23 +40,29 @@ public class SmsParseKeys {
     public void setId(String id) {
         this.id = id;
     }
+    public String[] getTemplates() {
+        return this.templates;
+    }
+    public void setTemplates(String[] templates) {
+        this.templates = templates;
+    }
     public int getType() {
         return this.type;
     }
     public void setType(int type) {
         this.type = type;
     }
-    public String getNameKey() {
-        return this.nameKey;
+    public String getNumber() {
+        return this.number;
     }
-    public void setNameKey(String nameKey) {
-        this.nameKey = nameKey;
+    public void setNumber(String number) {
+        this.number = number;
     }
-    @Generated(hash = 1172767148)
-    public SmsParseKeys(String nameKey, int type, String id) {
-        this.nameKey = nameKey;
+    @Generated(hash = 1461144964)
+    public SmsParseKeys(String number, int type, String[] templates, String id) {
+        this.number = number;
         this.type = type;
+        this.templates = templates;
         this.id = id;
     }
-
 }

@@ -537,31 +537,30 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         count--;
                     }
                     paFragmentManager.displayFragment(new DebtBorrowFragment());
-//                    if (mainView) {
-//                        int count = paFragmentManager.getFragmentManager().getBackStackEntryCount();
-//                        while (count > 0) {
-//                            paFragmentManager.getFragmentManager().popBackStack();
-//                            count--;
-//                        }
-//                        paFragmentManager.displayFragment(new DebtBorrowFragment());
-//                    } else {
-//                        paFragmentManager.getFragmentManager().popBackStack();
-//                        if(TYPE == DebtBorrow.BORROW)
-//                            logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, posMain, currentDebtBorrow.getId());
-//                        else
-//                            logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,posMain,currentDebtBorrow.getId());
-//
-//                        BitmapFactory.Options options=new BitmapFactory.Options();
-//                        options.inPreferredConfig= Bitmap.Config.RGB_565;
-//                        Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(currentDebtBorrow.getId(),"drawable",getActivity().getPackageName()),options);
-//                        temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
-//                        List<Bitmap> bitmaps=new ArrayList<>();
-//                        bitmaps.add(temp);
-//                        dataCache.getBoardBitmapsCache().put(posMain,bitmaps);
-//
-//                        paFragmentManager.getFragmentManager().popBackStack();
-//                        paFragmentManager.displayMainWindow();
-//                    }
+                    if (!paFragmentManager.isMainReturn()) {
+                        count = paFragmentManager.getFragmentManager().getBackStackEntryCount();
+                        while (count > 0) {
+                            paFragmentManager.getFragmentManager().popBackStack();
+                            count--;
+                        }
+                        paFragmentManager.displayFragment(new DebtBorrowFragment());
+                    } else {
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        if(TYPE == DebtBorrow.BORROW)
+                            logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, posMain, currentDebtBorrow.getId());
+                        else
+                            logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, posMain,currentDebtBorrow.getId());
+
+                        BitmapFactory.Options options=new BitmapFactory.Options();
+                        options.inPreferredConfig= Bitmap.Config.RGB_565;
+                        Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(currentDebtBorrow.getId(),"drawable",getActivity().getPackageName()),options);
+                        temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
+                        List<Bitmap> bitmaps=new ArrayList<>();
+                        bitmaps.add(temp);
+                        dataCache.getBoardBitmapsCache().put((long) posMain,temp);
+                        paFragmentManager.displayMainWindow();
+                        paFragmentManager.setMainReturn(false);
+                    }
                 }
             }
         }

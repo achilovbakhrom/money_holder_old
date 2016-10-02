@@ -101,7 +101,18 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
             } else {
                 view.amount.setText("" + list.get(position).getAmount() + list.get(position).getCurrency().getAbbr());
             }
-            view.period.setText(list.get(position).getDates());
+            view.account.setText(list.get(position).getAccount().getName());
+            String dates [] = list.get(position).getDates().split(",");
+            int count = dates.length;
+            String date = "";
+            if (count >= 10) {
+                for (int i = 0; i < dates.length; i++) {
+                    date += count/2 == i ? ("\n" + dates[i] + ",") : dates[i] + ",";
+                }
+            } else {
+                date = list.get(position).getDates();
+            }
+            view.period.setText(date);
             view.edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -160,6 +171,7 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
         public TextView period;
         public TextView edit;
         public TextView delete;
+        public TextView account;
 
         public ViewHolder(View view) {
             super(view);
@@ -170,6 +182,7 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
             period = (TextView) view.findViewById(R.id.tvItemAutoMarketPerType);
             edit = (TextView) view.findViewById(R.id.tvAutoMarketItemEdit);
             delete = (TextView) view.findViewById(R.id.tvAutoMarketItemDelete);
+            account = (TextView) view.findViewById(R.id.tvNal);
         }
     }
 }

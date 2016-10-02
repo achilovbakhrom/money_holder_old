@@ -373,11 +373,11 @@ public class DrawerInitializer {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
 
-//                if (fragmentManager.getFragmentManager().getBackStackEntryCount() == 0 && position == 0) {
-//                    pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                } else {
-//                    pocketAccounter.findViewById(R.id.change).setVisibility(View.GONE);
-//                }
+                if (fragmentManager.getFragmentManager().getBackStackEntryCount() == 0 && position == 0) {
+                    pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
+                } else {
+                    pocketAccounter.findViewById(R.id.change).setVisibility(View.GONE);
+                }
                 drawer.closeLeftSide();
                 drawer.postDelayed(new Runnable() {
                     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

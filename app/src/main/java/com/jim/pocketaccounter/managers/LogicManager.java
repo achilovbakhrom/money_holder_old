@@ -330,14 +330,15 @@ public class LogicManager {
         }
         Query<BoardButton> query = boardButtonDao
                 .queryBuilder()
-                .where(BoardButtonDao.Properties.Table.eq(type),
+                .where(BoardButtonDao.Properties.Type.eq(type),
                        BoardButtonDao.Properties.Pos.eq(pos))
                 .build();
         List<BoardButton> list = query.list();
         BoardButton boardButton = null;
-        if (!list.isEmpty())
+        if (!list.isEmpty()) {
             boardButton = list.get(0);
-        boardButton.setCategoryId(categoryId);
+            boardButton.setCategoryId(categoryId);
+        }
         if (categoryId != null)
             boardButton.setType(t);
         boardButtonDao.insertOrReplace(boardButton);

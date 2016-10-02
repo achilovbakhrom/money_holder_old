@@ -30,7 +30,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginLeft="10dp"
-                android:padding="10dp"
+                android:padding="@dimen/ten_dp"
                 android:src="@android:drawable/ic_menu_camera" />
 
             <RelativeLayout
@@ -105,7 +105,7 @@
                     android:layout_marginLeft="24dp"
                     android:layout_marginTop="4dp"
                     android:gravity="left"
-                    android:text="Period"
+                    android:text="Periods"
                     android:textColor="#414141"
                     android:textSize="18sp" />
 
@@ -123,13 +123,15 @@
 
                 <TextView
                     android:id="@+id/tvItemAutoMarketPerType"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_below="@+id/tvNal"
-                    android:gravity="left"
-                    android:text="Period"
+                    android:layout_toRightOf="@+id/tvPer"
+                    android:paddingLeft="@dimen/ten_dp"
+                    android:layout_below="@+id/tvItemAutoMarketAmount"
+                    android:gravity="right"
+                    android:text="PeriodPeriodPeriodPeriodPeriodPeriodPeriodPeriod"
                     android:textColor="#414141"
                     android:textSize="18sp" />
             </RelativeLayout>

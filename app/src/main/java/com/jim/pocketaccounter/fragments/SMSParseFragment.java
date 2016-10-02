@@ -21,8 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -146,7 +144,7 @@ public class SMSParseFragment extends Fragment {
 
 		}
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
-			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sms_object_list_item, parent, false);
+			View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sms_adapter_root, parent, false);
 			return new ViewHolder(view);
 		}
 	}
@@ -160,11 +158,11 @@ public class SMSParseFragment extends Fragment {
 		public LinearLayout forGONE;
 		public ViewHolder(View view) {
 			super(view);
-			chbSmsObjectItem = (CheckBox) view.findViewById(R.id.chbSmsObjectItem);
-			tvSmsParseItemNumber = (TextView) view.findViewById(R.id.tvSmsParseItemNumber);
-			tvSmsParsingItemInfo = (TextView) view.findViewById(R.id.tvSmsParsingItemInfo);
-			AccoountName = (TextView) view.findViewById(R.id.tvaccount);
-			forGONE = (LinearLayout) view.findViewById(R.id.for_gone);
+//			chbSmsObjectItem = (CheckBox) view.findViewById(R.id.chbSmsObjectItem);
+//			tvSmsParseItemNumber = (TextView) view.findViewById(R.id.tvSmsParseItemNumber);
+//			tvSmsParsingItemInfo = (TextView) view.findViewById(R.id.tvSmsParsingItemInfo);
+//			AccoountName = (TextView) view.findViewById(R.id.tvaccount);
+//			forGONE = (LinearLayout) view.findViewById(R.id.for_gone);
 			rootView = view;
 		}
 	}

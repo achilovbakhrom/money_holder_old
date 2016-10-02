@@ -5,6 +5,7 @@ import com.jim.pocketaccounter.fragments.AccountFragment;
 import com.jim.pocketaccounter.fragments.AccountInfoFragment;
 import com.jim.pocketaccounter.fragments.AddAutoMarketFragment;
 import com.jim.pocketaccounter.fragments.AddCreditFragment;
+import com.jim.pocketaccounter.fragments.AddSmsParseFragment;
 import com.jim.pocketaccounter.fragments.AutoMarketFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CategoryInfoFragment;
@@ -16,15 +17,23 @@ import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.PurposeEditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
+import com.jim.pocketaccounter.fragments.RecordDetailFragment;
+import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
 import com.jim.pocketaccounter.fragments.ReportByCategory;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
+import com.jim.pocketaccounter.fragments.SMSParseFragment;
+import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 
 /**
  * Created by user on 6/16/2016.
  */
 
 public interface PocketClassess {
+    // Records
+    String RECORD_EDIT_FRAGMENT = RecordEditFragment.class.getName();
+    String RECORD_DETEIL_FRAGMENT = RecordDetailFragment.class.getName();
+
     // Currency
     String CURRENCY_FRAG = CurrencyFragment.class.getName();
     String CURRENCY_CHOOSE = CurrencyChooseFragment.class.getName();
@@ -62,4 +71,9 @@ public interface PocketClassess {
     // Report by Account
     String REPORT_ACCOUNT = ReportByAccountFragment.class.getName();
     String REPORT_CATEGORY = ReportByCategory.class.getName();
+
+    // Sms Parsing
+    String SMS_PARSE_FRAGMENT = SmsParseMainFragment.class.getName();
+    String ADD_SMS_PARSE_FRAGMENT = AddSmsParseFragment.class.getName();
+
 }

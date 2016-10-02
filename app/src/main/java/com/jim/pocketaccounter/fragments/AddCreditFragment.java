@@ -151,6 +151,9 @@ public class AddCreditFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        if (fromMainWindow) {
+            paFragmentManager.setMainReturn(true);
+        }
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
         currencyDao = daoSession.getCurrencyDao();

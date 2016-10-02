@@ -59,29 +59,42 @@ import javax.inject.Named;
 public class AccountFragment extends Fragment {
 	private FABIcon fabAccountAdd;
     private RecyclerView recyclerView;
-	@Inject	WarningDialog warningDialog;
-    @Inject LogicManager logicManager;
-    @Inject ToolbarManager toolbarManager;
-    @Inject DaoSession daoSession;
-	@Inject ReportManager reportManager;
-	@Inject @Named(value = "display_formatter") SimpleDateFormat dateFormat;
-	@Inject	CommonOperations commonOperations;
-	@Inject	PAFragmentManager paFragmentManager;
-	@Inject	DrawerInitializer drawerInitializer;
-	@Inject	TransferDialog transferDialog;
+	@Inject
+	WarningDialog warningDialog;
+    @Inject
+    LogicManager logicManager;
+    @Inject
+    ToolbarManager toolbarManager;
+    @Inject
+    DaoSession daoSession;
+	@Inject
+	ReportManager reportManager;
+	@Inject
+	@Named(value = "display_formatter")
+	SimpleDateFormat dateFormat;
+	@Inject
+	CommonOperations commonOperations;
+	@Inject
+	PAFragmentManager paFragmentManager;
+	@Inject
+	DrawerInitializer drawerInitializer;
+	@Inject
+	TransferDialog transferDialog;
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_layout, container, false);
 		rootView.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+				if(PocketAccounter.keyboardVisible){
+					InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);}
 			}
 		},100);
+
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
 		toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
-		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
+		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				drawerInitializer.getDrawer().openLeftSide();
@@ -98,6 +111,7 @@ public class AccountFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.displayFragment(new AccountEditFragment(null));
+
 			}
 		});
         refreshList();
@@ -202,6 +216,7 @@ public class AccountFragment extends Fragment {
         TextView tvContent;
 		TextView pay;
 		TextView earn;
+
 		View view;
         public ViewHolder(View view) {
             super(view);

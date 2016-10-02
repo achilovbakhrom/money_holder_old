@@ -21,6 +21,7 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.credit.AdapterCridetArchive;
+import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
@@ -35,6 +36,8 @@ public class CreditTabLay extends Fragment  implements View.OnClickListener, Vie
     PAFragmentManager paFragmentManager;
     @Inject
     ToolbarManager toolbarManager;
+    @Inject
+    DrawerInitializer drawerInitializer;
 
     ForFab A1;
     FloatingActionButton fb;

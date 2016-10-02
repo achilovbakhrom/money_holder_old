@@ -54,6 +54,10 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     private Dialog dialog;
     private MyDialogKeys myDialogKeys;
 
+    public static final int INCOME = 0;
+    public static final int EXPANCE = 1;
+    public static final int KEY_SMS = 2;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +69,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_credit_tab_lay, container, false);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-        toolbarManager.setImageToSecondImage(R.drawable.key_sms);
+        toolbarManager.setImageToSecondImage(R.drawable.checked_sign);
         toolbarManager.setOnSecondImageClickListener(this);
         viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         tabLayout = (TabLayout) rootView.findViewById(R.id.sliding_tabs);
@@ -178,8 +182,8 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
 
         public void addkey(String key) {
             SmsParseKeys smsParseKeys = new SmsParseKeys();
-            smsParseKeys.setType(type);
-            smsParseKeys.setNameKey(key);
+//            smsParseKeys.setType(type);
+//            smsParseKeys.setNameKey(key);
             smsKeys.add(0, smsParseKeys);
             daoSession.getSmsParseKeysDao().insertOrReplace(smsParseKeys);
             notifyItemInserted(0);
@@ -229,7 +233,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
                     }
                 });
             }
-            view.textView.setText(smsKeys.get(position).getNameKey());
+//            view.textView.setText(smsKeys.get(position).getNameKey());
         }
 
         public SmsParseMainFragment.ViewHolderKeys onCreateViewHolder(ViewGroup parent, int var2) {
