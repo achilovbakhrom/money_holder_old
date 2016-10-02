@@ -1274,7 +1274,7 @@
     <string name="this_is_money_transfer_form_from_nsome_to_some_accaunt">Money transfer from one account to another</string>
     <string name="to_t">To</string>
     <string name="widget_settings">Widget Settings</string>
-    <string name="word_do_sifri">Enter the word preceding the digit (the payment amount)</string>
+    <string name="word_do_sifri">Enter the word preceding the digit </string>
     <string name="word_for_decide_expence">Keyword for defining \"expense\"</string>
     <string name="word_for_decide_income">Keyword for defining \"income\"</string>
     <string name="zdes_idot_dlinnaya_obyasneniya_pro_to_shto_kak_rabotaet_klyuchi_i">Enter keywords, separated by a comma, followed by a digit (the payment amount). Keywords can be found in your SMS, received from the bank. Punctuation marks are ignored</string>

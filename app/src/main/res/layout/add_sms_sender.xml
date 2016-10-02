@@ -50,8 +50,85 @@
                         android:layout_alignParentTop="true"
                         android:id="@+id/imageView9" />
                 </RelativeLayout>
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="@dimen/ten_dp">
+                    <RadioButton
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:text="All operations"
+                        android:checked="true"
+                        android:textSize="12dp"/>
+                    <RadioButton
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:text="Only Income"
+                        android:textSize="12dp"/>
+                    <RadioButton
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:text="Only Expanse"
+                        android:textSize="12dp"/>
+                </RadioGroup>
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </RelativeLayout>
             </LinearLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="@color/green_light_forline"
+                />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sixteen_dp"
+                    android:textColor="@color/black_for_glavniy_text"
+                    android:layout_marginLeft="@dimen/sixteen_dp"
+                    android:paddingTop="@dimen/sevent_dp"
+                    android:paddingBottom="@dimen/sevent_dp"
+                    android:layout_marginleft="@dimen/sixteen_dp"
+                    android:text="Not identefied messages"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/sixteen_dp"
+                    android:textColor="@color/black_for_glavniy_text"
+                    android:paddingTop="@dimen/sevent_dp"
+                    android:paddingBottom="@dimen/sevent_dp"
+                    android:text="12"
+                    android:layout_marginRight="@dimen/sixteen_dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="2px"
+                android:background="@color/green_light_forline"
+                />
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#f6f6f6"
+                >
+
+            </android.support.v7.widget.RecyclerView>
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="2px"
@@ -74,7 +151,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/ten_dp"
-                        android:text="Type operation"
+                        android:text="Key words"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/eighteen_sp" />
 
@@ -93,28 +170,94 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <RadioGroup
+                    android:layout_marginTop="@dimen/ten_dp"
+                    android:orientation="vertical">
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/five_dp"
-                        android:orientation="horizontal">
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:checked="true"
-                            android:textSize="@dimen/fourteen_dp"
-                            android:text="Income"/>
-                        <RadioButton
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="@dimen/fourteen_dp"
-                            android:layout_weight="1"
-                            android:text="Expanse"/>
+                        android:paddingTop="@dimen/eight_dp">
 
-                    </RadioGroup>
+                        <TextView
+                            android:paddingTop="@dimen/two_dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginRight="@dimen/six_dp"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:text="For Income :"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:id="@+id/forIncome"
+                            android:layout_alignParentTop="true" />
+                        <EditText
+                            android:layout_below="@id/forIncome"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:layout_alignParentEnd="true"
+                            android:hint="@string/word_for_decide_income"
+                            />
 
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/eight_dp">
+
+                        <EditText
+                            android:layout_below="@id/forExpense"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:layout_alignParentEnd="true"
+                            android:hint="@string/word_for_decide_expence"
+                            />
+
+                        <TextView
+                            android:paddingTop="@dimen/two_dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:text="For Expence :"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:id="@+id/forExpense"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/eight_dp">
+
+                        <TextView
+                            android:paddingTop="@dimen/two_dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginRight="@dimen/six_dp"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:text="For Ammount :"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:id="@+id/forammonurt"
+                            android:layout_alignParentTop="true" />
+                        <EditText
+                            android:layout_below="@id/forammonurt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textSize="@dimen/fourteen_dp"
+                            android:layout_alignParentEnd="true"
+                            android:hint="@string/word_do_sifri"
+                            />
+
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -160,7 +303,7 @@
                         android:layout_toStartOf="@+id/spinner_procent"
                         android:elevation="0dp"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:text="Select for this number :"
+                        android:text="Account for sms parsing : "
                         android:textSize="@dimen/fourteen_dp"
                         />
 
@@ -184,7 +327,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/ten_dp"
-                        android:text="@string/period_of_credit"
+                        android:text="Currency"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/eighteen_sp" />
 
@@ -216,7 +359,7 @@
                         android:layout_toStartOf="@+id/spinner_procent"
                         android:elevation="0dp"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:text="Select for this number :"
+                        android:text="Operations will calculate :"
                         android:textSize="@dimen/fourteen_dp"
                         />
 

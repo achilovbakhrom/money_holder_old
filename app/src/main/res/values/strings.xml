@@ -1247,7 +1247,7 @@
     <string name="operaitons_with">Operaitons with</string>
     <string name="curenncy_of_sms">Select the currency</string>
     <string name="key_for_parsing">Keywords for parsing</string>
-    <string name="word_do_sifri">Enter the word preceding the digit (the payment amount)</string>
+    <string name="word_do_sifri">Enter the word preceding the digit</string>
     <string name="word_for_decide_income">Keyword for defining \"income\"</string>
     <string name="word_for_decide_expence">Keyword for defining \"expense\"</string>
     <string name="zdes_idot_dlinnaya_obyasneniya_pro_to_shto_kak_rabotaet_klyuchi_i">Enter keywords, separated by a comma, followed by a digit (the payment amount). Keywords can be found in your SMS, received from the bank. Punctuation marks are ignored</string>
