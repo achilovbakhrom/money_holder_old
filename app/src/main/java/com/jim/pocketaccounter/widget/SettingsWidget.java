@@ -20,6 +20,7 @@ import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -260,7 +261,7 @@ public class SettingsWidget extends AppCompatActivity {
     Database db;
     private void RefreshList(){
         String butID_1,butID_2,butID_3,butID_4;
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(getApplicationContext(), "PocketAccounterDatabase");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
         db = helper.getReadableDb();
         DaoSession daoSession = new DaoMaster(db).newSession();
 

@@ -44,7 +44,6 @@ import com.jim.pocketaccounter.database.AutoMarket;
 import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
 //import com.jim.pocketaccounter.finance.FinanceManager;
-import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.SmsParseKeys;
 import com.jim.pocketaccounter.managers.CommonOperations;
@@ -256,7 +255,7 @@ public class PocketAccounter extends AppCompatActivity {
 
     private void checkAutoMarket() {
         Log.d("sss", "" + (daoSession == null));
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "pocketaccounter-db");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
         Database db = helper.getEncryptedWritableDb("super-secret");
         daoSession = new DaoMaster(db).newSession();
         for (AutoMarket au : daoSession.getAutoMarketDao().loadAll()) {
@@ -274,8 +273,8 @@ public class PocketAccounter extends AppCompatActivity {
                     boolean tek = false;
                     for (FinanceRecord fn : daoSession.getFinanceRecordDao().loadAll()) {
                         if (fn.getDate().compareTo(financeRecord.getDate()) == 0 && fn.getRecordId().startsWith("auto")
-                                && fn.getCategory().getId().matches(financeRecord.getCategory().getId()) &&
-                                fn.getSubCategory().getId().matches(financeRecord.getSubCategory().getId())) {
+                                && fn.getCategory().getId().matches(financeRecord.getCategory().getId())
+                                && fn.getSubCategory().getId().matches(financeRecord.getSubCategory().getId())) {
                             tek = true;
                             break;
                         } else if (au.getType() && day.matches("" + getResources().getStringArray(R.array.week_days)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)])) {

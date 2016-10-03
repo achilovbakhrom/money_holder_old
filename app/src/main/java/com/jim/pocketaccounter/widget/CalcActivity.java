@@ -145,13 +145,13 @@ package com.jim.pocketaccounter.widget;
         DaoSession daoSession;
         Database db;
         public static String KEY_FOR_INSTALAZING="key_for_init";
-        private static final int MY_PERMISSIONS_REQUEST_CAMERA = 18;
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_calc);
             mainView=(LinearLayout) findViewById(R.id.llRoot);
-            DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "PocketAccounterDatabase");
+            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
              db = helper.getWritableDb();
             daoSession = new DaoMaster(db).newSession();
             comment = (TextView) findViewById(R.id.textView18);
@@ -370,18 +370,29 @@ package com.jim.pocketaccounter.widget;
                             .setItems(R.array.adding_ticket_type, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     if(which==0){
-                                        if (ContextCompat.checkSelfPermission(CalcActivity.this,
-                                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                                != PackageManager.PERMISSION_GRANTED) {
-                                            if (ActivityCompat.shouldShowRequestPermissionRationale(CalcActivity.this,
+                                        int permission = ContextCompat.checkSelfPermission(CalcActivity.this,
+                                                android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                        if (permission != PackageManager.PERMISSION_GRANTED) {
+                                            if (ActivityCompat.shouldShowRequestPermissionRationale(( CalcActivity.this),
                                                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                                                ActivityCompat.requestPermissions( CalcActivity.this,
-                                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                        MY_PERMISSIONS_REQUEST_CAMERA);
+                                                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(CalcActivity.this);
+                                                builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
+                                                        .setTitle("Permission required");
+
+                                                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int id) {
+                                                        ActivityCompat.requestPermissions( CalcActivity.this,
+                                                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                                                PERMISSION_READ_STORAGE);
+                                                    }
+                                                });
+                                                android.app.AlertDialog dialogik = builder.create();
+                                                dialogik.show();
+
                                             } else {
                                                 ActivityCompat.requestPermissions( CalcActivity.this,
                                                         new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                        MY_PERMISSIONS_REQUEST_CAMERA);
+                                                        PERMISSION_READ_STORAGE);
                                             }
                                         } else {
                                             getPhoto();
@@ -389,27 +400,13 @@ package com.jim.pocketaccounter.widget;
                                     }
                                     else if(which==1){
                                         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                                            if (ContextCompat.checkSelfPermission(CalcActivity.this,
-                                                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                                    != PackageManager.PERMISSION_GRANTED) {
-                                                if (ActivityCompat.shouldShowRequestPermissionRationale(CalcActivity.this,
-                                                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                                                    ActivityCompat.requestPermissions( CalcActivity.this,
-                                                            new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                            MY_PERMISSIONS_REQUEST_CAMERA);
-                                                } else {
-                                                    ActivityCompat.requestPermissions( CalcActivity.this,
-                                                            new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                            MY_PERMISSIONS_REQUEST_CAMERA);
-                                                }
-                                            }
-                                            else {
-                                                File f = new File(getExternalFilesDir(null),"temp.jpg");
-                                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                                                PocketAccounter.openActivity=true;
-                                                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                                            }
+                                        if (takePictureIntent.resolveActivity(CalcActivity.this.getPackageManager()) != null) {
+
+                                            File f = new File(CalcActivity.this.getExternalFilesDir(null),"temp.jpg");
+
+                                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+                                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
                                         }
 
 
@@ -1181,26 +1178,6 @@ package com.jim.pocketaccounter.widget;
             }
 
 
-        }
-
-        @Override
-        public void onRequestPermissionsResult(int requestCode,
-                                               String permissions[], int[] grantResults) {
-            switch (requestCode) {
-                case MY_PERMISSIONS_REQUEST_CAMERA: {
-                    if (grantResults.length > 0
-                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                            File f = new File(getExternalFilesDir(null),"temp.jpg");
-                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                            PocketAccounter.openActivity=true;
-                            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                        }
-                        return;
-                    }
-                }
-            }
         }
 
 

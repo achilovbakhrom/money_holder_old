@@ -38,12 +38,9 @@ import javax.inject.Inject;
  */
 
 public class AddSmsParseFragment extends Fragment {
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    PAFragmentManager paFragmentManager;
-    @Inject
-    ToolbarManager toolbarManager;
+    @Inject DaoSession daoSession;
+    @Inject PAFragmentManager paFragmentManager;
+    @Inject ToolbarManager toolbarManager;
 
     private EditText etNumber;
     private ImageView ivSms;

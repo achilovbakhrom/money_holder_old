@@ -6,6 +6,7 @@ import com.jim.pocketaccounter.database.RootCategory;
 import java.util.Calendar;
 
 public class PocketAccounterGeneral {
+	public static final String OLD_DB_NAME = "PocketAccounterDatabase", CURRENT_DB_NAME = "pocketaccounter-db";
 	public static final int NORMAL_MODE = 0;
 	public static final int EDIT_MODE = 1;
 	public static final int INCOME=0, EXPENSE =1, TRANSFER = 2;

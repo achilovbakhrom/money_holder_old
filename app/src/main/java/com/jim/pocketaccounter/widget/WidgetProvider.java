@@ -68,6 +68,7 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onEnabled(context);
         SharedPreferences sPref;
         sPref = context.getSharedPreferences("infoFirst", MODE_PRIVATE);
+
     }
 
     @Override
@@ -95,11 +96,15 @@ public class WidgetProvider extends AppWidgetProvider {
         String butID_1, butID_2, butID_3, butID_4;
         sPref = context.getSharedPreferences("infoFirst", MODE_PRIVATE);
 
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(context, "PocketAccounterDatabase");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, PocketAccounterGeneral.CURRENT_DB_NAME);
         Database db = helper.getReadableDb();
         DaoSession daoSession = new DaoMaster(db).newSession();
+        if(daoSession!=null)
+            Log.d("testt", "updateWidget: "+daoSession.getRootCategoryDao().loadAll().size());
 
 
+//        FinanceManager financeManager = new FinanceManager(context);
+//        listCategory = financeManager.getCategories();
         sPref.edit().putInt(WidgetKeys.SPREF_WIDGET_ID,widgetID).apply();
 
         butID_1 = sPref.getString(WidgetKeys.BUTTON_1_ID, WidgetKeys.BUTTON_DISABLED);

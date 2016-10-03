@@ -19,6 +19,7 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -38,7 +39,7 @@ public class AutoMarketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(this, "PocketAccounterDatabase");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
         autoMarketDao = daoSession.getAutoMarketDao();

@@ -6,9 +6,9 @@ import android.preference.PreferenceManager;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.ReportManager;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import org.greenrobot.greendao.database.Database;
@@ -38,9 +38,8 @@ public class PocketAccounterApplicationModule {
     private SimpleDateFormat displayFormatter, commonFormatter;
     public PocketAccounterApplicationModule(PocketAccounterApplication pocketAccounterApplication) {
         this.pocketAccounterApplication = pocketAccounterApplication;
-        DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "PocketAccounterDatabase");
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, PocketAccounterGeneral.CURRENT_DB_NAME);
         Database db = helper.getWritableDb();
-
         daoSession = new DaoMaster(db).newSession();
         preferences = PreferenceManager.getDefaultSharedPreferences(pocketAccounterApplication);
     }
@@ -53,9 +52,8 @@ public class PocketAccounterApplicationModule {
     @Provides
     public DaoSession getDaoSession() {
         if (daoSession == null) {
-            DaoMaster.DevOpenHelper helper = new DatabaseMigration(pocketAccounterApplication, "PocketAccounterDatabase");
+            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, PocketAccounterGeneral.CURRENT_DB_NAME);
             Database db = helper.getWritableDb();
-
             daoSession = new DaoMaster(db).newSession();
         }
         return daoSession;
@@ -113,5 +111,4 @@ public class PocketAccounterApplicationModule {
             displayFormatter = new SimpleDateFormat("dd LLLL, yyyy");
         return displayFormatter;
     }
-
 }
