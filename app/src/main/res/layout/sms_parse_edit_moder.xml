@@ -73,12 +73,6 @@
                 android:text="Amount"
                 />
 
-            <EditText
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/etSmsParseAddAmount"
-                />
-
         </LinearLayout>
 
         <LinearLayout
@@ -119,11 +113,6 @@
                 android:text="Account"
                 />
 
-            <Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/spSmsParseAddAccount"
-                />
 
         </LinearLayout>
 

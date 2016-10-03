@@ -1,82 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#fafffd"
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/bitmap_size"
                 android:paddingRight="@dimen/sixteen_dp"
-                android:paddingTop="@dimen/sixteen_dp"
-                android:background="#fafffd"
-                >
+                android:paddingTop="@dimen/sixteen_dp">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Sender: "
-                    android:textSize="@dimen/twenty_dp"
                     android:textColor="@color/black_for_glavniy_text"
-                    />
+                    android:textSize="@dimen/twenty_dp" />
+
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <EditText
+                        android:id="@+id/etSmsParseAddNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="@dimen/sixteen_dp"
-                        android:hint="(number or name of sender)"
-                        android:textColorHint="#d1d1d1"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_marginBottom="@dimen/sixteen_dp"
-                        android:id="@+id/editText2"
                         android:layout_marginRight="@dimen/ten_dp"
                         android:layout_toLeftOf="@+id/imageView9"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true" />
+                        android:hint="(number or name of sender)"
+                        android:textColorHint="#d1d1d1"
+                        android:textSize="@dimen/sixteen_dp" />
+
                     <ImageView
+                        android:id="@+id/ivSmsParseGet"
                         android:layout_width="@dimen/fifty_dp"
                         android:layout_height="@dimen/thirty_dp"
-                        android:layout_alignParentRight="true"
+                        android:layout_alignBottom="@+id/etSmsParseAddNumber"
                         android:layout_alignParentEnd="true"
-                        android:src="@drawable/ic_email_black_24dp"
-                        android:layout_alignBottom="@+id/editText2"
+                        android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
-                        android:id="@+id/imageView9" />
+                        android:src="@drawable/ic_email_black_24dp" />
                 </RelativeLayout>
+
                 <RadioGroup
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/ten_dp">
+                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:id="@+id/rgSmsParseAddSort"
+                    android:orientation="horizontal">
+
                     <RadioButton
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/black_for_glavniy_text"
-                        android:text="All operations"
+                        android:layout_weight="1"
                         android:checked="true"
-                        android:textSize="12dp"/>
+                        android:text="All operations"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:id="@+id/rbnSmsParseAddAll"
+                        android:textSize="12dp" />
+
                     <RadioButton
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/black_for_glavniy_text"
+                        android:layout_weight="1"
+                        android:id="@+id/rbnSmsParseAddIncome"
                         android:text="Only Income"
-                        android:textSize="12dp"/>
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="12dp" />
+
                     <RadioButton
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/black_for_glavniy_text"
+                        android:layout_weight="1"
                         android:text="Only Expanse"
-                        android:textSize="12dp"/>
+                        android:id="@+id/rbnSmsParseAddExpance"
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="12dp" />
                 </RadioGroup>
 
                 <RelativeLayout
@@ -85,55 +99,57 @@
 
                 </RelativeLayout>
             </LinearLayout>
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="@color/green_light_forline"
-                />
+                android:background="@color/green_light_forline" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/sixteen_dp"
-                    android:textColor="@color/black_for_glavniy_text"
                     android:layout_marginLeft="@dimen/sixteen_dp"
-                    android:paddingTop="@dimen/sevent_dp"
                     android:paddingBottom="@dimen/sevent_dp"
-                    android:layout_marginleft="@dimen/sixteen_dp"
+                    android:paddingTop="@dimen/sevent_dp"
                     android:text="Not identefied messages"
-                    />
+                    android:textColor="@color/black_for_glavniy_text"
+                    android:textSize="@dimen/sixteen_dp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/sixteen_dp"
-                    android:textColor="@color/black_for_glavniy_text"
-                    android:paddingTop="@dimen/sevent_dp"
-                    android:paddingBottom="@dimen/sevent_dp"
-                    android:text="12"
-                    android:layout_marginRight="@dimen/sixteen_dp"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_marginRight="@dimen/sixteen_dp"
+                    android:paddingBottom="@dimen/sevent_dp"
+                    android:paddingTop="@dimen/sevent_dp"
+                    android:text="12"
+                    android:textColor="@color/black_for_glavniy_text"
+                    android:textSize="@dimen/sixteen_dp" />
             </RelativeLayout>
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="@color/green_light_forline"
-                />
+                android:background="@color/green_light_forline" />
+
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#f6f6f6"
-                >
+                android:id="@+id/rvSmsParseAdd"
+                android:background="#f6f6f6">
 
             </android.support.v7.widget.RecyclerView>
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="@color/green_light_forline"
-                />
+                android:background="@color/green_light_forline" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -172,90 +188,93 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/ten_dp"
                     android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="@dimen/eight_dp">
 
                         <TextView
-                            android:paddingTop="@dimen/two_dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginRight="@dimen/six_dp"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:text="For Income :"
-                            android:textSize="@dimen/fourteen_dp"
                             android:id="@+id/forIncome"
-                            android:layout_alignParentTop="true" />
-                        <EditText
-                            android:layout_below="@id/forIncome"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:textSize="@dimen/fourteen_dp"
-                            android:layout_alignParentEnd="true"
-                            android:hint="@string/word_for_decide_income"
-                            />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/eight_dp">
-
-                        <EditText
-                            android:layout_below="@id/forExpense"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:textSize="@dimen/fourteen_dp"
-                            android:layout_alignParentEnd="true"
-                            android:hint="@string/word_for_decide_expence"
-                            />
-
-                        <TextView
-                            android:paddingTop="@dimen/two_dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:text="For Expence :"
-                            android:textSize="@dimen/fourteen_dp"
-                            android:id="@+id/forExpense"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/eight_dp">
-
-                        <TextView
-                            android:paddingTop="@dimen/two_dp"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
                             android:layout_marginRight="@dimen/six_dp"
+                            android:paddingTop="@dimen/two_dp"
+                            android:text="For Income :"
                             android:textColor="@color/black_for_glavniy_text"
-                            android:text="For Ammount :"
-                            android:textSize="@dimen/fourteen_dp"
-                            android:id="@+id/forammonurt"
-                            android:layout_alignParentTop="true" />
+                            android:textSize="@dimen/fourteen_dp" />
+
                         <EditText
-                            android:layout_below="@id/forammonurt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:textSize="@dimen/fourteen_dp"
                             android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@id/forIncome"
+                            android:hint="@string/word_for_decide_income"
+                            android:id="@+id/etSmsParseAddIncome"
+                            android:textSize="@dimen/fourteen_dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/eight_dp">
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:id="@+id/etSmsParseAddExpance"
+                            android:layout_below="@+id/smsParsForExpense"
+                            android:hint="@string/word_for_decide_expence"
+                            android:textSize="@dimen/fourteen_dp" />
+
+                        <TextView
+                            android:id="@+id/smsParsForExpense"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:paddingTop="@dimen/two_dp"
+                            android:text="For Expence :"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:textSize="@dimen/fourteen_dp" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/eight_dp">
+
+                        <TextView
+                            android:id="@+id/forammonurt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginRight="@dimen/six_dp"
+                            android:paddingTop="@dimen/two_dp"
+                            android:text="For Ammount :"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:textSize="@dimen/fourteen_dp" />
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_below="@id/forammonurt"
                             android:hint="@string/word_do_sifri"
-                            />
+                            android:id="@+id/etSmsParseAddAmount"
+                            android:textSize="@dimen/fourteen_dp" />
 
                     </RelativeLayout>
                 </LinearLayout>
@@ -274,16 +293,6 @@
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/eighteen_sp" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/one_dp"
-                            android:background="@color/green_light_forline" />
-                    </RelativeLayout>
                 </LinearLayout>
 
                 <RelativeLayout
@@ -293,7 +302,6 @@
 
                     <TextView
                         android:id="@+id/procent_credit"
-                        android:paddingTop="@dimen/two_dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
@@ -302,19 +310,32 @@
                         android:layout_toLeftOf="@+id/spinner_procent"
                         android:layout_toStartOf="@+id/spinner_procent"
                         android:elevation="0dp"
-                        android:textColor="@color/black_for_glavniy_text"
+                        android:paddingTop="@dimen/two_dp"
                         android:text="Account for sms parsing : "
-                        android:textSize="@dimen/fourteen_dp"
-                        />
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="@dimen/fourteen_dp" />
 
                     <Spinner
-                        android:id="@+id/spinner_Account"
+                        android:id="@+id/spSmsParseAddAccount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        />
 
-                        ></Spinner>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/one_dp"
+                            android:background="@color/green_light_forline" />
+                    </RelativeLayout>
                 </RelativeLayout>
 
                 <LinearLayout
@@ -349,7 +370,6 @@
                     android:paddingTop="@dimen/eight_dp">
 
                     <TextView
-                        android:paddingTop="@dimen/two_dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
@@ -358,31 +378,30 @@
                         android:layout_toLeftOf="@+id/spinner_procent"
                         android:layout_toStartOf="@+id/spinner_procent"
                         android:elevation="0dp"
-                        android:textColor="@color/black_for_glavniy_text"
+                        android:paddingTop="@dimen/two_dp"
                         android:text="Operations will calculate :"
-                        android:textSize="@dimen/fourteen_dp"
-                        />
+                        android:textColor="@color/black_for_glavniy_text"
+                        android:textSize="@dimen/fourteen_dp" />
 
                     <Spinner
-                        android:id="@+id/spinner_for_currency"
+                        android:id="@+id/spSmsParseAddCurrency"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        />
 
-                        ></Spinner>
                 </RelativeLayout>
 
             </LinearLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/sixteen_dp"
                 android:layout_height="2px"
                 android:layout_marginLeft="@dimen/sixteen_dp"
                 android:layout_marginRight="@dimen/sixteen_dp"
-                android:background="@color/green_light_forline"
-                />
+                android:layout_marginTop="@dimen/sixteen_dp"
+                android:background="@color/green_light_forline" />
         </LinearLayout>
 
 
