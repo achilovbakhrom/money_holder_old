@@ -1516,4 +1516,8 @@
     <string name="it_is_income">It is Income</string>
     <string name="which_type_is_it">Which type is it?</string>
     <string name="from_sms">from SMS</string>
+    <string name="select_word_for_parsing">Select word for parsing</string>
+    <string name="income_decide_with_static_word">Income decide with static word :</string>
+    <string name="ammount_of_operation">Ammount of operation in this message :</string>
+    <string name="obyasneniya_pro_parsing">Bu joyda oyyasneniya ketadi buyoda nima \n qilinvotgani i bu narsa nimaga \nkereligi(sms key words dialogg)</string>
 </resources>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#fff">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:background="@color/grey_light2"
+        android:id="@+id/linearLayout3">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/twenty_dp"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:text="@string/select_word_for_parsing"
+            android:textColor="@color/for_darker"
+            android:layout_alignBottom="@+id/ivInfoDebtBorrowCancel" />
+
+        <ImageView
+            android:id="@+id/ivInfoDebtBorrowSave"
+            android:layout_width="@dimen/twentyfive_dp"
+            android:layout_height="@dimen/twentyfive_dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/check_sign"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_marginTop="@dimen/sixteen_dp"
+            android:layout_marginBottom="@dimen/sixteen_dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:layout_alignParentEnd="true" />
+        <ImageView
+            android:id="@+id/ivInfoDebtBorrowCancel"
+            android:layout_width="@dimen/twentyfive_dp"
+            android:layout_height="@dimen/twentyfive_dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/cancel_sign"
+            android:layout_alignBottom="@+id/ivInfoDebtBorrowSave"
+            android:layout_toLeftOf="@+id/ivInfoDebtBorrowSave" />
+    </RelativeLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+
+        android:background="@color/green_light_forline"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ten_dp"
+        android:text="Message content :"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:textSize="@dimen/sixteen_dp"
+        android:textColor="@color/black_for_glavniy_text"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Oplata za obslugu sostavlyaet 300.0 $. Vy mojete dlya udobnogo polzovaniya nashu prilojeniyu ! Vash balans 200 041 $. National Bank Uzbekistan"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:textColor="@color/for_darker"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black_for_glavniy_text"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:textSize="@dimen/sixteen_dp"
+        android:text="@string/income_decide_with_static_word"
+        android:layout_marginTop="@dimen/ten_dp"/>
+    <!--NasimxonSizgaContener-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></FrameLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black_for_glavniy_text"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:textSize="@dimen/sixteen_dp"
+        android:text="@string/ammount_of_operation"
+        android:layout_marginTop="@dimen/ten_dp"/>
+    <!--NasimxonSizgaContener-->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"></FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+
+
+        android:background="@color/green_light_forline"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/grey_light2">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/obyasneniya_pro_parsing"
+            android:textSize="@dimen/ten_dp"
+            android:layout_marginTop="@dimen/sixteen_dp"
+            android:textColor="@color/black_for_secondary_text"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:paddingBottom="@dimen/thirty_dp"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:gravity="center"
+            android:id="@+id/textView12" />
+    </LinearLayout>
+
+
+
+</LinearLayout>
