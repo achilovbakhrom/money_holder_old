@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +81,7 @@ public class AddSmsParseFragment extends Fragment {
         etAmount = (EditText) rootView.findViewById(R.id.etSmsParseAddAmount);
         spAccount = (Spinner) rootView.findViewById(R.id.spSmsParseAddAccount);
         spCurrency = (Spinner) rootView.findViewById(R.id.spSmsParseAddCurrency);
-        myAdapter = new MyAdapter(ALL_SMS);
+        myAdapter = new MyAdapter(ALL_SMS, getAllSms());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvSmsList.setLayoutManager(layoutManager);
         rvSmsList.setAdapter(myAdapter);
@@ -98,7 +100,23 @@ public class AddSmsParseFragment extends Fragment {
                 }
             }
         });
+        etNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
+            @Override
+            public void afterTextChanged(Editable s) {
+                List<Sms> smsList = new ArrayList<>();
+                for (Sms sms : getAllSms()) {
+                    if(sms.getNumber().contains(s.toString())) {
+                        smsList.add(sms);
+                    }
+                }
+
+            }
+        });
         return rootView;
     }
 
@@ -116,16 +134,13 @@ public class AddSmsParseFragment extends Fragment {
             for (int i = 0; i < totalSMS; i++) {
                 objSms = new Sms();
                 objSms.setId(c.getString(c.getColumnIndexOrThrow("_id")));
-                objSms.setNumber(c.getString(c
-                        .getColumnIndexOrThrow("address")));
+                objSms.setNumber(c.getString(c.getColumnIndexOrThrow("address")));
                 objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
                 objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
                 if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
                     objSms.setFolderName("inbox");
-                } else {
-                    objSms.setFolderName("sent");
+                    lstSms.add(objSms);
                 }
-                lstSms.add(objSms);
                 c.moveToNext();
             }
         }
@@ -183,10 +198,11 @@ public class AddSmsParseFragment extends Fragment {
 
     private class MyAdapter extends RecyclerView.Adapter<AddSmsParseFragment.ViewHolder> {
         private int typeSort;
+        private List<Sms> list;
 
-        public MyAdapter(int typeSort) {
+        public MyAdapter(int typeSort, List<Sms> list) {
             this.typeSort = typeSort;
-
+            this.list = list;
         }
 
         public int getTypeSort() {
@@ -199,7 +215,7 @@ public class AddSmsParseFragment extends Fragment {
         }
 
         public int getItemCount() {
-            return 0;
+            return list.size();
         }
 
         public void onBindViewHolder(final AddSmsParseFragment.ViewHolder view, final int position) {
