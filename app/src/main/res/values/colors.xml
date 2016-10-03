@@ -52,6 +52,7 @@
     <color name="new_for_line" type="color">#dfdfdf</color>
     <color name="balanse_expanse" type="color">#832e1c</color>
     <color name="red_green_darker_monoxrom" type="color">#b82101</color>
+    <color name="red_green_darker_monoxrom_red" type="color">#bb1f1f</color>
     <color name="red_green_darker_monoxrom_transparent" type="color">#aab82101</color>
     <color name="belt_balanse" type="color">#dfdfdf</color>
     <color name="drawer_bg" type="color">#f8f8f8</color>

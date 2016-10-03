@@ -1512,4 +1512,8 @@
     <string name="processed">Processed:</string>
     <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
     <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
+    <string name="it_is_expense">It is Expanse</string>
+    <string name="it_is_income">It is Income</string>
+    <string name="which_type_is_it">Which type is it?</string>
+    <string name="from_sms">from SMS</string>
 </resources>

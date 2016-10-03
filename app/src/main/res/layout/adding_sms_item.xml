@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+
+
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/twenty_dp"
+        android:layout_marginLeft="@dimen/five_dp"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_rectangle_2"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="@dimen/five_dp"
+            android:paddingLeft="@dimen/five_dp"
+            android:paddingBottom="@dimen/five_dp"
+            android:textSize="@dimen/fourteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:text="Oplata za obslugu sostavlyaet 300.0 $. Vy mojete dlya udobnogo polzovaniya nashu prilojeniyu ! Vash balans 200 041 $. National Bank Uzbekistan"
+            android:layout_marginTop="@dimen/five_dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/which_type_is_it"
+            android:paddingRight="@dimen/five_dp"
+            android:paddingLeft="@dimen/five_dp"
+            android:paddingTop="@dimen/three_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/fourteen_dp"
+            android:paddingBottom="@dimen/three_dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/two_dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/days_shape_green"
+                android:layout_height="wrap_content"
+                android:text="@string/it_is_income"
+                android:gravity="center"
+                android:paddingBottom="@dimen/eight_dp"
+                android:paddingTop="@dimen/eight_dp"
+                android:textSize="@dimen/fourteen_dp"
+                android:layout_marginRight="@dimen/six_dp"
+                android:layout_marginLeft="@dimen/six_dp"
+                android:textColor="@color/green_light"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/days_shape_red"
+                android:layout_height="wrap_content"
+                android:text="@string/it_is_expense"
+                android:gravity="center"
+                android:layout_marginLeft="@dimen/five_dp"
+                android:paddingBottom="@dimen/eight_dp"
+                android:paddingTop="@dimen/eight_dp"
+                android:textSize="@dimen/fourteen_dp"
+                android:layout_marginRight="@dimen/five_dp"
+                android:textColor="@color/red_green_darker_monoxrom_red"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -12,7 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,24 +36,33 @@
                         android:id="@+id/etSmsParseAddNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
                         android:layout_marginBottom="@dimen/sixteen_dp"
-                        android:layout_marginRight="@dimen/ten_dp"
-                        android:layout_toLeftOf="@+id/imageView9"
+                        android:textSize="@dimen/sixteen_dp"
                         android:hint="(number or name of sender)"
                         android:textColorHint="#d1d1d1"
-                        android:textSize="@dimen/sixteen_dp" />
-
-                    <ImageView
+                        android:layout_marginRight="@dimen/ten_dp"
+                        android:layout_toLeftOf="@+id/ivSmsParseGet"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:id="@+id/ivSmsParseGet"
-                        android:layout_width="@dimen/fifty_dp"
-                        android:layout_height="@dimen/thirty_dp"
-                        android:layout_alignBottom="@+id/etSmsParseAddNumber"
-                        android:layout_alignParentEnd="true"
+                        android:text="@string/from_sms"
+                        android:textColor="@color/green_light"
+                        android:textSize="@dimen/fourteen_dp"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/five_dp"
+                        android:paddingBottom="@dimen/five_dp"
+                        android:paddingRight="@dimen/twelve_dp"
+                        android:paddingLeft="@dimen/twelve_dp"
+                        android:layout_marginBottom="@dimen/sevent_dp"
+                        android:background="@drawable/days_shape_green"
                         android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignBottom="@+id/etSmsParseAddNumber"
                         android:layout_alignParentTop="true"
-                        android:src="@drawable/ic_email_black_24dp" />
+                        />
                 </RelativeLayout>
 
                 <RadioGroup
@@ -66,31 +74,30 @@
 
                     <RadioButton
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:checked="true"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black_for_glavniy_text"
                         android:text="All operations"
-                        android:textColor="@color/black_for_glavniy_text"
                         android:id="@+id/rbnSmsParseAddAll"
-                        android:textSize="12dp" />
-
+                        android:checked="true"
+                        android:textSize="12dp"/>
                     <RadioButton
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:id="@+id/rbnSmsParseAddIncome"
-                        android:text="Only Income"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="12dp" />
+                        android:text="Only Income"
+                        android:id="@+id/rbnSmsParseAddIncome"
 
+                        android:textSize="12dp"/>
                     <RadioButton
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black_for_glavniy_text"
                         android:text="Only Expanse"
                         android:id="@+id/rbnSmsParseAddExpance"
-                        android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="12dp" />
+                        android:textSize="12dp"/>
                 </RadioGroup>
 
                 <RelativeLayout
@@ -112,24 +119,28 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/sixteen_dp"
-                    android:paddingBottom="@dimen/sevent_dp"
-                    android:paddingTop="@dimen/sevent_dp"
-                    android:text="Not identefied messages"
+                    android:textSize="@dimen/eighteen_sp"
                     android:textColor="@color/black_for_glavniy_text"
-                    android:textSize="@dimen/sixteen_dp" />
-
+                    android:paddingTop="@dimen/sevent_dp"
+                    android:paddingBottom="@dimen/sevent_dp"
+                    android:layout_marginLeft="@dimen/sixteen_dp"
+                    android:layout_marginRight="@dimen/sixteen_dp"
+                    android:text="Not identefied messages"
+                    android:layout_toLeftOf="@+id/textView21"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="@dimen/sixteen_dp"
-                    android:paddingBottom="@dimen/sevent_dp"
-                    android:paddingTop="@dimen/sevent_dp"
-                    android:text="12"
+                    android:textSize="@dimen/sixteen_dp"
                     android:textColor="@color/black_for_glavniy_text"
-                    android:textSize="@dimen/sixteen_dp" />
+                    android:paddingTop="@dimen/sevent_dp"
+                    android:paddingBottom="@dimen/sevent_dp"
+                    android:text="12"
+                    android:layout_marginRight="@dimen/sixteen_dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/textView21" />
             </RelativeLayout>
 
             <FrameLayout
