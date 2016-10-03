@@ -7,20 +7,20 @@ package com.jim.pocketaccounter.utils;
 public class TemplateSms {
     private String regex;
     private int type;
-    private int posAmountGroup;
+    private String posAmountGroupName;
 
-    public TemplateSms(String regex, int type, int posAmountGroup) {
+    public TemplateSms(String regex, int type, String posAmountGroup) {
         this.regex = regex;
         this.type = type;
-        this.posAmountGroup = posAmountGroup;
+        this.posAmountGroupName = posAmountGroup;
     }
 
-    public int getPosAmountGroup() {
-        return posAmountGroup;
+    public String getPosAmountGroup() {
+        return posAmountGroupName;
     }
 
-    public void setPosAmountGroup(int posAmountGroup) {
-        this.posAmountGroup = posAmountGroup;
+    public void setPosAmountGroup(String posAmountGroup) {
+        this.posAmountGroupName = posAmountGroup;
     }
 
     public String getRegex() {

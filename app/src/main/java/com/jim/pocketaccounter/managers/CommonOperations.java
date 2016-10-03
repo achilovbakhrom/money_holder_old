@@ -45,6 +45,7 @@ import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.TemplateSms;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.greenrobot.greendao.database.StandardDatabase;
 
 import java.io.File;
@@ -238,18 +239,38 @@ public class CommonOperations {
     }
 
     public List<TemplateSms> generateSmsTemplateList(String[] splittedText, int incExpPos, int amountPos, String[] incomeKeywords, String[] expenseKeywords, String[] amountKeywords) {
+        String numberPattern = "[0-9]+[.,]?[0-9]*";
+        String incExpenseKeyWord = splittedText[incExpPos];
         List<TemplateSms> templates = new ArrayList<>();
         for (String incomeKeyword : incomeKeywords) {
             int type = PocketAccounterGeneral.INCOME;
-            int amountBlock = 0;
-            String regex = "";
-            if (incExpPos < amountPos && incExpPos+1 != amountPos ) {
-                regex = "^(.*(\b"+incomeKeyword+"\b)?)"+
-                        "(.*(\b"+incomeKeyword+"\b)*)" +
-                        "([0-9]+[.,]?[0-9]*)"+"$";
+            String amountBlock = "amount_block";
+            String regex = ".*";
+            if (incExpPos < amountPos) {
+                if (incExpPos+1 == amountPos) {
+                    regex += "(\\b"+incomeKeyword+")\\s*";
+                    regex += "(?P<"+amountBlock+">"+numberPattern+")";
+                    regex += ".*";
+                }
+                else {
+                    regex += "(\\b"+incomeKeyword+").*";
+                    regex += "(\\b"+splittedText[amountPos-1]+")\\s*";
+                    regex += "(?P<"+amountBlock+">"+numberPattern+")";
+                    regex += ".*";
+                }
             }
+            else {
+                regex = "";
+                if (amountPos != 0) {
+                    regex += ".*";
+                    regex += "(\\b" + splittedText[amountPos - 1] + ")\\s*";
+                }
+                regex += "(?P<"+amountBlock+">"+numberPattern+").*";
+                regex += "(\\b"+incomeKeyword+").*";
 
-
+            }
+            TemplateSms templateSms = new TemplateSms(regex, type, amountBlock);
+            templates.add(templateSms);
         }
         return templates;
     }
