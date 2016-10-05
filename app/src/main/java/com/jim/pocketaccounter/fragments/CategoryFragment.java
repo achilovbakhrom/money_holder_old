@@ -7,6 +7,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +25,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.LogicManager;
@@ -88,7 +90,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	}
 	private void refreshList() {
 		ArrayList<RootCategory> categories = new ArrayList<RootCategory>();
-		List<RootCategory> rootCategories = daoSession.getRootCategoryDao().loadAll();
+		List<RootCategory> rootCategories = daoSession.getRootCategoryDao().queryBuilder().orderAsc(RootCategoryDao.Properties.Name).list();
 		for (RootCategory rootCategory : rootCategories) {
 			if (chbCatIncomes.isChecked()) {
 				if (rootCategory.getType() == PocketAccounterGeneral.INCOME)
@@ -136,8 +138,16 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 					subCatAddEditDialog.setSubCat(null, new OnSubcategorySavingListener() {
 						@Override
 						public void onSubcategorySaving(SubCategory subCategory) {
+							if (result.get(position).getSubCategories() != null)
+								result.get(position).getSubCategories().add(subCategory);
+							else {
+								List<SubCategory> subCategoryList = new ArrayList<>();
+								subCategoryList.add(subCategory);
+								result.get(position).setSubCategories(subCategoryList);
+							}
 							List<SubCategory> subCategories = new ArrayList<>();
 							subCategories.add(subCategory);
+
 							if (logicManager.insertSubCategory(subCategories) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS)
 								Toast.makeText(getContext(), R.string.such_subcat_exist,
 										Toast.LENGTH_SHORT).show();

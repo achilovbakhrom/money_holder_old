@@ -72,14 +72,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import org.greenrobot.greendao.query.DeleteQuery;
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import javax.inject.Inject;
@@ -577,10 +572,10 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		String clear = getResources().getString(R.string.clear);
 		String clearRecords = getContext().getString(R.string.clear_records);
 		BoardButton cur = daoSession.getBoardButtonDao().queryBuilder()
-				.where(BoardButtonDao.Properties.Pos.eq(pos), BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
+				.where(BoardButtonDao.Properties.Pos.eq(pos+currentPage*16), BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
 				.list().isEmpty() ?
 				null:daoSession.getBoardButtonDao().queryBuilder()
-				.where(BoardButtonDao.Properties.Pos.eq(pos), BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
+				.where(BoardButtonDao.Properties.Pos.eq(pos+currentPage*16), BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
 				.list().get(0);
 		String[] items = null;
 		String format = simpleDateFormat.format(begin.getTime());
@@ -626,6 +621,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 						break;
 				}
 				PocketAccounter.PRESSED = false;
+				operationsListDialog.dismiss();
 			}
 		});
 		operationsListDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -671,7 +667,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 									switch (position) {
 										case 0:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, pos, date));
+											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, currentPage*16+pos, date));
 											break;
 										case 1:
 											paFragmentManager.setMainReturn(true);
@@ -814,7 +810,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		end.set(Calendar.SECOND, 59);
 		end.set(Calendar.MILLISECOND, 59);
 		final String id = daoSession.getBoardButtonDao().queryBuilder()
-							.where(BoardButtonDao.Properties.Pos.eq(pos))
+							.where(BoardButtonDao.Properties.Pos.eq(pos+currentPage*16),
+									BoardButtonDao.Properties.Table.eq(PocketAccounterGeneral.EXPENSE))
 							.list().get(0).getCategoryId();
 		final WarningDialog warningDialog = new WarningDialog(getContext());
 		warningDialog.setText(getContext().getString(R.string.clear_warning));
@@ -822,10 +819,13 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			@Override
 			public void onClick(View v) {
 				QueryBuilder<FinanceRecord> financeRecordQueryBuilder = daoSession.getFinanceRecordDao().queryBuilder();
-				List<FinanceRecord> deletingRecords = financeRecordQueryBuilder.where(FinanceRecordDao.Properties.Date.eq(simpleDateFormat.format(begin.getTime())),
-						FinanceRecordDao.Properties.CategoryId.eq(id))
-						.list();
+				financeRecordQueryBuilder
+						.where(FinanceRecordDao.Properties.Date.eq(simpleDateFormat.format(dataCache.getEndDate().getTime())),
+						FinanceRecordDao.Properties.CategoryId.eq(id));
+				List<FinanceRecord> deletingRecords = financeRecordQueryBuilder.list();
 				daoSession.getFinanceRecordDao().deleteInTx(deletingRecords);
+				paFragmentManager.getCurrentFragment().update();
+				dataCache.updateOneDay(dataCache.getEndDate());
 				PocketAccounter.PRESSED = false;
 				for (int i=0; i<buttons.size(); i++)
 					buttons.get(i).setPressed(false);
@@ -975,22 +975,26 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			dialog.show();
 		}
 		else {
+			for (int i=0; i<buttons.size(); i++)
+				buttons.get(i).setPressed(false);
+			invalidate();
+			PocketAccounter.PRESSED = false;
 			Toast.makeText(getContext(), R.string.debt_borrow_list_is_empty, Toast.LENGTH_SHORT).show();
 		}
 
 	}
 
 	private void openCreditsChooseDialog(final int pos) {
-		List<CreditDetials> debtBorrowList = daoSession.getCreditDetialsDao()
+		List<CreditDetials> creditDetialsList = daoSession.getCreditDetialsDao()
 				.queryBuilder().where(CreditDetialsDao.Properties.Key_for_include.eq(true),
 						CreditDetialsDao.Properties.Key_for_archive.eq(false)).list();
-		if (!debtBorrowList.isEmpty()) {
+		if (!creditDetialsList.isEmpty()) {
 			final Dialog dialog = new Dialog(getContext());
 			View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
 			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialog.setContentView(dialogView);
 			final ArrayList<IconWithName> categories = new ArrayList<>();
-			List<CreditDetials> creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
+			creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
 			for (CreditDetials creditDetials : creditDetialsList) {
 				IconWithName iconWithName = new IconWithName(creditDetials.getIcon_ID(),
 						creditDetials.getCredit_name(), Long.toString(creditDetials.getMyCredit_id()));
@@ -1025,8 +1029,13 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			});
 			dialog.show();
 		}
-		else
+		else {
+			for (int i = 0; i < buttons.size(); i++)
+				buttons.get(i).setPressed(false);
+			invalidate();
+			PocketAccounter.PRESSED = false;
 			Toast.makeText(getContext(), R.string.credit_list_is_empty, Toast.LENGTH_SHORT).show();
+		}
 	}
 	private void changeIconInCache(int pos, String icon) {
 		int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());

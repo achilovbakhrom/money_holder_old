@@ -133,7 +133,9 @@ public class DataCache {
         end.set(Calendar.SECOND, 59);
         end.set(Calendar.MILLISECOND, 59);
         List<FinanceRecord> financeRecords = daoSession.getFinanceRecordDao()
-                .queryBuilder().where(FinanceRecordDao.Properties.Date.eq(simpleDateFormat.format(begin.getTime()))).list();
+                                                        .queryBuilder()
+                                                        .where(FinanceRecordDao.Properties.Date.eq(simpleDateFormat.format(begin.getTime())))
+                                                        .list();
         List<CreditDetials> tempCredits = daoSession.getCreditDetialsDao().loadAll();
         List<CreditDetials> creditDetialList= new ArrayList<>();
         for (CreditDetials creditDetial : tempCredits) {
@@ -155,7 +157,7 @@ public class DataCache {
                 debtBorrows.add(debtBorrow);
                 break;
             }
-            for (Recking recking: debtBorrow.getReckings()) {
+            for (Recking recking : debtBorrow.getReckings()) {
                 if (recking.getPayDate().compareTo(begin) >= 0 &&
                         recking.getPayDate().compareTo(end) <= 0) {
                     debtBorrows.add(debtBorrow);
@@ -194,7 +196,7 @@ public class DataCache {
                         }
                     }
                     if (found)
-                        percents.get(date).get(pos).setPercent(boardButtonPercent.getPercent());
+                        percents.get(date).get(pos).setPercent(0.0d);
                     else
                         percents.get(date).add(boardButtonPercent);
 

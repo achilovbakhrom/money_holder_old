@@ -330,7 +330,7 @@ public class LogicManager {
         }
         Query<BoardButton> query = boardButtonDao
                 .queryBuilder()
-                .where(BoardButtonDao.Properties.Type.eq(type),
+                .where(BoardButtonDao.Properties.Table.eq(type),
                        BoardButtonDao.Properties.Pos.eq(pos))
                 .build();
         List<BoardButton> list = query.list();
