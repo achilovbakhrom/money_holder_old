@@ -205,12 +205,13 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 		lvSubCats.setAdapter(adapter);
 	}
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+	public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
 		if (mode == PocketAccounterGeneral.NORMAL_MODE) {
 			subCatAddEditDialog.setRootCategory(categoryId);
 			subCatAddEditDialog.setSubCat(subCategories.get(position), new OnSubcategorySavingListener() {
 				@Override
 				public void onSubcategorySaving(SubCategory subCategory) {
+
 					if (subCategories == null) return;
 					for (SubCategory s : subCategories) {
 						if (s.getName().equals(subCategory.getName()) && !s.getId().matches(subCategory.getId())) {
@@ -264,14 +265,17 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 			subCatAddEditDialog.setSubCat(null, new OnSubcategorySavingListener() {
 				@Override
 				public void onSubcategorySaving(SubCategory subCategory) {
-					for (SubCategory subcategory : subCategories)
-						if(subcategory.getName().equals(subCategory.getName())) {
-							Toast.makeText(getContext(), R.string.such_subcat_exist, Toast.LENGTH_SHORT).show();
-							return;
-						}
-					if (subCategories == null)
+					if (subCategories != null) {
+						for (SubCategory subcategory : subCategories)
+							if (subcategory.getName().equals(subCategory.getName())) {
+								Toast.makeText(getContext(), R.string.such_subcat_exist, Toast.LENGTH_SHORT).show();
+								return;
+							}
+					}
+					else
 						subCategories = new ArrayList<>();
 					subCategories.add(subCategory);
+					logicManager.insertSubCategory(subCategories);
 					refreshSubCatList(mode);
 					subCatAddEditDialog.dismiss();
 				}
@@ -311,6 +315,7 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 								}
 							}
 							refreshSubCatList(mode);
+							dataCache.updatePercents();
 							mode = PocketAccounterGeneral.NORMAL_MODE;
 							setMode(mode);
 							warningDialog.dismiss();
@@ -397,8 +402,8 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 				}
 			}
 			if (editMode == PocketAccounterGeneral.NO_MODE) {
-				paFragmentManager.displayFragment(new CategoryFragment());
 				paFragmentManager.getFragmentManager().popBackStack();
+				paFragmentManager.displayFragment(new CategoryFragment());
 			}
 			else {
 				logicManager.changeBoardButton(rootCategory.getType(),

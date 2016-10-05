@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -25,6 +26,8 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
@@ -42,6 +45,7 @@ import com.jim.pocketaccounter.utils.FilterDialog;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.WarningDialog;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,6 +67,8 @@ public class CategoryInfoFragment extends Fragment {
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	OperationsListDialog operationsListDialog;
 	@Inject	FilterDialog filterDialog;
+	@Inject	SharedPreferences sharedPreferences;
+	@Inject	DataCache dataCache;
 	private RootCategory rootCategory;
 	private FABIcon fabCategoryIcon;
 	private TextView tvCategoryInfoName;
@@ -169,6 +175,30 @@ public class CategoryInfoFragment extends Fragment {
 						warningDialog.setOnYesButtonListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
+								List<BoardButton> list = daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.CategoryId.eq(rootCategory.getId())).list();
+								if (!list.isEmpty()) {
+									int currentPage = 0, countOfButtons = 0;
+									if (rootCategory.getType() == PocketAccounterGeneral.INCOME) {
+										currentPage = sharedPreferences.getInt("income_current_page", 1);
+										countOfButtons = 4;
+									}
+									else {
+										currentPage = sharedPreferences.getInt("expense_current_page", 1);
+										countOfButtons = 16;
+									}
+									for (BoardButton boardButton : list) {
+										if (currentPage*countOfButtons <= boardButton.getPos()
+												&& (currentPage+1)*countOfButtons > currentPage*countOfButtons) {
+											BitmapFactory.Options options = new BitmapFactory.Options();
+											options.inPreferredConfig = Bitmap.Config.RGB_565;
+											Bitmap scaled = BitmapFactory.decodeResource(getResources(), R.drawable.no_category, options);
+											scaled = Bitmap.createScaledBitmap(scaled, (int) getResources().getDimension(R.dimen.thirty_dp),
+													(int) getResources().getDimension(R.dimen.thirty_dp), false);
+											dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+											dataCache.updatePercents();
+										}
+									}
+								}
 								logicManager.deleteRootCategory(rootCategory);
 								paFragmentManager.getFragmentManager().popBackStack();
 								paFragmentManager.displayFragment(new CategoryFragment());
