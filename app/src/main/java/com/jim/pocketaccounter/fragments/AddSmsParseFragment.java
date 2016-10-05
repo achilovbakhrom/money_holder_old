@@ -43,7 +43,6 @@ public class AddSmsParseFragment extends Fragment {
     @Inject ToolbarManager toolbarManager;
 
     private EditText etNumber;
-    private ImageView ivSms;
     private RadioGroup rgSortSms;
     private RecyclerView rvSmsList;
     private TextView tvSmsCount;
@@ -70,7 +69,6 @@ public class AddSmsParseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_sms_sender, container, false);
         etNumber = (EditText) rootView.findViewById(R.id.etSmsParseAddNumber);
-        ivSms = (ImageView) rootView.findViewById(R.id.ivSmsParseGet);
         rgSortSms = (RadioGroup) rootView.findViewById(R.id.rgSmsParseAddSort);
         rvSmsList = (RecyclerView) rootView.findViewById(R.id.rvSmsParseAdd);
         etIncome = (EditText) rootView.findViewById(R.id.etSmsParseAddIncome);

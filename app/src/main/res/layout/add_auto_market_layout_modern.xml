@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    >
+
+    <LinearLayout
+        android:paddingTop="@dimen/sixteen_dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey_light2"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="@dimen/seventy_dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/sixteen_dp"
+            android:layout_marginLeft="@dimen/sixteen_dp">
+            <ImageView
+                android:id="@+id/ivAddAutoMarketCategory"
+                android:layout_width="@dimen/seventy_dp"
+                android:layout_height="@dimen/seventy_dp"
+
+                android:padding="10dp"
+                android:src="@drawable/ic_photo_size_select_small_black_24dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="select category"
+                android:textSize="@dimen/ten_dp"
+                android:textColor="@color/black_for_secondary_text"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/ten_dp">
+            <TextView
+                android:id="@+id/tvAddAutoMarketCatName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/category_one"
+                android:textColor="@color/black_for_glavniy_text"
+                android:layout_marginTop="@dimen/sixteen_dp"
+                android:textSize="@dimen/twenty_dp"
+                />
+            <TextView
+                android:id="@+id/tvAddAutoMarketSubCatName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sixteen_dp"
+                android:layout_below="@+id/tvAddAutoMarketCatName"
+                android:text="@string/sub_category"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@+id/linlay_first"
+        android:background="@color/green_light_forline" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/twenty_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/ten_dp"
+            android:text="Amount of payment"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/eighteen_sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/one_dp"
+                android:background="@color/green_light_forline" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp">
+
+        <EditText
+            android:id="@+id/etAddAutoMarketAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/spAddAutoMarketCurrency"
+            android:hint="@string/enter_amount_operation"
+            android:inputType="numberDecimal"
+            android:maxLength="13"
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_toLeftOf="@+id/spAddAutoMarketCurrency" />
+
+        <Spinner
+            android:id="@+id/spAddAutoMarketCurrency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/fourteen_dp"
+
+            ></Spinner>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/twenty_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/ten_dp"
+            android:text="Account of operation"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/eighteen_sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/one_dp"
+                android:background="@color/green_light_forline" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp">
+
+        <TextView
+            android:id="@+id/tvForAmnnount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="@dimen/six_dp"
+            android:layout_toLeftOf="@+id/acountSpinner"
+            android:layout_toStartOf="@+id/acountSpinner"
+            android:text="Choise account :"
+            android:textColor="@color/black_for_glavniy_text"
+            android:inputType="numberDecimal"
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_alignBottom="@+id/acountSpinner" />
+
+        <Spinner
+            android:id="@+id/acountSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/fourteen_dp"
+            ></Spinner>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/twenty_dp"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/ten_dp"
+            android:text="Repeat"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/eighteen_sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/one_dp"
+                android:background="@color/green_light_forline" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rgMonthWeek"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"
+            >
+
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:id="@+id/rbtnAddAutoMarketWeek"
+                android:text="Week days"
+                android:checked="true"
+                />
+
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:id="@+id/rbtnAddAutoMarketMonth"
+                android:text="Month days"
+                android:layout_marginLeft="@dimen/fifteen_dp"
+                />
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/two_dp"
+        android:layout_marginTop="@dimen/ten_dp"
+        android:layout_gravity="center"
+        android:id="@+id/rvAddAutoMarketPerItems"
+        android:background="@drawable/days_shape"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp"/>
+
+
+</LinearLayout>

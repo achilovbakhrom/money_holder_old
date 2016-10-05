@@ -50,6 +50,7 @@ import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
 import com.jim.pocketaccounter.report.CategoryReportView;
 import com.jim.pocketaccounter.report.ReportByCategoryDialogAdapter;
+import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.record.RecordExpanseView;

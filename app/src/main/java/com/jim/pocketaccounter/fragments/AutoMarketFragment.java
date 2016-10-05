@@ -158,7 +158,7 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
         }
 
         public ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.auto_market_item_layout, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.auto_market_item_layout_modern, parent, false);
             return new ViewHolder(view);
         }
     }

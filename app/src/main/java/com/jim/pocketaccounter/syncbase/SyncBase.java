@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -17,12 +18,20 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.managers.CommonOperations;
+import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterApplicationModule;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +43,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javax.inject.Inject;
 
 /**
  * Created by DEV on 10.06.2016.
@@ -47,10 +58,23 @@ public class SyncBase {
     StorageReference refStorage;
     Context context;
     ChangeStateLis eventer;
+    @Inject
+    DaoSession daoSession;
+    @Inject
+    SharedPreferences sharedPreferences;
+    @Inject
+    PocketAccounterApplicationModule pocketAccounterApplicationModule;
+
+//    @Inject
+//    PAFragmentManager paFragmentManager;
+    @Inject
+    DataCache dataCache;
     void SyncBase(){
 
     }
     public SyncBase(StorageReference refStorage, Context context,String databsename) {
+        Log.d("testtt", "SyncBase: CONSTRUCT");
+        ((PocketAccounterApplication) context.getApplicationContext()).component().inject(this);
         this.refStorage = refStorage;
         this.context = context;
         String packageName = context.getPackageName();
@@ -77,7 +101,7 @@ public class SyncBase {
                     .setCustomMetadata(META_KEY, Long.toString(System.currentTimeMillis()))
                     .build();
             InputStream stream = new FileInputStream(new File(PATH_FOR_INPUT));
-            refStorage.child(auth_uid + "/" + DB_NAME).putStream(stream, metadata).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            refStorage.child(auth_uid + "/" + PocketAccounterGeneral.OLD_DB_NAME).putStream(stream, metadata).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     even.onSuccses();
@@ -98,7 +122,6 @@ public class SyncBase {
 
     }
    public boolean downloadLast(String auth_uid, final ChangeStateLis even){
-       // TODO tekwirib kor dialog ustma ust bob qomayaptimi
 
        final ProgressDialog A1=new ProgressDialog(context);
        A1.setMessage(context.getString(R.string.please_wait));
@@ -109,47 +132,13 @@ public class SyncBase {
            final File fileDirectory = new File(context.getFilesDir(),DB_NAME) ;
            final SQLiteDatabase current = SQLiteDatabase.openDatabase(file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
 
-          refStorage.child(auth_uid+"/"+DB_NAME).getFile(fileDirectory).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+          refStorage.child(auth_uid+"/"+PocketAccounterGeneral.OLD_DB_NAME).getFile(fileDirectory).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
               @Override
               public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                   SQLiteDatabase received = SQLiteDatabase.openDatabase(fileDirectory.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
 //                  Log.e("ttt", received.getVersion()+" version");
                   if (current.getVersion() > received.getVersion()) {
-                      if (received.getVersion() == 2) {
-                          received.execSQL("CREATE TABLE sms_parsing_table ("
-                                  + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                                  + "number TEXT,"
-                                  + "income_words TEXT,"
-                                  + "expense_words TEXT,"
-                                  + "amount_words TEXT,"
-                                  + "account_id TEXT,"
-                                  + "currency_id TEXT,"
-                                  + "type INTEGER,"
-                                  + "empty TEXT"
-                                  + ");");
-                          upgradeFromThreeToFour(received);
-                          upgradeFromFourToFive(received);
-                      }
-                      if (received.getVersion() == 3){
-                          upgradeFromThreeToFour(received);
-                          upgradeFromFourToFive(received);
-                      }
-                      if (received.getVersion() == 4){
-                          upgradeFromFourToFive(received);
-                      }
-                      received.setVersion(current.getVersion());
-                      File currentDB = new File(fileDirectory.getAbsolutePath());
-                      File backupDB = new File(file.getAbsolutePath());
-                      FileChannel src = null, dst = null;
-                      try {
-                          src = new FileInputStream(currentDB).getChannel();
-                          dst = new FileOutputStream(backupDB).getChannel();
-                          dst.transferFrom(src, 0, src.size());
-                          src.close();
-                          dst.close();
-                      } catch (IOException e) {
-                          e.printStackTrace();
-                      }
+                      CommonOperations.migrateDatabase(context,fileDirectory.getAbsolutePath(),daoSession,sharedPreferences);
                   }
                   else {
                       File currentDB = new File(fileDirectory.getAbsolutePath());
@@ -165,6 +154,15 @@ public class SyncBase {
                           e.printStackTrace();
                       }
                   }
+
+
+                  PAFragmentManager paFragmentManager=new PAFragmentManager( ((PocketAccounter) context));
+
+                  pocketAccounterApplicationModule.updateDaoSession();
+                  paFragmentManager.updateAllFragmentsOnViewPager();
+                  paFragmentManager.getCurrentFragment().update();
+                  dataCache.updatePercents();
+                  dataCache.updateOneDay(dataCache.getEndDate());
                   even.onSuccses();
                   A1.dismiss();
               }
@@ -182,7 +180,7 @@ public class SyncBase {
        return false;
    }
     public void meta_Message(String auth_uid, final ChangeStateLisMETA even){
-         refStorage.child(auth_uid+"/"+DB_NAME).getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+         refStorage.child(auth_uid+"/"+PocketAccounterGeneral.OLD_DB_NAME).getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
              @Override
              public void onSuccess(StorageMetadata storageMetadata) {
                  even.onSuccses(Long.parseLong(storageMetadata.getCustomMetadata(META_KEY)));

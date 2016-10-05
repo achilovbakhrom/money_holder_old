@@ -53,6 +53,7 @@ import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
 import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.CircleImageView;
 import com.jim.pocketaccounter.utils.FABIcon;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.navdrawer.LeftMenuAdapter;
 import com.jim.pocketaccounter.utils.navdrawer.LeftMenuItem;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
@@ -74,7 +75,6 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
-import static com.jim.pocketaccounter.PocketAccounter.reg;
 
 /**
  * Created by DEV on 28.08.2016.
@@ -112,7 +112,7 @@ public class DrawerInitializer {
     private AnimationDrawable mAnimationDrawable;
     private NotificationManagerCredit notific;
     boolean keyFromCalc = false;
-
+    public static SignInGoogleMoneyHold reg;
     public DrawerInitializer(PocketAccounter pocketAccounter, PAFragmentManager fragmentManager) {
         this.pocketAccounter = pocketAccounter;
         this.fragmentManager = fragmentManager;
@@ -135,7 +135,12 @@ public class DrawerInitializer {
         String[] debtSubItemIcons = pocketAccounter.getResources().getStringArray(R.array.debts_subitem_icons);
         List<LeftMenuItem> items = new ArrayList<>();
         spref = pocketAccounter.getSharedPreferences("infoFirst", pocketAccounter.MODE_PRIVATE);
-        mySync = new SyncBase(storageRef, pocketAccounter, "PocketAccounterDatabase");
+        mySync = new SyncBase(storageRef, pocketAccounter, PocketAccounterGeneral.CURRENT_DB_NAME);
+
+        userName = (TextView) pocketAccounter.findViewById(R.id.tvToolbarName);
+        userEmail = (TextView) pocketAccounter.findViewById(R.id.tvGoogleMail);
+        userAvatar = (CircleImageView) pocketAccounter.findViewById(R.id.userphoto);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             userName.setText(user.getDisplayName());
@@ -151,9 +156,7 @@ public class DrawerInitializer {
             }
         }
 
-        userAvatar = (CircleImageView) pocketAccounter.findViewById(R.id.userphoto);
-        userName = (TextView) pocketAccounter.findViewById(R.id.tvToolbarName);
-        userEmail = (TextView) pocketAccounter.findViewById(R.id.tvGoogleMail);
+
 
         FABIcon fabIcon = (FABIcon) pocketAccounter.findViewById(R.id.fabDrawerNavIcon);
         fabIconFrame = (ImageView) pocketAccounter.findViewById(R.id.iconFrameForAnim);
@@ -184,7 +187,7 @@ public class DrawerInitializer {
                     }
 
                     showProgressDialog(pocketAccounter.getString(R.string.cheking_user));
-                    PocketAccounter.mySync.meta_Message(user.getUid(), new SyncBase.ChangeStateLisMETA() {
+                    mySync.meta_Message(user.getUid(), new SyncBase.ChangeStateLisMETA() {
                         @Override
                         public void onSuccses(final long inFormat) {
                             hideProgressDialog();
@@ -197,13 +200,15 @@ public class DrawerInitializer {
                                     .setPositiveButton(pocketAccounter.getString(R.string.yes), new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             showProgressDialog(pocketAccounter.getString(R.string.download));
-                                            PocketAccounter.mySync.downloadLast(user.getUid(), new SyncBase.ChangeStateLis() {
+                                            mySync .downloadLast(user.getUid(), new SyncBase.ChangeStateLis() {
                                                 @Override
                                                 public void onSuccses() {
                                                     pocketAccounter.runOnUiThread(new Runnable() {
                                                         @Override
                                                         public void run() {
                                                             hideProgressDialog();
+
+
 //                                                            fragmentManager.initialize(new GregorianCalendar());
                                                             if (!drawer.isClosed()) {
                                                                 drawer.close();
@@ -486,7 +491,6 @@ public class DrawerInitializer {
             }
         });
     }
-
     public void onActivResultForDrawerCalls(int requestCode, int resultCode, Intent data){
         if (requestCode == SignInGoogleMoneyHold.RC_SIGN_IN) {
             reg.regitRequstGet(data);

@@ -97,11 +97,9 @@ public class PocketAccounter extends AppCompatActivity {
     private PasswordWindow pwPassword;
     private Calendar date;
     private Spinner spToolbar;
-    public static SignInGoogleMoneyHold reg;
     public static boolean isCalcLayoutOpen = false;
     public static boolean openActivity = false;
     boolean downloadnycCanRest = true;
-    public static SyncBase mySync;
     Uri imageUri;
     ImageView fabIconFrame;
     public static final int key_for_restat = 10101;

@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.modulesandcomponents.modules;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.DaoMaster;
@@ -57,6 +58,18 @@ public class PocketAccounterApplicationModule {
             daoSession = new DaoMaster(db).newSession();
         }
         return daoSession;
+    }
+
+    public void updateDaoSession () {
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(pocketAccounterApplication, PocketAccounterGeneral.CURRENT_DB_NAME);
+        Database db = helper.getWritableDb();
+        daoSession = new DaoMaster(db).newSession();
+    }
+
+    @Provides
+    public PocketAccounterApplicationModule getModule () {
+        Log.d("testtt", "kirdi");
+        return this;
     }
 
     @Provides

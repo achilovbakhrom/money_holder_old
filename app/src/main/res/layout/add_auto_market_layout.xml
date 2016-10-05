@@ -12,8 +12,9 @@
 
         <ImageView
             android:id="@+id/ivAddAutoMarketCategory"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="@dimen/seventy_dp"
+            android:layout_height="@dimen/seventy_dp"
+            android:layout_marginBottom="@dimen/sixteen_dp"
             android:layout_marginLeft="10dp"
             android:padding="10dp"
             android:src="@android:drawable/ic_menu_camera" />

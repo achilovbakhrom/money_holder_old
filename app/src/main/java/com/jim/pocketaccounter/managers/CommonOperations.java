@@ -409,7 +409,7 @@ public class CommonOperations {
             if (old.getVersion() == 5 && ((StandardDatabase) daoSession.getDatabase()).getSQLiteDatabase().getVersion() == 6)
                 upgradeFiveToSix(context, old, daoSession);
             //delete file
-            if (migrationDbFile.delete())
+            if (old.getVersion()!=6 && migrationDbFile.delete())
                 Log.d(PocketAccounterGeneral.TAG, migrationDbFile.getName() + " is deleted successfully !!!");
             else
                 Log.d(PocketAccounterGeneral.TAG, "Can't delete file: " + migrationDbFile.getName() + ". Please try again...");

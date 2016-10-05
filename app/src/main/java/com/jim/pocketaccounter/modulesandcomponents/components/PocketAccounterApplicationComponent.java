@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.modulesandcomponents.components;
 import android.content.SharedPreferences;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
+import com.jim.pocketaccounter.SettingsActivity;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.finance.CurrencyChooseAdapter;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
@@ -10,6 +11,7 @@ import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
+import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterApplicationModule;
 import com.jim.pocketaccounter.utils.record.RecordButtonExpanse;
@@ -35,6 +37,7 @@ public interface PocketAccounterApplicationComponent {
     DataCache getDataCache();
     CommonOperations getCommonOperations();
     ReportManager reportManager();
+    PocketAccounterApplicationModule getPocketAccounterApplicationModule();
     @Named(value = "begin") Calendar getBegin();
     @Named(value = "end") Calendar getEnd();
     @Named(value = "common_formatter") SimpleDateFormat getCommonFormatter();
@@ -50,4 +53,6 @@ public interface PocketAccounterApplicationComponent {
     void inject(DataCache dataCache);
     void inject(PAFragmentManager paFragmentManager);
     void inject(WidgetProvider widgetProvider);
+    void inject(SyncBase syncBase);
+    void inject(SettingsActivity settingsActivity);
 }

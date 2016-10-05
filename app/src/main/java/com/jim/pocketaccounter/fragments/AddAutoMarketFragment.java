@@ -75,7 +75,7 @@ public class AddAutoMarketFragment extends Fragment {
 
     private AutoMarketDao autoMarketDao;
     private EditText amount;
-    private Spinner spCurrency;
+    private Spinner spCurrency,account_sp;
     private ImageView ivCategory;
     private TextView categoryName;
     private TextView subCategoryName;
@@ -85,7 +85,8 @@ public class AddAutoMarketFragment extends Fragment {
     private AutoMarket autoMarket;
     private boolean type = false;
     RecyclerView.LayoutManager layoutManager;
-
+    ArrayList<Account> accounts;
+    String[] accs;
     private RecyclerView rvDays;
     private DaysAdapter daysAdapter;
     private RadioGroup radioGroup;
@@ -109,10 +110,11 @@ public class AddAutoMarketFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.add_auto_market_layout, container, false);
+        View rootView = inflater.inflate(R.layout.add_auto_market_layout_modern, container, false);
         amount = (EditText) rootView.findViewById(R.id.etAddAutoMarketAmount);
         ivCategory = (ImageView) rootView.findViewById(R.id.ivAddAutoMarketCategory);
         spCurrency = (Spinner) rootView.findViewById(R.id.spAddAutoMarketCurrency);
+        account_sp = (Spinner) rootView.findViewById(R.id.acountSpinner);
         radioGroup = (RadioGroup) rootView.findViewById(R.id.rgMonthWeek);
         categoryName = (TextView) rootView.findViewById(R.id.tvAddAutoMarketCatName);
         subCategoryName = (TextView) rootView.findViewById(R.id.tvAddAutoMarketSubCatName);
@@ -123,8 +125,17 @@ public class AddAutoMarketFragment extends Fragment {
             curs.add(cr.getAbbr());
         }
 
+        accounts = (ArrayList<Account>) accountDao.queryBuilder().list();
+        accs = new String[accounts.size()];
+        for (int i = 0; i < accounts.size(); i++) {
+            accs[i] = accounts.get(i).getName();
+        }
+        ArrayAdapter<String> adapter_scet = new ArrayAdapter<String>(getActivity(),
+                R.layout.spiner_gravity_right, accs);
+        account_sp.setAdapter(adapter_scet);
+
         ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getContext()
-                , android.R.layout.simple_list_item_1, curs);
+                , R.layout.adapter_spiner, curs);
         spCurrency.setAdapter(curAdapter);
 
 //        dialog = new Dialog(getActivity());
@@ -459,7 +470,7 @@ public class AddAutoMarketFragment extends Fragment {
             view.day.setText(days[position]);
             view.day.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_secondary_text));
             if (tek[position]) view.day.setTextColor(ContextCompat.getColor(getContext(), R.color.green_just));
-            view.day.setOnClickListener(new View.OnClickListener() {
+            view.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (!tek[position]) {
@@ -481,9 +492,10 @@ public class AddAutoMarketFragment extends Fragment {
     public class ViewHolderDialog extends RecyclerView.ViewHolder {
         public TextView day;
         public FrameLayout frameLayout;
-
+        public View itemView;
         public ViewHolderDialog(View view) {
             super(view);
+            itemView  = view;
             day = (TextView) view.findViewById(R.id.tvItemDay);
             frameLayout = (FrameLayout) view.findViewById(R.id.flItemDay);
         }

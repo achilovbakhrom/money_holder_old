@@ -1240,7 +1240,7 @@
     <string name="all_transfer_operitions_you_can_see_bla_bla_bla_hullas_transactisiya_haqida">All money transfers are fixed in the balance</string>
     <string name="this_is_money_transfer_form_from_nsome_to_some_accaunt">Money transfer from one account to another</string>
     <string name="widget_settings">Widget Settings</string>
-    <bool name="widget_def">true</bool>
+    <bool name="widget_def">false</bool>
     <string name="main_diagramm">Chart</string>
     <string name="period_of_diagramm">Period</string>
     <string name="choose_type_sms">Select type of SMS</string>
@@ -1512,7 +1512,6 @@
     <string name="processed">Processed:</string>
     <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
     <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
-    <string name="it_is_expense">It is Expanse</string>
     <string name="it_is_income">It is Income</string>
     <string name="which_type_is_it">Which type is it?</string>
     <string name="from_sms">from SMS</string>
@@ -1520,4 +1519,8 @@
     <string name="income_decide_with_static_word">Income decide with static word :</string>
     <string name="ammount_of_operation">Ammount of operation in this message :</string>
     <string name="obyasneniya_pro_parsing">Bu joyda oyyasneniya ketadi buyoda nima \n qilinvotgani i bu narsa nimaga \nkereligi(sms key words dialogg)</string>
+    <string name="it_is_expense">It is Exanpse</string>
+    <string name="category_one">Category</string>
+    <string name="sub_category">Sub Category</string>
+    <string name="enter_amount_operation">Enter amount of operation</string>
 </resources>

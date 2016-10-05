@@ -1507,4 +1507,17 @@
     <string name="type">Type:</string>
     <string name="whole_day_datas_deleting">Записи за текущий день будут удалены!</string>
     <string name="search">Search</string>
+    <string name="account_for_parsing">Account for parsing:</string>
+    <string name="all_expense">All expense:</string>
+    <string name="all_incomes">All incomes:</string>
+    <string name="ammount_of_operation">Ammount of operation in this message :</string>
+    <string name="income_decide_with_static_word">Income decide with static word :</string>
+    <string name="info_toliq">Information</string>
+    <string name="it_is_expense">It is Exanpse</string>
+    <string name="it_is_income">It is Income</string>
+    <string name="obyasneniya_pro_parsing">Bu joyda oyyasneniya ketadi buyoda nima   qilinvotgani i bu narsa nimaga  kereligi(sms key words dialogg)</string>
+    <string name="processed">Processed:</string>
+    <string name="select_word_for_parsing">Select word for parsing</string>
+    <string name="which_type_is_it">Which type is it?</string>
+    <string name="from_sms">from SMS</string>
 </resources>
