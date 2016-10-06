@@ -783,9 +783,12 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 				.list().get(0);
 		String[] items = null;
 		String format = simpleDateFormat.format(begin.getTime());
-		List<FinanceRecord> temp = daoSession.getFinanceRecordDao().queryBuilder()
-				.where(FinanceRecordDao.Properties.CategoryId.eq(cur.getCategoryId()),
-						FinanceRecordDao.Properties.Date.eq(format)).list();
+		List<FinanceRecord> temp = new ArrayList<>();
+		if (cur.getCategoryId() != null)
+			temp = daoSession.getFinanceRecordDao().queryBuilder()
+					.where(FinanceRecordDao.Properties.CategoryId.isNotNull(),
+							FinanceRecordDao.Properties.CategoryId.eq(cur.getCategoryId()),
+							FinanceRecordDao.Properties.Date.eq(format)).list();
 		if (!temp.isEmpty()) {
 			items = new String[4];
 			items[0] = change;

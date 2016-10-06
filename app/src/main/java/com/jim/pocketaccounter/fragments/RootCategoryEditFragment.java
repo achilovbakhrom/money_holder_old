@@ -315,7 +315,7 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
 								}
 							}
 							refreshSubCatList(mode);
-							dataCache.updatePercents();
+							dataCache.updateAllPercents();
 							mode = PocketAccounterGeneral.NORMAL_MODE;
 							setMode(mode);
 							warningDialog.dismiss();

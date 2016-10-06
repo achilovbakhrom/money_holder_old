@@ -51,7 +51,7 @@ public class DataCache {
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 16;
         percents = new LruCache<>(cacheSize);
-        updatePercents();
+        updatePercentsWhenSwiping();
         categoryEditFragmentDatas = new CategoryEditFragmentDatas();
         elements = new LruCache<Integer, Bitmap>(cacheSize) {
             @Override
@@ -357,7 +357,7 @@ public class DataCache {
         }
     }
 
-    public void updatePercents() {
+    public void updatePercentsWhenSwiping() {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -408,6 +408,43 @@ public class DataCache {
                 }
             }
         }, 500);
+    }
+
+    public void updateAllPercents() {
+        begin.setTimeInMillis(endDate.getTimeInMillis());
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        begin.set(Calendar.MINUTE, 0);
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
+        end.setTimeInMillis(endDate.getTimeInMillis());
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 59);
+        percents.evictAll();
+        for (int i=0; i<10; i++) {
+            updateOneDay(end);
+            if (i >= 5) {
+                if (i == 5) {
+                    begin.setTimeInMillis(endDate.getTimeInMillis());
+                    begin.set(Calendar.HOUR_OF_DAY, 0);
+                    begin.set(Calendar.MINUTE, 0);
+                    begin.set(Calendar.SECOND, 0);
+                    begin.set(Calendar.MILLISECOND, 0);
+                    end.setTimeInMillis(endDate.getTimeInMillis());
+                    end.set(Calendar.HOUR_OF_DAY, 23);
+                    end.set(Calendar.MINUTE, 59);
+                    end.set(Calendar.SECOND, 59);
+                    end.set(Calendar.MILLISECOND, 59);
+                }
+                begin.add(Calendar.DAY_OF_MONTH, -1);
+                end.add(Calendar.DAY_OF_MONTH, -1);
+            }
+            else {
+                begin.add(Calendar.DAY_OF_MONTH, 1);
+                end.add(Calendar.DAY_OF_MONTH, 1);
+            }
+        }
     }
 
     public Double getPercent(Integer table, Calendar day, Integer position) {

@@ -36,6 +36,7 @@ import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.ScrollDirectionListener;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,8 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 	LogicManager logicManager;
 	@Inject
 	CommonOperations commonOperations;
+	@Inject
+	DataCache dataCache;
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.currency_fragment, container, false);
 		rootView.postDelayed(new Runnable() {
@@ -221,8 +224,10 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 							int answer = logicManager.deleteCurrency(deletingObjects);
 							if (answer == LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT) {
 								Toast.makeText(getContext(), R.string.currency_empty_warning, Toast.LENGTH_SHORT).show();
+								return;
 							}
 							refreshList();
+							dataCache.updateAllPercents();
 							toolbarManager.setSubtitle(getResources().getString(R.string.main_currency) + " " + commonOperations.getMainCurrency().getAbbr());
 							dialog.dismiss();
 						}

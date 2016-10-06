@@ -1,6 +1,5 @@
 package com.jim.pocketaccounter.managers;
 
-import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -8,12 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -36,9 +30,7 @@ import java.util.Calendar;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
-import static com.jim.pocketaccounter.PocketAccounter.toolbar;
 
 /**
  * Created by DEV on 27.08.2016.
@@ -149,7 +141,7 @@ public class PAFragmentManager {
                 if (page != null) {
                     page.update();
                     dataCache.setEndDate(page.getDay());
-                    dataCache.updatePercents();
+                    dataCache.updatePercentsWhenSwiping();
                     page.update();
                 }
                 lastPos = position;

@@ -161,7 +161,7 @@ public class SyncBase {
                   pocketAccounterApplicationModule.updateDaoSession();
                   paFragmentManager.updateAllFragmentsOnViewPager();
                   paFragmentManager.getCurrentFragment().update();
-                  dataCache.updatePercents();
+                  dataCache.updatePercentsWhenSwiping();
                   dataCache.updateOneDay(dataCache.getEndDate());
                   even.onSuccses();
                   A1.dismiss();

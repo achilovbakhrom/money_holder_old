@@ -40,6 +40,7 @@ import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,6 +75,8 @@ public class AccountInfoFragment extends Fragment {
 	FilterDialog filterDialog;
 	@Inject
 	TransferDialog transferDialog;
+	@Inject
+	DataCache dataCache;
 	private Account account;
 	private FABIcon fabAccountIcon;
 	private TextView tvAccountNameInfo;
@@ -204,6 +207,7 @@ public class AccountInfoFragment extends Fragment {
 							paFragmentManager.getFragmentManager().popBackStack();
 							paFragmentManager.displayFragment(new AccountFragment());
 						}
+						dataCache.updateAllPercents();
 						break;
 				}
 				operationsListDialog.dismiss();
