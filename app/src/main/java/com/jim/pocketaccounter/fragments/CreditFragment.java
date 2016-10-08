@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -125,7 +126,10 @@ public class CreditFragment extends Fragment {
                     }
                 });
 //            paFragmentManager.getFragmentManager().popBackStack();
-            paFragmentManager.displayFragment(fragment);
+//            paFragmentManager.displayFragment(fragment);
+            final android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            ft.add(R.id.flMain, fragment,tag);
+            ft.commit();
         }
     }
     public void updateToFirst(){

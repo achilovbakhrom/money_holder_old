@@ -950,14 +950,14 @@ public class AddCreditFragment extends Fragment {
                 }
                 dialog.dismiss();
                 if (isEdit()&&!fromMainWindow) {
-
+                    Log.d("testttt", "editing");
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
 
                 }
                 else if(fromMainWindow){
-
+                    Log.d("testttt", "fromMainWindow");
                     if(modeFromMain==PocketAccounterGeneral.EXPANSE_MODE)
                         logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,posFromMain,Long.toString(A1.getMyCredit_id()));
                     else
@@ -972,7 +972,7 @@ public class AddCreditFragment extends Fragment {
                     paFragmentManager.displayMainWindow();
                 }
                 else {
-
+                    Log.d("testttt", "adding");
                     paFragmentManager.getFragmentManager().popBackStack();
                 }
 

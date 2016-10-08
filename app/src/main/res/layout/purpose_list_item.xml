@@ -19,12 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:descendantFocusability="blocksDescendants">
+            android:descendantFocusability="blocksDescendants"
+            android:background="@color/grey_light2"
+            >
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:background="@color/grey_light2">
+                android:background="#ffffff"
+
+                >
                 <ImageView
                     android:id="@+id/ivPurposeItem"
                     android:layout_width="@dimen/fourty_dp"
@@ -44,7 +48,7 @@
                         android:layout_marginBottom="@dimen/five_dp"
                         android:layout_marginLeft="@dimen/fifteen_dp"
                         android:layout_marginRight="@dimen/sixteen_sp"
-                        android:layout_marginTop="@dimen/fifteen_dp"
+                        android:layout_marginTop="@dimen/twelve_dp"
                         android:text="TextView"
                         android:textColor="@color/toolbar_text_color"
                         android:textSize="@dimen/sixteen_sp" />
@@ -58,28 +62,102 @@
                         android:text="TextView"/>
                 </LinearLayout>
             </LinearLayout>
-            <ImageView
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/one_dp"
-                android:background="@color/toolbar_color"/>
+                android:layout_height="2px"
+                android:background="@color/green_light_forline"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
             </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ten_dp"
+                android:layout_marginRight="@dimen/sixteen_dp"
+                android:layout_marginLeft="@dimen/sixteen_dp"
+
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/twelve_dp"
+                    android:gravity="bottom"
+                    android:text="2 month"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@color/black_for_glavniy_text"
+                    android:id="@+id/tvLeftDate"
+                    android:layout_alignBottom="@+id/textView5"
+                    android:layout_alignParentTop="true"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/left_datee"
+                    android:textSize="@dimen/twelve_dp"
+                    android:textColor="@color/for_darker"
+                    android:id="@+id/textView5"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@+id/left_date"
+                    android:layout_toStartOf="@+id/left_date" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/realrt1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/sixteen_dp"
+                android:layout_marginLeft="@dimen/sixteen_dp"
+
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/twelve_dp"
+                    android:gravity="bottom"
+                    android:text="120$"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@color/red"
+                    android:id="@+id/tvNal"
+                    android:layout_alignBottom="@+id/textView2"
+                    android:layout_alignParentTop="true"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/left_acomuleted"
+                    android:textSize="@dimen/twelve_dp"
+                    android:textColor="@color/for_darker"
+                    android:id="@+id/textView2"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_toLeftOf="@+id/left_date"
+                    android:layout_toStartOf="@+id/left_date" />
+
+            </RelativeLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:layout_marginTop="@dimen/ten_dp"
+                android:layout_marginTop="@dimen/six_dp"
                 android:layout_marginBottom="@dimen/ten_dp">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/to_earn"
+                    android:text="@string/spend"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:layout_marginLeft="@dimen/five_dp"
+                    android:layout_marginLeft="@dimen/sixteen_dp"
                     android:layout_marginRight="@dimen/five_dp"
                     android:background="@drawable/knopka_zeleniy"
                     android:textColor="@color/green_light"
@@ -92,7 +170,7 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_marginLeft="@dimen/five_dp"
-                    android:layout_marginRight="@dimen/five_dp"
+                    android:layout_marginRight="@dimen/sixteen_dp"
                     android:background="@drawable/knopka_zeleniy"
                     android:textColor="@color/green_light"
                     android:textSize="@dimen/twelve_dp"

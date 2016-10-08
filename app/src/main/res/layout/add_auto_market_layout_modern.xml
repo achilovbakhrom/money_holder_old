@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -102,7 +103,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/sixteen_dp"
-                android:layout_marginLeft="@dimen/sixteen_dp">
+                android:layout_marginLeft="@dimen/sixteen_dp"
+                >
 
                 <EditText
                     android:id="@+id/etAddAutoMarketAmount"
@@ -120,10 +122,9 @@
                 <Spinner
                     android:id="@+id/spAddAutoMarketCurrency"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginTop="@dimen/fourteen_dp"
                     />
             </RelativeLayout>
 
@@ -131,7 +132,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/twenty_dp"
+                android:layout_marginTop="@dimen/ten_dp"
                 android:layout_marginLeft="@dimen/sixteen_dp"
                 android:layout_marginRight="@dimen/sixteen_dp"
                 android:orientation="horizontal">
@@ -175,15 +176,16 @@
                     android:textColor="@color/black_for_glavniy_text"
                     android:inputType="numberDecimal"
                     android:textSize="@dimen/fourteen_dp"
-                    android:layout_alignBottom="@+id/acountSpinner" />
+                    android:gravity="center_vertical"
+                    android:layout_alignBottom="@+id/acountSpinner"
+                    android:layout_alignParentTop="true" />
 
                 <Spinner
                     android:id="@+id/acountSpinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginTop="@dimen/fourteen_dp"
                     />
             </RelativeLayout>
 
@@ -191,7 +193,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/twenty_dp"
+                android:layout_marginTop="@dimen/ten_dp"
                 android:layout_marginLeft="@dimen/sixteen_dp"
                 android:layout_marginRight="@dimen/sixteen_dp"
                 android:orientation="horizontal">

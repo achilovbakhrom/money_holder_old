@@ -13,11 +13,13 @@
         android:background="@color/grey_light2">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ten_dp">
             <com.jim.pocketaccounter.utils.FABIcon
                 android:id="@+id/fabCategoryIcon"
                 android:layout_width="@dimen/fiftysix_dp"
                 android:layout_height="@dimen/fiftysix_dp"
+                android:clickable="false"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/twelve_dp"
                 android:layout_centerVertical="true"
@@ -37,12 +39,14 @@
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:layout_gravity="center_vertical"
                     android:text="TextView"
+                    android:textColor="@color/black_for_glavniy_text"
                     android:textSize="@dimen/sixteen_dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/tvCategoryInfoType"
                     android:layout_gravity="center_vertical"
+                    android:textColor="@color/black_for_secondary_text"
                     android:text="TextView"
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:layout_marginRight="@dimen/sixteen_dp"
@@ -70,11 +74,11 @@
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
-    <ImageView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/one_dp"
-        android:background="@color/toolbar_color"
-        android:layout_marginBottom="@dimen/ten_dp"/>
+        android:layout_height="2px"
+        android:background="@color/green_light_forline"
+        android:layout_marginBottom="@dimen/ten_dp" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -90,6 +94,7 @@
             android:layout_weight="1"
             android:layout_marginLeft="@dimen/ten_dp"
             android:layout_marginRight="@dimen/ten_dp"/>
+
         <ImageView
             android:layout_width="@dimen/twenty_dp"
             android:layout_height="@dimen/twenty_dp"

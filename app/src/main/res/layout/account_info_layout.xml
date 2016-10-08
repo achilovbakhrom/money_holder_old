@@ -52,6 +52,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ten_dp"
             android:layout_marginBottom="@dimen/ten_dp">
             <TextView
                 android:layout_width="match_parent"
@@ -61,6 +62,7 @@
                 android:background="@drawable/knopka_zeleniy"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textColor="@color/green_light"
                 android:layout_marginLeft="@dimen/sixteen_dp"
                 android:layout_marginRight="@dimen/five_dp"/>
             <TextView
@@ -71,6 +73,7 @@
                 android:background="@drawable/knopka_zeleniy"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:textColor="@color/green_light"
                 android:layout_marginRight="@dimen/sixteen_dp"
                 android:layout_marginLeft="@dimen/five_dp"/>
         </LinearLayout>

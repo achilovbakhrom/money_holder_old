@@ -5,7 +5,17 @@
     tools:context="com.jim.pocketaccounter.fragments.SearchFragment"
     android:paddingTop="@dimen/six_dp"
     android:background="#fff">
-
+    <TextView
+        android:id="@+id/textViewSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/please_type"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp"
+        android:textColor="@color/black_for_secondary_text"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/ten_dp"
+        android:textSize="@dimen/sixteen_dp"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyc_item_search"
         android:layout_width="match_parent"

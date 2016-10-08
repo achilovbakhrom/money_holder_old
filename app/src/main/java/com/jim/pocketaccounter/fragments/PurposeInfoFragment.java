@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.fragments;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -44,6 +45,7 @@ import org.greenrobot.greendao.query.Query;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -82,6 +84,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     private TextView amountPurpose;
     private TextView cashAdd;
     private TextView cashSend;
+    private TextView myLefDate;
+    private TextView Allcashes;
     private RecyclerView recyclerView;
     private boolean MODE = false;
 
@@ -98,13 +102,15 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rooView = inflater.inflate(R.layout.purpose_info_layout, container, false);
+        View rooView = inflater.inflate(R.layout.purpose_info_layout_modern, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         beginDate = null;
         endDate = null;
         deleteOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoDelete);
         filterOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoFilter);
         cashAdd = (TextView) rooView.findViewById(R.id.tvPurposeInfoToCash);
+        myLefDate = (TextView) rooView.findViewById(R.id.leftdate);
+        Allcashes = (TextView) rooView.findViewById(R.id.totaly);
         cashSend = (TextView) rooView.findViewById(R.id.tvPurposeInfoReplanish);
         toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
@@ -141,6 +147,54 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 operationsListDialog.show();
             }
         });
+        double qoldiq = 0;
+        for (AccountOperation accountOperation: reportManager.getAccountOpertions(purpose)) {
+            qoldiq += accountOperation.getAmount();
+        }
+        Allcashes.setText(parseToWithoutNull(qoldiq)+purpose.getCurrency().getAbbr());
+
+        // ------- LEFT DATE MODUL -------
+
+
+        int t[]=InfoCreditFragment.getDateDifferenceInDDMMYYYY(purpose.getBegin().getTime(),purpose.getEnd().getTime());
+        if(t[0]*t[1]*t[2]<0&&(t[0]+t[1]+t[2])!=0){
+            myLefDate.setText(R.string.ends);
+            myLefDate.setTextColor(Color.parseColor("#832e1c"));
+        } else {
+            String left_date_string = "";
+            if (t[0] != 0) {
+                if (t[0] > 1) {
+                    left_date_string += Integer.toString(t[0]) + " " + getString(R.string.years);
+                } else {
+                    left_date_string += Integer.toString(t[0]) + " " + getString(R.string.year);
+                }
+
+            }
+            if(t[1]!=0){
+                if(!left_date_string.matches("")){
+                    left_date_string+=" ";
+                }
+                if(t[1]>1){
+                    left_date_string+=Integer.toString(t[1])+" "+getString(R.string.moths);
+                }
+                else{
+                    left_date_string+=Integer.toString(t[1])+" "+getString(R.string.moth);
+                }
+            }
+            if(t[2]!=0){
+                if(!left_date_string.matches("")){
+                    left_date_string+=" ";
+                }
+                if(t[2]>1){
+                    left_date_string+=Integer.toString(t[2])+" "+getString(R.string.days);
+                }
+                else{
+                    left_date_string+=Integer.toString(t[2])+" "+getString(R.string.day);
+                }
+            }
+            myLefDate.setText(left_date_string);
+        }
+
 
         iconPurpose = (ImageView) rooView.findViewById(R.id.ivPurposeinfoIcon);
         namePurpose = (TextView) rooView.findViewById(R.id.tvPurposeInfoName);
@@ -154,7 +208,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         iconPurpose.setImageBitmap(bitmap);
         // ---------- end icon set ---------
         namePurpose.setText(purpose.getDescription());
-        amountPurpose.setText("" + purpose.getPurpose());
+        amountPurpose.setText("" + purpose.getPurpose()+purpose.getCurrency().getAbbr());
         deleteOpertions.setOnClickListener(this);
         filterOpertions.setOnClickListener(this);
         cashAdd.setOnClickListener(this);
@@ -165,7 +219,25 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         recyclerView.setAdapter(myAdapter);
         return rooView;
     }
+    public void updateAllInfo(){
 
+    }
+
+    public Double lefAmmount(Purpose purpose){
+        double qoldiq = 0;
+
+        for (AccountOperation accountOperation: reportManager.getAccountOpertions(purpose)) {
+            qoldiq += accountOperation.getAmount();
+        }
+
+        return purpose.getPurpose() - qoldiq;
+    }
+    public String parseToWithoutNull(double A) {
+        if (A == (int) A) {
+            return Integer.toString((int) A);
+        } else
+            return dateFormat.format(A);
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -189,9 +261,10 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 });
                 break;
             }
+            //TODO Nasimxon pul otkazilgandan kiyin adapter bilan total sumni yam yangilavoriw kere
             case R.id.tvPurposeInfoToCash: {
                 transferDialog.show();
-                transferDialog.setAccountOrPurpose(purpose.getId(), false);
+                transferDialog.setAccountOrPurpose(purpose.getId(), true);
                 transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                     @Override
                     public void OnTransferDialogSave() {
@@ -205,7 +278,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             }
             case R.id.tvPurposeInfoReplanish: {
                 transferDialog.show();
-                transferDialog.setAccountOrPurpose(purpose.getId(), true);
+                transferDialog.setAccountOrPurpose(purpose.getId(), false);
                 transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                     @Override
                     public void OnTransferDialogSave() {
@@ -217,6 +290,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 break;
             }
         }
+
     }
 
     private class MyAdapter extends RecyclerView.Adapter<ViewHolder> {

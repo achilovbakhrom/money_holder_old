@@ -166,15 +166,26 @@ public class AccountFragment extends Fragment {
 			view.tvAccStartMoney.setText(startMoney);
 			Map<Currency, Double> map = reportManager.getRemain(result.get(position));
 			String text = "";
-			for (Currency currency : map.keySet())
-				text = text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr()+"\n";
+			boolean isfirst=true;
+			for (Currency currency : map.keySet()){
+				if(isfirst){
+					text = text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
+					isfirst=false;
+				}
+				else
+				text = "\n" + text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
+
+			}
 			view.view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					paFragmentManager.displayFragment(new AccountInfoFragment(result.get(position)));
 				}
 			});
+			if(!text.equals(""))
 			view.tvContent.setText(text);
+			else
+			view.tvContent.setVisibility(View.INVISIBLE);
 			view.pay.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {

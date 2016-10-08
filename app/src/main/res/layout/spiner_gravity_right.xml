@@ -9,5 +9,5 @@
     android:maxLength="12"
     android:layout_height="wrap_content"
     android:ellipsize="marquee"
-    android:textSize="@dimen/fourteen_sp"
+    android:textSize="@dimen/fourteen_dp"
     android:textAlignment="inherit"/>

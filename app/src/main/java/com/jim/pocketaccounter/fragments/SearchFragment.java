@@ -58,6 +58,7 @@ import com.jim.pocketaccounter.utils.SearchResultConten;
 
 import org.greenrobot.greendao.query.Join;
 import org.greenrobot.greendao.query.QueryBuilder;
+import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -86,6 +87,7 @@ public class SearchFragment extends Fragment {
     PAFragmentManager paFragmentManager;
     @Inject
     ToolbarManager toolbarManager;
+    TextView textViewSearch;
     List<SearchResultConten> searchItemsToSend;
     List<SearchResultConten> searchItemsToSendForUse;
 
@@ -128,6 +130,9 @@ public class SearchFragment extends Fragment {
 //        setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         rvSearchItems = (RecyclerView) view.findViewById(R.id.recyc_item_search);
+        textViewSearch = (TextView) view.findViewById(R.id.textViewSearch);
+        textViewSearch.setVisibility(View.VISIBLE);
+        textViewSearch.setText(getResources().getString(R.string.please_type));
         LinearManagerWithOutEx llm = new LinearManagerWithOutEx(getContext());
         rvSearchItems.setLayoutManager(llm);
         rvSearchItems.setAdapter(rvAdapterSearch);
@@ -302,7 +307,14 @@ public class SearchFragment extends Fragment {
                     }
                 });
             searchItemsToSend.size();
-
+            if(searchItemsToSend.size()==0){
+                textViewSearch.setVisibility(View.VISIBLE);
+                textViewSearch.setText("I can't find \""+searchSt+"\"");
+            }
+            else
+            {
+                textViewSearch.setVisibility(View.GONE);
+            }
             rvAdapterSearch.setDataList(searchItemsToSend, getActivity(), searchSt);
         } else {
             searchItemsToSendForUse.clear();
@@ -334,7 +346,14 @@ public class SearchFragment extends Fragment {
                 }
             }
 
-
+            if(searchItemsToSendForUse.size()==0){
+                textViewSearch.setVisibility(View.VISIBLE);
+                textViewSearch.setText("I can't find \""+searchSt+"\"");
+            }
+            else
+            {
+                textViewSearch.setVisibility(View.GONE);
+            }
             rvAdapterSearch.setDataList(searchItemsToSendForUse, getActivity(), searchSt);
         }
 

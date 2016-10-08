@@ -14,6 +14,8 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,6 +61,8 @@ import com.jim.pocketaccounter.utils.OnIconPickListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -87,16 +91,38 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     private String choosenIcon = "icons_1";
     private Purpose purpose;
     private EditText purposeName;
-    private FABIcon iconPurpose;
+    private ImageView iconPurpose;
     private EditText amountPurpose;
     private Spinner curPurpose;
     private Spinner periodPurpose;
-    private TextView beginDate;
-    private TextView endDate;
-
+    private EditText beginDate;
+    private EditText endDate;
+    private LinearLayout linearLayoutForGone;
+    private RelativeLayout relativeLayoutForGone;
     private Calendar begCalendar;
     private Calendar endCalendar;
+    private TextView tvperido;
+    private TextView etPeriodCount;
+    enum Apple{
+        UP ("my") {
+            @Override
+            public void direc() {
+            }
+        },DOWN ("your"){
+            @Override
+            public void direc() {
 
+            }
+        };
+        private String named;
+        Apple(String name){
+            this.named=name;
+        }
+        public String named(){
+            return named;
+        }
+        public abstract void direc();
+    }
     public PurposeEditFragment(Purpose purpose) {
         this.purpose = purpose;
     }
@@ -110,14 +136,24 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.purpose_edit_layout, container, false);
+        final View rootView = inflater.inflate(R.layout.purpose_edit_layout_moder, container, false);
         purposeName = (EditText) rootView.findViewById(R.id.etPurposeEditName);
-        iconPurpose = (FABIcon) rootView.findViewById(R.id.fabPurposeIcon);
+        iconPurpose = (ImageView) rootView.findViewById(R.id.fabPurposeIcon);
         amountPurpose = (EditText) rootView.findViewById(R.id.etPurposeTotal);
         curPurpose = (Spinner) rootView.findViewById(R.id.spPurposeCurrency);
         periodPurpose = (Spinner) rootView.findViewById(R.id.spPurposePeriod);
-        beginDate = (TextView) rootView.findViewById(R.id.tvPurposeBeginDate);
-        endDate = (TextView) rootView.findViewById(R.id.tvPurposeEndDate);
+        beginDate = (EditText) rootView.findViewById(R.id.tvPurposeBeginDate);
+        endDate = (EditText) rootView.findViewById(R.id.tvPurposeEndDate);
+        linearLayoutForGone = (LinearLayout) rootView.findViewById(R.id.linTextForGOne);
+        relativeLayoutForGone = (RelativeLayout) rootView.findViewById(R.id.rlForGOne);
+        tvperido = (TextView) rootView.findViewById(R.id.tvperido);
+        etPeriodCount = (EditText) rootView.findViewById(R.id.for_period_credit);
+        CurrencyDao currencyDao = daoSession.getCurrencyDao();
+        final List<String> curList = new ArrayList<>();
+        for (Currency c : currencyDao.queryBuilder().list()) {
+            curList.add(c.getAbbr());
+        }
+        endDate = (EditText) rootView.findViewById(R.id.tvPurposeEndDate);
         // ------------ Toolbar setting ----------
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
@@ -138,6 +174,16 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                     purpose.setPurpose(Double.parseDouble(amountPurpose.getText().toString()));
                     purpose.setBegin(begCalendar);
                     purpose.setEnd(endCalendar);
+                    Currency currencyy = null ;
+                    List<Currency> curListTemp = daoSession.getCurrencyDao().loadAll();
+                    for (Currency temp:curListTemp){
+                        if(curList.get(curPurpose.getSelectedItemPosition()).equals(temp.getAbbr())){
+                            currencyy = temp;
+                        }
+                    }
+                    if(currencyy == null)
+                        return;
+                    purpose.setCurrency(currencyy);
                     switch (logicManager.insertPurpose(purpose)) {
                         case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
                             Toast.makeText(getContext(), "such name have", Toast.LENGTH_SHORT).show();
@@ -180,19 +226,19 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         });
         // ------------ end icon set ---------
         // ------------ spinner currency --------
-        CurrencyDao currencyDao = daoSession.getCurrencyDao();
-        List<String> curList = new ArrayList<>();
-        for (Currency c : currencyDao.queryBuilder().list()) {
-            curList.add(c.getAbbr());
-        }
+
         ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1, curList);
+                R.layout.adapter_spiner, curList);
         curPurpose.setAdapter(curAdapter);
         // ------------ end spinner currency -------
         // ------------ period purpose spinner ------
+
+        relativeLayoutForGone.setVisibility(View.GONE);
+        linearLayoutForGone.setVisibility(View.GONE);
+        tvperido.setVisibility(View.VISIBLE);
         String periodList[] = getResources().getStringArray(R.array.period_purpose);
         ArrayAdapter<String> periodAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_list_item_1, periodList);
+                R.layout.adapter_spiner, periodList);
         periodPurpose.setAdapter(periodAdapter);
         periodPurpose.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -204,106 +250,134 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                 final EditText editText = (EditText) dialogView.findViewById(R.id.etDialogPurpose);
                 final EditText editTextSecond = (EditText) dialogView.findViewById(R.id.etDialogPurposeSecond);
                 final TextView textView = (TextView) dialogView.findViewById(R.id.tvDialogPurposeTitle);
-                begCalendar = (Calendar) Calendar.getInstance().clone();
-                endCalendar = (Calendar) Calendar.getInstance().clone();
+                if (begCalendar != null) {
+                    forDateSyncFirst();
+                } else if (endCalendar != null) {
+                    forDateSyncLast();
+                }
                 switch (position) {
                     case 0: {
-                        beginDate.setText("----");
-                        endDate.setText("----");
+                        relativeLayoutForGone.setVisibility(View.GONE);
+                        linearLayoutForGone.setVisibility(View.GONE);
+                        tvperido.setVisibility(View.VISIBLE);
+                        etPeriodCount.setVisibility(View.GONE);
                         begCalendar = null;
                         endCalendar = null;
+                        beginDate.setText("");
+                        endDate.setText("");
                         break;
                     }
                     case 1: {
-                        textView.setText("Enter count week");
-                        editText.setHint("Enter week");
-                        editTextSecond.setVisibility(View.GONE);
-                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
-                        save.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                endCalendar.add(Calendar.WEEK_OF_YEAR, Integer.parseInt(editText.getText().toString()));
-                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
-                                endDate.setText(dateFormat.format(endCalendar.getTime()));
-                            }
-                        });
-                        dialog.show();
+                        relativeLayoutForGone.setVisibility(View.VISIBLE);
+                        linearLayoutForGone.setVisibility(View.VISIBLE);
+                        tvperido.setVisibility(View.GONE);
+                        etPeriodCount.setVisibility(View.VISIBLE);
+
+//                        textView.setText("Enter count week");
+//                        editText.setHint("Enter week");
+//                        editTextSecond.setVisibility(View.GONE);
+//                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+//                        save.setOnClickListener(new OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                endCalendar.add(Calendar.WEEK_OF_YEAR, Integer.parseInt(editText.getText().toString()));
+//                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+//                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+//                            }
+//                        });
+//                        dialog.show();
                         break;
                     }
                     case 2: {
-                        textView.setText("Enter count month");
-                        editText.setHint("Enter month");
-                        editTextSecond.setVisibility(View.GONE);
-                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
-                        save.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                endCalendar.add(Calendar.WEEK_OF_MONTH, Integer.parseInt(editText.getText().toString()));
-                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
-                                endDate.setText(dateFormat.format(endCalendar.getTime()));
-                            }
-                        });
-                        dialog.show();
+                        relativeLayoutForGone.setVisibility(View.VISIBLE);
+                        linearLayoutForGone.setVisibility(View.VISIBLE);
+                        tvperido.setVisibility(View.GONE);
+                        etPeriodCount.setVisibility(View.VISIBLE);
+
+
+//                        textView.setText("Enter count month");
+//                        editText.setHint("Enter month");
+//                        editTextSecond.setVisibility(View.GONE);
+//                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+//                        save.setOnClickListener(new OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                endCalendar.add(Calendar.WEEK_OF_MONTH, Integer.parseInt(editText.getText().toString()));
+//                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+//                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+//                            }
+//                        });
+//                        dialog.show();
                         break;
                     }
                     case 3: {
-                        textView.setText("Enter count year");
-                        editText.setHint("Enter year");
-                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
-                        editTextSecond.setVisibility(View.GONE);
-                        save.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                endCalendar.add(Calendar.YEAR, Integer.parseInt(editText.getText().toString()));
-                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
-                                endDate.setText(dateFormat.format(endCalendar.getTime()));
-                            }
-                        });
-                        dialog.show();
+                        relativeLayoutForGone.setVisibility(View.VISIBLE);
+                        linearLayoutForGone.setVisibility(View.VISIBLE);
+                        tvperido.setVisibility(View.GONE);
+                        etPeriodCount.setVisibility(View.VISIBLE);
+//
+//                        textView.setText("Enter count year");
+//                        editText.setHint("Enter year");
+//                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+//                        editTextSecond.setVisibility(View.GONE);
+//                        save.setOnClickListener(new OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                endCalendar.add(Calendar.YEAR, Integer.parseInt(editText.getText().toString()));
+//                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+//                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+//                            }
+//                        });
+//                        dialog.show();
                         break;
                     }
                     case 4: {
-                        textView.setText("Enter between date");
-                        editTextSecond.setVisibility(View.VISIBLE);
-                        editText.setHint("Enter start");
-                        editTextSecond.setHint("Enter end");
-                        editText.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                datePicker.setOnDatePickListener(new OnDatePickListener() {
-                                    @Override
-                                    public void OnDatePick(Calendar pickedDate) {
-                                        begCalendar = pickedDate;
-                                        editText.setText(dateFormat.format(begCalendar.getTime()));
-                                    }
-                                });
-                                datePicker.show();
-                                return true;
-                            }
-                        });
-                        editTextSecond.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                datePicker.setOnDatePickListener(new OnDatePickListener() {
-                                    @Override
-                                    public void OnDatePick(Calendar pickedDate) {
-                                        endCalendar = pickedDate;
-                                        editTextSecond.setText(dateFormat.format(endCalendar.getTime()));
-                                    }
-                                });
-                                datePicker.show();
-                                return true;
-                            }
-                        });
-                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
-                        save.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
-                                endDate.setText(dateFormat.format(endCalendar.getTime()));
-                            }
-                        });
-                        dialog.show();
+                        relativeLayoutForGone.setVisibility(View.VISIBLE);
+                        linearLayoutForGone.setVisibility(View.VISIBLE);
+                        tvperido.setVisibility(View.VISIBLE);
+                        etPeriodCount.setVisibility(View.GONE);
+//
+//                        textView.setText("Enter between date");
+//                        editTextSecond.setVisibility(View.VISIBLE);
+//                        editText.setHint("Enter start");
+//                        editTextSecond.setHint("Enter end");
+//                        editText.setOnTouchListener(new View.OnTouchListener() {
+//                            @Override
+//                            public boolean onTouch(View v, MotionEvent event) {
+//                                datePicker.setOnDatePickListener(new OnDatePickListener() {
+//                                    @Override
+//                                    public void OnDatePick(Calendar pickedDate) {
+//                                        begCalendar = pickedDate;
+//                                        editText.setText(dateFormat.format(begCalendar.getTime()));
+//                                    }
+//                                });
+//                                datePicker.show();
+//                                return true;
+//                            }
+//                        });
+//                        editTextSecond.setOnTouchListener(new View.OnTouchListener() {
+//                            @Override
+//                            public boolean onTouch(View v, MotionEvent event) {
+//                                datePicker.setOnDatePickListener(new OnDatePickListener() {
+//                                    @Override
+//                                    public void OnDatePick(Calendar pickedDate) {
+//                                        endCalendar = pickedDate;
+//                                        editTextSecond.setText(dateFormat.format(endCalendar.getTime()));
+//                                    }
+//                                });
+//                                datePicker.show();
+//                                return true;
+//                            }
+//                        });
+//                        final ImageView save = (ImageView) dialogView.findViewById(R.id.ivDialogPurposeSave);
+//                        save.setOnClickListener(new OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+//                                endDate.setText(dateFormat.format(endCalendar.getTime()));
+//                            }
+//                        });
+//                        dialog.show();
                         break;
                     }
                 }
@@ -314,6 +388,153 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
             }
         });
+
+        //----- Calendar Data picker -------
+
+        final DatePickerDialog.OnDateSetListener getDatesetListener = new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(android.widget.DatePicker arg0, int arg1, int arg2, int arg3) {
+                begCalendar = new GregorianCalendar(arg1, arg2, arg3);
+                beginDate.setText(dateFormat.format(begCalendar.getTime()));
+                endCalendar = (Calendar) begCalendar.clone();
+                int period_long = 1;
+                if (!etPeriodCount.getText().toString().matches("")) {
+                    period_long = Integer.parseInt(etPeriodCount.getText().toString());
+
+                    switch (periodPurpose.getSelectedItemPosition()) {
+                        case 1:
+                            //week
+                            endCalendar.add(Calendar.WEEK_OF_YEAR, period_long);
+
+
+                            break;
+                        case 2:
+                            //year
+                            endCalendar.add(Calendar.MONTH, period_long);
+
+                            break;
+                        case 3:
+                            //year
+                            endCalendar.add(Calendar.YEAR, period_long);
+                            break;
+                        case 4:
+                            return;
+                        default:
+                            return;
+                    }
+
+
+                    // forCompute+=period_long;
+
+                    endDate.setText(dateFormat.format(endCalendar.getTime()));
+
+                } else {
+                    etPeriodCount.setError(getString(R.string.first_enter_period));
+                }
+            }
+        };
+        final DatePickerDialog.OnDateSetListener getDatesetListener2 = new DatePickerDialog.OnDateSetListener() {
+            public void onDateSet(android.widget.DatePicker arg0, int arg1, int arg2, int arg3) {
+
+
+                endCalendar = new GregorianCalendar(arg1, arg2, arg3);
+                endDate.setText(dateFormat.format(endCalendar.getTime()));
+                begCalendar = (Calendar) endCalendar.clone();
+                int period_long = 1;
+                if (!etPeriodCount.getText().toString().matches("")) {
+                    period_long = Integer.parseInt(etPeriodCount.getText().toString());
+
+                    switch (periodPurpose.getSelectedItemPosition()) {
+                        case 1:
+                            //week
+                            begCalendar.add(Calendar.WEEK_OF_YEAR, - period_long);
+
+
+                            break;
+                        case 2:
+                            //year
+                            begCalendar.add(Calendar.MONTH, -  period_long);
+
+                            break;
+                        case 3:
+                            //year
+                            begCalendar.add(Calendar.YEAR, - period_long);
+                            break;
+                        case 4:
+                            return;
+                        default:
+                            return;
+                    }
+
+
+                    // forCompute+=period_long;
+
+                    beginDate.setText(dateFormat.format(begCalendar.getTime()));
+
+                } else {
+                    etPeriodCount.setError(getString(R.string.first_enter_period));
+                }
+
+            }
+        };
+
+
+
+
+
+
+
+
+
+        beginDate.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                beginDate.setError(null);
+                endDate.setError(null);
+                Calendar calendar = Calendar.getInstance();
+                Dialog mDialog = new DatePickerDialog(getContext(),
+                        getDatesetListener, calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH), calendar
+                        .get(Calendar.DAY_OF_MONTH));
+                mDialog.show();
+            }
+        });
+        endDate.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                beginDate.setError(null);
+                endDate.setError(null);
+                Calendar calendar = Calendar.getInstance();
+                Dialog mDialog = new DatePickerDialog(getContext(),
+                        getDatesetListener2, calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH), calendar
+                        .get(Calendar.DAY_OF_MONTH));
+                mDialog.show();
+            }
+        });
+
+        etPeriodCount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (begCalendar != null) {
+                    forDateSyncFirst();
+                } else if (endCalendar != null) {
+                    forDateSyncLast();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+
+
         // ------------ end period spinner ---------
         if (purpose != null) {
             purposeName.setText(purpose.getDescription());
@@ -325,6 +546,86 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
             endDate.setText(dateFormat.format(purpose.getEnd().getTime()));
         }
         return rootView;
+    }
+
+    public void forDateSyncFirst() {
+        beginDate.setText(dateFormat.format(begCalendar.getTime()));
+        endCalendar = (Calendar) begCalendar.clone();
+        int period_long = 1;
+        if (!etPeriodCount.getText().toString().matches("")) {
+            period_long = Integer.parseInt(etPeriodCount.getText().toString());
+
+            switch (periodPurpose.getSelectedItemPosition()) {
+                case 1:
+                    //week
+                    endCalendar.add(Calendar.WEEK_OF_YEAR, period_long);
+
+
+                    break;
+                case 2:
+                    //year
+                    endCalendar.add(Calendar.MONTH, period_long);
+
+                    break;
+                case 3:
+                    //year
+                    endCalendar.add(Calendar.YEAR, period_long);
+                    break;
+                case 4:
+                    return;
+                default:
+                    return;
+            }
+
+
+            // forCompute+=period_long;
+
+            endDate.setText(dateFormat.format(endCalendar.getTime()));
+
+        } else {
+            etPeriodCount.setError(getString(R.string.first_enter_period));
+        }
+    }
+
+    public void forDateSyncLast() {
+
+        endDate.setText(dateFormat.format(endCalendar.getTime()));
+        begCalendar = (Calendar) endCalendar.clone();
+        int period_long = 1;
+        if (!etPeriodCount.getText().toString().matches("")) {
+            period_long = Integer.parseInt(etPeriodCount.getText().toString());
+
+            switch (periodPurpose.getSelectedItemPosition()) {
+                case 1:
+                    //week
+                    begCalendar.add(Calendar.WEEK_OF_YEAR, -period_long);
+
+
+                    break;
+                case 2:
+                    //year
+                    begCalendar.add(Calendar.MONTH, - period_long);
+
+                    break;
+                case 3:
+                    //year
+                    begCalendar.add(Calendar.YEAR,  -period_long);
+                    break;
+                case 4:
+                    return;
+                default:
+                    return;
+            }
+
+
+            // forCompute+=period_long;
+
+            beginDate.setText(dateFormat.format(begCalendar.getTime()));
+
+        } else {
+            etPeriodCount.setError(getString(R.string.first_enter_period));
+        }
+
     }
 
     @Override

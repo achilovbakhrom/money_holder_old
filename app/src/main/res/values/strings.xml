@@ -1523,6 +1523,11 @@
     <string name="category_one">Category</string>
     <string name="sub_category">Sub Category</string>
     <string name="enter_amount_operation">Enter amount of operation</string>
+    <string name="chooseroot">Choise root</string>
+    <string name="spend">Потратить</string>
+    <string name="left_datee">Left date:</string>
+    <string name="left_acomuleted">Left to accumulate :</string>
+    <string name="please_type">Please type word for searching</string>
     <string name="choose_different_accounts">Выберите разные счета...</string>
     <string name="do_you_want_to_delete">Вы действительно хотите удалить?</string>
 </resources>
