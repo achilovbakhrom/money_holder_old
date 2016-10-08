@@ -2,8 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,11 +101,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="12 messages"
+                        android:text="no messages"
                         android:textSize="@dimen/twelve_sp"
                         android:textColor="@color/red"
                         android:gravity="bottom"
-                        android:id="@+id/tvMessage"
+                        android:id="@+id/tvNotMessageReadCount"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true" />
@@ -249,7 +250,7 @@
                         android:textSize="@dimen/twelve_sp"
                         android:gravity="bottom"
                         android:textColor="@color/for_darker"
-                        android:id="@+id/tvProcessed"
+                        android:id="@+id/tvProcessedCout"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true" />
@@ -269,7 +270,7 @@
                 android:paddingRight="@dimen/sixteen_dp"
                 android:paddingBottom="@dimen/ten_dp"
                 android:paddingTop="@dimen/six_dp"
-                android:id="@+id/rlDebtBorrowTop"
+                android:id="@+id/rlSmsAdapterInfo"
                 android:background="@color/grey_light2">
                 <RelativeLayout
                     android:layout_width="wrap_content"

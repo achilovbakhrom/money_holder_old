@@ -23,7 +23,7 @@
                 android:paddingLeft="@dimen/five_dp"
                 android:textSize="@dimen/sixteen_dp"
                 android:textColor="@color/for_darker"
-                android:layout_toLeftOf="@+id/textView16"
+                android:layout_toLeftOf="@+id/tvSmsParseRecieveAmount"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
             <ImageView
@@ -44,7 +44,7 @@
                 android:layout_marginRight="@dimen/five_dp"
                 android:layout_toLeftOf="@+id/imageView8"
                 android:layout_toStartOf="@+id/imageView8"
-                android:id="@+id/textView16" />
+                android:id="@+id/tvSmsParseRecieveAmount" />
         </RelativeLayout>
         <FrameLayout
             android:layout_width="match_parent"
@@ -60,6 +60,7 @@
             android:paddingLeft="@dimen/five_dp"
             android:paddingBottom="@dimen/five_dp"
             android:textSize="@dimen/fourteen_dp"
+            android:id="@+id/tvSmsParseRecieveBody"
             android:textColor="@color/for_darker"
             android:text="Oplata za obslugu sostavlyaet 300.0 $. Vy mojete dlya udobnogo polzovaniya nashu prilojeniyu ! Vash balans 200 041 $. National Bank Uzbekistan"
             android:layout_marginTop="@dimen/five_dp"/>
@@ -74,5 +75,6 @@
         android:textColor="#d6d6d6"
         android:paddingRight="@dimen/fourty_dp"
         android:layout_marginBottom="@dimen/ten_dp"
+        android:id="@+id/tvSmsParseSuccessDate"
         android:text="26.10.2016   20:32"/>
 </LinearLayout>

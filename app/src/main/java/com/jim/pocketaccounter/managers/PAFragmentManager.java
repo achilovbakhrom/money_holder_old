@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.jim.pocketaccounter.PocketAccounter;
@@ -179,9 +180,9 @@ public class PAFragmentManager {
     }
 
     public void displayMainWindow() {
-//        activity.treatToolbar();
+        activity.treatToolbar();
         PRESSED = false;
-//        activity.findViewById(R.id.change).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.change).setVisibility(View.VISIBLE);
         MainPageFragment leftPage = (MainPageFragment) fragmentManager.findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+(lvpMain.getCurrentItem()-1));
         if (leftPage != null)
             leftPage.initialize();
@@ -191,6 +192,7 @@ public class PAFragmentManager {
         MainPageFragment centerPage = (MainPageFragment) fragmentManager.findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+lvpMain.getCurrentItem());
         if (centerPage != null)
             centerPage.initialize();
+        if (fragmentManager.getBackStackEntryCount() > 0)
         fragmentManager.popBackStackImmediate();
     }
 

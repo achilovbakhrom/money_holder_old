@@ -48,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/ivSmsParseGet"
-                        android:text="@string/from_sms"
+                        android:text="from sms"
                         android:textColor="@color/green_light"
                         android:textSize="@dimen/fourteen_dp"
                         android:gravity="center"
@@ -126,7 +126,7 @@
                     android:layout_marginLeft="@dimen/sixteen_dp"
                     android:layout_marginRight="@dimen/sixteen_dp"
                     android:text="Not identefied messages"
-                    android:layout_toLeftOf="@+id/textView21"
+                    android:layout_toLeftOf="@+id/tvAddSmsParseCount"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
                 <TextView
@@ -140,7 +140,7 @@
                     android:layout_marginRight="@dimen/sixteen_dp"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:id="@+id/textView21" />
+                    android:id="@+id/tvAddSmsParseCount" />
             </RelativeLayout>
 
             <FrameLayout
@@ -152,6 +152,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/rvSmsParseAdd"
+                android:paddingTop="@dimen/ten_dp"
+                android:paddingBottom="@dimen/five_dp"
                 android:background="#f6f6f6">
 
             </android.support.v7.widget.RecyclerView>

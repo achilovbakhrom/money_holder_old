@@ -1,39 +1,35 @@
 package com.jim.pocketaccounter.database;
 
-import com.jim.pocketaccounter.utils.TemplateSms;
+import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.JoinProperty;
 import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Property;
-import org.greenrobot.greendao.annotation.ToMany;
 import org.greenrobot.greendao.annotation.ToOne;
-
-import java.util.List;
-import java.util.UUID;
-
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-import com.jim.pocketaccounter.utils.TemplateSmsDao;
 
-@Entity(nameInDb = "SMS_PARSE_OBJECTS", active = true)
-public class SmsParseObject {
+import java.util.Calendar;
+import java.util.UUID;
+
+/**
+ * Created by root on 10/6/16.
+ */
+@Entity(nameInDb = "SMS_PARSE_SUCCESS", active = true)
+public class SmsParseSuccess {
     @Property
     @Id
     private String id;
     @Property
     private String number = "";
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
+    private Calendar date;
     @Property
-    @ToMany(joinProperties = {
-            @JoinProperty(name = "id", referencedName = "parseObjectId")
-    })
-    private List<TemplateSms> templates;
+    private String body;
     @Property
-    @ToMany(joinProperties = {
-            @JoinProperty(name = "id", referencedName = "smsParseObjectId")
-    })
-    private List<SmsParseSuccess> successList;
+    private int type;
     @Property
     private String accountId;
     @Property
@@ -44,18 +40,24 @@ public class SmsParseObject {
     @Property
     @ToOne(joinProperty = "currencyId")
     private Currency currency;
+    @Property
+    private double amount;
+    @Property
+    private String smsParseObjectId;
+    @Property
+    private boolean isSuccess;
     @Generated(hash = 1170963677)
     private transient String currency__resolvedKey;
     @Generated(hash = 1221310859)
     private transient String account__resolvedKey;
     /** Used for active entity operations. */
-    @Generated(hash = 645439137)
-    private transient SmsParseObjectDao myDao;
+    @Generated(hash = 1806441768)
+    private transient SmsParseSuccessDao myDao;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
     @Keep
-    public SmsParseObject() {
+    public SmsParseSuccess() {
         id = UUID.randomUUID().toString();
     }
     /**
@@ -90,58 +92,6 @@ public class SmsParseObject {
             throw new DaoException("Entity is detached from DAO context");
         }
         myDao.delete(this);
-    }
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 678356865)
-    public synchronized void resetSuccessList() {
-        successList = null;
-    }
-    /**
-     * To-many relationship, resolved on first access (and after reset).
-     * Changes to to-many relations are not persisted, make changes to the target entity.
-     */
-    @Generated(hash = 315779555)
-    public List<SmsParseSuccess> getSuccessList() {
-        if (successList == null) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            SmsParseSuccessDao targetDao = daoSession.getSmsParseSuccessDao();
-            List<SmsParseSuccess> successListNew = targetDao._querySmsParseObject_SuccessList(id);
-            synchronized (this) {
-                if(successList == null) {
-                    successList = successListNew;
-                }
-            }
-        }
-        return successList;
-    }
-    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
-    @Generated(hash = 1036578811)
-    public synchronized void resetTemplates() {
-        templates = null;
-    }
-    /**
-     * To-many relationship, resolved on first access (and after reset).
-     * Changes to to-many relations are not persisted, make changes to the target entity.
-     */
-    @Generated(hash = 922169954)
-    public List<TemplateSms> getTemplates() {
-        if (templates == null) {
-            final DaoSession daoSession = this.daoSession;
-            if (daoSession == null) {
-                throw new DaoException("Entity is detached from DAO context");
-            }
-            TemplateSmsDao targetDao = daoSession.getTemplateSmsDao();
-            List<TemplateSms> templatesNew = targetDao._querySmsParseObject_Templates(id);
-            synchronized (this) {
-                if(templates == null) {
-                    templates = templatesNew;
-                }
-            }
-        }
-        return templates;
     }
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1889019422)
@@ -198,10 +148,28 @@ public class SmsParseObject {
         return account;
     }
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1939383941)
+    @Generated(hash = 561365418)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getSmsParseObjectDao() : null;
+        myDao = daoSession != null ? daoSession.getSmsParseSuccessDao() : null;
+    }
+    public boolean getIsSuccess() {
+        return this.isSuccess;
+    }
+    public void setIsSuccess(boolean isSuccess) {
+        this.isSuccess = isSuccess;
+    }
+    public String getSmsParseObjectId() {
+        return this.smsParseObjectId;
+    }
+    public void setSmsParseObjectId(String smsParseObjectId) {
+        this.smsParseObjectId = smsParseObjectId;
+    }
+    public double getAmount() {
+        return this.amount;
+    }
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
     public String getCurrencyId() {
         return this.currencyId;
@@ -215,6 +183,24 @@ public class SmsParseObject {
     public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
+    public int getType() {
+        return this.type;
+    }
+    public void setType(int type) {
+        this.type = type;
+    }
+    public String getBody() {
+        return this.body;
+    }
+    public void setBody(String body) {
+        this.body = body;
+    }
+    public Calendar getDate() {
+        return this.date;
+    }
+    public void setDate(Calendar date) {
+        this.date = date;
+    }
     public String getNumber() {
         return this.number;
     }
@@ -227,12 +213,19 @@ public class SmsParseObject {
     public void setId(String id) {
         this.id = id;
     }
-    @Generated(hash = 634174835)
-    public SmsParseObject(String id, String number, String accountId,
-            String currencyId) {
+    @Generated(hash = 802090454)
+    public SmsParseSuccess(String id, String number, Calendar date, String body,
+            int type, String accountId, String currencyId, double amount,
+            String smsParseObjectId, boolean isSuccess) {
         this.id = id;
         this.number = number;
+        this.date = date;
+        this.body = body;
+        this.type = type;
         this.accountId = accountId;
         this.currencyId = currencyId;
+        this.amount = amount;
+        this.smsParseObjectId = smsParseObjectId;
+        this.isSuccess = isSuccess;
     }
 }

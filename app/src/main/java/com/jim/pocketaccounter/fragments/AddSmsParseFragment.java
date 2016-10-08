@@ -1,11 +1,20 @@
 package com.jim.pocketaccounter.fragments;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -13,23 +22,43 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.SmsParseObject;
+import com.jim.pocketaccounter.database.SmsParseSuccess;
+import com.jim.pocketaccounter.finance.TransferAccountAdapter;
+import com.jim.pocketaccounter.helper.TagLayout;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.TemplateSms;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -38,13 +67,21 @@ import javax.inject.Inject;
  */
 
 public class AddSmsParseFragment extends Fragment {
-    @Inject DaoSession daoSession;
-    @Inject PAFragmentManager paFragmentManager;
-    @Inject ToolbarManager toolbarManager;
+    @Inject
+    DaoSession daoSession;
+    @Inject
+    PAFragmentManager paFragmentManager;
+    @Inject
+    ToolbarManager toolbarManager;
+    @Inject
+    CommonOperations commonOperations;
 
     private EditText etNumber;
+    private TextView ivSms;
     private RadioGroup rgSortSms;
     private RecyclerView rvSmsList;
+    private RecyclerView rvSmsParseDialog;
+    private TagLayout tagLayout;
     private TextView tvSmsCount;
     private EditText etIncome;
     private EditText etExpance;
@@ -52,11 +89,18 @@ public class AddSmsParseFragment extends Fragment {
     private Spinner spAccount;
     private Spinner spCurrency;
 
+    private Dialog dialog;
     private MyAdapter myAdapter;
 
     private final int ALL_SMS = 0;
     private final int INCOME_SMS = 1;
     private final int EXPANCE_SMS = 2;
+    private int posIncExp = -1;
+    private int posAmount = -1;
+
+    private List<TemplateSms> templateSmsList;
+
+    int txSize;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +112,9 @@ public class AddSmsParseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_sms_sender, container, false);
+        txSize = (int) (getResources().getDimension(R.dimen.fourteen_dp));
         etNumber = (EditText) rootView.findViewById(R.id.etSmsParseAddNumber);
+        ivSms = (TextView) rootView.findViewById(R.id.ivSmsParseGet);
         rgSortSms = (RadioGroup) rootView.findViewById(R.id.rgSmsParseAddSort);
         rvSmsList = (RecyclerView) rootView.findViewById(R.id.rvSmsParseAdd);
         etIncome = (EditText) rootView.findViewById(R.id.etSmsParseAddIncome);
@@ -76,15 +122,87 @@ public class AddSmsParseFragment extends Fragment {
         etAmount = (EditText) rootView.findViewById(R.id.etSmsParseAddAmount);
         spAccount = (Spinner) rootView.findViewById(R.id.spSmsParseAddAccount);
         spCurrency = (Spinner) rootView.findViewById(R.id.spSmsParseAddCurrency);
-        myAdapter = new MyAdapter(ALL_SMS, getAllSms());
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        tvSmsCount = (TextView) rootView.findViewById(R.id.tvAddSmsParseCount);
+        tvSmsCount.setText("0");
+        final List<String> accStrings = new ArrayList<>();
+        for (Account ac : daoSession.getAccountDao().loadAll()) {
+            accStrings.add(ac.getId());
+        }
+        final TransferAccountAdapter transferAccountAdapter = new TransferAccountAdapter(getContext(), accStrings);
+        spAccount.setAdapter(transferAccountAdapter);
+        List<String> cursStrings = new ArrayList<>();
+        for (Currency cr : daoSession.getCurrencyDao().loadAll()) {
+            cursStrings.add(cr.getAbbr());
+        }
+        ArrayAdapter<String> cursAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_1, cursStrings);
+        spCurrency.setAdapter(cursAdapter);
+
+        myAdapter = new MyAdapter(ALL_SMS, null);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
+        toolbarManager.setImageToSecondImage(R.drawable.checked_sign);
+        toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (etIncome.getText().toString().isEmpty() &&
+                        etExpance.getText().toString().isEmpty() || etAmount.getText().toString().isEmpty()) {
+                    etIncome.setError("enter income key");
+                    if (etExpance.getText().toString().isEmpty())
+                        etExpance.setError("enter expance key");
+                    if (etAmount.getText().toString().isEmpty()) {
+                        etExpance.setError("enter expance key");
+                    }
+                } else {
+                    SmsParseObject smsParseObject = new SmsParseObject();
+                    if (templateSmsList != null) {
+                        for (TemplateSms templateSms : templateSmsList) {
+                            templateSms.setParseObjectId(smsParseObject.getId());
+                        }
+                    }
+                    smsParseObject.setCurrency(daoSession.getCurrencyDao().queryBuilder()
+                            .where(CurrencyDao.Properties.Abbr.eq("" + spCurrency.getSelectedItem())).list().get(0));
+                    smsParseObject.setAccount(daoSession.getAccountDao().queryBuilder()
+                            .where(AccountDao.Properties.Id.eq(accStrings.get(spAccount.getSelectedItemPosition()))).list().get(0));
+                    smsParseObject.setNumber(etNumber.getText().toString());
+                    daoSession.getTemplateSmsDao().insertInTx(templateSmsList);
+                    daoSession.getSmsParseObjectDao().insertOrReplace(smsParseObject);
+
+                    //
+                    List<Sms> smsList = new ArrayList<>();
+                    for (Sms sms : getAllSms()) {
+                        if (sms.getNumber().equals(smsParseObject.getNumber())) {
+                            smsList.add(sms);
+                        }
+                    }
+                    SmsParseSuccess smsParseSuccess = new SmsParseSuccess();
+                    smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
+                    smsParseSuccess.setNumber(smsParseObject.getNumber());
+                    smsParseSuccess.setType(PocketAccounterGeneral.INCOME);
+                    smsParseSuccess.setCurrency(smsParseObject.getCurrency());
+                    smsParseSuccess.setAccount(smsParseObject.getAccount());
+                    smsParseSuccess.setAmount(136);
+                    smsParseSuccess.setBody(smsList.get(0).getBody());
+                    smsParseSuccess.setDate(Calendar.getInstance());
+                    daoSession.getSmsParseSuccessDao().insertOrReplace(smsParseSuccess);
+                    //
+
+                    paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.displayFragment(new SmsParseMainFragment());
+                }
+            }
+        });
         rvSmsList.setLayoutManager(layoutManager);
-        rvSmsList.setAdapter(myAdapter);
         rgSortSms.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (myAdapter.getTypeSort() != (checkedId == R.id.rbnSmsParseAddExpance ? ALL_SMS
-                        : checkedId == R.id.rbnSmsParseAddIncome ? INCOME_SMS : EXPANCE_SMS)) {
+                if (myAdapter.getTypeSort() != (checkedId == R.id.rbnSmsParseAddExpance ? EXPANCE_SMS
+                        : checkedId == R.id.rbnSmsParseAddIncome ? INCOME_SMS : ALL_SMS)) {
                     if (checkedId == R.id.rbnSmsParseAddExpance) {
                         myAdapter.setType(EXPANCE_SMS);
                     } else if (checkedId == R.id.rbnSmsParseAddIncome) {
@@ -97,50 +215,92 @@ public class AddSmsParseFragment extends Fragment {
         });
         etNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 List<Sms> smsList = new ArrayList<>();
                 for (Sms sms : getAllSms()) {
-                    if(sms.getNumber().contains(s.toString())) {
+                    if (sms.getNumber().equals(s.toString())) {
                         smsList.add(sms);
                     }
                 }
+                myAdapter = new MyAdapter(myAdapter.getTypeSort(), smsList);
+                rvSmsList.setAdapter(myAdapter);
+            }
 
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        ivSms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog = new Dialog(getActivity());
+                View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_sms_parse_numbers, null);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(dialogView);
+                final RecyclerView recyclerView = (RecyclerView) dialogView.findViewById(R.id.rvSmsParseDialog);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                recyclerView.setLayoutManager(layoutManager);
+                MyNumberAdapter myAdapter = new MyNumberAdapter();
+                recyclerView.setAdapter(myAdapter);
+                int width = getResources().getDisplayMetrics().widthPixels;
+                dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                dialog.show();
             }
         });
         return rootView;
     }
 
-    public List<Sms> getAllSms() {
-        List<Sms> lstSms = new ArrayList<Sms>();
-        Sms objSms = new Sms();
-        Uri message = Uri.parse("content://sms/");
-        ContentResolver cr = getActivity().getContentResolver();
+    final int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
-        Cursor c = cr.query(message, null, null, null, null);
-        getActivity().startManagingCursor(c);
-        int totalSMS = c.getCount();
-
-        if (c.moveToFirst()) {
-            for (int i = 0; i < totalSMS; i++) {
-                objSms = new Sms();
-                objSms.setId(c.getString(c.getColumnIndexOrThrow("_id")));
-                objSms.setNumber(c.getString(c.getColumnIndexOrThrow("address")));
-                objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
-                objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
-                if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
-                    objSms.setFolderName("inbox");
-                    lstSms.add(objSms);
-                }
-                c.moveToNext();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_ASK_PERMISSIONS) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getAllSms();
             }
         }
-        c.close();
-        return lstSms;
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    public List<Sms> getAllSms() {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.READ_SMS},
+                    REQUEST_CODE_ASK_PERMISSIONS);
+        } else {
+            List<Sms> lstSms = new ArrayList<>();
+            Sms objSms;
+            Uri message = Uri.parse("content://sms/");
+            ContentResolver cr = getActivity().getContentResolver();
+
+            Cursor c = cr.query(message, null, null, null, null);
+            getActivity().startManagingCursor(c);
+            int totalSMS = c.getCount();
+
+            if (c.moveToFirst()) {
+                for (int i = 0; i < totalSMS; i++) {
+                    objSms = new Sms();
+                    objSms.setId(c.getString(c.getColumnIndexOrThrow("_id")));
+                    objSms.setNumber(c.getString(c.getColumnIndexOrThrow("address")));
+                    objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
+                    objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
+                    if (!c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
+                        objSms.setFolderName("sent");
+                        lstSms.add(objSms);
+                    }
+                    c.moveToNext();
+                }
+            }
+            c.close();
+            Toast.makeText(getContext(), "" + lstSms.size(), Toast.LENGTH_SHORT).show();
+            return lstSms;
+        }
+        return null;
     }
 
     class Sms {
@@ -191,13 +351,74 @@ public class AddSmsParseFragment extends Fragment {
         }
     }
 
-    private class MyAdapter extends RecyclerView.Adapter<AddSmsParseFragment.ViewHolder> {
+    private List<String> smsBodyParse(String body) {
+        List<String> words = new ArrayList<>();
+        String[] strings = body.split(" ");
+        for (String s : strings) {
+            if (s.split(" ").length == 1 && s.split("\n").length == 1) {
+                words.add(s);
+            } else {
+                if (s.split(" ").length == 1) {
+                    for (String s1 : s.split("\n")) {
+                        words.add(s1);
+                    }
+                } else {
+                    for (String s1 : s.split(" ")) {
+                        words.add(s1);
+                    }
+                }
+            }
+        }
+        for (int i = words.size() - 1; i >= 0; i--) {
+            String regex = "[a-zA-Z:;_][0-9]?[0-9][.,@#*]([1][0-2][0]?[0-9])[0-9]{2,4}";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(words.get(i));
+            if (!matcher.matches()) {
+                regex = "([a-zA-Z]*)([0-9]+[.,]?[0-9]*)([^0-9]*)";
+                pattern = Pattern.compile(regex);
+                matcher = pattern.matcher(words.get(i));
+                matcher.matches();
+                if (matcher.matches()) {
+                    words.remove(i);
+                    if (!matcher.group(3).isEmpty())
+                        words.add(i, matcher.group(3));
+                    if (!matcher.group(2).isEmpty())
+                        words.add(i, matcher.group(2));
+                    if (!matcher.group(1).isEmpty())
+                        words.add(i, matcher.group(1));
+                }
+            }
+        }
+        for (int i = words.size() - 1; i > 0; i--) {
+            String regex = "([0-9]+[.,]?[0-9]*\\s*)*";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(words.get(i));
+            if (matcher.matches() && pattern.matcher(words.get(i - 1)).matches()) {
+                words.set(i - 1, words.get(i - 1) + " " + words.get(i));
+                words.remove(i);
+            }
+        }
+        return words;
+    }
+
+    private class MyAdapter extends RecyclerView.Adapter<AddSmsParseFragment.ViewHolder> implements View.OnClickListener {
         private int typeSort;
         private List<Sms> list;
+        private List<String> strings;
+        private List<TextView> tvList;
+        private List<String> incomeKeys;
+        private List<String> expanceKeys;
+        private List<String> amountKeys;
 
         public MyAdapter(int typeSort, List<Sms> list) {
             this.typeSort = typeSort;
             this.list = list;
+            if (list != null)
+                tvSmsCount.setText("" + list.size());
+            incomeKeys = new ArrayList<>();
+            expanceKeys = new ArrayList<>();
+            amountKeys = new ArrayList<>();
+            templateSmsList = new ArrayList<>();
         }
 
         public int getTypeSort() {
@@ -210,25 +431,253 @@ public class AddSmsParseFragment extends Fragment {
         }
 
         public int getItemCount() {
-            return list.size();
+            return list == null ? 0 : list.size();
         }
 
         public void onBindViewHolder(final AddSmsParseFragment.ViewHolder view, final int position) {
+            view.body.setText(list.get(position).getBody());
+            if (typeSort == ALL_SMS) {
+                view.income.setVisibility(View.VISIBLE);
+                view.expance.setVisibility(View.VISIBLE);
+            } else if (typeSort == INCOME_SMS) {
+                view.income.setVisibility(View.VISIBLE);
+                view.expance.setVisibility(View.GONE);
+            } else {
+                view.income.setVisibility(View.GONE);
+                view.expance.setVisibility(View.VISIBLE);
+            }
+            view.income.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogSms(true, position);
+                }
+            });
+            view.expance.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogSms(false, position);
+                }
+            });
+        }
 
+        private int measureListText(List<String> list) {
+            Paint paint = new Paint();
+            Rect rect = new Rect();
+            paint.setTextSize(txSize);
+            int length = 0;
+            for (String s : list) {
+                paint.getTextBounds(s, 0, s.length(), rect);
+                length += rect.width();
+            }
+            return length;
         }
 
         public AddSmsParseFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sms_adapter_root, parent, false);
-            return new AddSmsParseFragment.ViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adding_sms_item, parent, false);
+            return new ViewHolder(view);
+        }
+
+        private void dialogSms(final boolean type, final int position) {
+            posIncExp = -1;
+            posAmount = -1;
+            dialog = new Dialog(getActivity());
+            View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_parsin_sms_select_word, null);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(dialogView);
+            final ImageView close = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowCancel);
+            final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
+            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
+            final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
+
+            int eni = (int) (8 * getResources().getDisplayMetrics().widthPixels / 10 - 2 * commonOperations.convertDpToPixel(24));
+
+            strings = smsBodyParse(list.get(position).getBody());
+            tvList = new ArrayList<>();
+
+            Map<Integer, List<String>> map = new TreeMap<>();
+
+            for (int i = strings.size() - 1; i >= 0; i--) {
+                if (strings.get(i).isEmpty()) {
+                    strings.remove(i);
+                } else
+                    strings.set(i, strings.get(i) + " ");
+            }
+
+            List<String> tempList = new ArrayList<>();
+            int length;
+            int row = 1;
+
+            for (int i = 0; i < strings.size(); i++) {
+                List<String> temp = new ArrayList<>();
+                temp.addAll(tempList);
+                temp.add(strings.get(i));
+                length = measureListText(temp);
+                if (eni > length) {
+                    tempList.add(strings.get(i));
+                } else {
+                    map.put(row++, tempList);
+                    tempList = new ArrayList<>();
+                    tempList.add(strings.get(i));
+                }
+                if (i == strings.size() - 1 && !tempList.isEmpty()) {
+                    map.put(row++, tempList);
+                }
+            }
+            row = 1;
+            for (Integer integer : map.keySet()) {
+                List<String> lt = map.get(integer);
+                LinearLayout linearLayout1 = new LinearLayout(getContext());
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams
+                        (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                linearLayout1.setOrientation(LinearLayout.HORIZONTAL);
+                linearLayout1.setLayoutParams(layoutParams);
+                linearLayout.addView(linearLayout1);
+                for (int i = 0; i < lt.size(); i++) {
+                    TextView textView = new TextView(getContext());
+                    textView.setTag(row++);
+                    textView.setTextSize(txSize);
+                    textView.setText(lt.get(i));
+                    tvList.add(textView);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams
+                            (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    textView.setLayoutParams(lp);
+                    textView.setOnClickListener(MyAdapter.this);
+                    linearLayout1.addView(textView);
+                }
+            }
+            content.setText(list.get(position).getBody());
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (posAmount == -1) {
+                        Toast.makeText(getContext(), "Choose amount", Toast.LENGTH_SHORT).show();
+                    } else if (posIncExp == -1) {
+                        Toast.makeText(getContext(), "Choose " + (type ? "income " : "expance " + "key"), Toast.LENGTH_SHORT).show();
+                    } else {
+                        for (int i = 0; i < strings.size(); i++) {
+                            strings.set(i, strings.get(i).trim());
+                        }
+                        if (type)
+                            incomeKeys.add(strings.get(posIncExp));
+                        else
+                            expanceKeys.add(strings.get(posIncExp));
+                        amountKeys.add(strings.get(posAmount));
+                        templateSmsList = commonOperations.generateSmsTemplateList(strings, posIncExp, posAmount, incomeKeys, expanceKeys, amountKeys);
+                        for (int i = list.size() - 1; i >= 0; i--) {
+                            for (TemplateSms templateSms : templateSmsList) {
+                                if (list.get(i).getBody().matches(templateSms.getRegex())) {
+                                    list.remove(i);
+                                    break;
+                                }
+                            }
+                        }
+                        String incs = "";
+                        for (String s : incomeKeys) {
+                            incs += s + ",";
+                        }
+                        String exps = "";
+                        for (String expanceKey : expanceKeys) {
+                            exps += expanceKey + " ";
+                        }
+                        String ams = "";
+                        for (String amountKey : amountKeys) {
+                            ams += amountKey;
+                        }
+                        if (!incomeKeys.isEmpty())
+                            etIncome.setText(incs.substring(0, incs.length() - 1));
+                        if (!expanceKeys.isEmpty())
+                            etExpance.setText(exps.substring(0, exps.length() - 1));
+                        etAmount.setText(ams.substring(0, ams.length() - 1));
+                        notifyDataSetChanged();
+                    }
+                    dialog.dismiss();
+                }
+            });
+            int width = getResources().getDisplayMetrics().widthPixels;
+            dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+            dialog.show();
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getTag() != null) {
+                String regex = "([0-9]+[.,]?[0-9]*\\s*)+";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(strings.get((Integer) v.getTag() - 1));
+                if (!matcher.matches() && !strings.get((int) v.getTag() - 1).matches("\\s?[0-9]+\\s?")) {
+                    if (posIncExp != -1)
+                        tvList.get(posIncExp).setBackgroundDrawable(null);
+                    posIncExp = (int) v.getTag() - 1;
+                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.table_selected));
+                } else {
+                    if (posAmount != -1)
+                        tvList.get(posAmount).setBackgroundDrawable(null);
+                    posAmount = (int) v.getTag() - 1;
+                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bar_income));
+                }
+            }
         }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView body;
+        public TextView income;
+        public TextView expance;
 
         public ViewHolder(View view) {
             super(view);
-
+            body = (TextView) view.findViewById(R.id.tvAddSmsParseItemBody);
+            income = (TextView) view.findViewById(R.id.tvAddSmsParseItemIncome);
+            expance = (TextView) view.findViewById(R.id.tvAddSmsParseItemExpance);
         }
     }
 
+    private class MyNumberAdapter extends RecyclerView.Adapter<AddSmsParseFragment.ViewHolderNumber> {
+        private List<Sms> smsList;
+
+        public MyNumberAdapter() {
+            smsList = getAllSms();
+        }
+
+        public int getItemCount() {
+            return smsList.size();
+        }
+
+        public void onBindViewHolder(final ViewHolderNumber view, final int position) {
+            view.number.setText(smsList.get(position).getNumber());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            Date date = new Date();
+            date.setTime(Long.parseLong(smsList.get(position).getDate()));
+            view.date.setText(simpleDateFormat.format(date.getTime()));
+            view.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    etNumber.setText(smsList.get(position).getNumber());
+                    dialog.dismiss();
+                }
+            });
+        }
+
+        public AddSmsParseFragment.ViewHolderNumber onCreateViewHolder(ViewGroup parent, int var2) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_dialog_sms_parsing, parent, false);
+            return new AddSmsParseFragment.ViewHolderNumber(view);
+        }
+    }
+
+    public class ViewHolderNumber extends RecyclerView.ViewHolder {
+        private TextView number;
+        private TextView date;
+
+        public ViewHolderNumber(View view) {
+            super(view);
+            number = (TextView) view.findViewById(R.id.tvSmsParseDialogItemNumber);
+            date = (TextView) view.findViewById(R.id.tvSmsParseDialogItemDate);
+        }
+    }
 }

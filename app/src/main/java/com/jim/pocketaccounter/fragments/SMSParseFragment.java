@@ -95,7 +95,7 @@ public class SMSParseFragment extends Fragment {
 		fabSmsParse.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				paFragmentManager.displayFragment(new SMSParseEditFragment(null));
+				paFragmentManager.displayFragment(new SMSParseInfoFragment(null));
 			}
 		});
 		refreshList();
