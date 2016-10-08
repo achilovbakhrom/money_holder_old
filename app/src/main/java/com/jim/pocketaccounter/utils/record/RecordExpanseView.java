@@ -66,6 +66,7 @@ import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -95,6 +96,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private int buttonsSize;
 	private int beltBalance;
 	private float oneDp;
+	private int black, grey;
 	@Inject	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	LogicManager logicManager;
@@ -107,6 +109,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	public RecordExpanseView(Context context, Calendar date) {
 		super(context);
 		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
+		black = ContextCompat.getColor(context, R.color.toolbar_text_color);
+		grey = ContextCompat.getColor(context, R.color.toolbar_color);
 		this.date = date;
 		gestureDetector = new GestureDetectorCompat(getContext(),this);
 		workspaceCornerRadius = getResources().getDimension(R.dimen.five_dp);
@@ -199,27 +203,27 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private void drawIndicator() {
 		if (tableCount == 1) return;
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		float y = 7.25f*twoDp, x;
+		float y = workspaceMargin/2-0.6f*twoDp, x;
 		if (tableCount % 2 == 0) {
 			x = workspace.centerX()-4*twoDp-tableCount*twoDp-(tableCount/2-1)*twoDp;
 			for (int i=0; i<tableCount; i++) {
 				if (i == currentPage) {
-					paint.setColor(Color.BLACK);
+					paint.setColor(black);
 				}
 				else {
-					paint.setColor(Color.GRAY);
+					paint.setColor(grey);
 				}
-				canvas.drawCircle(i*6*twoDp + x, y, 1.5f*twoDp, paint);
+				canvas.drawCircle(i*6*twoDp + x, y, 1.2f*twoDp, paint);
 			}
 		}
 		else {
 			x = workspace.centerX()-1.5f*twoDp-4*twoDp*(tableCount-1)/2f-twoDp*(tableCount-1)/2;
 			for (int i=0; i<tableCount; i++) {
 				if (i == currentPage) {
-					paint.setColor(Color.BLACK);
+					paint.setColor(black);
 				}
 				else {
-					paint.setColor(Color.GRAY);
+					paint.setColor(grey);
 				}
 				canvas.drawCircle(i*6*twoDp + x, y, 1.5f*twoDp, paint);
 			}
@@ -429,6 +433,15 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 											invalidate();
 										}
 									});
+									transferDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+										@Override
+										public void onDismiss(DialogInterface dialog) {
+											for (int j=0; j<buttons.size(); j++)
+												buttons.get(j).setPressed(false);
+											PocketAccounter.PRESSED = false;
+											invalidate();
+										}
+									});
 									transferDialog.show();
 									break;
 								case 3:
@@ -469,8 +482,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 										@Override
 										public void onDismiss(DialogInterface dialog) {
 											for (int i=0; i < buttons.size(); i++) {
-
-															buttons.get(i).setPressed(false);
+												buttons.get(i).setPressed(false);
 											}
 											PocketAccounter.PRESSED = false;
 											invalidate();

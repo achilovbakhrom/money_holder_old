@@ -101,7 +101,7 @@
         <item>Шекель</item>
         <item>Иена</item>
         <item>Вона</item>
-        <item>Афгани</item>
+        <item>Молдавский лей</item>
         <item>Лек</item>
         <item>Алжирский динар</item>
         <item>Кванза</item>
@@ -145,7 +145,7 @@
         <item>₪</item>
         <item>¥</item>
         <item>₩</item>
-        <item>؋</item>
+        <item>lei</item>
         <item>L</item>
         <item>.د.ج </item>
         <item>Kz</item>
@@ -1518,4 +1518,5 @@
     <string name="select_word_for_parsing">Select word for parsing</string>
     <string name="which_type_is_it">Which type is it?</string>
     <string name="from_sms">from SMS</string>
+    <string name="do_you_want_to_delete">Вы действительно хотите удалить?</string>
 </resources>

@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -41,6 +42,7 @@ import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FABIcon;
+import com.jim.pocketaccounter.utils.TransferAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
@@ -59,8 +61,6 @@ import javax.inject.Named;
 public class AccountFragment extends Fragment {
 	private FABIcon fabAccountAdd;
     private RecyclerView recyclerView;
-	@Inject
-	WarningDialog warningDialog;
     @Inject
     LogicManager logicManager;
     @Inject
@@ -78,8 +78,6 @@ public class AccountFragment extends Fragment {
 	PAFragmentManager paFragmentManager;
 	@Inject
 	DrawerInitializer drawerInitializer;
-	@Inject
-	TransferDialog transferDialog;
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_layout, container, false);
@@ -102,7 +100,28 @@ public class AccountFragment extends Fragment {
 		});
         toolbarManager.setTitle(getResources().getString(R.string.accounts));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
+		toolbarManager.setImageToSecondImage(R.drawable.transfer_money);
+		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!daoSession.getAccountOperationDao().loadAll().isEmpty()) {
+					final TransferAddEditDialog transferAddEditDialog = new TransferAddEditDialog(getContext());
+					int width = getResources().getDisplayMetrics().widthPixels;
+					int height = getResources().getDisplayMetrics().heightPixels;
+					transferAddEditDialog.getWindow().setLayout(8*width/10, 8*height/9);
+					transferAddEditDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+						@Override
+						public void onDismiss(DialogInterface dialog) {
+							refreshList();
+						}
+					});
+					transferAddEditDialog.show();
+				}
+				else
+					Toast.makeText(getContext(), "Перевод не осуществлен!", Toast.LENGTH_SHORT).show();
+			}
+		});
         toolbarManager.setSpinnerVisibility(View.GONE);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvAccounts);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -133,7 +152,7 @@ public class AccountFragment extends Fragment {
         }
         public void onBindViewHolder(final ViewHolder view, final int position) {
             view.tvAccountListName.setText(result.get(position).getName());
-			int resId = getResources().getIdentifier(result.get(position).getIcon(),"drawable", getContext().getPackageName());
+			int resId = getResources().getIdentifier(result.get(position).getIcon(), "drawable", getContext().getPackageName());
             view.ivAccountListIcon.setImageResource(resId);
 			String startMoney = "";
 			if (result.get(position).getAmount() == 0)
@@ -159,20 +178,22 @@ public class AccountFragment extends Fragment {
 			view.pay.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					transferDialog.show();
+					TransferDialog transferDialog = new TransferDialog(getContext());
 					transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
 					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 						@Override
 						public void OnTransferDialogSave() {
-							Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
+							refreshList();
 						}
 					});
+					transferDialog.show();
 				}
 			});
 			view.earn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (daoSession.getPurposeDao().loadAll().isEmpty()) {
+						final WarningDialog warningDialog = new WarningDialog(getContext());
 						warningDialog.setText(getString(R.string.purpose_list_is_empty));
 						warningDialog.setOnYesButtonListener(new OnClickListener() {
 							@Override
@@ -190,14 +211,15 @@ public class AccountFragment extends Fragment {
 						});
 						warningDialog.show();
 					} else {
-						transferDialog.show();
+						TransferDialog transferDialog = new TransferDialog(getContext());
 						transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
 						transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 							@Override
 							public void OnTransferDialogSave() {
-
+								refreshList();
 							}
 						});
+						transferDialog.show();
 					}
 				}
 			});

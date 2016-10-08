@@ -68,7 +68,6 @@ public class PocketAccounterApplicationModule {
 
     @Provides
     public PocketAccounterApplicationModule getModule () {
-        Log.d("testtt", "kirdi");
         return this;
     }
 

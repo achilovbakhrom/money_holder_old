@@ -73,18 +73,6 @@ public class ReportManager {
         accountDao = daoSession.getAccountDao();
     }
 
-//    public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar b, Calendar e, Class... classes) {
-//        Calendar begin = (Calendar) b.clone();
-//        begin.set(Calendar.HOUR_OF_DAY, 0);
-//        begin.set(Calendar.MINUTE, 0);
-//        begin.set(Calendar.SECOND, 0);
-//        begin.set(Calendar.MILLISECOND, 0);
-//        Calendar end = (Calendar) e.clone();
-//        end.set(Calendar.HOUR_OF_DAY, 23);
-//        end.set(Calendar.MINUTE, 59);
-//        end.set(Calendar.SECOND, 59);
-//        end.set(Calendar.MILLISECOND, 59);
-//    }
     public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ...classes) {
         List<ReportObject> result = new ArrayList<>();
         for (Class cl : classes) {
@@ -115,25 +103,38 @@ public class ReportManager {
                 for (AccountOperation accountOperations : accountOperationsDao.loadAll()) {
                     if (accountOperations.getDate().compareTo(begin) >= 0 &&
                             accountOperations.getDate().compareTo(end) <= 0) {
-                        ReportObject reportObject = new ReportObject();
-                        reportObject.setType(PocketAccounterGeneral.TRANSFER);
-//                        reportObject.setAccount(accountOperations.getAccount());
-//                        reportObject.setDate((Calendar)accountOperations.getDate().clone());
-//                        if (toMainCurrency) {
-//                            reportObject.setCurrency(commonOperations.getMainCurrency());
-//                            reportObject.setAmount(commonOperations.getCost(accountOperations.getDate(), accountOperations.getCurrency(), accountOperations.getAmount()));
-//                        }
-//                        else {
-//                            reportObject.setCurrency(reportObject.getCurrency());
-//                            reportObject.setAmount(accountOperations.getAmount());
-//                        }
-//                        if (accountOperations.getType() == PocketAccounterGeneral.INCOME)
-//                            reportObject.setDescription(context.getResources().getString(R.string.income));
-//                        else if (accountOperations.getType() == PocketAccounterGeneral.EXPENSE)
-//                            reportObject.setDescription(context.getResources().getString(R.string.expanse));
-//                        else
-//                            reportObject.setDescription(context.getString(R.string.transfer));
-//                        result.add(reportObject);
+                        List<Account> accountList = daoSession.getAccountDao().queryBuilder()
+                                .where(AccountDao.Properties.Id.eq(accountOperations.getSourceId()))
+                                .list();
+                        if (!accountList.isEmpty()) {
+                            ReportObject reportObject = new ReportObject();
+                            reportObject.setType(PocketAccounterGeneral.EXPENSE);
+                            reportObject.setAccount(accountList.get(0));
+                            reportObject.setCurrency(accountOperations.getCurrency());
+                            if (toMainCurrency)
+                                reportObject.setAmount(commonOperations.getCost(accountOperations.getDate(), accountOperations.getCurrency(), accountOperations.getAmount()));
+                            else
+                                reportObject.setAmount(accountOperations.getAmount());
+                            reportObject.setDate(accountOperations.getDate());
+                            reportObject.setDescription(context.getResources().getString(R.string.transfer));
+                            result.add(reportObject);
+                        }
+                        accountList = daoSession.getAccountDao().queryBuilder()
+                                .where(AccountDao.Properties.Id.eq(accountOperations.getTargetId()))
+                                .list();
+                        if (!accountList.isEmpty()) {
+                            ReportObject reportObject = new ReportObject();
+                            reportObject.setType(PocketAccounterGeneral.INCOME);
+                            reportObject.setAccount(accountList.get(0));
+                            reportObject.setCurrency(accountOperations.getCurrency());
+                            if (toMainCurrency)
+                                reportObject.setAmount(commonOperations.getCost(accountOperations.getDate(), accountOperations.getCurrency(), accountOperations.getAmount()));
+                            else
+                                reportObject.setAmount(accountOperations.getAmount());
+                            reportObject.setDate(accountOperations.getDate());
+                            reportObject.setDescription(context.getResources().getString(R.string.transfer));
+                            result.add(reportObject);
+                        }
                     }
                 }
             }
@@ -497,6 +498,7 @@ public class ReportManager {
     public Map<Currency, Double> getRemain(Account account) {
         List<ReportObject> list = getReportObjects(false, account.getCalendar(), Calendar.getInstance(),
                 Account.class,
+                AccountOperation.class,
                 FinanceRecord.class,
                 DebtBorrow.class,
                 CreditDetials.class);

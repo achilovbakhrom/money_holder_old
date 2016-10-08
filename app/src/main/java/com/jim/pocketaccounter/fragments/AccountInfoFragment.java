@@ -52,31 +52,14 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class AccountInfoFragment extends Fragment {
-	@Inject
-	WarningDialog warningDialog;
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    DaoSession daoSession;
-	@Inject
-	ReportManager reportManager;
-	@Inject
-	@Named(value = "display_formatter")
-	SimpleDateFormat dateFormat;
-	@Inject
-	CommonOperations commonOperations;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	OperationsListDialog operationsListDialog;
-	@Inject
-	FilterDialog filterDialog;
-	@Inject
-	TransferDialog transferDialog;
-	@Inject
-	DataCache dataCache;
+    @Inject LogicManager logicManager;
+    @Inject ToolbarManager toolbarManager;
+    @Inject DaoSession daoSession;
+	@Inject ReportManager reportManager;
+	@Inject	@Named(value = "display_formatter")	SimpleDateFormat dateFormat;
+	@Inject	CommonOperations commonOperations;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	DataCache dataCache;
 	private Account account;
 	private FABIcon fabAccountIcon;
 	private TextView tvAccountNameInfo;
@@ -142,6 +125,7 @@ public class AccountInfoFragment extends Fragment {
 		ivAccountInfoOperationsFilter.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				FilterDialog filterDialog = new FilterDialog(getContext());
 				filterDialog.setOnDateSelectedListener(new FilterSelectable() {
 					@Override
 					public void onDateSelected(Calendar begin, Calendar end) {
@@ -154,6 +138,7 @@ public class AccountInfoFragment extends Fragment {
 		getPay.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				final TransferDialog transferDialog = new TransferDialog(getContext());
 				transferDialog.show();
 				transferDialog.setAccountOrPurpose(account.getId(), false);
 				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
@@ -168,6 +153,7 @@ public class AccountInfoFragment extends Fragment {
 		sendPay.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				final TransferDialog transferDialog = new TransferDialog(getContext());
 				transferDialog.show();
 				transferDialog.setAccountOrPurpose(account.getId(), true);
 				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
@@ -189,6 +175,7 @@ public class AccountInfoFragment extends Fragment {
 		String[] ops = new String[2];
 		ops[0] = getResources().getString(R.string.to_edit);
 		ops[1] = getResources().getString(R.string.delete);
+		final OperationsListDialog operationsListDialog = new OperationsListDialog(getContext());
 		operationsListDialog.setAdapter(ops);
 		operationsListDialog.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -199,7 +186,7 @@ public class AccountInfoFragment extends Fragment {
 						paFragmentManager.displayFragment(new AccountEditFragment(account));
 						break;
 					case 1:
-						List<Account> accounts = new ArrayList<Account>();
+						List<Account> accounts = new ArrayList<>();
 						accounts.add(account);
 						if (LogicManagerConstants.MUST_BE_AT_LEAST_ONE_OBJECT == logicManager.deleteAccount(accounts)){
 							Toast.makeText(getContext(), R.string.account_deleting_error, Toast.LENGTH_SHORT).show();
@@ -219,7 +206,6 @@ public class AccountInfoFragment extends Fragment {
 	private void refreshOperationsList() {
 		List<ReportObject> objects = reportManager.getAccountOperations(account, account.getCalendar(), Calendar.getInstance());
 		AccountOperationsAdapter accountOperationsAdapter = new AccountOperationsAdapter(objects);
-		Log.d("sss", "" + objects.size());
 		rvAccountDetailsInfo.setAdapter(accountOperationsAdapter);
 	}
 

@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.utils;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -11,11 +12,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
@@ -23,6 +26,7 @@ import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.ReportManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,7 +50,8 @@ public class TransferDialog extends Dialog {
     @Inject
     @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
-
+    @Inject
+    ReportManager reportManager;
     private View dialogView;
     private EditText etAccountEditName;
     private Spinner spTransferFirst, spTransferSecond;
@@ -56,10 +61,15 @@ public class TransferDialog extends Dialog {
     private ImageView ivYes, ivAccountManClose;
     private TextView date;
     private Calendar calendar;
-
+    private OnTransferDialogSaveListener onTransferDialogSaveListener;
+    private List<String> first, second;
+    private AccountOperation accountOperation;
     public TransferDialog(Context context) {
         super(context);
-        ((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
+        if (!context.getClass().getName().equals(PocketAccounter.class.getName()))
+            ((PocketAccounter) ((ContextThemeWrapper)context).getBaseContext()).component((PocketAccounterApplication)context.getApplicationContext()).inject(this);
+        else
+            ((PocketAccounter) context).component((PocketAccounterApplication)context.getApplicationContext()).inject(this);
         dialogView = getLayoutInflater().inflate(R.layout.account_transfer_dialog, null);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(dialogView);
@@ -75,7 +85,61 @@ public class TransferDialog extends Dialog {
         ArrayAdapter<String> currencyAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, currs);
         spAccManDialog.setAdapter(currencyAdapter);
         ivYes = (ImageView) dialogView.findViewById(R.id.ivAccountManSave);
+        ivYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (etAccountEditName.getText().toString().isEmpty()) {
+                    etAccountEditName.setError(getContext().getResources().getString(R.string.enter_amount_error));
+                    return;
+                }
+                String firstId = first.get(spTransferFirst.getSelectedItemPosition());
+                String secondId = second.get(spTransferSecond.getSelectedItemPosition());
+                if (firstId.equals(secondId)) {
+                    Toast.makeText(getContext(), R.string.choose_different_accounts, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                List<Account> accounts = daoSession.getAccountDao().queryBuilder().where(AccountDao.Properties.Id.eq(firstId)).list();
+                if (!accounts.isEmpty()) {
+                    Account account = accounts.get(0);
+                    if (account.getIsLimited()) {
+                        Double limitAccess = logicManager.isLimitAccess(account, calendar);
+                        Double amount = Double.parseDouble(etAccountEditName.getText().toString());
+                        if (limitAccess-amount<-account.getLimite()) {
+                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                    if (account.getNoneMinusAccount()) {
+                        Double limitAccess = logicManager.isLimitAccess(account, calendar);
+                        Double amount = Double.parseDouble(etAccountEditName.getText().toString());
+                        if (limitAccess+amount<0) {
+                            Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                }
+                if (accountOperation == null)
+                    accountOperation = new AccountOperation();
+                accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
+                accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
+                accountOperation.setDate(calendar);
+                accountOperation.setSourceId(first.get(spTransferFirst.getSelectedItemPosition()));
+                accountOperation.setTargetId(second.get(spTransferSecond.getSelectedItemPosition()));
+                accountOperation.__setDaoSession(daoSession);
+                logicManager.insertAccountOperation(accountOperation);
+                dismiss();
+
+            }
+        });
         ivAccountManClose = (ImageView) dialogView.findViewById(R.id.ivAccountManClose);
+        ivAccountManClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
         calendar = (Calendar) Calendar.getInstance().clone();
         date.setText(dateFormat.format(calendar.getTime()));
         date.setOnClickListener(new View.OnClickListener() {
@@ -101,12 +165,65 @@ public class TransferDialog extends Dialog {
         super(context, cancelable, cancelListener);
     }
 
-    private int firstPos = 0;
-    private int secondPos = 1;
+    public void setAccountOperation(AccountOperation accountOperation) {
+        this.accountOperation = accountOperation;
+        first = new ArrayList<>();
+        for (Account account : daoSession.getAccountDao().loadAll())
+            first.add(account.getId());
+        for (Purpose purpose : daoSession.getPurposeDao().loadAll())
+            first.add(purpose.getId());
+        second = new ArrayList<>();
+        for (String id : first) {
+            if (!id.matches(accountOperation.getSourceId())) {
+                second.add(id);
+            }
+        }
+        firstAdapter = new TransferAccountAdapter(getContext(), first);
+        spTransferFirst.setAdapter(firstAdapter);
+        spTransferFirst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long pos) {
+                String firstId = first.get(i);
+                second.clear();
+                for (String id : first) {
+                    if (!id.matches(firstId))
+                        second.add(id);
+                }
+                secondAdapter = new TransferAccountAdapter(getContext(), second);
+                spTransferSecond.setAdapter(secondAdapter);
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+        int firstPos = 0;
+        for (int i=0; i<first.size(); i++) {
+            if (first.get(i).equals(accountOperation.getSourceId())) {
+                firstPos = i;
+                break;
+            }
+        }
+        spTransferFirst.setSelection(firstPos);
+        int secondPos = 0;
+        for (int i=0; i<second.size(); i++) {
+            if (second.get(i).equals(accountOperation.getTargetId())) {
+                secondPos = i;
+                break;
+            }
+        }
+        spTransferSecond.setSelection(secondPos);
+        etAccountEditName.setText(Double.toString(accountOperation.getAmount()));
+        int currencyPos = 0;
+        for (int i=0; i<currencies.size(); i++) {
+            if (currencies.get(i).getId().equals(accountOperation.getCurrencyId())) {
+                currencyPos = i;
+                break;
+            }
+        }
+        spAccManDialog.setSelection(currencyPos);
+    }
 
     public void setAccountOrPurpose(String id, boolean type) {
         if (id != null) {
-            final List<String> first = new ArrayList<>();
+            first = new ArrayList<>();
             for (Account account : daoSession.getAccountDao().loadAll())
                 first.add(account.getId());
             for (Purpose purpose : daoSession.getPurposeDao().loadAll())
@@ -118,7 +235,7 @@ public class TransferDialog extends Dialog {
                     break;
                 }
             }
-            final List<String> second = new ArrayList<>();
+            second = new ArrayList<>();
             firstAdapter = new TransferAccountAdapter(getContext(), first);
             spTransferFirst.setAdapter(firstAdapter);
             if (type) {
@@ -133,79 +250,70 @@ public class TransferDialog extends Dialog {
                         if (!id.matches(firstId))
                             second.add(id);
                     }
-                    if (i == spTransferSecond.getSelectedItemPosition()) {
-                        spTransferSecond.setSelection(firstPos);
-                        secondPos = firstPos;
-                    } else {
-                        firstPos = i;
-                    }
+                    secondAdapter = new TransferAccountAdapter(getContext(), second);
+                    spTransferSecond.setAdapter(secondAdapter);
                 }
                 public void onNothingSelected(AdapterView<?> adapterView) {}
             });
-            secondAdapter = new TransferAccountAdapter(getContext(), first);
-            spTransferSecond.setAdapter(secondAdapter);
             if (!type) {
                 spTransferSecond.setSelection(selectedPos);
             }
-            spTransferSecond.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (position == spTransferFirst.getSelectedItemPosition()) {
-                        spTransferFirst.setSelection(secondPos);
-                        firstPos = secondPos;
-                    } else {
-                        secondPos = position;
-                    }
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {}
-            });
         }
     }
 
-    public void setOnTransferDialogSaveListener(final OnTransferDialogSaveListener onTransferDialogSaveListener) {
+    public void setOnTransferDialogSaveListener(OnTransferDialogSaveListener onTransferDialogSaveListener) {
+        this.onTransferDialogSaveListener = onTransferDialogSaveListener;
         ivYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
-                if (onTransferDialogSaveListener != null && !etAccountEditName.getText().toString().isEmpty()) {
-                    onTransferDialogSaveListener.OnTransferDialogSave();
-                    AccountOperation accountOperation = new AccountOperation();
-                    accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
-                    accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
-                    accountOperation.setDate(calendar);
-                    if (spTransferFirst.getSelectedItemPosition() < daoSession.getAccountDao().loadAll().size()) {
-                        accountOperation.setSourceId(daoSession.getAccountDao().loadAll()
-                                .get(spTransferFirst.getSelectedItemPosition()).getId());
-                    } else {
-                        accountOperation.setSourceId(daoSession.getPurposeDao().loadAll()
-                                .get(spTransferFirst.getSelectedItemPosition() - daoSession.getAccountDao().loadAll().size()).getId());
-                    }
-                    if (spTransferSecond.getSelectedItemPosition() < daoSession.getAccountDao().loadAll().size()) {
-                        accountOperation.setTargetId(daoSession.getAccountDao().loadAll()
-                                .get(spTransferSecond.getSelectedItemPosition()).getId());
-                    } else {
-                        accountOperation.setTargetId(daoSession.getPurposeDao().loadAll()
-                                .get(spTransferSecond.getSelectedItemPosition() - daoSession.getAccountDao().loadAll().size()).getId());
-                    }
-                    accountOperation.__setDaoSession(daoSession);
-                    logicManager.insertAccountOperation(accountOperation);
-                    dismiss();
+                if (etAccountEditName.getText().toString().isEmpty()) {
+                    etAccountEditName.setError(getContext().getResources().getString(R.string.enter_amount_error));
+                    return;
                 }
-            }
-        });
-        ImageView ivClose = (ImageView) dialogView.findViewById(R.id.ivAccountManClose);
-        ivClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                String firstId = first.get(spTransferFirst.getSelectedItemPosition());
+                String secondId = second.get(spTransferSecond.getSelectedItemPosition());
+                if (firstId.equals(secondId)) {
+                    Toast.makeText(getContext(), R.string.choose_different_accounts, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                List<Account> accounts = daoSession.getAccountDao().queryBuilder().where(AccountDao.Properties.Id.eq(firstId)).list();
+                if (!accounts.isEmpty()) {
+                    Account account = accounts.get(0);
+                    if (account.getIsLimited()) {
+                        Double limitAccess = logicManager.isLimitAccess(account, calendar);
+                        Double amount = Double.parseDouble(etAccountEditName.getText().toString());
+                        if (limitAccess-amount<-account.getLimite()) {
+                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                    if (account.getNoneMinusAccount()) {
+                        Double limitAccess = logicManager.isLimitAccess(account, calendar);
+                        Double amount = Double.parseDouble(etAccountEditName.getText().toString());
+                        if (limitAccess+amount<0) {
+                            Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                }
+                if (accountOperation == null)
+                    accountOperation = new AccountOperation();
+                accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
+                accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
+                accountOperation.setDate(calendar);
+                accountOperation.setSourceId(first.get(spTransferFirst.getSelectedItemPosition()));
+                accountOperation.setTargetId(second.get(spTransferSecond.getSelectedItemPosition()));
+                logicManager.insertAccountOperation(accountOperation);
+                TransferDialog.this.onTransferDialogSaveListener.OnTransferDialogSave();
                 dismiss();
+
             }
         });
     }
 
     public interface OnTransferDialogSaveListener {
-        public void OnTransferDialogSave();
+        void OnTransferDialogSave();
     }
 }

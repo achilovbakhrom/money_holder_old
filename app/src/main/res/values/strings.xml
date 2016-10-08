@@ -76,7 +76,7 @@
         <item> Shekel </item>
         <item> The yen </item>
         <item> Vaughan </item>
-        <item> Afghani </item>
+        <item> Moldavian lei </item>
         <item> Lek </item>
         <item> The Algerian Dinar </item>
         <item> Kwanza </item>
@@ -120,7 +120,7 @@
         <item>₪</item>
         <item>¥</item>
         <item>₩</item>
-        <item>؋</item>
+        <item>lei</item>
         <item>L</item>
         <item>.د.ج </item>
         <item>Kz</item>
@@ -1523,4 +1523,6 @@
     <string name="category_one">Category</string>
     <string name="sub_category">Sub Category</string>
     <string name="enter_amount_operation">Enter amount of operation</string>
+    <string name="choose_different_accounts">Выберите разные счета...</string>
+    <string name="do_you_want_to_delete">Вы действительно хотите удалить?</string>
 </resources>
