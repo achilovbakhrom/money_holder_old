@@ -31,9 +31,11 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
+import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.AutoMarket;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -54,6 +56,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -82,9 +85,9 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
     SimpleDateFormat simpleDateFormat;
     @Inject
     ReportManager reportManager;
+    private final ArrayList<String> result = new ArrayList<>();
 
     private String[] titles;
-    private int pos_account = 0, pos_currency = 0;
     private Calendar begin, end;
     private DecimalFormat decimalFormat;
     private Account account;
@@ -244,7 +247,6 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
 //        financeManager = PocketAccounter.financeManager;
 
         toolbarManager.setSpinnerVisibility(View.VISIBLE);
-        final ArrayList<String> result = new ArrayList<>();
 
         for (int i = 0; i < daoSession.getAccountDao().loadAll().size(); i++) {
             for (int j = 0; j < daoSession.getCurrencyDao().loadAll().size(); j++) {
@@ -263,11 +265,12 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                 Account.class, DebtBorrow.class, CreditDetials.class,
                 FinanceRecord.class, AutoMarket.class);
 
-        for (int i = result.size() - 1; i >= 0 ; i--) {
-            pos_account = i / daoSession.getCurrencyDao().loadAll().size();
-            pos_currency = i % daoSession.getCurrencyDao().loadAll().size();
-            account = daoSession.getAccountDao().loadAll().get(pos_account);
-            currency = daoSession.getCurrencyDao().loadAll().get(pos_currency);
+//        int pos_account = 0, pos_currency = 0;
+        for (int i = result.size() - 1; i >= 0; i--) {
+//            pos_account = i / daoSession.getCurrencyDao().loadAll().size();
+//            pos_currency = i % daoSession.getCurrencyDao().loadAll().size();
+            account = daoSession.getAccountDao().loadAll().get(i / daoSession.getCurrencyDao().loadAll().size());
+            currency = daoSession.getCurrencyDao().loadAll().get(i % daoSession.getCurrencyDao().loadAll().size());
             boolean bor = false;
             for (ReportObject reportObject : reportObjects) {
                 if (reportObject.getCurrency().getId().matches(currency.getId()) &&
@@ -287,10 +290,14 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
         toolbarManager.getSpinner().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                pos_account = position / daoSession.getCurrencyDao().loadAll().size();
-                pos_currency = position % daoSession.getCurrencyDao().loadAll().size();
-                account = daoSession.getAccountDao().loadAll().get(pos_account);
-                currency = daoSession.getCurrencyDao().loadAll().get(pos_currency);
+                ArrayList<String> accountCurrency = new ArrayList<String>();
+//                pos_account = position / daoSession.getCurrencyDao().loadAll().size();
+//                pos_currency = position % daoSession.getCurrencyDao().loadAll().size();
+                String[] accountCurrencyString = parent.getSelectedItem().toString().split(",");
+                account = daoSession.getAccountDao().queryBuilder().where(AccountDao.Properties.Name.eq(accountCurrencyString[0])).list().get(0);
+                currency = daoSession.getCurrencyDao().queryBuilder().where(CurrencyDao.Properties.Abbr.eq(accountCurrencyString[1].replace(" ",""))).list().get(0);
+                Log.d("_","account: "+ account.getName());
+                Log.d("_","currency: "+ currency.getAbbr());
 
                 begin.set(Calendar.DAY_OF_YEAR, end.get(Calendar.DAY_OF_YEAR) - 2);
                 begin.set(Calendar.HOUR_OF_DAY, 0);
@@ -305,13 +312,10 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
         tbReportByAccount = (TableView) rootView.findViewById(R.id.tbReportByAccount);
         tvReportByAccountNoDatas = (TextView) rootView.findViewById(R.id.tvReportByAccountNoDatas);
-
         titles = rootView.getResources().getStringArray(R.array.report_by_account_titles);
         String tekwir = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("report_shp", "");
-
         if (!tekwir.matches("")) {
             int position = 0;
             for (String temp : result) {
@@ -338,7 +342,7 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                 filterDialog.setOnDateSelectedListener(new FilterSelectable() {
                     @Override
                     public void onDateSelected(Calendar begin, Calendar end) {
-                        onCreateReportbyAccount(getContext(), begin, end, account, currency);
+                                 onCreateReportbyAccount(getContext(), begin, end, account, currency);
                     }
                 });
                 break;
@@ -366,7 +370,8 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                 }
             }
 
-        Calendar current_begin = (Calendar) Calendar.getInstance().clone(), current_end = (Calendar) Calendar.getInstance().clone();
+        Calendar current_begin = (Calendar) Calendar.getInstance().clone(),
+                current_end = (Calendar) Calendar.getInstance().clone();
         Collections.sort(sortReportByAccount, new MyComparator());
         long countOfDays = 0;
         if (sortReportByAccount != null && sortReportByAccount.size() >= 2) {

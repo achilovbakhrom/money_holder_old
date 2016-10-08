@@ -11,8 +11,8 @@ import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
+import com.jim.pocketaccounter.report.IncomeExpanseDataRow;
 import com.jim.pocketaccounter.syncbase.SyncBase;
-import com.jim.pocketaccounter.utils.TransferDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterApplicationModule;
 import com.jim.pocketaccounter.utils.record.RecordButtonExpanse;
@@ -56,5 +56,5 @@ public interface PocketAccounterApplicationComponent {
     void inject(WidgetProvider widgetProvider);
     void inject(SyncBase syncBase);
     void inject(SettingsActivity settingsActivity);
-//    void inject(TransferDialog transferDialog);
+    void inject(IncomeExpanseDataRow incomeExpanseDataRow);
 }

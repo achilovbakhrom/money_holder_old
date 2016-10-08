@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -27,4 +28,5 @@ public class DatabaseMigration extends DaoMaster.DevOpenHelper{
         preferences.edit().putBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, true).commit();
         Log.d("sss", preferences.getBoolean(PocketAccounterGeneral.DB_ONCREATE_ENTER, false) + "after");
     }
+
 }

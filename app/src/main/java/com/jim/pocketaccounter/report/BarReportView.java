@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -17,20 +19,29 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.managers.ReportManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import javax.inject.Inject;
 
 
 public class BarReportView extends LinearLayout {
+    @Inject
+    ReportManager reportManager;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private HorizontalBarChart barChart;
-    private ArrayList<IncomeExpanseDataRow> datas;
     private Calendar begin, end;
-
+    private ArrayList<IncomeExpanseDataRow> sortReportIncomeExpance;
     public BarReportView(Context context, Calendar begin, Calendar end) {
         super(context);
+        ((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
         this.begin = (Calendar)begin.clone();
         this.end = (Calendar)end.clone();
         barChart = new HorizontalBarChart(context);
@@ -48,8 +59,7 @@ public class BarReportView extends LinearLayout {
         leftAxis.setDrawGridLines(true);
         leftAxis.setSpaceTop(30f);
         barChart.getAxisRight().setEnabled(false);
-        IncomeExpanseReport report = new IncomeExpanseReport(getContext(), begin, end);
-        datas = report.makeReport();
+        sortReportIncomeExpance = (ArrayList<IncomeExpanseDataRow>) reportManager.getIncomeExpanceReport(begin,end);
         LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         barChart.setLayoutParams(lp);
         addView(barChart);
@@ -62,8 +72,7 @@ public class BarReportView extends LinearLayout {
         this.end = (Calendar) end.clone();
     }
     public void makeReport() {
-        IncomeExpanseReport report = new IncomeExpanseReport(getContext(), begin, end);
-        datas = report.makeReport();
+        sortReportIncomeExpance = (ArrayList<IncomeExpanseDataRow>) reportManager.getIncomeExpanceReport(begin,end);
     }
     public BarChart getBarChart() {return barChart;}
     public BarReportView(Context context, AttributeSet attrs) {
@@ -77,20 +86,23 @@ public class BarReportView extends LinearLayout {
     public BarReportView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
-    public ArrayList<IncomeExpanseDataRow> getDatas() {return datas;}
+    public ArrayList<IncomeExpanseDataRow> getDatas() {return (ArrayList<IncomeExpanseDataRow>) sortReportIncomeExpance;}
     public void drawReport() {
         ArrayList<String> xVals = new ArrayList<String>();
-//        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-        for (int i=0; i<datas.size(); i++) {
-//            xVals.add(format.format(datas.get(i).getDate().getTime()));
+        if (sortReportIncomeExpance.size() != 0) {
+            for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
+                xVals.add(dateFormat.format(sortReportIncomeExpance.get(i).getDate().getTime()));
+            }
         }
         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
         ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
         ArrayList<BarEntry> yVals3 = new ArrayList<BarEntry>();
-        for (int i = 0; i < datas.size(); i++) {
-            yVals1.add(new BarEntry((float) datas.get(i).getTotalIncome(), i));
-            yVals2.add(new BarEntry((float) datas.get(i).getTotalExpanse(), i));
-            yVals3.add(new BarEntry((float) datas.get(i).getTotalProfit(), i));
+        if (sortReportIncomeExpance.size() != 0) {
+            for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
+                yVals1.add(new BarEntry((float) sortReportIncomeExpance.get(i).getTotalIncome(), i));
+                yVals2.add(new BarEntry((float) sortReportIncomeExpance.get(i).getTotalExpanse(), i));
+                yVals3.add(new BarEntry((float) sortReportIncomeExpance.get(i).getTotalProfit(), i));
+            }
         }
         BarDataSet set1, set2, set3;
         set1 = new BarDataSet(yVals1, getResources().getString(R.string.income));
@@ -109,4 +121,5 @@ public class BarReportView extends LinearLayout {
         barChart.setData(data);
         barChart.invalidate();
     }
+
 }

@@ -99,12 +99,8 @@ public class WidgetProvider extends AppWidgetProvider {
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(context, PocketAccounterGeneral.CURRENT_DB_NAME);
         Database db = helper.getReadableDb();
         DaoSession daoSession = new DaoMaster(db).newSession();
-        if(daoSession!=null)
-            Log.d("testt", "updateWidget: "+daoSession.getRootCategoryDao().loadAll().size());
 
 
-//        FinanceManager financeManager = new FinanceManager(context);
-//        listCategory = financeManager.getCategories();
         sPref.edit().putInt(WidgetKeys.SPREF_WIDGET_ID,widgetID).apply();
 
         butID_1 = sPref.getString(WidgetKeys.BUTTON_1_ID, WidgetKeys.BUTTON_DISABLED);

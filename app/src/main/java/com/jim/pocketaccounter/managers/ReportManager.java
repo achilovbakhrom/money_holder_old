@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.managers;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -24,6 +25,8 @@ import com.jim.pocketaccounter.database.ReckingCreditDao;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.report.CategoryDataRow;
+import com.jim.pocketaccounter.report.IncomeExpanseDataRow;
+import com.jim.pocketaccounter.report.IncomeExpanseDayDetails;
 import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.report.SubCategoryWitAmount;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -595,7 +598,7 @@ public class ReportManager {
                 reportObject.setAmount(fr.getAmount());
                 reportObject.setCurrency(fr.getCurrency());
                 reportObject.setAccount(fr.getAccount());
-                reportObject.setDescription(fr.getCategory().getName() + "," + fr.getSubCategory().getName());
+                reportObject.setDescription(fr.getCategory().getName() + ",");
                 if (fr.getCategory().getType() == PocketAccounterGeneral.INCOME) {
                     reportObject.setType(PocketAccounterGeneral.INCOME);
                     incomes.add(reportObject);
@@ -682,5 +685,173 @@ public class ReportManager {
         getIncomeExpanceDates(begin, end);
         return expances;
 //        }
+    }
+
+    public List<IncomeExpanseDataRow> getIncomeExpanceReport(Calendar begin, Calendar end) {
+        Calendar recordBegin = (Calendar) begin.clone();
+        Calendar recordEnd = (Calendar) end.clone();
+        ArrayList<IncomeExpanseDataRow> result = new ArrayList<IncomeExpanseDataRow>();
+        // Finance Record
+        ArrayList<FinanceRecord> records = new ArrayList<FinanceRecord>();
+        for (FinanceRecord fr : daoSession.getFinanceRecordDao().loadAll()) {
+            if (fr.getDate().compareTo(begin) > 0 && fr.getDate().compareTo(end) < 0) {
+                records.add(fr);
+            }
+        }
+        // Debt Borrows
+        ArrayList<DebtBorrow> debtBorrowMain = new ArrayList<DebtBorrow>();
+        ArrayList<DebtBorrow> debtBorrowRecking = new ArrayList<DebtBorrow>();
+        for (DebtBorrow db : debtBorrowDao.queryBuilder().list()) {
+            if (db.getTakenDate().compareTo(begin) > 0 && db.getTakenDate().compareTo(end) < 0 && db.getCalculate()) {
+                debtBorrowMain.add(db);
+                for (int j=0; j<db.getReckings().size(); j++) {
+                    Recking recking = db.getReckings().get(j);
+                    Calendar cal = Calendar.getInstance();
+                    try {
+                        cal.setTime(dateFormat.parse(recking.getPayDate().toString()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    if (cal.compareTo(begin) >= 0 && cal.compareTo(end) <= 0) {
+                        debtBorrowRecking.add(db);
+                        break;
+                    }
+                }
+            }
+        }
+        // Credit
+        ArrayList<CreditDetials> credits = new ArrayList<CreditDetials>();
+        for (CreditDetials cr : creditDetialsDao.loadAll()) {
+            for (ReckingCredit reckingCredit : cr.getReckings()) {
+                if (reckingCredit.getPayDate().compareTo(begin) > 0 && reckingCredit.getPayDate().compareTo(end) < 0 && cr.getKey_for_include()) {
+                    ReckingCredit recking = reckingCredit;
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(recking.getPayDate().getTimeInMillis());
+                    if (cal.compareTo(begin) >= 0 && cal.compareTo(end) <= 0) {
+                        credits.add(cr);
+                        break;
+                    }
+                }
+            }
+        }
+        while(recordBegin.compareTo(recordEnd)<=0) {
+            IncomeExpanseDataRow row = new IncomeExpanseDataRow(recordBegin);
+            ArrayList<IncomeExpanseDayDetails> details = new ArrayList<IncomeExpanseDayDetails>();
+            //accumulate records
+            Calendar b = (Calendar)recordBegin.clone();
+            b.set(Calendar.HOUR_OF_DAY, 0);
+            b.set(Calendar.MINUTE, 0);
+            b.set(Calendar.SECOND, 0);
+            b.set(Calendar.MILLISECOND, 0);
+            Calendar e = (Calendar)recordBegin.clone();
+            e.set(Calendar.HOUR_OF_DAY, 23);
+            e.set(Calendar.MINUTE, 59);
+            e.set(Calendar.SECOND, 59);
+            e.set(Calendar.MILLISECOND, 59);
+            for (Account account : accountDao.loadAll()) {
+                if (account.getAmount() != 0) {
+                    Calendar calendar = (Calendar) recordBegin.clone();
+                    if (calendar.compareTo(b) >= 0 && calendar.compareTo(e) <= 0) {
+                        IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
+                        RootCategory category = new RootCategory();
+                        category.setType(PocketAccounterGeneral.INCOME);
+                        category.setIcon("icons_25");
+                        category.setName(account.getName());
+                        category.setId(account.getId());
+                        detail.setCategory(category);
+                        detail.setSubCategory(null);
+                        detail.setAmount(account.getAmount());
+                        detail.setCurrency(account.getStartMoneyCurrency());
+                        details.add(detail);
+                    }
+                }
+            }
+            for (int i=0; i<records.size(); i++) {
+                if (records.get(i).getDate().compareTo(b) >= 0 &&
+                        records.get(i).getDate().compareTo(e) <= 0) {
+                    IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
+                    detail.setCategory(records.get(i).getCategory());
+                    detail.setSubCategory(records.get(i).getSubCategory());
+                    detail.setAmount(records.get(i).getAmount());
+                    detail.setCurrency(records.get(i).getCurrency());
+                    details.add(detail);
+                }
+            }
+            //accumulate debtborrow mains
+            for (int i=0; i<debtBorrowMain.size(); i++) {
+                if (debtBorrowMain.get(i).getTakenDate().compareTo(b) >= 0 &&
+                        debtBorrowMain.get(i).getTakenDate().compareTo(e) <= 0) {
+                    IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
+                    RootCategory category = new RootCategory();
+                    if (debtBorrowMain.get(i).getType() == DebtBorrow.BORROW) {
+                        category.setName(context.getResources().getString(R.string.borrow_statistics));
+                        category.setType(PocketAccounterGeneral.EXPENSE);
+                    }
+                    else {
+                        category.setName(context.getResources().getString(R.string.debt_statistics));
+                        category.setType(PocketAccounterGeneral.INCOME);
+                    }
+                    detail.setCategory(category);
+                    detail.setSubCategory(null);
+                    detail.setAmount(debtBorrowMain.get(i).getAmount());
+                    detail.setCurrency(debtBorrowMain.get(i).getCurrency());
+                    details.add(detail);
+                }
+            }
+
+            //accumulate debtborrow reckings
+            for (int i=0; i<debtBorrowRecking.size(); i++) {
+                for (int j=0; j<debtBorrowRecking.get(i).getReckings().size(); j++) {
+                    Recking recking = debtBorrowRecking.get(i).getReckings().get(j);
+                    Calendar cal = Calendar.getInstance();
+                    try {
+                        cal.setTime(dateFormat.parse(recking.getPayDate().toString()));
+                    } catch (ParseException ex) {
+                        ex.printStackTrace();
+                    }
+                    if (cal.compareTo(b) >= 0 && cal.compareTo(e) <= 0) {
+                        IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
+                        RootCategory category = new RootCategory();
+                        if (debtBorrowRecking.get(i).getType() == DebtBorrow.BORROW) {
+                            category.setName(context.getResources().getString(R.string.borrow_recking_statistics));
+                            category.setType(PocketAccounterGeneral.INCOME);
+                        }
+                        else {
+                            category.setName(context.getResources().getString(R.string.debt_recking_statistics));
+                            category.setType(PocketAccounterGeneral.EXPENSE);
+                        }
+                        detail.setCategory(category);
+                        detail.setSubCategory(null);
+                        detail.setAmount(recking.getAmount());
+                        detail.setCurrency(debtBorrowRecking.get(i).getCurrency());
+                        details.add(detail);
+                    }
+                }
+            }
+            //accumulate credits
+            for (int i=0; i<credits.size(); i++) {
+                for (int j=0; j<credits.get(i).getReckings().size(); j++) {
+                    ReckingCredit recking = credits.get(i).getReckings().get(j);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(recking.getPayDate().getTimeInMillis());
+                    if (cal.compareTo(b) >= 0 && cal.compareTo(e) <= 0) {
+                        IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
+                        RootCategory category = new RootCategory();
+                        category.setName(credits.get(i).getCredit_name());
+                        category.setType(PocketAccounterGeneral.EXPENSE);
+                        detail.setCategory(category);
+                        detail.setSubCategory(null);
+                        detail.setAmount(recking.getAmount());
+                        detail.setCurrency(credits.get(i).getValyute_currency());
+                        details.add(detail);
+                    }
+                }
+            }
+            row.setDetails(details);
+            row.calculate(context);
+            result.add(row);
+            recordBegin.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        return  result;
     }
 }

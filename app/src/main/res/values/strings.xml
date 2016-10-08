@@ -120,7 +120,7 @@
         <item>₪</item>
         <item>¥</item>
         <item>₩</item>
-        <item>lei</item>
+        <item>؋</item>
         <item>L</item>
         <item>.د.ج </item>
         <item>Kz</item>
@@ -1523,6 +1523,7 @@
     <string name="category_one">Category</string>
     <string name="sub_category">Sub Category</string>
     <string name="enter_amount_operation">Enter amount of operation</string>
+    <string name="income_expance_title">Доходы и расходы</string>
     <string name="chooseroot">Choise root</string>
     <string name="spend">Потратить</string>
     <string name="left_datee">Left date:</string>

@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,55 +25,59 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
 public class TableView extends LinearLayout {
     @Inject
     CommonOperations commonOperations;
-
+    @Inject
+    DaoSession daoSession;
     private Bitmap operation;
     private TextView tvFirstTitle, tvSecondTitle, tvThirdTitle, tvFourthTitle;
     private RecyclerView rvTable;
     private boolean isFirstBitmap;
     private ArrayList<? extends Object> datas;
     private LinearLayoutManager lm;
-
     public TableView(Context context) {
         super(context);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.table_layout, this);
         init();
     }
-
     public TableView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.table_layout, this);
         init();
     }
-
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public TableView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.table_layout, this);
         init();
     }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TableView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         init();
     }
-
     private void init() {
         rvTable = (RecyclerView) findViewById(R.id.rvTable);
         DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -91,7 +96,6 @@ public class TableView extends LinearLayout {
         lm = new LinearLayoutManager(getContext());
         rvTable.setLayoutManager(lm);
     }
-
     public void setTitle(String[] titles, boolean isFirstBitmap) {
         this.isFirstBitmap = isFirstBitmap;
         tvFirstTitle.setText(titles[0]);
@@ -99,26 +103,19 @@ public class TableView extends LinearLayout {
         tvThirdTitle.setText(titles[2]);
         tvFourthTitle.setText(titles[3]);
     }
-
     public void setDatas(ArrayList<? extends Object> datas) {
         this.datas = datas;
         MyAdapter adapter = new MyAdapter(datas);
         rvTable.setAdapter(adapter);
     }
-
     private class MyAdapter extends RecyclerView.Adapter<TableView.ViewHolder> {
         private ArrayList<? extends Object> result;
-
         public MyAdapter(ArrayList<? extends Object> result) {
             this.result = result;
         }
-
         public int getItemCount() {
-
-
             return result.size();
         }
-
         public TableView.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.table_item, parent, false);
             DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -134,12 +131,10 @@ public class TableView extends LinearLayout {
             TextView tvTableThirdCol = (TextView) view.findViewById(R.id.tvTableThirdCol);
             tvTableThirdCol.setLayoutParams(lp);
             TextView tvTableFourthCol = (TextView) view.findViewById(R.id.tvTableFourthCol);
-            lp.setMargins((int) getResources().getDimension(R.dimen.eight_dp), (int) getResources().getDimension(R.dimen.five_dp),
-                    (int) getResources().getDimension(R.dimen.eight_dp), (int) getResources().getDimension(R.dimen.five_dp));
+            lp.setMargins((int) getResources().getDimension(R.dimen.eight_dp), (int) getResources().getDimension(R.dimen.five_dp), (int) getResources().getDimension(R.dimen.eight_dp), (int) getResources().getDimension(R.dimen.five_dp));
             tvTableFourthCol.setLayoutParams(lp);
             return new TableView.ViewHolder(view);
         }
-
         public void setPosition(int position) {
             View view = rvTable.getChildAt(position);
             if (view != null) {
@@ -149,7 +144,6 @@ public class TableView extends LinearLayout {
                     view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.table_odd));
             }
         }
-
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             if (position % 2 == 0)
@@ -168,6 +162,7 @@ public class TableView extends LinearLayout {
                         final Dialog dialog = new Dialog(getContext());
                         View dialogView = ((PocketAccounter) getContext()).getLayoutInflater().inflate(R.layout.report_by_income_expanse_info, null);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setCancelable(false);
                         dialog.setContentView(dialogView);
                         TextView tvReportByIncomeExpanseDate = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseDate);
                         SimpleDateFormat format = new SimpleDateFormat("dd LLL, yyyy");
@@ -180,24 +175,21 @@ public class TableView extends LinearLayout {
                                 dialog.dismiss();
                             }
                         });
-                        ReportByIncomeExpanseDialogAdapter adapter = new ReportByIncomeExpanseDialogAdapter(getContext(), row.getDetails());
+                        ReportByIncomeExpanseDialogAdapter adapter = new ReportByIncomeExpanseDialogAdapter(getContext(), row.getDetails(), Calendar.getInstance());
                         lvReportByIncomeExpanseInfo.setAdapter(adapter);
                         TextView tvReportByIncomeExpanseTotalIncome = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseTotalIncome);
                         DecimalFormat decimalFormat = new DecimalFormat("0.00##");
-
-//                        commonOperations.getCost(row.getDate(), row, row.getTotalExpanse());
-//                        tvReportByIncomeExpanseTotalIncome.setText(decimalFormat.format(row.getTotalExpanse()) + commonOperations.getMainCurrency().getAbbr());
-//                        TextView tvReportByIncomeExpanseExpanse = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseExpanse);
-//                        tvReportByIncomeExpanseExpanse.setText(decimalFormat.format(row.getTotalIncome()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
-//                        TextView tvReportByIncomeExpanseProfit = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseProfit);
-//                        tvReportByIncomeExpanseProfit.setText(decimalFormat.format(row.getTotalProfit()) + PocketAccounter.financeManager.getMainCurrency().getAbbr());
+                        tvReportByIncomeExpanseTotalIncome.setText(decimalFormat.format(row.getTotalExpanse()) + commonOperations.getMainCurrency().getAbbr());
+                        TextView tvReportByIncomeExpanseExpanse = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseExpanse);
+                        tvReportByIncomeExpanseExpanse.setText(decimalFormat.format(row.getTotalIncome()) + commonOperations.getMainCurrency().getAbbr());
+                        TextView tvReportByIncomeExpanseProfit = (TextView) dialogView.findViewById(R.id.tvReportByIncomeExpanseProfit);
+                        tvReportByIncomeExpanseProfit.setText(decimalFormat.format(row.getTotalProfit()) + commonOperations.getMainCurrency().getAbbr());
                         dialog.show();
                     }
                 }
             });
             SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
             DecimalFormat decimalFormat = new DecimalFormat("0.00");
-//            String abbr = PocketAccounter.financeManager.getMainCurrency().getAbbr();
             if (isFirstBitmap) {
                 ReportObject row = (ReportObject) result.get(position);
                 holder.tvTableFirstCol.setVisibility(GONE);
@@ -222,17 +214,19 @@ public class TableView extends LinearLayout {
                     holder.tvTableThirdCol.setText(((int) row.getAmount()) + row.getCurrency().getAbbr());
                 else holder.tvTableThirdCol.setText(row.getAmount() + row.getCurrency().getAbbr());
             } else {
-                IncomeExpanseDataRow row = (IncomeExpanseDataRow) result.get(position);
+                IncomeExpanseDataRow incomeExpanseDataRow = (IncomeExpanseDataRow) result.get(position);
                 holder.tvTableFirstCol.setVisibility(VISIBLE);
                 holder.ivTableItem.setVisibility(GONE);
-                holder.tvTableFirstCol.setText(format.format(row.getDate().getTime()));
-//                holder.tvTableSecondCol.setText(decimalFormat.format(row.getTotalIncome()) + abbr);
-//                holder.tvTableThirdCol.setText(decimalFormat.format(row.getTotalExpanse()) + abbr);
-//                holder.tvTableFourthCol.setText(decimalFormat.format(row.getTotalProfit()) + abbr);
+                holder.tvTableFirstCol.setText(format.format(incomeExpanseDataRow.getDate().getTime()));
+                holder.tvTableSecondCol.setText(decimalFormat.format(incomeExpanseDataRow.getTotalIncome()) + commonOperations.getMainCurrency().getAbbr());
+                holder.tvTableThirdCol.setText(decimalFormat.format(incomeExpanseDataRow.getTotalExpanse()) + commonOperations.getMainCurrency().getAbbr());
+                holder.tvTableFourthCol.setText(decimalFormat.format(incomeExpanseDataRow.getTotalProfit()) + commonOperations.getMainCurrency().getAbbr());
+                holder.tvTableSecondCol.setText(decimalFormat.format(incomeExpanseDataRow.getTotalIncome()) + commonOperations.getMainCurrency().getAbbr());
+                holder.tvTableThirdCol.setText(decimalFormat.format(incomeExpanseDataRow.getTotalExpanse()) + commonOperations.getMainCurrency().getAbbr());
+                holder.tvTableFourthCol.setText(decimalFormat.format(incomeExpanseDataRow.getTotalProfit()) + commonOperations.getMainCurrency().getAbbr());
             }
         }
     }
-
     public void unselectAll() {
         RecyclerView.Adapter adapter = rvTable.getAdapter();
         for (int i = 0; i < adapter.getItemCount(); i++) {
@@ -244,12 +238,10 @@ public class TableView extends LinearLayout {
             }
         }
     }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvTableFirstCol, tvTableSecondCol, tvTableThirdCol, tvTableFourthCol;
         public ImageView ivTableItem;
         public View view;
-
         public ViewHolder(View view) {
             super(view);
             tvTableFirstCol = (TextView) view.findViewById(R.id.tvTableFirstCol);

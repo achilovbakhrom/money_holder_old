@@ -31,7 +31,6 @@ import java.util.Calendar;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-
 public class ReportByCategory extends Fragment {
     @Inject
     PAFragmentManager paFragmentManager;
