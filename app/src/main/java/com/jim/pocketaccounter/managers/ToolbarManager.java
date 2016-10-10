@@ -135,23 +135,15 @@ public class ToolbarManager {
 
              searchEditToolbar.addTextChangedListener(new TextWatcher() {
                  @Override
-                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                 }
-
+                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                  @Override
-                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                 }
-
+                 public void onTextChanged(CharSequence s, int start, int before, int count) {}
                  @Override
                  public void afterTextChanged(Editable s) {
                      textChangeListnerW.onTextChange(searchEditToolbar.getText().toString());
                  }
              });
          }
-
-
 
         fragmentManager.displayFragment(searchFragment, "salom");
 
@@ -172,7 +164,7 @@ public class ToolbarManager {
         setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closeSearchTools(firstIconActive,secondIconActive);
+                closeSearchTools();
             }
         });
         setToolbarIconsVisibility(View.VISIBLE,View.GONE,View.GONE);
@@ -182,14 +174,13 @@ public class ToolbarManager {
 
      }
     Runnable runForItClose;
-    public void closeSearchFragment(final boolean firstIconActive,final boolean secondIconActive){
-
+    public void closeSearchFragment(){
         whenKeyboardClosed=new Handler();
         runForItClose=new Runnable() {
             @Override
             public void run() {
                 if(!keyboardIsOpen){
-                    setImageToHomeButton(R.drawable.ic_back_button);
+                    setImageToHomeButton(R.drawable.ic_drawer);
                     searchEditToolbar.setVisibility(View.GONE);
                     ivToolbarStart.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -227,8 +218,7 @@ public class ToolbarManager {
 
         whenKeyboardClosed.postDelayed(runForItClose,200);
     }
-    public void closeSearchTools(final boolean firstIconActive, final boolean secondIconActive){
-
+    public void closeSearchTools(){
         whenKeyboardClosed=new Handler();
         runForItClose=new Runnable() {
             @Override
@@ -280,8 +270,6 @@ public class ToolbarManager {
         }
 
         whenKeyboardClosed.postDelayed(runForItClose,200);
-
-
 
     }
     public void setImageToStartImage(int resId) {

@@ -22,7 +22,8 @@ import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
 import com.jim.pocketaccounter.fragments.ReportByCategory;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
-import com.jim.pocketaccounter.fragments.SMSParseFragment;
+import com.jim.pocketaccounter.fragments.SMSParseInfoFragment;
+import com.jim.pocketaccounter.fragments.SearchFragment;
 import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 
 /**
@@ -75,5 +76,8 @@ public interface PocketClassess {
     // Sms Parsing
     String SMS_PARSE_FRAGMENT = SmsParseMainFragment.class.getName();
     String ADD_SMS_PARSE_FRAGMENT = AddSmsParseFragment.class.getName();
+    String INFO_SMS_PARSE_FRAGMENT = SMSParseInfoFragment.class.getName();
 
+    // Searching
+    String SEARCH_FRAGMENT = SearchFragment.class.getName();
 }

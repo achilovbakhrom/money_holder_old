@@ -392,6 +392,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 								case 1:
 									switch (position) {
 										case 0:
+											paFragmentManager.setMainReturn(true);
 											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, currentPage*4+pos, date));
 											break;
 										case 1:
@@ -536,24 +537,31 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 							}
 							switch (pos) {
 								case 0:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new CurrencyFragment());
 									break;
 								case 1:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new CategoryFragment());
 									break;
 								case 2:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new AccountFragment());
 									break;
 								case 3:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new PurposeFragment());
 									break;
 								case 4:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new AutoMarketFragment());
 									break;
 								case 5:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new CreditTabLay());
 									break;
 								case 6:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new DebtBorrowFragment());
 									break;
 								case 7:
@@ -666,6 +674,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 											.commit();
 									initButtons();
 									invalidate();
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.updateAllFragmentsPageChanges();
 									break;
 							}
@@ -933,6 +942,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				paFragmentManager.setMainReturn(true);
 				paFragmentManager.displayFragment(new RecordEditFragment(records.get(position).getCategory(), date, records.get(position), PocketAccounterGeneral.MAIN));
 				PocketAccounter.PRESSED = false;
 				dialog.dismiss();

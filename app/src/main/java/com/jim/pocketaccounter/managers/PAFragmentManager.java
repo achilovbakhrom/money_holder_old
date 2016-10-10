@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -23,7 +24,7 @@ import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.MainPageFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.RecordDetailFragment;
-import com.jim.pocketaccounter.fragments.SMSParseFragment;
+import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.util.Calendar;
@@ -155,7 +156,7 @@ public class PAFragmentManager {
         int size = fragmentManager.getFragments().size();
         for (int i = 0; i < size; i++) {
             Fragment fragment = fragmentManager.getFragments().get(i);
-            if (fragment != null && fragment.getClass().getName().matches(MainPageFragment.class.getName())) {
+            if (fragment != null && fragment.getClass().getName().equals(MainPageFragment.class.getName())) {
                 ((MainPageFragment) fragment).update();
             }
         }
@@ -170,7 +171,7 @@ public class PAFragmentManager {
         int size = fragmentManager.getFragments().size();
         for (int i = 0; i < size; i++) {
             Fragment fragment = fragmentManager.getFragments().get(i);
-            if (fragment != null && fragment.getClass().getName().matches(MainPageFragment.class.getName())) {
+            if (fragment != null && fragment.getClass().getName().equals(MainPageFragment.class.getName())) {
                 ((MainPageFragment) fragment).updatePageChanges();
             }
         }
@@ -193,11 +194,8 @@ public class PAFragmentManager {
         fragmentManager.popBackStackImmediate();
     }
 
-
-
     public void displayFragment(Fragment fragment) {
-//        main.setVisibility(View.GONE);
-        if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
+        if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().equals(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStackImmediate();
@@ -213,7 +211,7 @@ public class PAFragmentManager {
 
     public void displayFragment(Fragment fragment, String tag) {
 //        main.setVisibility(View.GONE);
-        if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().matches(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
+        if (fragmentManager.findFragmentById(R.id.flMain) != null && fragment.getClass().getName().equals(fragmentManager.findFragmentById(R.id.flMain).getClass().getName()))
             return;
         PRESSED = true;
         fragmentManager
@@ -253,38 +251,44 @@ public class PAFragmentManager {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void remoteBackPress() {
         String fragName = getFragmentManager().findFragmentById(R.id.flMain).getClass().getName();
+        Log.d("sss", fragName);
         int count = getFragmentManager().getBackStackEntryCount();
         while (count > 0) {
             getFragmentManager().popBackStack();
             count--;
         }
-        if (fragName.matches(PocketClassess.DEBTBORROW_FRAG) || fragName.matches(PocketClassess.AUTOMARKET_FRAG)
-                || fragName.matches(PocketClassess.CURRENCY_FRAG) || fragName.matches(PocketClassess.CATEGORY_FRAG)
-                || fragName.matches(PocketClassess.ACCOUNT_FRAG) || fragName.matches(PocketClassess.CREDIT_FRAG)
-                || fragName.matches(PocketClassess.PURPOSE_FRAG) || fragName.matches(PocketClassess.REPORT_ACCOUNT)
-                || fragName.matches(PocketClassess.REPORT_CATEGORY)) {
-//            main.setVisibility(View.VISIBLE);
+        if (isMainReturn) {
+            isMainReturn = false;
             displayMainWindow();
-        } else if (fragName.matches(PocketClassess.ADD_DEBTBORROW) || fragName.matches(PocketClassess.INFO_DEBTBORROW)) {
-            displayFragment(new DebtBorrowFragment());
-        } else if (fragName.matches(PocketClassess.ADD_AUTOMARKET) || fragName.matches(PocketClassess.INFO_DEBTBORROW)) {
-            displayFragment(new AutoMarketFragment());
-        } else if (fragName.matches(PocketClassess.CURRENCY_CHOOSE) || fragName.matches(PocketClassess.CURRENCY_EDIT)) {
-            displayFragment(new CurrencyFragment());
-        } else if (fragName.matches(PocketClassess.CATEGORY_INFO) || fragName.matches(PocketClassess.ADD_CATEGORY)) {
-            displayFragment(new CategoryFragment());
-        } else if (fragName.matches(PocketClassess.ACCOUNT_EDIT) || fragName.matches(PocketClassess.ACCOUNT_INFO)) {
-            displayFragment(new AccountFragment());
-        } else if (fragName.matches(PocketClassess.ADD_AUTOMARKET)) {
-            displayFragment(new AutoMarketFragment());
-        } else if (fragName.matches(PocketClassess.INFO_CREDIT) || fragName.matches(PocketClassess.ADD_CREDIT)) {
-            displayFragment(new CreditTabLay());
-        } else if (fragName.matches(PocketClassess.INFO_PURPOSE) || fragName.matches(PocketClassess.ADD_PURPOSE)) {
-            displayFragment(new PurposeFragment());
-        } else if (fragName.matches(PocketClassess.ADD_SMS_PARSE_FRAGMENT)) {
-            displayFragment(new SMSParseFragment());
-        } else if (fragName.matches(PocketClassess.RECORD_EDIT_FRAGMENT)) {
-            displayFragment(new RecordDetailFragment(dataCache.getBeginDate()));
+        } else {
+            if (fragName.equals(PocketClassess.DEBTBORROW_FRAG) || fragName.equals(PocketClassess.AUTOMARKET_FRAG)
+                    || fragName.equals(PocketClassess.CURRENCY_FRAG) || fragName.equals(PocketClassess.CATEGORY_FRAG)
+                    || fragName.equals(PocketClassess.ACCOUNT_FRAG) || fragName.equals(PocketClassess.CREDIT_FRAG)
+                    || fragName.equals(PocketClassess.PURPOSE_FRAG) || fragName.equals(PocketClassess.REPORT_ACCOUNT)
+                    || fragName.equals(PocketClassess.REPORT_CATEGORY) || fragName.equals(PocketClassess.SMS_PARSE_FRAGMENT)
+                    || fragName.equals(PocketClassess.RECORD_DETEIL_FRAGMENT)) {
+                displayMainWindow();
+            } else if (fragName.equals(PocketClassess.ADD_DEBTBORROW) || fragName.equals(PocketClassess.INFO_DEBTBORROW)) {
+                displayFragment(new DebtBorrowFragment());
+            } else if (fragName.equals(PocketClassess.ADD_AUTOMARKET) || fragName.equals(PocketClassess.INFO_DEBTBORROW)) {
+                displayFragment(new AutoMarketFragment());
+            } else if (fragName.equals(PocketClassess.CURRENCY_CHOOSE) || fragName.equals(PocketClassess.CURRENCY_EDIT)) {
+                displayFragment(new CurrencyFragment());
+            } else if (fragName.equals(PocketClassess.CATEGORY_INFO) || fragName.equals(PocketClassess.ADD_CATEGORY)) {
+                displayFragment(new CategoryFragment());
+            } else if (fragName.equals(PocketClassess.ACCOUNT_EDIT) || fragName.equals(PocketClassess.ACCOUNT_INFO)) {
+                displayFragment(new AccountFragment());
+            } else if (fragName.equals(PocketClassess.ADD_AUTOMARKET)) {
+                displayFragment(new AutoMarketFragment());
+            } else if (fragName.equals(PocketClassess.INFO_CREDIT) || fragName.equals(PocketClassess.ADD_CREDIT)) {
+                displayFragment(new CreditTabLay());
+            } else if (fragName.equals(PocketClassess.INFO_PURPOSE) || fragName.equals(PocketClassess.ADD_PURPOSE)) {
+                displayFragment(new PurposeFragment());
+            } else if (fragName.equals(PocketClassess.RECORD_EDIT_FRAGMENT)) {
+                displayFragment(new RecordDetailFragment(dataCache.getBeginDate()));
+            } else if (fragName.equals(PocketClassess.ADD_SMS_PARSE_FRAGMENT) || fragName.equals(PocketClassess.INFO_SMS_PARSE_FRAGMENT)) {
+                displayFragment(new SmsParseMainFragment());
+            }
         }
     }
 }

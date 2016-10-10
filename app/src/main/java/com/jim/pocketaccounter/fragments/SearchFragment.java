@@ -471,7 +471,7 @@ public class SearchFragment extends Fragment {
                                             paFragmentManager.displayMainWindow();
                                         }
                                     });
-                                    toolbarManager.closeSearchFragment(false, false);
+                                    toolbarManager.closeSearchFragment();
                                     paFragmentManager.displayFragment(new RecordEditFragment(null, ((FinanceRecord) item.getParrentObject()).getDate(), ((FinanceRecord) item.getParrentObject()), PocketAccounterGeneral.DETAIL));
 
                                 }
@@ -493,13 +493,13 @@ public class SearchFragment extends Fragment {
                                     if(((CreditDetials) item.getParrentObject()).getKey_for_archive()){
                                         InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
                                         temp.setConteentFragment((CreditDetials) item.getParrentObject());
-                                        toolbarManager.closeSearchFragment(false, true);
+                                        toolbarManager.closeSearchFragment();
                                         paFragmentManager.displayFragment(temp);
                                     }
                                     else {
                                         InfoCreditFragment temp = new InfoCreditFragment();
                                         temp.setDefaultContent(((CreditDetials) item.getParrentObject()));
-                                        toolbarManager.closeSearchFragment(false, true);
+                                        toolbarManager.closeSearchFragment();
                                         paFragmentManager.displayFragment(temp);
                                     }
                                 }
@@ -525,13 +525,13 @@ public class SearchFragment extends Fragment {
                                         InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
                                         temp.setConteentFragment(parentCreditDetials);
                                         paFragmentManager.displayFragment(temp);
-                                        toolbarManager.closeSearchFragment(false, true);
+                                        toolbarManager.closeSearchFragment();
                                     }
                                     else {
                                         InfoCreditFragment temp = new InfoCreditFragment();
                                         temp.setDefaultContent(parentCreditDetials);
                                         paFragmentManager.displayFragment(temp);
-                                        toolbarManager.closeSearchFragment(false, true);
+                                        toolbarManager.closeSearchFragment();
                                     }
 
                                 }

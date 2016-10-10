@@ -2,7 +2,6 @@ package com.jim.pocketaccounter.managers;
 
 import android.app.ProgressDialog;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,13 +12,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -37,7 +32,6 @@ import com.jim.pocketaccounter.R;
 //import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.SettingsActivity;
 import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.fragments.AccountFragment;
 import com.jim.pocketaccounter.fragments.AutoMarketFragment;
@@ -47,7 +41,6 @@ import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
 import com.jim.pocketaccounter.fragments.ReportByCategory;
-import com.jim.pocketaccounter.fragments.SMSParseFragment;
 import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 import com.jim.pocketaccounter.fragments.TableBarFragment;
 import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
@@ -70,12 +63,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 
 import static android.app.Activity.RESULT_OK;
-import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
 
 /**
  * Created by DEV on 28.08.2016.

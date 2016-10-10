@@ -347,12 +347,14 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 								if (!categoryList.isEmpty())
 									category = categoryList.get(0);
 							}
+							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.CREDIT) {
 							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(buttons.get(position).getCategory().getCategoryId()));
 							InfoCreditFragment temp = new InfoCreditFragment();
 							temp.setContentFromMainWindow(item,position,PocketAccounterGeneral.EXPANSE_MODE);
+							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(temp);
 
 						}

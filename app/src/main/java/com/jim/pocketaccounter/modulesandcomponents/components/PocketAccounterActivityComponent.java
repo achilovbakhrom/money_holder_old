@@ -42,7 +42,6 @@ import com.jim.pocketaccounter.fragments.ReportByIncomeExpanseBarFragment;
 import com.jim.pocketaccounter.fragments.ReportByIncomeExpanseTableFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.fragments.SMSParseInfoFragment;
-import com.jim.pocketaccounter.fragments.SMSParseFragment;
 import com.jim.pocketaccounter.fragments.SearchFragment;
 import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 import com.jim.pocketaccounter.fragments.TableBarFragment;

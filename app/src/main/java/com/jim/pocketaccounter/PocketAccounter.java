@@ -46,6 +46,7 @@ import com.jim.pocketaccounter.database.DaoSession;
 //import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.SmsParseKeys;
+import com.jim.pocketaccounter.debt.PocketClassess;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.SettingsManager;
@@ -54,6 +55,7 @@ import com.jim.pocketaccounter.modulesandcomponents.components.DaggerPocketAccou
 import com.jim.pocketaccounter.utils.CircleImageView;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.TemplateSms;
+import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
 import com.jim.pocketaccounter.utils.password.OnPasswordRightEntered;
@@ -132,6 +134,8 @@ public class PocketAccounter extends AppCompatActivity {
     CommonOperations commonOperations;
     @Inject
     DataCache dataCache;
+    @Inject
+    WarningDialog warningDialog;
     PocketAccounterActivityComponent component;
 
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
@@ -156,10 +160,10 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.init();
         date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize();
+        paFragmentManager.initialize(beginDate, endDate);
         dataCache.getCategoryEditFragmentDatas().setDate(date);
         pwPassword = (PasswordWindow) findViewById(R.id.pwPassword);
-
+        checkAutoMarket();
 //        SmsParseKeys smsParseKeys = new SmsParseKeys();
 //        smsParseKeys.setNumber("+99931121");
 //        smsParseKeys.setTemplates(new String[] {"salmkga", "sadsdsa", "sdasd"});
@@ -253,10 +257,10 @@ public class PocketAccounter extends AppCompatActivity {
     private EditText endTimeFilter;
 
     private void checkAutoMarket() {
-        Log.d("sss", "" + (daoSession == null));
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
-        Database db = helper.getEncryptedWritableDb("super-secret");
-        daoSession = new DaoMaster(db).newSession();
+//        Log.d("sss", "" + (daoSession == null));
+//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
+//        Database db = helper.getWritableDb();
+//        daoSession = new DaoMaster(db).newSession();
         for (AutoMarket au : daoSession.getAutoMarketDao().loadAll()) {
             String[] days = au.getDates().split(",");
             for (String day : days) {
@@ -292,7 +296,7 @@ public class PocketAccounter extends AppCompatActivity {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
-        toolbarManager.setSubtitle(format.format(dataCache.getEndDate().getTime()));
+        toolbarManager.setSubtitle(format.format(date.getTime()));
 
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
@@ -304,6 +308,7 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.setToolbarIconsVisibility(View.VISIBLE, View.GONE, View.VISIBLE);
         toolbarManager.setSearchView(drawerInitializer, format, paFragmentManager, findViewById(R.id.main));
         toolbarManager.setImageToSecondImage(R.drawable.finance_calendar);
+        toolbarManager.setSearchView(drawerInitializer, format, paFragmentManager, findViewById(R.id.main));
 //        toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
         toolbarManager.setImageToStartImage(R.drawable.ic_search_black_24dp);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
@@ -376,9 +381,27 @@ public class PocketAccounter extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0) {
+            if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
+                    paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain).
+                            getClass().getName().equals(PocketClassess.SEARCH_FRAGMENT)) {
+                toolbarManager.closeSearchTools();
+            } else
             paFragmentManager.remoteBackPress();
-        } else
-            super.onBackPressed();
+        } else {
+            warningDialog.setOnYesButtonListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PocketAccounter.super.onBackPressed();
+                }
+            });
+            warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    warningDialog.dismiss();
+                }
+            });
+            warningDialog.show();
+        }
     }
 //
 //    public Calendar getDate() {
