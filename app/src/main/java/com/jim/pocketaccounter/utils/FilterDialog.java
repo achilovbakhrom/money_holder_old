@@ -162,12 +162,7 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 yilFilter.setSelection(i);
             }
         }
-
-        for (int i = 0; i < months.length; i++) {
-            if (i == Calendar.getInstance().get(Calendar.MONTH)) {
-                monthFilter.setSelection(i);
-            }
-        }
+        monthFilter.setSelection(Calendar.getInstance().get(Calendar.MONTH));
         spinner.setOnItemSelectedListener(this);
         yearFilter.setOnItemSelectedListener(this);
         yilFilter.setOnItemSelectedListener(this);
@@ -245,7 +240,6 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 findViewById(R.id.yi_oy).setVisibility(View.GONE);
                 findViewById(R.id.yil_edit).setVisibility(View.GONE);
                 findViewById(R.id.interval_edit).setVisibility(View.GONE);
-
                 beginDate.set(Calendar.DAY_OF_MONTH, 1);
                 beginDate.set(Calendar.HOUR_OF_DAY, 0);
                 beginDate.set(Calendar.MINUTE, 0);

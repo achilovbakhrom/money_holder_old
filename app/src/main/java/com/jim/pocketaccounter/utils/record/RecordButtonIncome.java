@@ -238,11 +238,18 @@ public class RecordButtonIncome {
 						name = debtBorrow.getPerson().getName();
 					}
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
-						scaled = queryContactImage(Integer.parseInt(debtBorrow.getPerson().getPhoto()));
-						if (scaled == null)
-							scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
-						scaled = Bitmap.createScaledBitmap(scaled, (int) context.getResources().getDimension(R.dimen.thirty_dp),
-								(int) context.getResources().getDimension(R.dimen.thirty_dp), true);
+						if (!debtBorrow.getPerson().getPhoto().equals("") && !debtBorrow.getPerson().getPhoto().equals("0")) {
+							try {
+								scaled = queryContactImage(Integer.parseInt(debtBorrow.getPerson().getPhoto()));
+							}
+							catch (NumberFormatException e) {
+								scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
+							}
+						}
+						else {
+							scaled = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_photo, options);
+						}
+						scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int)context.getResources().getDimension(R.dimen.thirty_dp), true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
 					else
@@ -294,7 +301,7 @@ public class RecordButtonIncome {
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
-			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
+			textPaint.setTextSize(context.getResources().getDimension(R.dimen.eleven_dp));
 			Rect bounds = new Rect();
 			for (int i=0; i < name.length(); i++) {
 				textPaint.getTextBounds(name, 0, i, bounds);

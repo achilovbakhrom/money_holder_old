@@ -156,7 +156,7 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.init();
         date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize(beginDate, endDate);
+        paFragmentManager.initialize();
         dataCache.getCategoryEditFragmentDatas().setDate(date);
         pwPassword = (PasswordWindow) findViewById(R.id.pwPassword);
 
@@ -292,7 +292,7 @@ public class PocketAccounter extends AppCompatActivity {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
-        toolbarManager.setSubtitle(format.format(date.getTime()));
+        toolbarManager.setSubtitle(format.format(dataCache.getEndDate().getTime()));
 
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override

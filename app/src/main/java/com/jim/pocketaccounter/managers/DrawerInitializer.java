@@ -401,7 +401,6 @@ public class DrawerInitializer {
                                 break;
                             case 4:
                                 fragmentManager.displayFragment(new AccountFragment());
-                                //Accounting management
                                 break;
                             case 5:
                                 fragmentManager.displayFragment(new PurposeFragment());
@@ -421,14 +420,13 @@ public class DrawerInitializer {
                                 fragmentManager.displayFragment(new ReportByAccountFragment());
                                 break;
                             case 12:
-                                fragmentManager.displayFragment(new ReportByCategory());
+//                                fragmentManager.displayFragment(new TableBarFragment());
                                 break;
                             case 13:
-//                                fragmentManager.displayFragment(new TableBarFragment());
+                                fragmentManager.displayFragment(new ReportByCategory());
                                 break;
                             case 14:
                                 fragmentManager.displayFragment(new SmsParseMainFragment());
-
 //                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
 //                                PocketAccounter.openActivity=true;
 //                                for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {

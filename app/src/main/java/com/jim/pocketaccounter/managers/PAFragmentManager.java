@@ -62,11 +62,8 @@ public class PAFragmentManager {
     @Named(value = "end")
     Calendar end;
     private MainPageFragment nextPage;
-    private FrameLayout main;
-    private boolean keyboardVisible = false;
     private ViewPager lvpMain;
 
-    LVPAdapter adapter;
     public PAFragmentManager(PocketAccounter activity) {
         this.activity = activity;
         ((PocketAccounterApplication) activity.getApplicationContext()).component().inject(this);
@@ -86,7 +83,7 @@ public class PAFragmentManager {
         return fragmentManager;
     }
 
-    public void initialize(final Calendar begin, final Calendar end) {
+    public void initialize() {
         final ViewPager lvpMain = (ViewPager) activity.findViewById(R.id.lvpMain);
         FragmentPagerAdapter adapter = new LVPAdapter(getFragmentManager());
         lvpMain.setCurrentItem(5000, false);

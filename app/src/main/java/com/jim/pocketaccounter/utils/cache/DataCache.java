@@ -122,12 +122,12 @@ public class DataCache {
 
     public void updateOneDay(final Calendar day) {
         String date = format(day);
-        begin.setTimeInMillis(new Long(day.getTimeInMillis()));
+        begin.setTimeInMillis(day.getTimeInMillis());
         begin.set(Calendar.HOUR_OF_DAY, 0);
         begin.set(Calendar.MINUTE, 0);
         begin.set(Calendar.SECOND, 0);
         begin.set(Calendar.MILLISECOND, 0);
-        end.setTimeInMillis(new Long(day.getTimeInMillis()));
+        end.setTimeInMillis(day.getTimeInMillis());
         end.set(Calendar.HOUR_OF_DAY, 23);
         end.set(Calendar.MINUTE, 59);
         end.set(Calendar.SECOND, 59);
@@ -259,6 +259,7 @@ public class DataCache {
                 case PocketAccounterGeneral.CREDIT:
                     Double credit = 0.0d;
                     for (CreditDetials creditDetials : creditDetialList) {
+                        if (!boardButtonList.get(i).getCategoryId().equals(Long.toString(creditDetials.getMyCredit_id()))) continue;
                         for (ReckingCredit recking : creditDetials.getReckings()) {
                             if (recking.getPayDate().compareTo(begin) >= 0 &&
                                     recking.getPayDate().compareTo(end) <= 0) {
@@ -297,8 +298,10 @@ public class DataCache {
                 case PocketAccounterGeneral.DEBT_BORROW:
                     Double debtBorrowExpenses = 0.0d, debtBorrowIncomes = 0.0d;
                     for (DebtBorrow db : debtBorrows) {
-                        if (db.getId().equals(boardButtonList.get(i).getCategoryId())) {
-                            if (db.getType() == DebtBorrow.BORROW)
+                        if (db.getId().equals(boardButtonList.get(i).getCategoryId()) &&
+                                db.getTakenDate().compareTo(begin) >= 0 &&
+                                    db.getTakenDate().compareTo(end) <= 0) {
+                            if (db.getType() == DebtBorrow.BORROW )
                                 debtBorrowExpenses += commonOperations.getCost(day, db.getCurrency(), db.getAmount());
                             else
                                 debtBorrowIncomes += commonOperations.getCost(day, db.getCurrency(), db.getAmount());
@@ -467,13 +470,14 @@ public class DataCache {
         endDate.set(Calendar.MINUTE, 59);
         endDate.set(Calendar.SECOND, 59);
         endDate.set(Calendar.MILLISECOND, 59);
-        if (beginDate == null)
+        if (commonOperations.getFirstDay() == null)
             beginDate = Calendar.getInstance();
+        else
+            beginDate = (Calendar) commonOperations.getFirstDay().clone();
         beginDate.set(Calendar.HOUR_OF_DAY, 0);
         beginDate.set(Calendar.MINUTE, 0);
         beginDate.set(Calendar.SECOND, 0);
         beginDate.set(Calendar.MILLISECOND, 0);
-        beginDate.add(Calendar.YEAR, -1);
     }
 
     public Calendar getBeginDate() {
