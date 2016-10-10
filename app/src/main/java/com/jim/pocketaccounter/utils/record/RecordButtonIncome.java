@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.utils.record;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -228,11 +230,23 @@ public class RecordButtonIncome {
 				case PocketAccounterGeneral.DEBT_BORROW:
 					Query<DebtBorrow> query = daoSession.getDebtBorrowDao()
 							.queryBuilder()
-							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getId()))
+							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getCategoryId()))
 							.build();
-					if (!query.list().isEmpty())
-						name = query.list().get(0).getPerson().getName();
-
+					DebtBorrow debtBorrow = null;
+					if (!query.list().isEmpty()) {
+						debtBorrow = query.list().get(0);
+						name = debtBorrow.getPerson().getName();
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
+						scaled = queryContactImage(Integer.parseInt(debtBorrow.getPerson().getPhoto()));
+						if (scaled == null)
+							scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
+						scaled = Bitmap.createScaledBitmap(scaled, (int) context.getResources().getDimension(R.dimen.thirty_dp),
+								(int) context.getResources().getDimension(R.dimen.thirty_dp), true);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 					break;
 				case PocketAccounterGeneral.FUNCTION:
 					String[] operationIds = context.getResources().getStringArray(R.array.operation_ids);
@@ -308,6 +322,25 @@ public class RecordButtonIncome {
 			String text = context.getResources().getString(R.string.add);
 			textPaint.getTextBounds(text, 0, text.length(), bounds);
 			canvas.drawText(text, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
+		}
+	}
+	private Bitmap queryContactImage(int imageDataRow) {
+		Cursor c = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
+				ContactsContract.CommonDataKinds.Photo.PHOTO
+		}, ContactsContract.Data._ID + "=?", new String[]{
+				Integer.toString(imageDataRow)
+		}, null);
+		byte[] imageBytes = null;
+		if (c != null) {
+			if (c.moveToFirst()) {
+				imageBytes = c.getBlob(0);
+			}
+			c.close();
+		}
+		if (imageBytes != null) {
+			return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+		} else {
+			return null;
 		}
 	}
 	public void setPressed(boolean pressed) {

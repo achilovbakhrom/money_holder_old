@@ -54,6 +54,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -61,7 +62,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
+import android.provider.ContactsContract;
 import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -365,7 +368,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 									break;
 								case 1:
 									paFragmentManager.displayFragment(new CategoryFragment());
-
 									break;
 								case 2:
 									paFragmentManager.displayFragment(new AccountFragment());
@@ -1053,12 +1055,43 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		}
 	}
 	private void changeIconInCache(int pos, String icon) {
-		int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inPreferredConfig = Bitmap.Config.RGB_565;
-		Bitmap scaled = BitmapFactory.decodeResource(getResources(), resId, options);
-		scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+		Bitmap scaled = null;
+		if (buttons.get(pos).getCategory().getType() != PocketAccounterGeneral.DEBT_BORROW) {
+			int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPreferredConfig = Bitmap.Config.RGB_565;
+			scaled = BitmapFactory.decodeResource(getResources(), resId, options);
+			scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+
+		}
+		else {
+			try {
+				scaled = queryContactImage(Integer.parseInt(icon));
+			}
+			catch (NumberFormatException e) {
+				scaled = BitmapFactory.decodeFile(icon);
+			}
+		}
 		dataCache.getBoardBitmapsCache().put(buttons.get(pos).getCategory().getId(),
 				scaled);
+	}
+	private Bitmap queryContactImage(int imageDataRow) {
+		Cursor c = getContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
+				ContactsContract.CommonDataKinds.Photo.PHOTO
+		}, ContactsContract.Data._ID + "=?", new String[]{
+				Integer.toString(imageDataRow)
+		}, null);
+		byte[] imageBytes = null;
+		if (c != null) {
+			if (c.moveToFirst()) {
+				imageBytes = c.getBlob(0);
+			}
+			c.close();
+		}
+		if (imageBytes != null) {
+			return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+		} else {
+			return null;
+		}
 	}
 }

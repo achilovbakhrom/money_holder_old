@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.utils.record;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,6 +11,8 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 
 import com.jim.pocketaccounter.PocketAccounter;
@@ -461,7 +464,7 @@ public class RecordButtonExpanse {
 				case PocketAccounterGeneral.DEBT_BORROW:
 					Query<DebtBorrow> query = daoSession.getDebtBorrowDao()
 							.queryBuilder()
-							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getId()))
+							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getCategoryId()))
 							.build();
 					DebtBorrow debtBorrow = null;
 					if (!query.list().isEmpty()) {
@@ -469,7 +472,9 @@ public class RecordButtonExpanse {
 						name = debtBorrow.getPerson().getName();
 					}
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
-						scaled = decodeFile(new File(debtBorrow.getPerson().getPhoto()));
+						scaled = queryContactImage(Integer.parseInt(debtBorrow.getPerson().getPhoto()));
+						if (scaled == null)
+							scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
 						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
@@ -550,25 +555,24 @@ public class RecordButtonExpanse {
 			canvas.drawText(text, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
 		}
 	}
-	private Bitmap decodeFile(File f) {
-		try {
-//            Decode image size
-			BitmapFactory.Options o = new BitmapFactory.Options();
-			o.inJustDecodeBounds = true;
-			BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-//            The new size we want to scale to
-			final int REQUIRED_SIZE = 128;
-//            Find the correct scale value. It should be the power of 2.
-			int scale = 1;
-			while (o.outWidth / scale / 2 >= REQUIRED_SIZE && o.outHeight / scale / 2 >= REQUIRED_SIZE)
-				scale *= 2;
-			//Decode with inSampleSize
-			BitmapFactory.Options o2 = new BitmapFactory.Options();
-			o2.inSampleSize = scale;
-			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-		} catch (FileNotFoundException e) {
+	private Bitmap queryContactImage(int imageDataRow) {
+		Cursor c = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
+				ContactsContract.CommonDataKinds.Photo.PHOTO
+		}, ContactsContract.Data._ID + "=?", new String[]{
+				Integer.toString(imageDataRow)
+		}, null);
+		byte[] imageBytes = null;
+		if (c != null) {
+			if (c.moveToFirst()) {
+				imageBytes = c.getBlob(0);
+			}
+			c.close();
 		}
-		return null;
+		if (imageBytes != null) {
+			return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+		} else {
+			return null;
+		}
 	}
 	public void setPressed(boolean pressed) {
 		this.pressed = pressed;

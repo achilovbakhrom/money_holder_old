@@ -2,8 +2,11 @@ package com.jim.pocketaccounter.finance;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,33 +55,32 @@ public class CategoryAdapterForDialog extends BaseAdapter {
 			ivCategoryListIcon.setImageResource(resId);
 		}
 		else {
-			Bitmap bitmap = decodeFile(new File(result.get(0).getIcon()));
-			bitmap = Bitmap.createScaledBitmap(bitmap, (int) context.getResources().getDimension(R.dimen.twentyfive_dp),
-					(int) context.getResources().getDimension(R.dimen.twentyfive_dp), false);
+			Bitmap bitmap = queryContactImage(Integer.parseInt(result.get(0).getIcon()));
+			if (bitmap == null)
+				Drawable.createFromPath(result.get(0).getIcon());
 			ivCategoryListIcon.setImageBitmap(bitmap);
 		}
 		TextView tvCategoryListName = (TextView) view.findViewById(R.id.tvIconWithName);
 		tvCategoryListName.setText(result.get(position).getName());
 		return view;
 	}
-	private Bitmap decodeFile(File f) {
-		try {
-//            Decode image size
-			BitmapFactory.Options o = new BitmapFactory.Options();
-//			o.inJustDecodeBounds = true;
-			BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-//            The new size we want to scale to
-			final int REQUIRED_SIZE = 128;
-//            Find the correct scale value. It should be the power of 2.
-			int scale = 1;
-			while (o.outWidth / scale / 2 >= REQUIRED_SIZE && o.outHeight / scale / 2 >= REQUIRED_SIZE)
-				scale *= 2;
-			//Decode with inSampleSize
-			BitmapFactory.Options o2 = new BitmapFactory.Options();
-			o2.inSampleSize = scale;
-			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-		} catch (FileNotFoundException e) {
+	private Bitmap queryContactImage(int imageDataRow) {
+		Cursor c = context.getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
+				ContactsContract.CommonDataKinds.Photo.PHOTO
+		}, ContactsContract.Data._ID + "=?", new String[]{
+				Integer.toString(imageDataRow)
+		}, null);
+		byte[] imageBytes = null;
+		if (c != null) {
+			if (c.moveToFirst()) {
+				imageBytes = c.getBlob(0);
+			}
+			c.close();
 		}
-		return null;
+		if (imageBytes != null) {
+			return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+		} else {
+			return null;
+		}
 	}
 }

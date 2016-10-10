@@ -1430,10 +1430,10 @@
         <item>back_button</item>
     </string-array>
     <string-array name="operation_icons">
-        <item>icons_312</item>
-        <item>icons_313</item>
-        <item>icons_314</item>
-        <item>icons_315</item>
+        <item>icons_318</item>
+        <item>icons_319</item>
+        <item>icons_400</item>
+        <item>icons_401</item>
         <item>icons_316</item>
         <item>icons_317</item>
     </string-array>
@@ -1467,18 +1467,18 @@
         <item>settings_page</item>
     </string-array>
     <string-array name="page_icons">
-        <item>icons_100</item>
-        <item>icons_101</item>
-        <item>icons_102</item>
-        <item>icons_103</item>
-        <item>icons_104</item>
-        <item>icons_105</item>
-        <item>icons_106</item>
-        <item>icons_107</item>
-        <item>icons_108</item>
-        <item>icons_109</item>
-        <item>icons_110</item>
-        <item>icons_111</item>
+        <item>icons_402</item>
+        <item>icons_403</item>
+        <item>icons_404</item>
+        <item>icons_405</item>
+        <item>icons_406</item>
+        <item>icons_407</item>
+        <item>icons_408</item>
+        <item>icons_409</item>
+        <item>icons_410</item>
+        <item>icons_411</item>
+        <item>icons_412</item>
+        <item>icons_413</item>
     </string-array>
 
     <string-array name="week_day_auto">
