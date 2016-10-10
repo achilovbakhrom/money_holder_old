@@ -38,6 +38,8 @@ import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseObjectDao;
+import com.jim.pocketaccounter.database.SmsParseSuccess;
+import com.jim.pocketaccounter.database.SmsParseSuccessDao;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.database.SubCategoryDao;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
@@ -70,7 +72,6 @@ public class LogicManager {
     private FinanceRecordDao recordDao;
     private DebtBorrowDao debtBorrowDao;
     private CreditDetialsDao creditDetialsDao;
-    private SmsParseObjectDao smsParseObjectDao;
     private AccountDao accountDao;
     private ReckingCreditDao reckingCreditDao;
     private SubCategoryDao subCategoryDao;
@@ -81,6 +82,8 @@ public class LogicManager {
     private ReckingDao reckingDao;
     private AccountOperationDao accountOperationDao;
     private AutoMarketDao autoMarketDao;
+    private SmsParseObjectDao smsParseObjectDao;
+    private SmsParseSuccessDao smsParseSuccessDao;
 
     public LogicManager(Context context) {
         this.context = context;
@@ -101,6 +104,8 @@ public class LogicManager {
         reckingDao = daoSession.getReckingDao();
         accountOperationDao = daoSession.getAccountOperationDao();
         autoMarketDao = daoSession.getAutoMarketDao();
+        smsParseObjectDao = daoSession.getSmsParseObjectDao();
+        smsParseSuccessDao = daoSession.getSmsParseSuccessDao();
     }
 
     public int deleteCurrency(List<Currency> currencies) {
@@ -487,6 +492,16 @@ public class LogicManager {
 
     public int deleteAutoMarket(AutoMarket autoMarket) {
         autoMarketDao.delete(autoMarket);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int deleteSmsParseObject(SmsParseObject smsParseObject) {
+        smsParseObjectDao.delete(smsParseObject);
+        return LogicManagerConstants.DELETED_SUCCESSFUL;
+    }
+
+    public int deleteSmsParseSuccess(SmsParseSuccess smsParseSuccess) {
+        smsParseSuccessDao.delete(smsParseSuccess);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
