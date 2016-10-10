@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,7 +169,8 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
         dialog.setContentView(dialogView);
         TextView tvReportByCategoryRootCatName = (TextView) dialogView.findViewById(R.id.tvReportByCategoryRootCatName);
         tvReportByCategoryRootCatName.setText(row.getCategory().getName());
-        tvReportByCategoryRootCatName.setText(row.getCategory().getName());
+//        tvReportByCategoryRootCatName.setText(row.getCategory().getName());
+        Log.d("datas_"," "+row.getCategory().getName());
         ImageView ivReportByCategoryRootCat = (ImageView) dialogView.findViewById(R.id.ivReportByCategoryRootCat);
         int resId=getResources().getIdentifier("icons_9", "drawable", getContext().getPackageName());
         if(row.getCategory().getIcon()!=null){
