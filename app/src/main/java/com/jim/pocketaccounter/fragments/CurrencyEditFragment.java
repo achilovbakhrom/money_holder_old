@@ -57,16 +57,11 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
 	private Calendar day = Calendar.getInstance();
 	private int mode = PocketAccounterGeneral.NORMAL_MODE;
 	private boolean[] selected;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	DaoSession daoSession;
-	@Inject
-	LogicManager logicManager;
-	@Inject
-	ToolbarManager toolbarManager;
-	@Inject
-	WarningDialog dialog;
+	@Inject	PAFragmentManager paFragmentManager;
+	@Inject	DaoSession daoSession;
+	@Inject	LogicManager logicManager;
+	@Inject	ToolbarManager toolbarManager;
+	@Inject	WarningDialog dialog;
 	public CurrencyEditFragment(Currency currency) {
 		this.currency = currency;
 	}

@@ -197,12 +197,12 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 							  workspaceMargin,
 							  getWidth()-workspaceMargin,
 							  getHeight()-workspaceMargin);
+		drawIndicator();
 		drawButtons();
 		drawPercents();
 		drawWorkspaceShader();
-		drawIndicator();
 	}
-
+	//drawing indicator ++
 	private void drawIndicator() {
 		if (tableCount == 1) return;
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -233,6 +233,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		}
 	}
 
+	//drawing buttons - linked to RecordButtonExpense class
 	private void drawButtons() {
 		float width, height;
 		width = workspace.width()/4;
@@ -244,8 +245,10 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			right = workspace.left+(i%4+1)*width;
 			bottom = workspace.top+((int)(Math.floor(i/4)+1)*height);
 			buttons.get(i).setBounds(left, top, right, bottom, workspaceCornerRadius);
-			buttons.get(i).drawButton(canvas);
+			buttons.get(i).drawButton(canvas); // link
 		}
+
+		//drawing three lines by horizontal and three by vertical
 		Paint borderPaint = new Paint();
 		borderPaint.setColor(beltBalance);
 		borderPaint.setStrokeWidth(oneDp);
@@ -260,6 +263,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 					workspace.bottom, borderPaint);
 		}
 	}
+
+	//drawing percents - gets data from datacache class
 	public void drawPercents() {
 		Rect bounds = new Rect();
 		Paint textPaint = new Paint();
@@ -280,6 +285,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 					button.getContainer().centerY()+4*aLetterHeight, textPaint);
 		}
 	}
+	//ondraw draws workspace shader (gradient)
 	private void drawWorkspaceShader() {
 		if (dataCache.getElements().get(PocketAccounterGeneral.UP_WORKSPACE_SHADER) == null) {
 			workspaceShader = commonOperations.getRoundedCornerBitmap(
@@ -653,6 +659,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		operationsListDialog.show();
 	}
 
+	// category, credit, debtborrow, function, page
 	private void openTypeChooseDialog(final int pos) {
 		String[] items = getResources().getStringArray(R.array.board_operation_names_long_press);
 		final OperationsListDialog operationsListDialog = new OperationsListDialog(getContext());
@@ -728,7 +735,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		});
 		operationsListDialog.show();
 	}
-
+	//page choose dialog
 	private void openPageChooseDialog(final int pos) {
 		final Dialog dialog=new Dialog(getContext());
 		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
@@ -771,7 +778,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		});
 		dialog.show();
 	}
-
+	//functions choose dialog
 	private void openOperationsList(final int pos) {
 		final Dialog dialog=new Dialog(getContext());
 		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
@@ -814,7 +821,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		});
 		dialog.show();
 	}
-
+	//clear allday
 	private void clear(final int pos) {
 		begin.setTimeInMillis(date.getTimeInMillis());
 		begin.set(Calendar.HOUR_OF_DAY, 0);
@@ -873,6 +880,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		warningDialog.show();
 	}
 
+	//opens edit dialog list
 	private void openEditDialog(int position) {
 		final Dialog dialog=new Dialog(getContext());
 		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
@@ -904,6 +912,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		dialog.show();
 	}
 
+	//categories choose dialog
 	private void openCategoryChooseDialog(final int pos) {
 		final Dialog dialog=new Dialog(getContext());
 		View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_with_listview, null);
@@ -948,6 +957,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		dialog.show();
 	}
 
+	// debt borrow choose dialog
 	private void openDebtBorrowChooseDialog(final int pos) {
 		final ArrayList<IconWithName> categories = new ArrayList<>();
 		List<DebtBorrow> debtBorrowList = daoSession.getDebtBorrowDao()
@@ -1001,6 +1011,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 
 	}
 
+	//credits choose dialog
 	private void openCreditsChooseDialog(final int pos) {
 		List<CreditDetials> creditDetialsList = daoSession.getCreditDetialsDao()
 				.queryBuilder().where(CreditDetialsDao.Properties.Key_for_include.eq(true),
@@ -1054,6 +1065,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			Toast.makeText(getContext(), R.string.credit_list_is_empty, Toast.LENGTH_SHORT).show();
 		}
 	}
+
+	//changes icon in datacache class
 	private void changeIconInCache(int pos, String icon) {
 		Bitmap scaled = null;
 		if (buttons.get(pos).getCategory().getType() != PocketAccounterGeneral.DEBT_BORROW) {
@@ -1061,17 +1074,23 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inPreferredConfig = Bitmap.Config.RGB_565;
 			scaled = BitmapFactory.decodeResource(getResources(), resId, options);
-			scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
-
 		}
 		else {
-			try {
-				scaled = queryContactImage(Integer.parseInt(icon));
+			if (!icon.equals("") && !icon.equals("0")) {
+				try {
+					scaled = queryContactImage(Integer.parseInt(icon));
+				}
+				catch (NumberFormatException e) {
+					scaled = BitmapFactory.decodeFile(icon);
+				}
 			}
-			catch (NumberFormatException e) {
-				scaled = BitmapFactory.decodeFile(icon);
+			else {
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inPreferredConfig = Bitmap.Config.RGB_565;
+				scaled = BitmapFactory.decodeResource(getResources(), R.drawable.no_photo, options);
 			}
 		}
+		scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
 		dataCache.getBoardBitmapsCache().put(buttons.get(pos).getCategory().getId(),
 				scaled);
 	}

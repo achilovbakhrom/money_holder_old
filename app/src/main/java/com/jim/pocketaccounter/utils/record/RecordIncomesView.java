@@ -997,17 +997,24 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inPreferredConfig = Bitmap.Config.RGB_565;
 			scaled = BitmapFactory.decodeResource(getResources(), resId, options);
-			scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp),
-					(int) getResources().getDimension(R.dimen.thirty_dp), true);
 		}
 		else {
-			try {
-				scaled = queryContactImage(Integer.parseInt(icon));
+			if (!icon.equals("") && !icon.equals("0")) {
+				try {
+					scaled = queryContactImage(Integer.parseInt(icon));
+				}
+				catch (NumberFormatException e) {
+					scaled = BitmapFactory.decodeFile(icon);
+				}
 			}
-			catch (NumberFormatException e) {
-				scaled = BitmapFactory.decodeFile(icon);
+			else {
+				BitmapFactory.Options options = new BitmapFactory.Options();
+				options.inPreferredConfig = Bitmap.Config.RGB_565;
+				scaled = BitmapFactory.decodeResource(getResources(), R.drawable.no_photo, options);
 			}
 		}
+		scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp),
+				(int) getResources().getDimension(R.dimen.thirty_dp), true);
 		dataCache.getBoardBitmapsCache().put(buttons.get(pos).getCategory().getId(),
 				scaled);
 	}

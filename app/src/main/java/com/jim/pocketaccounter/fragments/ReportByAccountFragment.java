@@ -4,15 +4,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,24 +28,22 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.AccountDao;
-import com.jim.pocketaccounter.database.AutoMarket;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
+import com.jim.pocketaccounter.database.SmsParseSuccess;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
-import com.jim.pocketaccounter.report.AccountDataRow;
+import com.jim.pocketaccounter.report.AccountCurrencyPair;
 import com.jim.pocketaccounter.report.FilterSelectable;
 import com.jim.pocketaccounter.report.ReportByAccount;
 import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.report.TableView;
 import com.jim.pocketaccounter.utils.FilterDialog;
-import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +51,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -72,39 +66,31 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 public class ReportByAccountFragment extends Fragment implements View.OnClickListener {
-    @Inject
-    PAFragmentManager paFragmentManager;
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    FilterDialog filterDialog;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    @Named(value = "display_formatter")
-    SimpleDateFormat simpleDateFormat;
-    @Inject
-    ReportManager reportManager;
-    private final ArrayList<String> result = new ArrayList<>();
-
+    @Inject PAFragmentManager paFragmentManager;
+    @Inject DaoSession daoSession;
+    @Inject FilterDialog filterDialog;
+    @Inject ToolbarManager toolbarManager;
+    @Inject @Named(value = "display_formatter") SimpleDateFormat simpleDateFormat;
+    @Inject ReportManager reportManager;
+    @Inject CommonOperations commonOperations;
+    @Inject SharedPreferences preferences;
     private String[] titles;
+    private int pos_account = 0, pos_currency = 0;
     private Calendar begin, end;
     private DecimalFormat decimalFormat;
     private Account account;
     private Currency currency;
     private TableView tbReportByAccount;
-    //    private ReportByAccount reportByAccount;
-    private ArrayList<ReportObject> sortReportByAccount;
+    private List<ReportObject> sortReportByAccount;
     private LinearLayout linLayReportByAccountInfo;
     private TextView tvReportByAccountNoDatas;
     private TextView tvReportbyAccountTotalIncome, tvReportbyAccountTotalExpanse, tvReportbyAccountTotalProfit, tvReportbyAccountAverageProfit;
     private final int PERMISSION_READ_STORAGE = 0;
-
+    private List<AccountCurrencyPair> pairs;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         final View rootView = inflater.inflate(R.layout.report_by_account, container, false);
-
         rootView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -114,198 +100,63 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                 }
             }
         }, 100);
-
-        rootView.setBackgroundColor(Color.WHITE);
+        initDates();
         linLayReportByAccountInfo = (LinearLayout) rootView.findViewById(R.id.linLayReportByAccountInfo);
         tvReportbyAccountTotalIncome = (TextView) rootView.findViewById(R.id.tvReportbyAccountTotalIncome);
         tvReportbyAccountTotalExpanse = (TextView) rootView.findViewById(R.id.tvReportbyAccountTotalExpanse);
         tvReportbyAccountTotalProfit = (TextView) rootView.findViewById(R.id.tvReportbyAccountTotalProfit);
         tvReportbyAccountAverageProfit = (TextView) rootView.findViewById(R.id.tvReportbyAccountAverageProfit);
-
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE, View.VISIBLE);
-        toolbarManager.setImageToSecondImage(R.drawable.ic_excel);
-        toolbarManager.setImageToFirstImage(R.drawable.ic_filter);
-//        ivToolbarExcel = (ImageView) PocketAccounter.toolbar.findViewById(R.id.ivToolbarExcel);
-//        ivToolbarExcel.setImageDrawable(null);
-//        ivToolbarExcel.setImageResource(R.drawable.ic_excel);
-        toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int permission = ContextCompat.checkSelfPermission(getContext(),
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                if (permission != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(((PocketAccounter) getContext()),
-                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
-                                .setTitle("Permission required");
-
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                        PERMISSION_READ_STORAGE);
-                            }
-                        });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-
-                    } else {
-                        ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                PERMISSION_READ_STORAGE);
-                    }
-                } else {
-                    saveExcel();
-                }
-            }
-        });
-//        ivToolbarExcel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                int permission = ContextCompat.checkSelfPermission(getContext(),
-//                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//                if (permission != PackageManager.PERMISSION_GRANTED) {
-//                    if (ActivityCompat.shouldShowRequestPermissionRationale(((PocketAccounter) getContext()),
-//                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//                        builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
-//                                .setTitle("Permission required");
-//
-//                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-//                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                                        PERMISSION_READ_STORAGE);
-//                            }
-//                        });
-//                        AlertDialog dialog = builder.create();
-//                        dialog.show();
-//
-//                    } else {
-//                        ActivityCompat.requestPermissions((PocketAccounter) getContext(),
-//                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                                PERMISSION_READ_STORAGE);
-//                    }
-//                } else {
-//                    saveExcel();
-//                }
-//
-//            }
-//        });
-
-//        ivToolbarMostRight = (ImageView) PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight);
-//        ivToolbarMostRight.setVisibility(View.VISIBLE);
-//        ivToolbarMostRight.setImageResource(R.drawable.ic_filter);
-//        ivToolbarMostRight.setOnClickListener(this);
-
-//        PocketAccounter.toolbar.setTitle("");
-//        PocketAccounter.toolbar.setSubtitle("");
-        //        spToolbar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                pos_account = (int) (position / daoSession.getAccountDao().loadAll().size());
-//                pos_currency = position % daoSession.getCurrencyDao().loadAll().size();
-//                account = daoSession.getAccountDao().loadAll().get(pos_account);
-//                currency = daoSession.getCurrencyDao().loadAll().get(pos_currency);
-//
-//                begin.set(Calendar.DAY_OF_YEAR, end.get(Calendar.DAY_OF_YEAR) - 2);
-//                begin.set(Calendar.HOUR_OF_DAY, 0);
-//                begin.set(Calendar.MINUTE, 0);
-//                begin.set(Calendar.SECOND, 0);
-//                begin.set(Calendar.MILLISECOND, 0);
-//                PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString("report_shp",account.getName()+", "+currency.getAbbr()).apply();
-//                onCreateReportbyAccount(getContext(), begin, end, account, currency);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//            }
-//        });
-
-        toolbarManager.setOnFirstImageClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                filterDialog.show();
-                filterDialog.setOnDateSelectedListener(new FilterSelectable() {
-                    @Override
-                    public void onDateSelected(Calendar begin, Calendar end) {
-                        onCreateReportbyAccount(getContext(), begin, end, account, currency);
-                    }
-                });
-            }
-        });
         toolbarManager.setTitle("");
         toolbarManager.setSubtitle("");
-
-        begin = Calendar.getInstance();
-        end = Calendar.getInstance();
-
-//        filterDialog = new FilterDialog(getContext());
-//          spToolbar = (Spinner) PocketAccounter.toolbar.findViewById(R.id.spToolbar);
-//        spToolbar.setVisibility(View.VISIBLE);
-//        financeManager = PocketAccounter.financeManager;
-
         toolbarManager.setSpinnerVisibility(View.VISIBLE);
-
-        for (int i = 0; i < daoSession.getAccountDao().loadAll().size(); i++) {
-            for (int j = 0; j < daoSession.getCurrencyDao().loadAll().size(); j++) {
-                result.add(daoSession.getAccountDao().loadAll().get(i).getName() + ", "
-                        + daoSession.getCurrencyDao().loadAll().get(j).getAbbr());
-            }
-        }
-
-        begin.set(Calendar.DAY_OF_YEAR, end.get(Calendar.DAY_OF_YEAR) - 2);
-        begin.set(Calendar.HOUR_OF_DAY, 0);
-        begin.set(Calendar.MINUTE, 0);
-        begin.set(Calendar.SECOND, 0);
-        begin.set(Calendar.MILLISECOND, 0);
-
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE, View.VISIBLE);
+        toolbarManager.setImageToFirstImage(R.drawable.ic_excel);
+        toolbarManager.setImageToSecondImage(R.drawable.ic_filter);
+        toolbarManager.setOnFirstImageClickListener(this);
+        toolbarManager.setOnSecondImageClickListener(this);
+        final List<String> result = new ArrayList<>();
         List<ReportObject> reportObjects = reportManager.getReportObjects(false, begin, end,
-                Account.class, DebtBorrow.class, CreditDetials.class,
-                FinanceRecord.class, AutoMarket.class);
-
-//        int pos_account = 0, pos_currency = 0;
-        for (int i = result.size() - 1; i >= 0; i--) {
-//            pos_account = i / daoSession.getCurrencyDao().loadAll().size();
-//            pos_currency = i % daoSession.getCurrencyDao().loadAll().size();
-            account = daoSession.getAccountDao().loadAll().get(i / daoSession.getCurrencyDao().loadAll().size());
-            currency = daoSession.getCurrencyDao().loadAll().get(i % daoSession.getCurrencyDao().loadAll().size());
-            boolean bor = false;
-            for (ReportObject reportObject : reportObjects) {
-                if (reportObject.getCurrency().getId().matches(currency.getId()) &&
-                        reportObject.getAccount().getId().matches(account.getId())) {
-                    bor = true;
-                    break;
+                Account.class, DebtBorrow.class, CreditDetials.class, SmsParseSuccess.class,
+                FinanceRecord.class);
+        List<Currency> allCurrencies = daoSession.getCurrencyDao().loadAll();
+        List<Account> allAccounts = daoSession.getAccountDao().loadAll();
+        pairs = new ArrayList<>();
+        for (Account account : allAccounts) {
+            for (Currency currency : allCurrencies) {
+                for (ReportObject reportObject : reportObjects) {
+                    if (reportObject.getAccount().getId().equals(account.getId()) &&
+                            reportObject.getCurrency().getId().equals(currency.getId())) {
+                        boolean found = false;
+                        for (AccountCurrencyPair accountCurrencyPair : pairs) {
+                            if (accountCurrencyPair.getAccount().getId().equals(account.getId()) &&
+                                    accountCurrencyPair.getCurrency().getId().equals(currency.getId())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            AccountCurrencyPair accountCurrencyPair = new AccountCurrencyPair();
+                            accountCurrencyPair.setAccount(account);
+                            accountCurrencyPair.setCurrency(currency);
+                            pairs.add(accountCurrencyPair);
+                        }
+                    }
                 }
             }
-            if (!bor)
-                result.remove(i);
         }
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.spiner_gravity_right2, result);
-
+        for (int i=0; i<pairs.size(); i++)
+            result.add(pairs.get(i).getAccount().getName() + ", "+pairs.get(i).getCurrency().getAbbr());
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                getContext(),
+                R.layout.spiner_gravity_right2,
+                result);
         toolbarManager.getSpinner().setAdapter(arrayAdapter);
         toolbarManager.getSpinner().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ArrayList<String> accountCurrency = new ArrayList<String>();
-//                pos_account = position / daoSession.getCurrencyDao().loadAll().size();
-//                pos_currency = position % daoSession.getCurrencyDao().loadAll().size();
-                String[] accountCurrencyString = parent.getSelectedItem().toString().split(",");
-                account = daoSession.getAccountDao().queryBuilder().where(AccountDao.Properties.Name.eq(accountCurrencyString[0])).list().get(0);
-                currency = daoSession.getCurrencyDao().queryBuilder().where(CurrencyDao.Properties.Abbr.eq(accountCurrencyString[1].replace(" ",""))).list().get(0);
-                Log.d("_","account: "+ account.getName());
-                Log.d("_","currency: "+ currency.getAbbr());
-
-                begin.set(Calendar.DAY_OF_YEAR, end.get(Calendar.DAY_OF_YEAR) - 2);
-                begin.set(Calendar.HOUR_OF_DAY, 0);
-                begin.set(Calendar.MINUTE, 0);
-                begin.set(Calendar.SECOND, 0);
-                begin.set(Calendar.MILLISECOND, 0);
-                PreferenceManager.getDefaultSharedPreferences(getContext()).edit().putString("report_shp", account.getName() + ", " + currency.getAbbr()).apply();
-                onCreateReportbyAccount(getContext(), begin, end, account, currency);
+                account = pairs.get(position).getAccount();
+                currency = pairs.get(position).getCurrency();
+                onCreateReportbyAccount(begin, end, account, currency);
             }
 
             @Override
@@ -334,6 +185,63 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
         return rootView;
     }
 
+    private void initDates() {
+        int pos = preferences.getInt("filter_pos", 0);
+        begin = Calendar.getInstance();
+        end = Calendar.getInstance();
+        switch (pos) {
+            case 0:
+                begin.set(Calendar.DAY_OF_MONTH, 1);
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                end.set(Calendar.DAY_OF_MONTH, end.getActualMaximum(Calendar.DAY_OF_MONTH));
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.MILLISECOND, 59);
+                break;
+            case 1:
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.MILLISECOND, 59);
+                begin.add(Calendar.DAY_OF_MONTH, -2);
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                break;
+            case 2:
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 59);
+                end.set(Calendar.MILLISECOND, 59);
+                begin.add(Calendar.DAY_OF_MONTH, -6);
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                Long begTime = preferences.getLong("filter_begin_time", 0L);
+                Long endTime = preferences.getLong("filter_end_time", 0L);
+                begin.setTimeInMillis(begTime);
+                end.setTimeInMillis(endTime);
+                break;
+        }
+        begin = Calendar.getInstance();
+        end = Calendar.getInstance();
+        begin.set(Calendar.DAY_OF_YEAR, end.get(Calendar.DAY_OF_YEAR) - 2);
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        begin.set(Calendar.MINUTE, 0);
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -342,46 +250,93 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                 filterDialog.setOnDateSelectedListener(new FilterSelectable() {
                     @Override
                     public void onDateSelected(Calendar begin, Calendar end) {
-                                 onCreateReportbyAccount(getContext(), begin, end, account, currency);
+                        ReportByAccountFragment.this.begin = (Calendar) begin.clone();
+                        ReportByAccountFragment.this.end = (Calendar) end.clone();
+                        final List<String> result = new ArrayList<>();
+                        List<ReportObject> reportObjects = reportManager.getReportObjects(false, begin, end,
+                                Account.class, DebtBorrow.class, CreditDetials.class, SmsParseSuccess.class,
+                                FinanceRecord.class);
+                        List<Currency> allCurrencies = daoSession.getCurrencyDao().loadAll();
+                        List<Account> allAccounts = daoSession.getAccountDao().loadAll();
+                        pairs = new ArrayList<>();
+                        for (Account account : allAccounts) {
+                            for (Currency currency : allCurrencies) {
+                                for (ReportObject reportObject : reportObjects) {
+                                    if (reportObject.getAccount().getId().equals(account.getId()) &&
+                                            reportObject.getCurrency().getId().equals(currency.getId())) {
+                                        boolean found = false;
+                                        for (AccountCurrencyPair accountCurrencyPair : pairs) {
+                                            if (accountCurrencyPair.getAccount().getId().equals(account.getId()) &&
+                                                    accountCurrencyPair.getCurrency().getId().equals(currency.getId())) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found) {
+                                            AccountCurrencyPair accountCurrencyPair = new AccountCurrencyPair();
+                                            accountCurrencyPair.setAccount(account);
+                                            accountCurrencyPair.setCurrency(currency);
+                                            pairs.add(accountCurrencyPair);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        for (int i=0; i<pairs.size(); i++)
+                            result.add(pairs.get(i).getAccount().getName() + ", "+pairs.get(i).getCurrency().getName());
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                                getContext(),
+                                R.layout.spiner_gravity_right2,
+                                result);
+                        toolbarManager.getSpinner().setAdapter(arrayAdapter);
                     }
                 });
                 break;
             case R.id.ivToolbarExcel:
-                exportToExcelFile();
+                int permission = ContextCompat.checkSelfPermission(getContext(),
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permission != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(((PocketAccounter) getContext()),
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setMessage("Permission to access the SD-CARD is required for this app to Download PDF.")
+                                .setTitle("Permission required");
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        PERMISSION_READ_STORAGE);
+                            }
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    } else {
+                        ActivityCompat.requestPermissions((PocketAccounter) getContext(),
+                                new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                PERMISSION_READ_STORAGE);
+                    }
+                } else {
+                    saveExcel();
+                }
                 break;
         }
     }
-
-    void onCreateReportbyAccount(Context context, Calendar begin, Calendar end, Account account, Currency currency) {
-//        reportByAccount = new ReportByAccount(context, begin, end, account, currency);
-        sortReportByAccount = (ArrayList<ReportObject>) reportManager.getReportObjects(false, begin, end,
-                Account.class, DebtBorrow.class, CreditDetials.class, FinanceRecord.class, AutoMarket.class);
-
-        Log.d("sss", currency.getAbbr() + " " + account.getName() + " " + sortReportByAccount.size());
-
-        if (!sortReportByAccount.isEmpty())
-            for (int i = sortReportByAccount.size() - 1; i >= 0; i--) {
-                if (!sortReportByAccount.get(i).getAccount().getId().equals(
-                        account.getId()) ||
-                        !sortReportByAccount.get(i).getCurrency().getAbbr().equals(currency.getAbbr())) {
-                    Log.d("sss2", sortReportByAccount.get(i).getAccount().getName() +
-                            " " + sortReportByAccount.get(i).getCurrency().getAbbr());
-                    sortReportByAccount.remove(i);
-                }
+    void onCreateReportbyAccount(Calendar begin, Calendar end, Account account, Currency currency) {
+        List<ReportObject> objects = reportManager.getReportObjects(false, begin, end,
+                Account.class, DebtBorrow.class, SmsParseSuccess.class,
+                CreditDetials.class, FinanceRecord.class);;
+        if (sortReportByAccount == null)
+             sortReportByAccount = new ArrayList<>();
+        else
+            sortReportByAccount.clear();
+        long betweenDays = commonOperations.betweenDays(begin, end);
+        for (ReportObject reportObject : objects) {
+            if (reportObject.getAccount().getId().equals(account.getId()) &&
+                    reportObject.getCurrency().getId().equals(currency.getId())) {
+                sortReportByAccount.add(reportObject);
             }
-
-        Calendar current_begin = (Calendar) Calendar.getInstance().clone(),
-                current_end = (Calendar) Calendar.getInstance().clone();
-        Collections.sort(sortReportByAccount, new MyComparator());
-        long countOfDays = 0;
-        if (sortReportByAccount != null && sortReportByAccount.size() >= 2) {
-            current_begin = (Calendar) sortReportByAccount.get(0).getDate().clone();
-            current_end = (Calendar) sortReportByAccount.get(sortReportByAccount.size() - 1).getDate().clone();
-            while (current_begin.getTime().compareTo(current_end.getTime()) <= 0) {
-                countOfDays++;
-                current_begin.add(Calendar.DAY_OF_MONTH, 1);
-            }
-        } else countOfDays = 1;
+        }
         if (sortReportByAccount.isEmpty()) {
             tbReportByAccount.setVisibility(View.GONE);
             linLayReportByAccountInfo.setVisibility(View.GONE);
@@ -392,7 +347,6 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
             tbReportByAccount.setVisibility(View.VISIBLE);
             linLayReportByAccountInfo.setVisibility(View.VISIBLE);
             toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE, View.VISIBLE);
-//            ivToolbarExcel.setVisibility(View.VISIBLE);
             tvReportByAccountNoDatas.setVisibility(View.GONE);
         }
         decimalFormat = new DecimalFormat("0.00##");
@@ -407,20 +361,18 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
         }
         tbReportByAccount.setDatas(sortReportByAccount);
         totalProfit = totalIncome - totalExpanse;
-        averageProfit = totalProfit / countOfDays;
+        averageProfit = totalProfit / betweenDays;
         tvReportbyAccountTotalIncome.setText(getResources().getString(R.string.report_income_expanse_total_income) + decimalFormat.format(totalIncome) + abbr);
         tvReportbyAccountTotalExpanse.setText(getResources().getString(R.string.report_income_expanse_total_expanse) + decimalFormat.format(totalExpanse) + abbr);
         tvReportbyAccountTotalProfit.setText(getResources().getString(R.string.report_income_expanse_total_profit) + decimalFormat.format(totalProfit) + abbr);
         tvReportbyAccountAverageProfit.setText(getResources().getString(R.string.report_income_expanse_aver_profit) + decimalFormat.format(averageProfit) + abbr);
     }
-
     class MyComparator implements Comparator<ReportObject> {
         @Override
         public int compare(ReportObject o1, ReportObject o2) {
             return o1.getDate().compareTo(o2.getDate());
         }
     }
-
     private void saveExcel() {
         File direct = new File(Environment.getExternalStorageDirectory() + "/Pocket Accounter");
         if (!direct.exists()) {
@@ -431,7 +383,6 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
             exportToExcelFile();
         }
     }
-
     public void exportToExcelFile() {
         final Dialog dialog = new Dialog(getContext());
         View dialogView = ((PocketAccounter) getContext()).getLayoutInflater().inflate(R.layout.warning_dialog, null);

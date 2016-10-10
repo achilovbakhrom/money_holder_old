@@ -50,10 +50,9 @@ public class RecordButtonExpanse {
 	private Context context;
 	private BoardButton boardButton;
 	private float aLetterHeight;
-//	private Calendar date;
 	private BitmapFactory.Options options;
 	private int thirtyDp, toolbarTextColor, tenSp;
-	String[] operationIds, operationIcons, operationNames, pageIcons, pageIds, pageNames;
+	private String[] operationIds, operationIcons, operationNames, pageIcons, pageIds, pageNames;
 	@Inject DaoSession daoSession;
 	@Inject	DataCache dataCache;
 	public RecordButtonExpanse(Context context, int type, Calendar date) {
@@ -62,7 +61,6 @@ public class RecordButtonExpanse {
 		options = new BitmapFactory.Options();
 		options.inPreferredConfig = Bitmap.Config.RGB_565;
 		thirtyDp = (int) context.getResources().getDimension(R.dimen.thirty_dp);
-//		this.date = Calendar.getInstance();
 		date.setTimeInMillis(date.getTimeInMillis());
 		clearance = context.getResources().getDimension(R.dimen.one_dp);
 		tenSp = (int) context.getResources().getDimension(R.dimen.ten_sp);
@@ -82,7 +80,7 @@ public class RecordButtonExpanse {
 		pageNames = context.getResources().getStringArray(R.array.page_names);
 		toolbarTextColor = ContextCompat.getColor(context, R.color.toolbar_text_color);
 	}
-	public synchronized void setBounds(float left, float top, float right, float bottom, float radius) {
+	public void setBounds(float left, float top, float right, float bottom, float radius) {
 		container.set(left, top, right, bottom);
 		this.radius = radius;
 		switch(type) {
@@ -472,9 +470,17 @@ public class RecordButtonExpanse {
 						name = debtBorrow.getPerson().getName();
 					}
 					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
-						scaled = queryContactImage(Integer.parseInt(debtBorrow.getPerson().getPhoto()));
-						if (scaled == null)
-							scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
+						if (!debtBorrow.getPerson().getPhoto().equals("")) {
+							try {
+								scaled = queryContactImage(Integer.parseInt(debtBorrow.getPerson().getPhoto()));
+							}
+							catch (NumberFormatException e) {
+								scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
+							}
+						}
+						else {
+							scaled = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_photo, options);
+						}
 						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
@@ -482,7 +488,6 @@ public class RecordButtonExpanse {
 						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 					break;
 				case PocketAccounterGeneral.FUNCTION:
-
 					String icon = null;
 					for (int i = 0; i < operationIds.length; i++) {
 						if (operationIds[i].matches(boardButton.getCategoryId())) {
@@ -522,7 +527,7 @@ public class RecordButtonExpanse {
 			canvas.drawBitmap(scaled, container.centerX()-scaled.getWidth()/2, container.centerY()-scaled.getHeight(), bitmapPaint);
 			Paint textPaint = new Paint();
 			textPaint.setColor(toolbarTextColor);
-			textPaint.setTextSize(context.getResources().getDimension(R.dimen.ten_sp));
+			textPaint.setTextSize(context.getResources().getDimension(R.dimen.eleven_dp));
 			textPaint.setAntiAlias(true);
 			Rect bounds = new Rect();
 			for (int i=0; i < name.length(); i++) {

@@ -104,7 +104,7 @@ import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOT
 public class RecordEditFragment extends Fragment implements OnClickListener {
     private boolean keyforback = false;
     private TextView tvRecordEditDisplay;
-    private ImageView ivToolbarMostRight, ivRecordEditCategory, ivRecordEditSubCategory, ivToolbaExcel;
+    private ImageView ivRecordEditCategory, ivRecordEditSubCategory;
     private Spinner spRecordEdit, spToolbar;
     private RootCategory category, cameCategory;
     private SubCategory subCategory;
@@ -157,6 +157,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
     @SuppressLint("ValidFragment")
     public RecordEditFragment(RootCategory category, Calendar date, FinanceRecord record, int parent) {
         this.parent = parent;
+        this.date = (Calendar) date.clone();
         DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
         otherSymbols.setDecimalSeparator('.');
         otherSymbols.setGroupingSeparator('.');
@@ -175,7 +176,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         if (parent == PocketAccounterGeneral.MAIN)
             paFragmentManager.setMainReturn(true);
         mainView = inflater.inflate(R.layout.record_edit_modern, container, false);
-        this.date = dataCache.getEndDate();
+//        this.date = dataCache.getEndDate();
         if (cameCategory != null) {
 
             Query<RootCategory> query = daoSession.getRootCategoryDao().queryBuilder()

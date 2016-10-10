@@ -55,9 +55,20 @@ public class CategoryAdapterForDialog extends BaseAdapter {
 			ivCategoryListIcon.setImageResource(resId);
 		}
 		else {
-			Bitmap bitmap = queryContactImage(Integer.parseInt(result.get(0).getIcon()));
-			if (bitmap == null)
-				Drawable.createFromPath(result.get(0).getIcon());
+			Bitmap bitmap = null;
+			if (!result.get(position).getIcon().equals("") && !result.get(position).getIcon().equals("0")) {
+				try {
+					bitmap = queryContactImage(Integer.parseInt(result.get(position).getIcon()));
+				}
+				catch (NumberFormatException e) {
+					bitmap = BitmapFactory.decodeFile(result.get(position).getIcon());
+				}
+
+			} else {
+				bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_photo);
+				bitmap = Bitmap.createScaledBitmap(bitmap, (int) context.getResources().getDimension(R.dimen.thirty_dp),
+						(int) context.getResources().getDimension(R.dimen.thirty_dp), false);
+			}
 			ivCategoryListIcon.setImageBitmap(bitmap);
 		}
 		TextView tvCategoryListName = (TextView) view.findViewById(R.id.tvIconWithName);
