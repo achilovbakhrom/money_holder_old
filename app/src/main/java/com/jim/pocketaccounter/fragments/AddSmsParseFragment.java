@@ -95,10 +95,14 @@ public class AddSmsParseFragment extends Fragment {
     private final int EXPANCE_SMS = 2;
     private int posIncExp = -1;
     private int posAmount = -1;
-
+    private SmsParseObject oldObject;
     private List<TemplateSms> templateSmsList;
 
     int txSize;
+
+    public AddSmsParseFragment(SmsParseObject object) {
+        this.oldObject = object;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -148,48 +152,70 @@ public class AddSmsParseFragment extends Fragment {
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (etIncome.getText().toString().isEmpty() &&
-                        etExpance.getText().toString().isEmpty() || etAmount.getText().toString().isEmpty()) {
-                    etIncome.setError("enter income key");
-                    if (etExpance.getText().toString().isEmpty())
-                        etExpance.setError("enter expance key");
-                    if (etAmount.getText().toString().isEmpty()) {
-                        etExpance.setError("enter expance key");
-                    }
-                } else {
-                    SmsParseObject smsParseObject = new SmsParseObject();
+                if (oldObject != null) {
                     if (templateSmsList != null) {
                         for (TemplateSms templateSms : templateSmsList) {
-                            templateSms.setParseObjectId(smsParseObject.getId());
+                            templateSms.setParseObjectId(oldObject.getId());
+                            for (SmsParseSuccess smsParseSuccess : oldObject.getSuccessList()) {
+                                if (!smsParseSuccess.getIsSuccess() && smsParseSuccess.getBody().matches(templateSms.getRegex())) {
+                                    smsParseSuccess.setIsSuccess(true);
+                                }
+                            }
                         }
                     }
-                    smsParseObject.setCurrency(daoSession.getCurrencyDao().queryBuilder()
+                    oldObject.setCurrency(daoSession.getCurrencyDao().queryBuilder()
                             .where(CurrencyDao.Properties.Abbr.eq("" + spCurrency.getSelectedItem())).list().get(0));
-                    smsParseObject.setAccount(daoSession.getAccountDao().queryBuilder()
+                    oldObject.setAccount(daoSession.getAccountDao().queryBuilder()
                             .where(AccountDao.Properties.Id.eq(accStrings.get(spAccount.getSelectedItemPosition()))).list().get(0));
-                    smsParseObject.setNumber(etNumber.getText().toString());
-                    daoSession.getTemplateSmsDao().insertInTx(templateSmsList);
-                    daoSession.getSmsParseObjectDao().insertOrReplace(smsParseObject);
-                    //
-//                    List<Sms> smsList = new ArrayList<>();
-//                    for (Sms sms : getAllSms()) {
-//                        if (sms.getNumber().equals(smsParseObject.getNumber())) {
-//                            smsList.add(sms);
-//                        }
-//                    }
-//                    SmsParseSuccess smsParseSuccess = new SmsParseSuccess();
-//                    smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
-//                    smsParseSuccess.setNumber(smsParseObject.getNumber());
-//                    smsParseSuccess.setType(PocketAccounterGeneral.INCOME);
-//                    smsParseSuccess.setCurrency(smsParseObject.getCurrency());
-//                    smsParseSuccess.setAccount(smsParseObject.getAccount());
-//                    smsParseSuccess.setAmount(136);
-//                    smsParseSuccess.setBody(smsList.get(0).getBody());
-//                    smsParseSuccess.setDate(Calendar.getInstance());
-//                    daoSession.getSmsParseSuccessDao().insertOrReplace(smsParseSuccess);
-                    //
+                    daoSession.getTemplateSmsDao().insertOrReplaceInTx(templateSmsList);
+                    daoSession.getSmsParseObjectDao().insertOrReplace(oldObject);
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new SmsParseMainFragment());
+                } else {
+                    if (etIncome.getText().toString().isEmpty() &&
+                            etExpance.getText().toString().isEmpty() || etAmount.getText().toString().isEmpty()) {
+                        etIncome.setError("enter income key");
+                        if (etExpance.getText().toString().isEmpty())
+                            etExpance.setError("enter expance key");
+                        if (etAmount.getText().toString().isEmpty()) {
+                            etExpance.setError("enter expance key");
+                        }
+                    } else {
+                        SmsParseObject smsParseObject = new SmsParseObject();
+                        if (templateSmsList != null) {
+                            for (TemplateSms templateSms : templateSmsList) {
+                                templateSms.setParseObjectId(smsParseObject.getId());
+                            }
+                        }
+                        smsParseObject.setCurrency(daoSession.getCurrencyDao().queryBuilder()
+                                .where(CurrencyDao.Properties.Abbr.eq("" + spCurrency.getSelectedItem())).list().get(0));
+                        smsParseObject.setAccount(daoSession.getAccountDao().queryBuilder()
+                                .where(AccountDao.Properties.Id.eq(accStrings.get(spAccount.getSelectedItemPosition()))).list().get(0));
+                        smsParseObject.setNumber(etNumber.getText().toString());
+                        daoSession.getTemplateSmsDao().insertInTx(templateSmsList);
+                        daoSession.getSmsParseObjectDao().insertOrReplace(smsParseObject);
+                        //
+                        List<Sms> smsList = new ArrayList<>();
+                        for (Sms sms : getAllSms()) {
+                            if (sms.getNumber().equals(smsParseObject.getNumber())) {
+                                smsList.add(sms);
+                            }
+                        }
+                        SmsParseSuccess smsParseSuccess = new SmsParseSuccess();
+                        smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
+                        smsParseSuccess.setNumber(smsParseObject.getNumber());
+                        smsParseSuccess.setType(PocketAccounterGeneral.INCOME);
+                        smsParseSuccess.setCurrency(smsParseObject.getCurrency());
+                        smsParseSuccess.setAccount(smsParseObject.getAccount());
+                        smsParseSuccess.setAmount(136);
+                        smsParseSuccess.setBody("dasdasdas dad ada d ad 3434  423");
+                        smsParseSuccess.setDate(Calendar.getInstance());
+                        smsParseSuccess.setIsSuccess(false);
+                        daoSession.getSmsParseSuccessDao().insertOrReplace(smsParseSuccess);
+                        //
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayFragment(new SmsParseMainFragment());
+                    }
                 }
             }
         });
@@ -243,6 +269,24 @@ public class AddSmsParseFragment extends Fragment {
                 dialog.show();
             }
         });
+        if (oldObject != null) {
+            etNumber.setText(oldObject.getNumber());
+            etNumber.setEnabled(false);
+            myAdapter.oldTemplateChange();
+            for (int i = 0; i < cursStrings.size(); i++) {
+                if (cursStrings.get(i).equals(oldObject.getCurrency().getAbbr())) {
+                    spCurrency.setSelection(i);
+                    break;
+                }
+            }
+            for (int i = 0; i < accStrings.size(); i++) {
+                if (accStrings.get(i).equals(oldObject.getAccountId())) {
+                    spAccount.setSelection(i);
+                    break;
+                }
+            }
+
+        }
         return rootView;
     }
 
@@ -414,6 +458,20 @@ public class AddSmsParseFragment extends Fragment {
             amountKeys = new ArrayList<>();
             templateSmsList = new ArrayList<>();
             amountKeyOld = new ArrayList<>();
+        }
+
+        public void oldTemplateChange () {
+            if (oldObject.getTemplates() != null) {
+                for (int i = list.size() - 1; i >= 0; i--) {
+                    for (TemplateSms templateSms : oldObject.getTemplates()) {
+                        if (list.get(i).getBody().matches(templateSms.getRegex())) {
+                            list.remove(i);
+                        }
+                    }
+                }
+            }
+            notifyDataSetChanged();
+            templateSmsList.addAll(oldObject.getTemplates());
         }
 
         public int getTypeSort() {

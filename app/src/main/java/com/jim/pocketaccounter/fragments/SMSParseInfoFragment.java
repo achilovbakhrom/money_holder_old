@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -125,7 +126,15 @@ public class SMSParseInfoFragment extends Fragment {
                         + successList.get(position).getCurrency().getAbbr());
                 view.tvType.setText(successList.get(position).getType() == PocketAccounterGeneral.INCOME ? "income" : "expense");
             } else {
+                view.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayFragment(new AddSmsParseFragment(object));
+                    }
+                });
                 view.tvAmount.setText("not success");
+                view.tvAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
                 view.tvType.setText("not parsing");
             }
         }
