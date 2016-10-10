@@ -597,7 +597,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 								.where(FinanceRecordDao.Properties.CategoryId.isNotNull(),
 										FinanceRecordDao.Properties.CategoryId.eq(cur.getCategoryId()),
 										FinanceRecordDao.Properties.Date.eq(format)).list();
-		if (!temp.isEmpty()) {
+			if (!temp.isEmpty()) {
 			items = new String[4];
 			items[0] = change;
 			items[1] = clear;
