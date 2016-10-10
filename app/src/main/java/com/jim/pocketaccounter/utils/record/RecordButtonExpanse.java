@@ -27,6 +27,9 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import org.greenrobot.greendao.query.Query;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -460,9 +463,18 @@ public class RecordButtonExpanse {
 							.queryBuilder()
 							.where(DebtBorrowDao.Properties.Id.eq(boardButton.getId()))
 							.build();
-					if (!query.list().isEmpty())
-						name = query.list().get(0).getPerson().getName();
-
+					DebtBorrow debtBorrow = null;
+					if (!query.list().isEmpty()) {
+						debtBorrow = query.list().get(0);
+						name = debtBorrow.getPerson().getName();
+					}
+					if (dataCache.getBoardBitmapsCache().get(boardButton.getId()) == null) {
+						scaled = decodeFile(new File(debtBorrow.getPerson().getPhoto()));
+						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
+						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
+					}
+					else
+						scaled = dataCache.getBoardBitmapsCache().get(boardButton.getId());
 					break;
 				case PocketAccounterGeneral.FUNCTION:
 
@@ -537,6 +549,26 @@ public class RecordButtonExpanse {
 			textPaint.getTextBounds(text, 0, text.length(), bounds);
 			canvas.drawText(text, container.centerX()-bounds.width()/2, container.centerY()+2*aLetterHeight, textPaint);
 		}
+	}
+	private Bitmap decodeFile(File f) {
+		try {
+//            Decode image size
+			BitmapFactory.Options o = new BitmapFactory.Options();
+			o.inJustDecodeBounds = true;
+			BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+//            The new size we want to scale to
+			final int REQUIRED_SIZE = 128;
+//            Find the correct scale value. It should be the power of 2.
+			int scale = 1;
+			while (o.outWidth / scale / 2 >= REQUIRED_SIZE && o.outHeight / scale / 2 >= REQUIRED_SIZE)
+				scale *= 2;
+			//Decode with inSampleSize
+			BitmapFactory.Options o2 = new BitmapFactory.Options();
+			o2.inSampleSize = scale;
+			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+		} catch (FileNotFoundException e) {
+		}
+		return null;
 	}
 	public void setPressed(boolean pressed) {
 		this.pressed = pressed;

@@ -22,6 +22,8 @@ import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
 import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SmsParseSuccess;
+import com.jim.pocketaccounter.database.SmsParseSuccessDao;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.report.CategoryDataRow;
 import com.jim.pocketaccounter.report.ReportObject;
@@ -58,8 +60,8 @@ public class ReportManager {
     private DebtBorrowDao debtBorrowDao;
     private CreditDetialsDao creditDetialsDao;
     private AccountDao accountDao;
+    private SmsParseSuccessDao smsParseSuccessDao;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
     private List<ReportObject> incomes;
     private List<ReportObject> expances;
 
@@ -71,6 +73,7 @@ public class ReportManager {
         debtBorrowDao = daoSession.getDebtBorrowDao();
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
+        smsParseSuccessDao = daoSession.getSmsParseSuccessDao();
     }
 
     public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ...classes) {
@@ -135,6 +138,31 @@ public class ReportManager {
                             reportObject.setDescription(context.getResources().getString(R.string.transfer));
                             result.add(reportObject);
                         }
+                    }
+                }
+            }
+            if (cl.getName().equals(SmsParseSuccess.class.getName())) {
+                List<SmsParseSuccess> list = smsParseSuccessDao
+                        .queryBuilder()
+                        .where(SmsParseSuccessDao.Properties.IsSuccess.eq(true))
+                        .list();
+                for (SmsParseSuccess smsParseSuccess : list) {
+                    if (smsParseSuccess.getDate().compareTo(begin) >= 0 &&
+                            smsParseSuccess.getDate().compareTo(end) <= 0) {
+                        ReportObject reportObject = new ReportObject();
+                        reportObject.setType(smsParseSuccess.getType());
+                        reportObject.setAccount(smsParseSuccess.getAccount());
+                        reportObject.setDate((Calendar) smsParseSuccess.getDate().clone());
+                        if (toMainCurrency) {
+                            reportObject.setCurrency(commonOperations.getMainCurrency());
+                            reportObject.setAmount(commonOperations.getCost(smsParseSuccess.getDate(), smsParseSuccess.getCurrency(), smsParseSuccess.getAmount()));
+                        }
+                        else {
+                            reportObject.setCurrency(smsParseSuccess.getCurrency());
+                            reportObject.setAmount(smsParseSuccess.getAmount());
+                        }
+                        reportObject.setDescription(smsParseSuccess.getNumber());
+                        result.add(reportObject);
                     }
                 }
             }
@@ -270,7 +298,11 @@ public class ReportManager {
 
     public Map<String, Double> calculateBalance(Calendar begin, Calendar end) {
         Map<String, Double> result = new HashMap<>();
-        List<ReportObject> list = getReportObjects(true, begin, end, Account.class, FinanceRecord.class, DebtBorrow.class, CreditDetials.class);
+        List<ReportObject> list = getReportObjects(true, begin, end, Account.class,
+                                                                    FinanceRecord.class,
+                                                                    DebtBorrow.class,
+                                                                    CreditDetials.class,
+                                                                    SmsParseSuccess.class);
         Double incomes = 0.0d, expenses = 0.0d, balance = 0.0d;
         for (ReportObject reportObject : list) {
             if (reportObject.getType() == PocketAccounterGeneral.INCOME)
