@@ -120,7 +120,7 @@
                 android:layout_marginTop="@dimen/four_dp"/>
             <LinearLayout
                 android:id="@+id/llItemInfoView"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

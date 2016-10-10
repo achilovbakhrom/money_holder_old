@@ -6,85 +6,103 @@
     android:orientation="vertical"
     android:padding="@dimen/ten_dp"
     >
+    <RelativeLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey_light2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/ivInfoDebtBorrowCancel"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:text="Add keywords in sms parsing"
+            android:textColor="@color/for_darker"
+            android:textSize="@dimen/sixteen_sp" />
+
+        <ImageView
+            android:id="@+id/ivInfoDebtBorrowSave"
+            android:layout_width="@dimen/twentyfive_dp"
+            android:layout_height="@dimen/twentyfive_dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/sixteen_dp"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:layout_marginTop="@dimen/sixteen_dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/check_sign" />
+
+        <ImageView
+            android:id="@+id/ivInfoDebtBorrowCancel"
+            android:layout_width="@dimen/twentyfive_dp"
+            android:layout_height="@dimen/twentyfive_dp"
+            android:layout_alignBottom="@+id/ivInfoDebtBorrowSave"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/ivInfoDebtBorrowSave"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/cancel_sign" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         >
 
-        <TextView
+        <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tvDialogSmsParseIncome"
-            android:text="@string/income"
-            android:layout_weight="1"
-            android:textColor="@color/green_light_monoxrom"
-            android:gravity="center"
-            android:textSize="@dimen/sixteen_sp"
+            android:text="income"
+            android:id="@+id/chbIncome"
             />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvDialogSmsParseExpanse"
-            android:text="@string/expanse"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:textSize="@dimen/sixteen_sp"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvDialogSmsParseCurs"
-            android:text="@string/currencies"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:textSize="@dimen/sixteen_sp"
-            />
-
-    </LinearLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rvDialogSmsParseKeys"
-        android:paddingTop="@dimen/five_dp"
-        android:paddingBottom="@dimen/five_dp"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="bottom"
-        android:layout_gravity="bottom"
-        >
-
-        <EditText
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/etDialogSmsParseNew"
-            android:layout_weight="5"
-            android:layout_marginRight="@dimen/five_dp"
-            />
+            android:orientation="horizontal"
+            >
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="add"
-            android:layout_marginLeft="@dimen/five_dp"
-            android:layout_weight="1"
-            android:id="@+id/btnDialogSmsKeyAdd"
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="@dimen/ten_dp"
+                android:text="Income"
+                android:id="@+id/tvIncome"
+                android:textSize="@dimen/sixteen_sp"
+                />
 
-        <Button
-            android:layout_width="wrap_content"
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etIncomeAdd"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/delete"
-            android:id="@+id/btnDialogSmsKeysDelete"
-            />
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/sixteen_sp"
+                android:text="Amount"
+                android:paddingRight="@dimen/ten_dp"
+                />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etAmountAdd"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
 

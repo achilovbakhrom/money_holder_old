@@ -154,6 +154,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             this.currentDebtBorrow = debtBorrowDao.load(getArguments().getString("key"));
             TYPE = getArguments().getInt("type", 0);
         } catch (NullPointerException e) {
+            e.printStackTrace();
         }
         debtBorrowDao = daoSession.getDebtBorrowDao();
         accountDao = daoSession.getAccountDao();

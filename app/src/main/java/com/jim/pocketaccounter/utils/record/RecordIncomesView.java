@@ -49,6 +49,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -60,6 +61,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Vibrator;
+import android.provider.ContactsContract;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.DisplayMetrics;
@@ -265,7 +267,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, currentPage*PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT+pos, categories.get(position).getId());
+					logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, currentPage*PocketAccounterGeneral.INCOME_BUTTONS_COUNT+pos, categories.get(position).getId());
 					changeIconInCache(pos, categories.get(position).getIcon());
 					initButtons();
 					for (int i=0; i<buttons.size(); i++)
@@ -989,11 +991,43 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		dialog.show();
 	}
 	private void changeIconInCache(int pos, String icon) {
-		int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inPreferredConfig = Bitmap.Config.RGB_565;
-		Bitmap scaled = BitmapFactory.decodeResource(getResources(), resId, options);
-		scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
-		dataCache.getBoardBitmapsCache().put(buttons.get(pos).getCategory().getId(), scaled);
+		Bitmap scaled = null;
+		if (buttons.get(pos).getCategory().getType() != PocketAccounterGeneral.DEBT_BORROW) {
+			int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPreferredConfig = Bitmap.Config.RGB_565;
+			scaled = BitmapFactory.decodeResource(getResources(), resId, options);
+			scaled = Bitmap.createScaledBitmap(scaled, (int)getResources().getDimension(R.dimen.thirty_dp),
+					(int) getResources().getDimension(R.dimen.thirty_dp), true);
+		}
+		else {
+			try {
+				scaled = queryContactImage(Integer.parseInt(icon));
+			}
+			catch (NumberFormatException e) {
+				scaled = BitmapFactory.decodeFile(icon);
+			}
+		}
+		dataCache.getBoardBitmapsCache().put(buttons.get(pos).getCategory().getId(),
+				scaled);
+	}
+	private Bitmap queryContactImage(int imageDataRow) {
+		Cursor c = getContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
+				ContactsContract.CommonDataKinds.Photo.PHOTO
+		}, ContactsContract.Data._ID + "=?", new String[]{
+				Integer.toString(imageDataRow)
+		}, null);
+		byte[] imageBytes = null;
+		if (c != null) {
+			if (c.moveToFirst()) {
+				imageBytes = c.getBlob(0);
+			}
+			c.close();
+		}
+		if (imageBytes != null) {
+			return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+		} else {
+			return null;
+		}
 	}
 }
