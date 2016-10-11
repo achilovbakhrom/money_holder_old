@@ -71,6 +71,45 @@
             android:textColor="@color/for_darker"
             android:textSize="@dimen/fourteen_dp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/two_dp"
+            android:orientation="horizontal"
+            android:id="@+id/llSmsRecive"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/six_dp"
+                android:layout_marginRight="@dimen/six_dp"
+                android:layout_weight="1"
+                android:background="@drawable/days_shape_green"
+                android:gravity="center"
+                android:paddingBottom="@dimen/eight_dp"
+                android:paddingTop="@dimen/eight_dp"
+                android:id="@+id/tvAddSmsParseItemIncome"
+                android:text="@string/it_is_income"
+                android:textColor="@color/green_light"
+                android:textSize="@dimen/fourteen_dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/five_dp"
+                android:layout_marginRight="@dimen/five_dp"
+                android:layout_weight="1"
+                android:background="@drawable/days_shape_red"
+                android:gravity="center"
+                android:paddingBottom="@dimen/eight_dp"
+                android:paddingTop="@dimen/eight_dp"
+                android:text="@string/it_is_expense"
+                android:id="@+id/tvAddSmsParseItemExpance"
+                android:textColor="@color/red_green_darker_monoxrom_red"
+                android:textSize="@dimen/fourteen_dp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView

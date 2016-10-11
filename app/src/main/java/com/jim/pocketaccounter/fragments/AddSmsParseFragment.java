@@ -181,29 +181,26 @@ public class AddSmsParseFragment extends Fragment {
                             etExpance.setError("enter expance key");
                         }
                     } else {
-                        String [] incomes = etIncome.getText().toString().split(", ");
-                        String [] expanses = etExpance.getText().toString().split(", ");
-                        String [] amounts = etAmount.getText().toString().split(", ");
+                        String [] incomes = etIncome.getText().toString().split(",");
+                        String [] expanses = etExpance.getText().toString().split(",");
+                        String [] amounts = etAmount.getText().toString().split(",");
                         boolean change = false;
                         if (incomes.length >  myAdapter.getIncomeKeys().size()) {
                             myAdapter.getIncomeKeys().clear();
-                            for (String income : incomes) {
+                            for (String income : incomes)
                                 myAdapter.getIncomeKeys().add(income);
-                            }
                             change = true;
                         }
                         if (expanses.length > myAdapter.getExpanceKeys().size()) {
                             myAdapter.getExpanceKeys().clear();
-                            for (String income : expanses) {
+                            for (String income : expanses)
                                 myAdapter.getExpanceKeys().add(income);
-                            }
                             change = true;
                         }
                         if (amounts.length > myAdapter.getAmountKeys().size()) {
                             myAdapter.getAmountKeys().clear();
-                            for (String income : amounts) {
+                            for (String income : amounts)
                                 myAdapter.getAmountKeys().add(income);
-                            }
                             change = true;
                         }
 
@@ -214,9 +211,8 @@ public class AddSmsParseFragment extends Fragment {
 
                         SmsParseObject smsParseObject = new SmsParseObject();
                         if (templateSmsList != null) {
-                            for (TemplateSms templateSms : templateSmsList) {
+                            for (TemplateSms templateSms : templateSmsList)
                                 templateSms.setParseObjectId(smsParseObject.getId());
-                            }
                         }
                         smsParseObject.setCurrency(daoSession.getCurrencyDao().queryBuilder()
                                 .where(CurrencyDao.Properties.Abbr.eq("" + spCurrency.getSelectedItem())).list().get(0));
@@ -228,9 +224,8 @@ public class AddSmsParseFragment extends Fragment {
                         //
                         List<Sms> smsList = new ArrayList<>();
                         for (Sms sms : getAllSms()) {
-                            if (sms.getNumber().equals(smsParseObject.getNumber())) {
+                            if (sms.getNumber().equals(smsParseObject.getNumber()))
                                 smsList.add(sms);
-                            }
                         }
                         SmsParseSuccess smsParseSuccess = new SmsParseSuccess();
                         smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
@@ -583,7 +578,8 @@ public class AddSmsParseFragment extends Fragment {
             final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
-            int eni = (int) (8 * getResources().getDisplayMetrics().widthPixels / 10 - 2 * commonOperations.convertDpToPixel(24));
+            int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
+                    - 2 * commonOperations.convertDpToPixel(24)) / getResources().getDisplayMetrics().density);
 
             strings = smsBodyParse(list.get(position).getBody());
             tvList = new ArrayList<>();
@@ -629,11 +625,11 @@ public class AddSmsParseFragment extends Fragment {
                 for (int i = 0; i < lt.size(); i++) {
                     TextView textView = new TextView(getContext());
                     textView.setTag(row++);
-                    textView.setTextSize(txSize);
+                    textView.setTextSize(txSize/getResources().getDisplayMetrics().density);
                     textView.setText(lt.get(i));
                     tvList.add(textView);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams
-                            (ViewGroup.LayoutParams.WRAP_CONTENT / getResources().getDisplayMetrics().densityDpi, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     textView.setLayoutParams(lp);
                     textView.setOnClickListener(MyAdapter.this);
                     linearLayout1.addView(textView);

@@ -107,6 +107,13 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
             view.tvNumber.setText(smsParseObjects.get(position).getNumber());
             view.tvAccount.setText(smsParseObjects.get(position).getAccount().getName());
             view.tvMessagesCount.setText("" + smsParseObjects.get(position).getSuccessList().size());
+            int count = 0;
+            for (SmsParseSuccess smsParseSuccess : smsParseObjects.get(position).getSuccessList()) {
+                if (!smsParseSuccess.getIsSuccess()) count ++;
+            }
+            if (count != 0) {
+                view.tvNotReadCount.setText("" + count);
+            }
             if (smsParseObjects.get(position).getSuccessList() != null) {
                 double incomeSumm = 0;
                 double expanceSumm = 0;

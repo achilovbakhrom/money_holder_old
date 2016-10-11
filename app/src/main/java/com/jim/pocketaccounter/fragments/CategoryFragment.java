@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -81,12 +82,39 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 		fabCategoryAdd.setOnClickListener(this);
 		rvCategories = (RecyclerView) rootView.findViewById(R.id.rvCategories);
 		rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+		rvCategories.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+				super.onScrollStateChanged(recyclerView, newState);
+			}
+
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+				try {
+					onScrolledList(dy > 0);
+				} catch (NullPointerException e) {
+				}
+			}
+		});
 		chbCatIncomes = (CheckBox) rootView.findViewById(R.id.chbCatIncomes);
 		chbCatIncomes.setOnCheckedChangeListener(this);
 		chbCatExpanses = (CheckBox) rootView.findViewById(R.id.chbCatExpanses);
 		chbCatExpanses.setOnCheckedChangeListener(this);
 		refreshList();
 		return rootView;
+	}
+
+	private boolean show = false;
+	public void onScrolledList(boolean k) {
+		if (k) {
+			if (!show)
+				fabCategoryAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_down));
+			show = true;
+		} else {
+			if (show)
+				fabCategoryAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_up));
+			show = false;
+		}
 	}
 	private void refreshList() {
 		ArrayList<RootCategory> categories = new ArrayList<RootCategory>();

@@ -273,7 +273,39 @@ public class SMSMonitor extends BroadcastReceiver {
                         smsParseSuccess.setAccount(smsParseObject.getAccount());
                         smsParseSuccess.setNumber(number);
                         smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
-                        amount = Double.parseDouble(matcher.group(templateSms.getPosAmountGroup()));
+                        if (matcher.group(templateSms.getPosAmountGroup()) != null
+                                && !matcher.group(templateSms.getPosAmountGroup()).isEmpty()) {
+                            try {
+                                double summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroup()));
+                                smsParseSuccess.setAmount(summ);
+                                smsParseSuccess.setIsSuccess(true);
+                                smsParseSuccess.setType(templateSms.getType());
+                            } catch (Exception e) {
+                                try {
+                                    if (matcher.group(templateSms.getPosAmountGroupSecond()) != null
+                                            && !matcher.group(templateSms.getPosAmountGroupSecond()).isEmpty()) {
+                                        double summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroupSecond()));
+                                        smsParseSuccess.setAmount(summ);
+                                        smsParseSuccess.setIsSuccess(true);
+                                        smsParseSuccess.setType(templateSms.getType());
+                                    }
+                                } catch (Exception e1) {
+                                    smsParseSuccess.setIsSuccess(false);
+                                }
+                            }
+                        } else if (matcher.group(templateSms.getPosAmountGroupSecond()) != null
+                                && !matcher.group(templateSms.getPosAmountGroupSecond()).isEmpty()) {
+                            try {
+                                double summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroupSecond()));
+                                smsParseSuccess.setAmount(summ);
+                                smsParseSuccess.setIsSuccess(true);
+                                smsParseSuccess.setType(templateSms.getType());
+                            } catch (Exception e1) {
+                                smsParseSuccess.setIsSuccess(false);
+                            }
+                        } else {
+                            smsParseSuccess.setIsSuccess(false);
+                        }
                         smsParseSuccess.setAmount(amount);
                         smsParseSuccess.setType(templateSms.getType());
                         smsParseSuccess.setIsSuccess(true);

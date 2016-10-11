@@ -290,7 +290,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                 break;
             }
         }
-
     }
 
     private class MyAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -312,14 +311,12 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             for (int i = tek.length - 1; i >= 0; i--) {
                 if (tek[i]) {
                     logicManager.deleteAccountOperation(purposes.get(i));
-                    Log.d("sss2", "pos = " + i);
                 }
             }
             allPurposes = (ArrayList<AccountOperation>) reportManager.getAccountOpertions(purpose);
             purposes = (ArrayList<AccountOperation>) allPurposes.clone();
             tek = new boolean[purposes.size()];
             refreshFilterPurpose();
-
 //            ReckingDao reckingDao = daoSession.getReckingDao();
 //            Query<Recking> reckingQuery = reckingDao.queryBuilder().join(Account.class, ReckingDao.Properties.AccountId)
         }

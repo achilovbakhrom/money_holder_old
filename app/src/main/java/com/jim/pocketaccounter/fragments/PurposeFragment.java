@@ -145,7 +145,6 @@ public class PurposeFragment extends Fragment {
                     } else {
                         left_date_string += Integer.toString(t[0]) + " " + getString(R.string.year);
                     }
-
                 }
                 if(t[1]!=0){
                     if(!left_date_string.matches("")){

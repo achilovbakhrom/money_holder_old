@@ -87,6 +87,7 @@ public class AccountInfoFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.getFragmentManager().popBackStack();
+				paFragmentManager.displayFragment(new AccountFragment());
 			}
 		});
 		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {

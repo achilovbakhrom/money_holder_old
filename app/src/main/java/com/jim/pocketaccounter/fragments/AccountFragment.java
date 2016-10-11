@@ -125,16 +125,42 @@ public class AccountFragment extends Fragment {
         toolbarManager.setSpinnerVisibility(View.GONE);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvAccounts);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+		recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+				super.onScrollStateChanged(recyclerView, newState);
+			}
+
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+				try {
+					onScrolledList(dy > 0);
+				} catch (NullPointerException e) {
+				}
+			}
+		});
         fabAccountAdd = (FABIcon) rootView.findViewById(R.id.fabAccountAdd);
 		fabAccountAdd.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				paFragmentManager.displayFragment(new AccountEditFragment(null));
-
 			}
 		});
         refreshList();
 		return rootView;
+	}
+
+	private boolean show = false;
+	public void onScrolledList(boolean k) {
+		if (k) {
+			if (!show)
+				fabAccountAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_down));
+			show = true;
+		} else {
+			if (show)
+				fabAccountAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_up));
+			show = false;
+		}
 	}
 
 	private void refreshList() {

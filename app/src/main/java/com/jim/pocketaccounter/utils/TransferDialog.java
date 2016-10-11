@@ -130,7 +130,6 @@ public class TransferDialog extends Dialog {
                 accountOperation.__setDaoSession(daoSession);
                 logicManager.insertAccountOperation(accountOperation);
                 dismiss();
-
             }
         });
         ivAccountManClose = (ImageView) dialogView.findViewById(R.id.ivAccountManClose);
@@ -256,7 +255,7 @@ public class TransferDialog extends Dialog {
                 public void onNothingSelected(AdapterView<?> adapterView) {}
             });
             if (!type) {
-                spTransferSecond.setSelection(selectedPos);
+                spTransferSecond.setSelection(selectedPos - 1);
             }
         }
     }
@@ -298,7 +297,7 @@ public class TransferDialog extends Dialog {
                         }
                     }
                 }
-                if (accountOperation == null)
+//                if (accountOperation == null)
                     accountOperation = new AccountOperation();
                 accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
                 accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
