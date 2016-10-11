@@ -36,6 +36,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -48,7 +49,7 @@ public class TableView extends LinearLayout {
     private TextView tvFirstTitle, tvSecondTitle, tvThirdTitle, tvFourthTitle;
     private RecyclerView rvTable;
     private boolean isFirstBitmap;
-    private ArrayList<? extends Object> datas;
+    private List<? extends Object> datas;
     private LinearLayoutManager lm;
     public TableView(Context context) {
         super(context);
@@ -103,14 +104,14 @@ public class TableView extends LinearLayout {
         tvThirdTitle.setText(titles[2]);
         tvFourthTitle.setText(titles[3]);
     }
-    public void setDatas(ArrayList<? extends Object> datas) {
+    public void setDatas(List<? extends Object> datas) {
         this.datas = datas;
         MyAdapter adapter = new MyAdapter(datas);
         rvTable.setAdapter(adapter);
     }
     private class MyAdapter extends RecyclerView.Adapter<TableView.ViewHolder> {
-        private ArrayList<? extends Object> result;
-        public MyAdapter(ArrayList<? extends Object> result) {
+        private List<? extends Object> result;
+        public MyAdapter(List<? extends Object> result) {
             this.result = result;
         }
         public int getItemCount() {

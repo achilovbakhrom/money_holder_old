@@ -151,7 +151,7 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-        final CategoryDataRow row = categoryReportView.getDatas().get(dataSetIndex);
+        final CategoryDataRow row = categoryReportView.getDatas().get(e.getXIndex());
         final Dialog dialog=new Dialog(getActivity());
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.report_by_category_info, null);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -188,12 +188,7 @@ public class ReportByCategoryIncomesFragment extends Fragment implements OnChart
         tvReportByCategoryInfoTotal.setText(decimalFormat.format(row.getTotalAmount())
                 + commonOperations.getMainCurrency().getAbbr());
         TextView tvReportByCategoryInfoAverage = (TextView) dialogView.findViewById(R.id.tvReportByCategoryInfoAverage);
-        int countOfDays = 0;
-        Calendar beg = (Calendar) begin.clone();
-        while(beg.compareTo(end) <= 0) {
-            countOfDays++;
-            beg.add(Calendar.DAY_OF_MONTH, 1);
-        }
+        Long countOfDays = commonOperations.betweenDays(begin, end);
         double average = row.getTotalAmount()/countOfDays;
         tvReportByCategoryInfoAverage.setText(decimalFormat.format(average)+commonOperations.getMainCurrency().getAbbr());
         DisplayMetrics dm = getResources().getDisplayMetrics();

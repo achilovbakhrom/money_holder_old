@@ -209,7 +209,7 @@ public class CommonOperations {
         e.set(Calendar.SECOND, 0);
         e.set(Calendar.MILLISECOND, 0);
         long day = 24L*60L*60L*1000L;
-        return (e.getTimeInMillis() - b.getTimeInMillis())/day;
+        return 1+(e.getTimeInMillis() - b.getTimeInMillis())/day;
     }
 
 

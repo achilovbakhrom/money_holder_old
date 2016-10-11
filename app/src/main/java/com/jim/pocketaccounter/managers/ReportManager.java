@@ -411,9 +411,73 @@ public class ReportManager {
         }
         //end income expanses
 
+        //sms parse records
+        List<SmsParseSuccess> tempSms = daoSession.getSmsParseSuccessDao()
+                                .queryBuilder()
+                                .where(SmsParseSuccessDao.Properties.IsSuccess.eq(true))
+                                .list();
+        List<SmsParseSuccess> smsParseSuccesses = new ArrayList<>();
+        for (SmsParseSuccess smsParseSuccess : tempSms) {
+            if (smsParseSuccess.getDate().compareTo(begin) >= 0 &&
+                    smsParseSuccess.getDate().compareTo(end) <= 0) {
+                smsParseSuccesses.add(smsParseSuccess);
+            }
+        }
+        String smsIncomeId = "sms_income";
+        String smsExpenseId = "sms_expense";
+        for (SmsParseSuccess smsParseSuccess : smsParseSuccesses) {
+            if (smsParseSuccess.getType() == PocketAccounterGeneral.INCOME) {
+                boolean found = false;
+                int position = 0;
+                for (int i=0; i<result.size(); i++) {
+                    if (result.get(i).getCategory().getId().equals(smsIncomeId)) {
+                        found = true;
+                        position = i;
+                        break;
+                    }
+                }
+                if (!found) {
+                    result.get(position).setTotalAmount(result.get(position).getTotalAmount()
+                        + commonOperations.getCost(smsParseSuccess.getDate(), smsParseSuccess.getCurrency(), smsParseSuccess.getAmount()));
+                } else {
+                    CategoryDataRow creditDataRow = new CategoryDataRow();
+                    RootCategory creditCategory = new RootCategory();
+                    creditCategory.setId(smsIncomeId);
+                    creditCategory.setType(PocketAccounterGeneral.INCOME);
+                    creditCategory.setName(context.getResources().getString(R.string.sms_parse_income));
+                    creditDataRow.setCategory(creditCategory);
+                    creditDataRow.setTotalAmount(commonOperations.getCost(smsParseSuccess.getDate(), smsParseSuccess.getCurrency(), smsParseSuccess.getAmount()));
+                    result.add(creditDataRow);
+                }
+            } else {
+                boolean found = false;
+                int position = 0;
+                for (int i=0; i<result.size(); i++) {
+                    if (result.get(i).getCategory().getId().equals(smsExpenseId)) {
+                        found = true;
+                        position = i;
+                        break;
+                    }
+                }
+                if (!found) {
+                    result.get(position).setTotalAmount(result.get(position).getTotalAmount()
+                            + commonOperations.getCost(smsParseSuccess.getDate(), smsParseSuccess.getCurrency(), smsParseSuccess.getAmount()));
+                } else {
+                    CategoryDataRow creditDataRow = new CategoryDataRow();
+                    RootCategory creditCategory = new RootCategory();
+                    creditCategory.setType(PocketAccounterGeneral.EXPENSE);
+                    creditCategory.setId(smsExpenseId);
+                    creditCategory.setName(context.getResources().getString(R.string.sms_parse_expense));
+                    creditDataRow.setCategory(creditCategory);
+                    creditDataRow.setTotalAmount(commonOperations.getCost(smsParseSuccess.getDate(), smsParseSuccess.getCurrency(), smsParseSuccess.getAmount()));
+                    result.add(creditDataRow);
+                }
+            }
+        }
+        //sms parse records end
+
         //credit begin
         double creditTotalPaid = 0.0;
-
         List<CreditDetials> temp = daoSession.getCreditDetialsDao()
                                             .queryBuilder()
                                             .where(CreditDetialsDao.Properties.Key_for_include.eq(true))

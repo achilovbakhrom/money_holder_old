@@ -52,8 +52,6 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
     @Named(value = "display_formatter")
     SimpleDateFormat format;
     @Inject
-    ReportManager reportManager;
-    @Inject
     CommonOperations commonOperations;
     @Inject
     SharedPreferences sharedPreferences;
@@ -136,33 +134,53 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
 
     private void init() {
 //        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String setting = sharedPreferences.getString("report_filter", "0");
+        int setting = sharedPreferences.getInt("filter_pos", 0);
         begin = Calendar.getInstance();
-        end = Calendar.getInstance();
-        switch (setting) {
-            case "0":
-                begin.set(Calendar.DAY_OF_MONTH, 1);
-                break;
-            case "1":
-                begin.add(Calendar.DAY_OF_MONTH, -2);
-                break;
-            case "2":
-                begin.add(Calendar.DAY_OF_MONTH, -6);
-                break;
-        }
         begin.set(Calendar.HOUR_OF_DAY, 0);
         begin.set(Calendar.MINUTE, 0);
         begin.set(Calendar.SECOND, 0);
         begin.set(Calendar.MILLISECOND, 0);
+        end = Calendar.getInstance();
         end.set(Calendar.HOUR_OF_DAY, 23);
         end.set(Calendar.MINUTE, 59);
         end.set(Calendar.SECOND, 59);
         end.set(Calendar.MILLISECOND, 59);
+        switch (setting) {
+            case 0:
+                begin.set(Calendar.DAY_OF_MONTH, 1);
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                break;
+            case 1:
+                begin.add(Calendar.DAY_OF_MONTH, -2);
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                break;
+            case 2:
+                begin.add(Calendar.DAY_OF_MONTH, -6);
+                begin.set(Calendar.HOUR_OF_DAY, 0);
+                begin.set(Calendar.MINUTE, 0);
+                begin.set(Calendar.SECOND, 0);
+                begin.set(Calendar.MILLISECOND, 0);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                Long begTime = sharedPreferences.getLong("filter_begin_time", 0L);
+                Long endTime = sharedPreferences.getLong("filter_end_time", 0L);
+                begin.setTimeInMillis(begTime);
+                end.setTimeInMillis(endTime);
+                break;
+        }
     }
 
     @Override
     public void onValueSelected(Entry e, int dataIndex, Highlight h) {
-        final CategoryDataRow row = categoryReportView.getDatas().get(dataIndex);
+        final CategoryDataRow row = categoryReportView.getDatas().get(e.getXIndex());
         final Dialog dialog=new Dialog(getActivity());
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.report_by_category_info, null);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -200,12 +218,7 @@ public class ReportByCategoryExpansesFragment extends Fragment implements OnChar
         DecimalFormat decimalFormat = new DecimalFormat("0.00##");
         tvReportByCategoryInfoTotal.setText(decimalFormat.format(row.getTotalAmount())+ commonOperations.getMainCurrency().getAbbr());
         TextView tvReportByCategoryInfoAverage = (TextView) dialogView.findViewById(R.id.tvReportByCategoryInfoAverage);
-        int countOfDays = 0;
-        Calendar beg = (Calendar) begin.clone();
-        while(beg.compareTo(end) <= 0) {
-            countOfDays++;
-            beg.add(Calendar.DAY_OF_MONTH, 1);
-        }
+        Long countOfDays = commonOperations.betweenDays(begin, end);
         double average = row.getTotalAmount()/countOfDays;
         tvReportByCategoryInfoAverage.setText(decimalFormat.format(average)+commonOperations.getMainCurrency().getAbbr());
         DisplayMetrics dm = getResources().getDisplayMetrics();

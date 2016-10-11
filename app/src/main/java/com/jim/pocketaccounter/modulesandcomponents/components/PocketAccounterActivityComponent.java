@@ -118,7 +118,6 @@ public interface PocketAccounterActivityComponent {
     void inject(ReportByCategoryExpansesFragment reportByCategoryExpansesFragment);
     void inject(ReportByCategoryIncomesFragment reportByCategoryIncomesFragment);
     void inject(CategoryReportView categoryReportView);
-    void inject(SMSParseFragment smsParseFragment);
     void inject(SMSParseInfoFragment smsParseEditFragment);
     void inject(ReportByCategoryDialogAdapter reportByCategoryDialogAdapter);
     void inject(SmsParseMainFragment smsParseMainFragment);

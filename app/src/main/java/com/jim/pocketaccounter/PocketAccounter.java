@@ -160,7 +160,7 @@ public class PocketAccounter extends AppCompatActivity {
         toolbarManager.init();
         date = Calendar.getInstance();
         treatToolbar();
-        paFragmentManager.initialize(beginDate, endDate);
+        paFragmentManager.initialize();
         dataCache.getCategoryEditFragmentDatas().setDate(date);
         pwPassword = (PasswordWindow) findViewById(R.id.pwPassword);
         checkAutoMarket();
@@ -289,7 +289,7 @@ public class PocketAccounter extends AppCompatActivity {
                 }
             }
         }
-        db.close();
+//        db.close();
     }
 
     public void treatToolbar() {
