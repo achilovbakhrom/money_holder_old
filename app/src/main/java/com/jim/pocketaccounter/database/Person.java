@@ -10,6 +10,7 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
 import java.util.UUID;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "PERSONS", active = true)
 public class Person {
@@ -72,12 +73,6 @@ public class Person {
         }
         myDao.delete(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 2056799268)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getPersonDao() : null;
-    }
     public String getPhoto() {
         return this.photo;
     }
@@ -101,6 +96,12 @@ public class Person {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 2056799268)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getPersonDao() : null;
     }
     @Generated(hash = 2109086809)
     public Person(@NotNull String id, String name, String phoneNumber, String photo) {

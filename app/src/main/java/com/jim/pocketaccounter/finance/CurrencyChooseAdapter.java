@@ -10,8 +10,8 @@ import android.widget.TextView;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.CurrencyChecbox;
+import com.jim.pocketaccounter.database.DaoSession;
 
 import java.util.ArrayList;
 

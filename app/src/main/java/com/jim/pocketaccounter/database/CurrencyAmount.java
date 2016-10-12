@@ -6,6 +6,7 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "CURRENCIES_AND_AMOUNTS", active = true)
 public class CurrencyAmount {
@@ -102,16 +103,16 @@ public class CurrencyAmount {
         }
         return currency;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 124921682)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getCurrencyAmountDao() : null;
-    }
     public Long getId() {
         return this.id;
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 124921682)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getCurrencyAmountDao() : null;
     }
 }

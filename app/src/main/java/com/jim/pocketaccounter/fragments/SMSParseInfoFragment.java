@@ -1,6 +1,5 @@
 package com.jim.pocketaccounter.fragments;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Paint;
@@ -28,14 +27,12 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseSuccess;
 import com.jim.pocketaccounter.database.SmsParseSuccessDao;
-import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
-import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
-import com.jim.pocketaccounter.utils.TemplateSms;
+import com.jim.pocketaccounter.database.TemplateSms;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

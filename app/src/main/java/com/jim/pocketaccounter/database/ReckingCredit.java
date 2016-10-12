@@ -14,6 +14,7 @@ import org.greenrobot.greendao.DaoException;
 
 import java.util.Calendar;
 import java.util.UUID;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by DEV on 11.06.2016.
@@ -87,12 +88,6 @@ public class ReckingCredit {
         }
         myDao.delete(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 897927379)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getReckingCreditDao() : null;
-    }
     public String getComment() {
         return this.comment;
     }
@@ -128,6 +123,12 @@ public class ReckingCredit {
     }
     public void setId(long id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 897927379)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getReckingCreditDao() : null;
     }
     @Generated(hash = 944164788)
     public ReckingCredit(long id, Calendar payDate, double amount, String accountId, long myCredit_id,

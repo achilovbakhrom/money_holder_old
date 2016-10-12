@@ -33,7 +33,6 @@ import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -53,6 +52,7 @@ import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.SearchResultConten;
 
@@ -309,7 +309,7 @@ public class SearchFragment extends Fragment {
             searchItemsToSend.size();
             if(searchItemsToSend.size()==0){
                 textViewSearch.setVisibility(View.VISIBLE);
-                textViewSearch.setText("I can't find \""+searchSt+"\"");
+                textViewSearch.setText(getString(R.string.cant_find)+" \""+searchSt+"\"");
             }
             else
             {

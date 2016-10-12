@@ -47,14 +47,14 @@
             android:id="@+id/ivExCurrencyAdd"
             android:layout_width="@dimen/twentyfive_dp"
             android:layout_height="@dimen/twentyfive_dp"
-            android:src="@drawable/subcat_add" />
+            android:src="@drawable/subcat_add"/>
 
         <ImageView
             android:id="@+id/ivExCurrencyDelete"
             android:layout_width="@dimen/twentyfive_dp"
             android:layout_height="@dimen/twentyfive_dp"
             android:layout_marginLeft="@dimen/ten_dp"
-            android:src="@drawable/subcat_delete" />
+            android:src="@drawable/subcat_delete"/>
 
     </LinearLayout>
 

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "CREDIT_DETAILS", active = true)
 public class CreditDetials {
@@ -201,15 +202,6 @@ public class CreditDetials {
 
 
 
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 745291544)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getCreditDetialsDao() : null;
-    }
-
-
-
     public String getInfo() {
         return this.info;
     }
@@ -374,6 +366,15 @@ public class CreditDetials {
 
     public void setCredit_name(String credit_name) {
         this.credit_name = credit_name;
+    }
+
+
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 745291544)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getCreditDetialsDao() : null;
     }
 
 

@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -59,6 +60,7 @@ public class MainPageFragment extends Fragment {
     @Inject PAFragmentManager paFragmentManager;
     @Inject @Named(value = "begin") Calendar begin;
     @Inject @Named(value = "end") Calendar end;
+    @Inject SharedPreferences preferences;
     public MainPageFragment(Context context, Calendar day) {
         this.day = (Calendar) day.clone();
         this.pocketAccounter = (PocketAccounter) context;
@@ -131,13 +133,6 @@ public class MainPageFragment extends Fragment {
         rlRecordIncomes.addView(incomeView);
         calculateBalance();
     }
-    public void updateCalendarChanged() {
-        day.setTimeInMillis(dataCache.getEndDate().getTimeInMillis());
-        toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
-        calculateBalance();
-        expenseView.invalidate();
-        incomeView.invalidate();
-    }
     public void update() {
         toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
         calculateBalance();
@@ -151,7 +146,23 @@ public class MainPageFragment extends Fragment {
         incomeView.invalidate();
     }
     public void calculateBalance() {
-        balance = reportManager.calculateBalance(dataCache.getBeginDate(), dataCache.getEndDate());
+        String mode = preferences.getString("balance_solve", "0");
+        end.setTimeInMillis(day.getTimeInMillis());
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 59);
+        if (mode.equals("0")) {
+            begin.setTimeInMillis(dataCache.getBeginDate().getTimeInMillis());
+        }
+        else {
+            begin.setTimeInMillis(day.getTimeInMillis());
+            begin.set(Calendar.HOUR_OF_DAY, 0);
+            begin.set(Calendar.MINUTE, 0);
+            begin.set(Calendar.SECOND, 0);
+            begin.set(Calendar.MILLISECOND, 0);
+        }
+        balance = reportManager.calculateBalance(begin, end);
         DecimalFormat decFormat = new DecimalFormat("0.00");
         String abbr = commonOperations.getMainCurrency().getAbbr();
         for (String key : balance.keySet()) {
@@ -159,7 +170,6 @@ public class MainPageFragment extends Fragment {
                 case PocketAccounterGeneral.INCOMES:
                     tvRecordIncome.setText(decFormat.format(balance.get(key)) + abbr);
                     break;
-
                 case PocketAccounterGeneral.EXPENSES:
                     tvRecordExpanse.setText(decFormat.format(balance.get(key)) + abbr);
                     break;
@@ -168,7 +178,6 @@ public class MainPageFragment extends Fragment {
                     break;
             }
         }
-
     }
 
     public static float dpToPx(Context context, float valueInDp) {

@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
@@ -43,12 +44,11 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseSuccess;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
-import com.jim.pocketaccounter.helper.TagLayout;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
-import com.jim.pocketaccounter.utils.TemplateSms;
+import com.jim.pocketaccounter.database.TemplateSms;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,6 +66,7 @@ import javax.inject.Inject;
  * Created by root on 9/29/16.
  */
 
+@SuppressLint("ValidFragment")
 public class AddSmsParseFragment extends Fragment {
     @Inject
     DaoSession daoSession;
@@ -351,7 +352,7 @@ public class AddSmsParseFragment extends Fragment {
                     objSms.setNumber(c.getString(c.getColumnIndexOrThrow("address")));
                     objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
                     objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
-                    if (!c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
+                    if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
                         objSms.setFolderName("sent");
                         lstSms.add(objSms);
                     }

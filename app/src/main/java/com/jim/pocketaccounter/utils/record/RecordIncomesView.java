@@ -15,7 +15,6 @@ import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
@@ -35,6 +34,7 @@ import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.SharedPreferencesKeys;
@@ -97,7 +97,8 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	private float twoDp;
 	private int black, grey;
 	@Inject	SharedPreferences sharedPreferences;
-	@Inject	DaoSession daoSession;
+	@Inject
+	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	DataCache dataCache;
 	@Inject	CommonOperations commonOperations;

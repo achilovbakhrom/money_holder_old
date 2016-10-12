@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "DEBT_BORROWS", active = true)
 public class DebtBorrow {
@@ -258,15 +259,6 @@ public class DebtBorrow {
         return person;
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
-    @Generated(hash = 861691792)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getDebtBorrowDao() : null;
-    }
-
     public String getId() {
         return this.id;
     }
@@ -353,6 +345,13 @@ public class DebtBorrow {
 
     public void setPerId(String perId) {
         this.perId = perId;
+    }
+
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 861691792)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getDebtBorrowDao() : null;
     }
 
     @Generated(hash = 439704250)

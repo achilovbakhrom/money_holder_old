@@ -13,6 +13,7 @@ import org.greenrobot.greendao.DaoException;
 
 import java.util.Calendar;
 import java.util.UUID;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by user on 6/8/2016.
@@ -93,12 +94,6 @@ public class Recking {
         }
         myDao.delete(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1014423750)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getReckingDao() : null;
-    }
     public String getComment() {
         return this.comment;
     }
@@ -134,6 +129,12 @@ public class Recking {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1014423750)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getReckingDao() : null;
     }
     @Generated(hash = 1526389974)
     public Recking(String id, Calendar payDate, double amount, String accountId, String debtBorrowsId,

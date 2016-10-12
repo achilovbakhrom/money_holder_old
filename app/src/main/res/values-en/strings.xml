@@ -20,7 +20,7 @@
         <item>Share app</item>
         <item>Feedback</item>
         <item>Purpose</item>
-        <item>Auto</item>
+        <item>Auto operations</item>
     </string-array>
     <string-array name="cat_ids">
         <item>0</item>
@@ -719,11 +719,11 @@
         <item>Excursion</item>
     </string-array>
     <string-array name="period_purpose">
-        <item>no period</item>
-        <item>week</item>
-        <item>mounth</item>
-        <item>year</item>
-        <item>beetwen date</item>
+        <item>Indefinitely</item>
+        <item>During the week</item>
+        <item>During the month</item>
+        <item>During the year</item>
+        <item>Interval</item>
     </string-array>
     <string-array name="week_day_auto">
         <item>Mon</item>
@@ -1521,4 +1521,14 @@
     <string name="which_type_is_it">Which type is it?</string>
     <string name="from_sms">from SMS</string>
     <string name="do_you_want_to_delete">Вы действительно хотите удалить?</string>
+    <string name="please_type">Search for word</string>
+    <string name="cant_find">I can\'t find</string>
+    <string name="your_purpose">Your purpose :</string>
+    <string name="enter_the_title">Enter the title</string>
+    <string name="accumulation">Accumulation</string>
+    <string name="enter_the_amount">Enter the amount</string>
+    <string name="term_of_purpose">Term of purpose</string>
+    <string name="duration">Duration</string>
+    <string name="left_datee">End:</string>
+    <string name="left_acomuleted">Left amount:</string>
 </resources>

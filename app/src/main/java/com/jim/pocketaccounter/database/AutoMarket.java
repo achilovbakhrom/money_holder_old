@@ -11,6 +11,7 @@ import org.greenrobot.greendao.annotation.ToOne;
 import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by root on 9/15/16.
@@ -202,12 +203,6 @@ public class AutoMarket {
         }
         return currency;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 391731539)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getAutoMarketDao() : null;
-    }
     public String getDates() {
         return this.dates;
     }
@@ -255,6 +250,12 @@ public class AutoMarket {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 391731539)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getAutoMarketDao() : null;
     }
     @Generated(hash = 1576085201)
     public AutoMarket(@NotNull String id, double amount, String curId,

@@ -5,6 +5,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by DEV on 28.08.2016.
@@ -55,12 +56,6 @@ public class BoardButton {
         }
         myDao.delete(this);
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1356069910)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getBoardButtonDao() : null;
-    }
     /** Used for active entity operations. */
     @Generated(hash = 363839140)
     private transient BoardButtonDao myDao;
@@ -96,6 +91,12 @@ public class BoardButton {
     }
     public void setId(Long id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1356069910)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getBoardButtonDao() : null;
     }
     @Generated(hash = 356784743)
     public BoardButton(Long id, String categoryId, int table, int pos, int type) {

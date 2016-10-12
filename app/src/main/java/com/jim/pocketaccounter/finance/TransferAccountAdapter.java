@@ -14,8 +14,8 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.Purpose;
+import com.jim.pocketaccounter.database.DaoSession;
 
 import java.util.ArrayList;
 import java.util.List;

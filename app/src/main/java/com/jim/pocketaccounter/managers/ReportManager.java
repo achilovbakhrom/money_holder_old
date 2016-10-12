@@ -13,7 +13,6 @@ import com.jim.pocketaccounter.database.AccountOperationDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -31,6 +30,7 @@ import com.jim.pocketaccounter.report.IncomeExpanseDataRow;
 import com.jim.pocketaccounter.report.IncomeExpanseDayDetails;
 import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.report.SubCategoryWitAmount;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
 import org.greenrobot.greendao.query.Query;
@@ -53,7 +53,8 @@ import javax.inject.Named;
  */
 
 public class ReportManager {
-    @Inject DaoSession daoSession;
+    @Inject
+    DaoSession daoSession;
     @Inject CommonOperations commonOperations;
     @Named(value = "begin") @Inject Calendar begin;
     @Named(value = "end") @Inject Calendar end;

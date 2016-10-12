@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "ROOT_CATEGORIES", active = true)
 public class RootCategory {
@@ -94,12 +95,6 @@ public class RootCategory {
 		this.subCategories = subCategories;
 	}
 
-	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 606159597)
-	public void __setDaoSession(DaoSession daoSession) {
-		this.daoSession = daoSession;
-		myDao = daoSession != null ? daoSession.getRootCategoryDao() : null;
-	}
 	/** Used for active entity operations. */
 	@Generated(hash = 1635362545)
 	private transient RootCategoryDao myDao;
@@ -129,6 +124,12 @@ public class RootCategory {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	/** called by internal mechanisms, do not call yourself. */
+	@Generated(hash = 606159597)
+	public void __setDaoSession(DaoSession daoSession) {
+		this.daoSession = daoSession;
+		myDao = daoSession != null ? daoSession.getRootCategoryDao() : null;
 	}
 	@Generated(hash = 1463833150)
 	public RootCategory(String name, String id, String icon, int type) {

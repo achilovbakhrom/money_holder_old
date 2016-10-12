@@ -10,6 +10,7 @@ import org.greenrobot.greendao.annotation.Property;
 import java.util.Calendar;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 @Entity(nameInDb = "CURRENCY_COSTS", active = true)
 public class CurrencyCost {
 	@Id(autoincrement = true)
@@ -87,17 +88,17 @@ public class CurrencyCost {
 		}
 		myDao.delete(this);
 	}
-	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 184881022)
-	public void __setDaoSession(DaoSession daoSession) {
-		this.daoSession = daoSession;
-		myDao = daoSession != null ? daoSession.getCurrencyCostDao() : null;
-	}
 	public Long getId() {
 		return this.id;
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	/** called by internal mechanisms, do not call yourself. */
+	@Generated(hash = 184881022)
+	public void __setDaoSession(DaoSession daoSession) {
+		this.daoSession = daoSession;
+		myDao = daoSession != null ? daoSession.getCurrencyCostDao() : null;
 	}
 }
 

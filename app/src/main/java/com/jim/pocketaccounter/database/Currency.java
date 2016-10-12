@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 
 @Entity(nameInDb = "CURRENCIES", active = true)
@@ -132,12 +133,6 @@ public class Currency {
 	    return costs;
 	}
 
-	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 869658167)
-	public void __setDaoSession(DaoSession daoSession) {
-		this.daoSession = daoSession;
-		myDao = daoSession != null ? daoSession.getCurrencyDao() : null;
-	}
 	public boolean getIsMain() {
 		return this.isMain;
 	}
@@ -149,5 +144,11 @@ public class Currency {
 	}
 	public List<CurrencyCost> getCurrencyCosts() {
 		return costs;
+	}
+	/** called by internal mechanisms, do not call yourself. */
+	@Generated(hash = 869658167)
+	public void __setDaoSession(DaoSession daoSession) {
+		this.daoSession = daoSession;
+		myDao = daoSession != null ? daoSession.getCurrencyDao() : null;
 	}
 }

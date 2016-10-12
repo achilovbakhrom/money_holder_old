@@ -13,6 +13,7 @@ import java.util.Calendar;
 import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "ACCOUNTS", active = true)
 public class Account {
@@ -144,12 +145,6 @@ public class Account {
 		}
 		return startMoneyCurrency;
 	}
-	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 1812283172)
-	public void __setDaoSession(DaoSession daoSession) {
-		this.daoSession = daoSession;
-		myDao = daoSession != null ? daoSession.getAccountDao() : null;
-	}
 	public String getLimitCurId() {
 		return this.limitCurId;
 	}
@@ -209,6 +204,12 @@ public class Account {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	/** called by internal mechanisms, do not call yourself. */
+	@Generated(hash = 1812283172)
+	public void __setDaoSession(DaoSession daoSession) {
+		this.daoSession = daoSession;
+		myDao = daoSession != null ? daoSession.getAccountDao() : null;
 	}
 	@Generated(hash = 984441795)
 	public Account(String name, String id, String icon, double amount,

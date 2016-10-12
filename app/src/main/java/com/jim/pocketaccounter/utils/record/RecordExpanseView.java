@@ -16,7 +16,6 @@ import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
@@ -41,6 +40,7 @@ import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.report.ReportByAccount;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.TransferDialog;
@@ -100,7 +100,9 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private int beltBalance;
 	private float oneDp;
 	private int black, grey;
-	@Inject	DaoSession daoSession;
+	private	SimpleDateFormat simpleDateFormat;
+	@Inject
+	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	LogicManager logicManager;
 	@Inject	DataCache dataCache;
@@ -108,7 +110,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	@Inject SharedPreferences sharedPreferences;
 	@Inject @Named(value = "begin") Calendar begin;
 	@Inject @Named(value = "end") Calendar end;
-	@Inject @Named(value = "common_formatter") SimpleDateFormat simpleDateFormat;
 	public RecordExpanseView(Context context, Calendar date) {
 		super(context);
 		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
@@ -124,6 +125,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		buttonsSize =  PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT;
 		beltBalance = ContextCompat.getColor(getContext(), R.color.belt_balanse);
 		twoDp = getResources().getDimension(R.dimen.four_dp)/getResources().getDisplayMetrics().density;
+		simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	}
 	public void updatePageCountAndPosition() {
 		this.tableCount = sharedPreferences.getInt("key_for_window_top", 4);

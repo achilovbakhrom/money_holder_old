@@ -223,9 +223,11 @@ public class TransferDialog extends Dialog {
     public void setAccountOrPurpose(String id, boolean type) {
         if (id != null) {
             first = new ArrayList<>();
-            for (Account account : daoSession.getAccountDao().loadAll())
+            List<Account> accounts = daoSession.getAccountDao().loadAll();
+            for (Account account : accounts)
                 first.add(account.getId());
-            for (Purpose purpose : daoSession.getPurposeDao().loadAll())
+            List<Purpose> purposes = daoSession.getPurposeDao().loadAll();
+            for (Purpose purpose : purposes)
                 first.add(purpose.getId());
             int selectedPos = 0;
             for (int i=0; i<first.size(); i++) {

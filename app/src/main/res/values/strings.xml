@@ -46,7 +46,7 @@
         <item>Categories</item>
         <item>Accounts</item>
         <item>Purpose</item>
-        <item>Auto</item>
+        <item>Auto operations</item>
     </string-array>
     <string-array name="finance_subitem_icons">
         <item>drawer_currency</item>
@@ -1364,11 +1364,11 @@
     <string name="none_minus_account_warning">Счет не может быть нулевым!</string>
     <string name="add_category">Добавить категорию</string>
     <string-array name="period_purpose">
-        <item>no period</item>
-        <item>week</item>
-        <item>mounth</item>
-        <item>year</item>
-        <item>beetwen date</item>
+        <item>Indefinitely</item>
+        <item>During the week</item>
+        <item>During the month</item>
+        <item>During the year</item>
+        <item>Interval</item>
     </string-array>
 
     <string name="simple_recking">Daily recking</string>
@@ -1526,9 +1526,16 @@
     <string name="income_expance_title">Доходы и расходы</string>
     <string name="chooseroot">Choise root</string>
     <string name="spend">Потратить</string>
-    <string name="left_datee">Left date:</string>
-    <string name="left_acomuleted">Left to accumulate :</string>
-    <string name="please_type">Please type word for searching</string>
+    <string name="left_datee">End:</string>
+    <string name="left_acomuleted">Left amount:</string>
+    <string name="please_type">Search for word</string>
     <string name="choose_different_accounts">Выберите разные счета...</string>
     <string name="do_you_want_to_delete">Вы действительно хотите удалить?</string>
+    <string name="cant_find">I can\'t find</string>
+    <string name="your_purpose">Your purpose :</string>
+    <string name="enter_the_title">Enter the title</string>
+    <string name="accumulation">Accumulation</string>
+    <string name="enter_the_amount">Enter the amount</string>
+    <string name="term_of_purpose">Term of purpose</string>
+    <string name="duration">Duration</string>
 </resources>

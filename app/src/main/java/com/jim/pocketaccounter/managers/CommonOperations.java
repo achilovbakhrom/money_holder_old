@@ -15,7 +15,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Environment;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
@@ -31,7 +30,6 @@ import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
 import com.jim.pocketaccounter.database.CurrencyDao;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.Person;
@@ -41,15 +39,15 @@ import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.database.SmsParseObject;
+import com.jim.pocketaccounter.database.SmsParseSuccess;
 import com.jim.pocketaccounter.database.SubCategory;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
-import com.jim.pocketaccounter.utils.TemplateSms;
+import com.jim.pocketaccounter.database.TemplateSms;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.greenrobot.greendao.database.StandardDatabase;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -457,6 +455,56 @@ public class CommonOperations {
                     calendar = (Calendar) account.getCalendar().clone();
             }
         }
+        List<FinanceRecord> records = daoSession.getFinanceRecordDao().loadAll();
+        for (FinanceRecord financeRecord : records) {
+            if (calendar == null)
+                calendar = (Calendar) financeRecord.getDate().clone();
+            else {
+                if (calendar.compareTo(financeRecord.getDate()) >= 0)
+                    calendar = (Calendar) financeRecord.getDate().clone();
+            }
+        }
+        List<CreditDetials> creditDetialses = daoSession.getCreditDetialsDao().loadAll();
+        for (CreditDetials creditDetials : creditDetialses) {
+            for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+                if (calendar == null)
+                    calendar = (Calendar) reckingCredit.getPayDate().clone();
+                else {
+                    if (calendar.compareTo(reckingCredit.getPayDate()) >= 0)
+                        calendar = (Calendar) reckingCredit.getPayDate().clone();
+                }
+            }
+        }
+        List<DebtBorrow> debtBorrows = daoSession.getDebtBorrowDao().loadAll();
+        for (DebtBorrow debtBorrow : debtBorrows) {
+            if (calendar == null)
+                calendar = (Calendar) debtBorrow.getTakenDate().clone();
+            else {
+                if (calendar.compareTo(debtBorrow.getTakenDate()) >= 0)
+                    calendar = (Calendar) debtBorrow.getTakenDate().clone();
+            }
+            for (Recking recking: debtBorrow.getReckings()) {
+                if (calendar == null)
+                    calendar = (Calendar) recking.getPayDate().clone();
+                else {
+                    if (calendar.compareTo(recking.getPayDate()) >= 0)
+                        calendar = (Calendar) recking.getPayDate().clone();
+                }
+            }
+        }
+        List<SmsParseSuccess> smsParseSuccesses = daoSession.getSmsParseSuccessDao().loadAll();
+        for (SmsParseSuccess smsParseSuccess : smsParseSuccesses) {
+            if (calendar == null)
+                calendar = (Calendar) smsParseSuccess.getDate().clone();
+            else {
+                if (calendar.compareTo(smsParseSuccess.getDate()) >= 0)
+                    calendar = (Calendar) smsParseSuccess.getDate().clone();
+            }
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return  calendar;
     }
 

@@ -1,12 +1,9 @@
 package com.jim.pocketaccounter;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -14,19 +11,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,14 +26,9 @@ import android.widget.TextView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
-import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.AutoMarket;
-import com.jim.pocketaccounter.database.DaoMaster;
-import com.jim.pocketaccounter.database.DaoSession;
 //import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.FinanceRecord;
-import com.jim.pocketaccounter.database.SmsParseKeys;
 import com.jim.pocketaccounter.debt.PocketClassess;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
@@ -53,8 +36,7 @@ import com.jim.pocketaccounter.managers.SettingsManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.modulesandcomponents.components.DaggerPocketAccounterActivityComponent;
 import com.jim.pocketaccounter.utils.CircleImageView;
-import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
-import com.jim.pocketaccounter.utils.TemplateSms;
+import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.utils.navdrawer.LeftSideDrawer;
@@ -65,16 +47,11 @@ import com.jim.pocketaccounter.utils.record.RecordIncomesView;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.modulesandcomponents.components.PocketAccounterActivityComponent;
 import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterActivityModule;
-import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
-import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.widget.WidgetKeys;
 import com.jim.pocketaccounter.widget.WidgetProvider;
 
-import org.greenrobot.greendao.database.Database;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -257,10 +234,6 @@ public class PocketAccounter extends AppCompatActivity {
     private EditText endTimeFilter;
 
     private void checkAutoMarket() {
-//        Log.d("sss", "" + (daoSession == null));
-//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
-//        Database db = helper.getWritableDb();
-//        daoSession = new DaoMaster(db).newSession();
         for (AutoMarket au : daoSession.getAutoMarketDao().loadAll()) {
             String[] days = au.getDates().split(",");
             for (String day : days) {
@@ -289,14 +262,13 @@ public class PocketAccounter extends AppCompatActivity {
                 }
             }
         }
-//        db.close();
     }
 
     public void treatToolbar() {
         // toolbar set
         toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setTitle(getResources().getString(R.string.app_name));
-        toolbarManager.setSubtitle(format.format(date.getTime()));
+        toolbarManager.setSubtitle(format.format(dataCache.getEndDate().getTime()));
 
         toolbarManager.setOnHomeButtonClickListener(new View.OnClickListener() {
             @Override
@@ -325,9 +297,9 @@ public class PocketAccounter extends AppCompatActivity {
                 ivDatePickOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int key = preferences.getInt("balance_solve", 0);
+                        String key = preferences.getString("balance_solve", "0");
                         Calendar begin, end = Calendar.getInstance();
-                        if (key == 0) {
+                        if (key.equals("0")) {
                             Calendar firstDay = commonOperations.getFirstDay();
                             if (firstDay == null) {
                                 firstDay = Calendar.getInstance();
@@ -353,11 +325,11 @@ public class PocketAccounter extends AppCompatActivity {
                         dataCache.setEndDate(end);
                         long countOfDays = 0;
                         if (end.compareTo(Calendar.getInstance()) >= 0) {
-                            countOfDays = commonOperations.betweenDays(Calendar.getInstance(), end);
+                            countOfDays = commonOperations.betweenDays(Calendar.getInstance(), end)-1;
                             paFragmentManager.getLvpMain().setCurrentItem(5000 + (int)countOfDays, false);
                         }
                         else {
-                            countOfDays = commonOperations.betweenDays(end, Calendar.getInstance());
+                            countOfDays = commonOperations.betweenDays(end, Calendar.getInstance())-1;
                             paFragmentManager.getLvpMain().setCurrentItem(5000 - (int)countOfDays, false);
                         }
                         if (paFragmentManager.getCurrentFragment() != null)

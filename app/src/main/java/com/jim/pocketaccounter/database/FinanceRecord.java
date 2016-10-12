@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "FINANCE_RECORDS", active = true)
 public class FinanceRecord {
@@ -243,12 +244,6 @@ public class FinanceRecord {
         }
         return category;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 453688691)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getFinanceRecordDao() : null;
-    }
     public String getComment() {
         return this.comment;
     }
@@ -296,6 +291,12 @@ public class FinanceRecord {
     }
     public void setDate(Calendar date) {
         this.date = date;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 453688691)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getFinanceRecordDao() : null;
     }
 
 

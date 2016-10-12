@@ -15,6 +15,7 @@ import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.ToOne;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by DEV on 06.09.2016.
@@ -114,12 +115,6 @@ public class Purpose {
         }
         return currency;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1602104432)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getPurposeDao() : null;
-    }
     public int getPeriodPos() {
         return this.periodPos;
     }
@@ -173,6 +168,12 @@ public class Purpose {
     }
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1602104432)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getPurposeDao() : null;
     }
     @Generated(hash = 1374484397)
     public Purpose(String icon, String description, Calendar begin, Calendar end,

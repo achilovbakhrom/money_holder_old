@@ -106,19 +106,6 @@ public class PAFragmentManager {
                 if (lastPos != position && direction == null) {
                     direction = lastPos<position;
                 }
-                if (lastPos>position && direction && lastPos-position<2) {
-                    Calendar day = nextPage.getDay();
-                    day.add(Calendar.DAY_OF_MONTH, -2);
-                    ((MainPageFragment) fragmentManager.findFragmentByTag(nextPage.getTag())).setDay(day);
-                    direction = !direction;
-                }
-                if (lastPos < position && !direction) {
-                    Calendar day = nextPage.getDay();
-                    day.add(Calendar.DAY_OF_MONTH, 2);
-                    nextPage.setDay(day);
-                    ((MainPageFragment) fragmentManager.findFragmentByTag(nextPage.getTag())).setDay(day);
-                    direction = !direction;
-                }
                 final MainPageFragment page = (MainPageFragment) getFragmentManager().findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+position);
                 MainPageFragment prevFragment;
                 if (lastPos>position && !direction) {

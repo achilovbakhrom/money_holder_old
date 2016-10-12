@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
@@ -14,10 +13,10 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseObjectDao;
 import com.jim.pocketaccounter.database.SmsParseSuccess;
+import com.jim.pocketaccounter.database.TemplateSms;
 
 import org.greenrobot.greendao.database.Database;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

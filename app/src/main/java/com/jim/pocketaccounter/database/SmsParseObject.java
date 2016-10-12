@@ -1,7 +1,5 @@
 package com.jim.pocketaccounter.database;
 
-import com.jim.pocketaccounter.utils.TemplateSms;
-
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.JoinProperty;
@@ -15,7 +13,8 @@ import java.util.UUID;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-import com.jim.pocketaccounter.utils.TemplateSmsDao;
+import com.jim.pocketaccounter.database.TemplateSmsDao;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "SMS_PARSE_OBJECTS", active = true)
 public class SmsParseObject {
@@ -197,12 +196,6 @@ public class SmsParseObject {
         }
         return account;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1939383941)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getSmsParseObjectDao() : null;
-    }
     public String getCurrencyId() {
         return this.currencyId;
     }
@@ -226,6 +219,12 @@ public class SmsParseObject {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 1939383941)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getSmsParseObjectDao() : null;
     }
     @Generated(hash = 634174835)
     public SmsParseObject(String id, String number, String accountId,

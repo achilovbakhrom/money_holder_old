@@ -13,6 +13,7 @@ import org.greenrobot.greendao.DaoException;
 
 import java.util.Calendar;
 import java.util.UUID;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by root on 10/6/16.
@@ -147,12 +148,6 @@ public class SmsParseSuccess {
         }
         return account;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 561365418)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getSmsParseSuccessDao() : null;
-    }
     public boolean getIsSuccess() {
         return this.isSuccess;
     }
@@ -212,6 +207,12 @@ public class SmsParseSuccess {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 561365418)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getSmsParseSuccessDao() : null;
     }
     @Generated(hash = 802090454)
     public SmsParseSuccess(String id, String number, Calendar date, String body,

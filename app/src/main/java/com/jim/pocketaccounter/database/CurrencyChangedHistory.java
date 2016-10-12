@@ -1,34 +1,37 @@
 package com.jim.pocketaccounter.database;
 
+import android.view.ViewDebug;
+
+import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
+
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.Property;
+
+import java.util.Calendar;
+
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 
-import java.util.UUID;
-import com.jim.pocketaccounter.database.DaoSession;
-
 /**
- * Created by DEV on 07.08.2016.
+ * Created by root on 10/11/16.
  */
-@Entity(nameInDb = "PHOTO_DETAILS", active = true)
-public class PhotoDetails {
-    @Property
-    String photopath;
-    @Property
-    String photopathCache;
-    @Property
-    String recordId;
+
+@Entity(nameInDb = "CURRENCY_CHANGED_HISTORY", active = true)
+public class CurrencyChangedHistory {
     @Id
     @Property
-    private String id;
-
-    @Keep
-    public PhotoDetails () {
-        id = UUID.randomUUID().toString();
-    }
+    Long id;
+    @Property
+    private String fromCurrency;
+    @Property
+    private String toCurrency;
+    @Property
+    private double cost;
+    @Property
+    @Convert(converter = CalendarConvertor.class, columnType = String.class)
+    private Calendar date;
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -63,54 +66,57 @@ public class PhotoDetails {
         myDao.delete(this);
     }
     /** Used for active entity operations. */
-    @Generated(hash = 1547580238)
-    private transient PhotoDetailsDao myDao;
+    @Generated(hash = 1051159655)
+    private transient CurrencyChangedHistoryDao myDao;
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    public String getRecordId() {
-        return this.recordId;
+    public Calendar getDate() {
+        return this.date;
     }
-    public void setRecordId(String recordId) {
-        this.recordId = recordId;
+    public void setDate(Calendar date) {
+        this.date = date;
     }
-    public String getPhotopathCache() {
-        return this.photopathCache;
+    public double getCost() {
+        return this.cost;
     }
-    public void setPhotopathCache(String photopathCache) {
-        this.photopathCache = photopathCache;
+    public void setCost(double cost) {
+        this.cost = cost;
     }
-    public String getPhotopath() {
-        return this.photopath;
+    public String getToCurrency() {
+        return this.toCurrency;
     }
-    public void setPhotopath(String photopath) {
-        this.photopath = photopath;
+    public void setToCurrency(String toCurrency) {
+        this.toCurrency = toCurrency;
     }
-    public String getId() {
-        return this.id;
+    public String getFromCurrency() {
+        return this.fromCurrency;
     }
-    public void setId(String id) {
-        this.id = id;
+    public void setFromCurrency(String fromCurrency) {
+        this.fromCurrency = fromCurrency;
     }
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 2103253507)
+    @Generated(hash = 1961542381)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getPhotoDetailsDao() : null;
+        myDao = daoSession != null ? daoSession.getCurrencyChangedHistoryDao() : null;
     }
-    @Keep
-    public PhotoDetails(String photopath, String photopathCache, String recordId) {
-        this.photopath = photopath;
-        this.photopathCache = photopathCache;
-        this.recordId = recordId;
-        this.id =  UUID.randomUUID().toString();
+    public Long getId() {
+        return this.id;
     }
-    @Generated(hash = 1077554308)
-    public PhotoDetails(String photopath, String photopathCache, String recordId, String id) {
-        this.photopath = photopath;
-        this.photopathCache = photopathCache;
-        this.recordId = recordId;
+    public void setId(Long id) {
         this.id = id;
     }
-  
+    @Generated(hash = 1996877469)
+    public CurrencyChangedHistory(Long id, String fromCurrency, String toCurrency,
+            double cost, Calendar date) {
+        this.id = id;
+        this.fromCurrency = fromCurrency;
+        this.toCurrency = toCurrency;
+        this.cost = cost;
+        this.date = date;
+    }
+    @Generated(hash = 1733333321)
+    public CurrencyChangedHistory() {
+    }
 }

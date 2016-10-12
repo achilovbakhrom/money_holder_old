@@ -44,7 +44,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/twentynine_dp"
-                        android:text="Name of purpose :"
+                        android:text="@string/your_purpose"
                         android:textColor="#212121"
 
                         android:textSize="@dimen/twenty_sp" />
@@ -54,7 +54,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 
-                        android:hint="Enter the your purpose"
+                        android:hint="@string/enter_the_title"
                         android:maxLength="25"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textColorHint="@color/black_for_secondary_text"
@@ -88,7 +88,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/ten_dp"
-                        android:text="Save up"
+                        android:text="@string/accumulation"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/eighteen_sp" />
 
@@ -117,7 +117,7 @@
                         android:layout_marginRight="@dimen/six_dp"
                         android:layout_toLeftOf="@+id/spPurposeCurrency"
                         android:layout_toStartOf="@+id/spPurposeCurrency"
-                        android:hint="How much save up"
+                        android:hint="@string/enter_the_amount"
                         android:inputType="numberDecimal"
                         android:maxLength="13"
                         android:textSize="@dimen/fourteen_dp" />
@@ -145,7 +145,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/ten_dp"
-                        android:text="Term of purpose"
+                        android:text="@string/term_of_purpose"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/eighteen_sp" />
 
@@ -173,7 +173,7 @@
                         android:layout_marginRight="@dimen/six_dp"
                         android:layout_toLeftOf="@+id/spPurposePeriod"
                         android:layout_toStartOf="@+id/spPurposePeriod"
-                        android:text="Period of save"
+                        android:text="@string/duration"
                         android:inputType="number"
                         android:gravity="center_vertical"
                         android:textColor="@color/black_for_glavniy_text"

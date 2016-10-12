@@ -1,4 +1,4 @@
-package com.jim.pocketaccounter.utils;
+package com.jim.pocketaccounter.database;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Keep;

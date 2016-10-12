@@ -5,6 +5,7 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 @Entity(nameInDb = "SUBCATEGORIES", active = true)
 public class SubCategory {
@@ -50,12 +51,6 @@ public class SubCategory {
 		}
 		myDao.delete(this);
 	}
-	/** called by internal mechanisms, do not call yourself. */
-	@Generated(hash = 1297250478)
-	public void __setDaoSession(DaoSession daoSession) {
-		this.daoSession = daoSession;
-		myDao = daoSession != null ? daoSession.getSubCategoryDao() : null;
-	}
 	/** Used for active entity operations. */
 	@Generated(hash = 1371187557)
 	private transient SubCategoryDao myDao;
@@ -85,6 +80,12 @@ public class SubCategory {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	/** called by internal mechanisms, do not call yourself. */
+	@Generated(hash = 1297250478)
+	public void __setDaoSession(DaoSession daoSession) {
+		this.daoSession = daoSession;
+		myDao = daoSession != null ? daoSession.getSubCategoryDao() : null;
 	}
 	@Generated(hash = 93145057)
 	public SubCategory(String name, String id, String icon, String parentId) {

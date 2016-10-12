@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+import com.jim.pocketaccounter.database.DaoSession;
 
 /**
  * Created by DEV on 31.08.2016.
@@ -98,12 +99,6 @@ public class AccountOperation {
     }
     @Generated(hash = 1170963677)
     private transient String currency__resolvedKey;
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 673519319)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getAccountOperationDao() : null;
-    }
     /** Used for active entity operations. */
     @Generated(hash = 1904212381)
     private transient AccountOperationDao myDao;
@@ -145,6 +140,12 @@ public class AccountOperation {
     }
     public void setId(String id) {
         this.id = id;
+    }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 673519319)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getAccountOperationDao() : null;
     }
     @Generated(hash = 682025703)
     public AccountOperation(String id, Calendar date, String sourceId,
