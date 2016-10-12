@@ -29,7 +29,9 @@ import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
+import com.jim.pocketaccounter.database.CurrencyCostState;
 import com.jim.pocketaccounter.database.CurrencyDao;
+import com.jim.pocketaccounter.database.CurrencyWithAmount;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.Person;
@@ -445,7 +447,7 @@ public class CommonOperations {
     }
 
     public Calendar getFirstDay() {
-        Calendar calendar = null;
+        Calendar calendar = Calendar.getInstance();
         List<Account> accounts = daoSession.getAccountDao().loadAll();
         for (Account account : accounts) {
             if (calendar == null)
@@ -574,7 +576,7 @@ public class CommonOperations {
         //inserting currencies
         String [] currencyNames = context.getResources().getStringArray(R.array.base_currencies);
         String [] currencyIds = context.getResources().getStringArray(R.array.currency_ids);
-        String [] currencyCosts = context.getResources().getStringArray(R.array.currency_costs);
+        String [] currencyCostAmounts = context.getResources().getStringArray(R.array.currency_costs);
         String [] currencySigns = context.getResources().getStringArray(R.array.base_abbrs);
 
         for (int i=0; i<3; i++) {
@@ -583,16 +585,56 @@ public class CommonOperations {
             currency.setId(currencyIds[i]);
             currency.setMain(i == 0);
             currency.setAbbr(currencySigns[i]);
-            CurrencyCost currencyCost = new CurrencyCost();
-            currencyCost.setCurrencyId(currencyIds[i]);
-            currencyCost.setDay(Calendar.getInstance());
-            currencyCost.setCost(Double.parseDouble(currencyCosts[i]));
-            daoSession.getCurrencyCostDao().insert(currencyCost);
-            List<CurrencyCost> costs = new ArrayList<>();
-            costs.add(currencyCost);
-            currency.__setDaoSession(daoSession);
-            currency.setCosts(costs);
             daoSession.getCurrencyDao().insertOrReplace(currency);
+        }
+
+        Calendar momentDay = Calendar.getInstance();
+        CurrencyCostState currencyCostState = new CurrencyCostState();
+        currencyCostState.setDay(momentDay);
+        Currency mainCur = daoSession.getCurrencyDao().queryBuilder().where(
+                CurrencyDao.Properties.IsMain.eq(true)).list().get(0);
+        currencyCostState.setMainCurrency(mainCur);
+        daoSession.getCurrencyCostStateDao().insertOrReplace(currencyCostState);
+
+        List<Currency> notMainCurs = daoSession.getCurrencyDao().queryBuilder().where(
+                CurrencyDao.Properties.IsMain.eq(false)).list();
+
+        for (Currency notMainCur : notMainCurs) {
+            CurrencyWithAmount  withAmount = new CurrencyWithAmount();
+            withAmount.setCurrency(notMainCur);
+            withAmount.setParentId(currencyCostState.getId());
+            for (int i = 0; i < currencyIds.length; i++) {
+                if (currencyIds[i].equals(notMainCur.getId())) {
+                    withAmount.setAmount(Double.parseDouble(currencyCostAmounts[i]));
+                    break;
+                }
+            }
+
+            daoSession.getCurrencyWithAmountDao().insertOrReplace(withAmount);
+        }
+
+        currencyCostState.resetCurrencyWithAmountList();
+
+        for (CurrencyWithAmount currencyWithAmount : currencyCostState.getCurrencyWithAmountList()) {
+            CurrencyCostState costState = new CurrencyCostState();
+            costState.setDay(momentDay);
+            costState.setMainCurrency(currencyWithAmount.getCurrency());
+            daoSession.getCurrencyCostStateDao().insertOrReplace(costState);
+
+            CurrencyWithAmount tempWithAmount = new CurrencyWithAmount();
+            tempWithAmount.setCurrency(currencyCostState.getMainCurrency());
+            tempWithAmount.setAmount(1/currencyWithAmount.getAmount());
+            tempWithAmount.setParentId(costState.getId());
+            daoSession.getCurrencyWithAmountDao().insertOrReplace(tempWithAmount);
+            for (CurrencyWithAmount withAmount : currencyCostState.getCurrencyWithAmountList()) {
+                if (withAmount.getId() != currencyWithAmount.getId()) {
+                    CurrencyWithAmount newWithAmount = new CurrencyWithAmount();
+                    newWithAmount.setCurrency(withAmount.getCurrency());
+                    newWithAmount.setAmount(withAmount.getAmount()/currencyWithAmount.getAmount());
+                    newWithAmount.setParentId(costState.getId());
+                    daoSession.getCurrencyWithAmountDao().insertOrReplace(tempWithAmount);
+                }
+            }
         }
 
         //inserting accounts
@@ -766,7 +808,8 @@ public class CommonOperations {
         List<Currency> currencies = new ArrayList<>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            Currency newCurrency = new Currency(cursor.getString(cursor.getColumnIndex("currency_name")));
+            Currency newCurrency = new Currency();
+            newCurrency.setName(cursor.getString(cursor.getColumnIndex("currency_name")));
             newCurrency.setAbbr(cursor.getString(cursor.getColumnIndex("currency_sign")));
             String currId = cursor.getString(cursor.getColumnIndex("currency_id"));
             newCurrency.setId(currId);
@@ -785,10 +828,10 @@ public class CommonOperations {
 
                     }
                     newCurrencyCost.setCost(costCursor.getDouble(costCursor.getColumnIndex("cost")));
-                    newCurrencyCost.setCurrencyId(currId);
+//                    newCurrencyCost.setCurrencyId(currId);
                     newCurrency.__setDaoSession(daoSession);
                     newCurrency.getCosts().add(newCurrencyCost);
-                    daoSession.getCurrencyCostDao().insertOrReplace(newCurrencyCost);
+//                    daoSession.getCurrencyCostDao().insertOrReplace(newCurrencyCost);
                 }
                 costCursor.moveToNext();
             }
@@ -1227,7 +1270,8 @@ public class CommonOperations {
         ArrayList<Currency> currencies = new ArrayList<Currency>();
         curCursor.moveToFirst();
         while (!curCursor.isAfterLast()) {
-            Currency newCurrency = new Currency(curCursor.getString(curCursor.getColumnIndex("currency_name")));
+            Currency newCurrency = new Currency();
+            newCurrency.setName(curCursor.getString(curCursor.getColumnIndex("currency_name")));
             newCurrency.setAbbr(curCursor.getString(curCursor.getColumnIndex("currency_sign")));
             String currId = curCursor.getString(curCursor.getColumnIndex("currency_id"));
             newCurrency.setId(currId);

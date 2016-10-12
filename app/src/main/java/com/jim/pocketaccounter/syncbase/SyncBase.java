@@ -227,7 +227,8 @@ public class SyncBase {
         ArrayList<Currency> currencies = new ArrayList<Currency>();
         curCursor.moveToFirst();
         while (!curCursor.isAfterLast()) {
-            Currency newCurrency = new Currency(curCursor.getString(curCursor.getColumnIndex("currency_name")));
+            Currency newCurrency = new Currency();
+            newCurrency.setName(curCursor.getString(curCursor.getColumnIndex("currency_name")));
             newCurrency.setAbbr(curCursor.getString(curCursor.getColumnIndex("currency_sign")));
             String currId = curCursor.getString(curCursor.getColumnIndex("currency_id"));
             newCurrency.setId(currId);

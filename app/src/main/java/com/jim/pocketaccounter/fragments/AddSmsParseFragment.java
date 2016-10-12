@@ -115,7 +115,7 @@ public class AddSmsParseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_sms_sender, container, false);
-        txSize = (int) (getResources().getDimension(R.dimen.fourteen_dp));
+        txSize = (int) ((int) (getResources().getDimension(R.dimen.fourteen_dp))/getResources().getDisplayMetrics().density);
         etNumber = (EditText) rootView.findViewById(R.id.etSmsParseAddNumber);
         ivSms = (TextView) rootView.findViewById(R.id.ivSmsParseGet);
         rgSortSms = (RadioGroup) rootView.findViewById(R.id.rgSmsParseAddSort);
@@ -580,7 +580,7 @@ public class AddSmsParseFragment extends Fragment {
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
-                    - 2 * commonOperations.convertDpToPixel(24)) / getResources().getDisplayMetrics().density);
+                    - 2 * commonOperations.convertDpToPixel(40))/getResources().getDisplayMetrics().density);
 
             strings = smsBodyParse(list.get(position).getBody());
             tvList = new ArrayList<>();
@@ -626,7 +626,7 @@ public class AddSmsParseFragment extends Fragment {
                 for (int i = 0; i < lt.size(); i++) {
                     TextView textView = new TextView(getContext());
                     textView.setTag(row++);
-                    textView.setTextSize(txSize/getResources().getDisplayMetrics().density);
+                    textView.setTextSize(txSize);
                     textView.setText(lt.get(i));
                     tvList.add(textView);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams

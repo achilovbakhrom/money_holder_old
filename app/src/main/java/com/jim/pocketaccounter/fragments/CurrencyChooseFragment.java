@@ -78,7 +78,8 @@ public class CurrencyChooseFragment extends Fragment {
         }
         currencies = new ArrayList<>();
         for (int i = 0; i < baseCurrencies.length; i++) {
-            Currency currency = new Currency(baseCurrencies[i]);
+            Currency currency = new Currency();
+//            currenc
             currency.setAbbr(baseAbbrs[i]);
             currency.setName(baseCurrencies[i]);
             currency.setId(currIds[i]);
@@ -87,7 +88,7 @@ public class CurrencyChooseFragment extends Fragment {
             cost.setDay(Calendar.getInstance());
             ArrayList<CurrencyCost> tempCost = new ArrayList<CurrencyCost>();
             tempCost.add(cost);
-            currency.setCosts(tempCost);
+//            currency.setCosts(tempCost);
             currencies.add(currency);
         }
         CurrencyChooseAdapter adapter = new CurrencyChooseAdapter(getActivity(), currencies, chbs);
@@ -160,7 +161,7 @@ public class CurrencyChooseFragment extends Fragment {
                         }
                     }
                     if (!found) {
-                        daoSession.getCurrencyCostDao().insertInTx(currency.getCosts());
+//                        daoSession.getCurrencyCostDao().insertInTx(currency.getCosts());
                         daoSession.getCurrencyDao().insert(currency);
                     }
                 }
