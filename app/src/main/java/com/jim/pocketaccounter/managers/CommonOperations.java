@@ -44,6 +44,7 @@ import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseSuccess;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.UserEnteredCalendars;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.database.TemplateSms;
 
@@ -579,16 +580,21 @@ public class CommonOperations {
         String [] currencyCostAmounts = context.getResources().getStringArray(R.array.currency_costs);
         String [] currencySigns = context.getResources().getStringArray(R.array.base_abbrs);
 
+        Calendar momentDay = Calendar.getInstance();
         for (int i=0; i<3; i++) {
             Currency currency = new Currency();
             currency.setName(currencyNames[i]);
             currency.setId(currencyIds[i]);
             currency.setMain(i == 0);
             currency.setAbbr(currencySigns[i]);
+            UserEnteredCalendars enteredCalendars = new UserEnteredCalendars();
+            enteredCalendars.setCurrencyId(currency.getId());
+            enteredCalendars.setCalendar(momentDay);
+            enteredCalendars.setId(i);
             daoSession.getCurrencyDao().insertOrReplace(currency);
+            daoSession.getUserEnteredCalendarsDao().insertOrReplace(enteredCalendars);
         }
 
-        Calendar momentDay = Calendar.getInstance();
         CurrencyCostState currencyCostState = new CurrencyCostState();
         currencyCostState.setDay(momentDay);
         Currency mainCur = daoSession.getCurrencyDao().queryBuilder().where(
@@ -609,14 +615,13 @@ public class CommonOperations {
                     break;
                 }
             }
-
             daoSession.getCurrencyWithAmountDao().insertOrReplace(withAmount);
         }
-
         currencyCostState.resetCurrencyWithAmountList();
 
-        for (CurrencyWithAmount currencyWithAmount : currencyCostState.getCurrencyWithAmountList()) {
+        for (CurrencyWithAmount currencyWithAmount: currencyCostState.getCurrencyWithAmountList()) {
             CurrencyCostState costState = new CurrencyCostState();
+            costState.setId(2);
             costState.setDay(momentDay);
             costState.setMainCurrency(currencyWithAmount.getCurrency());
             daoSession.getCurrencyCostStateDao().insertOrReplace(costState);
