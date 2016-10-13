@@ -129,7 +129,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     public PurposeEditFragment(Purpose purpose) {
         this.purpose = purpose;
     }
-
+    boolean forCustomPeriod=false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -272,6 +272,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         begCalendar = (Calendar) Calendar.getInstance();
                         beginDate.setText(dateFormat.format(begCalendar.getTime()));
                         keyb=true;
+                        forCustomPeriod = false;
                         break;
                     }
                     case 1: {
@@ -280,6 +281,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         tvperido.setVisibility(View.GONE);
                         etPeriodCount.setVisibility(View.VISIBLE);
                         keyb=false;
+                        forCustomPeriod = false;
+
 //                        textView.setText("Enter count week");
 //                        editText.setHint("Enter week");
 //                        editTextSecond.setVisibility(View.GONE);
@@ -301,6 +304,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         tvperido.setVisibility(View.GONE);
                         etPeriodCount.setVisibility(View.VISIBLE);
                         keyb=false;
+                        forCustomPeriod = false;
 
 //                        textView.setText("Enter count month");
 //                        editText.setHint("Enter month");
@@ -323,6 +327,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         tvperido.setVisibility(View.GONE);
                         etPeriodCount.setVisibility(View.VISIBLE);
                         keyb=false;
+                        forCustomPeriod = false;
+
 //
 //                        textView.setText("Enter count year");
 //                        editText.setHint("Enter year");
@@ -345,6 +351,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         tvperido.setVisibility(View.VISIBLE);
                         etPeriodCount.setVisibility(View.GONE);
                         keyb=false;
+                        forCustomPeriod = true;
+
 //
 //                        textView.setText("Enter between date");
 //                        editTextSecond.setVisibility(View.VISIBLE);
@@ -404,40 +412,42 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
             public void onDateSet(android.widget.DatePicker arg0, int arg1, int arg2, int arg3) {
                 begCalendar = new GregorianCalendar(arg1, arg2, arg3);
                 beginDate.setText(dateFormat.format(begCalendar.getTime()));
-                endCalendar = (Calendar) begCalendar.clone();
-                int period_long = 1;
-                if (!etPeriodCount.getText().toString().matches("")) {
-                    period_long = Integer.parseInt(etPeriodCount.getText().toString());
+                if(!forCustomPeriod) {
+                    endCalendar = (Calendar) begCalendar.clone();
+                    int period_long = 1;
+                    if (!etPeriodCount.getText().toString().matches("")) {
+                        period_long = Integer.parseInt(etPeriodCount.getText().toString());
 
-                    switch (periodPurpose.getSelectedItemPosition()) {
-                        case 1:
-                            //week
-                            endCalendar.add(Calendar.WEEK_OF_YEAR, period_long);
+                        switch (periodPurpose.getSelectedItemPosition()) {
+                            case 1:
+                                //week
+                                endCalendar.add(Calendar.WEEK_OF_YEAR, period_long);
 
 
-                            break;
-                        case 2:
-                            //year
-                            endCalendar.add(Calendar.MONTH, period_long);
+                                break;
+                            case 2:
+                                //year
+                                endCalendar.add(Calendar.MONTH, period_long);
 
-                            break;
-                        case 3:
-                            //year
-                            endCalendar.add(Calendar.YEAR, period_long);
-                            break;
-                        case 4:
-                            return;
-                        default:
-                            return;
+                                break;
+                            case 3:
+                                //year
+                                endCalendar.add(Calendar.YEAR, period_long);
+                                break;
+                            case 4:
+                                return;
+                            default:
+                                return;
+                        }
+
+
+                        // forCompute+=period_long;
+
+                        endDate.setText(dateFormat.format(endCalendar.getTime()));
+
+                    } else {
+                        etPeriodCount.setError(getString(R.string.first_enter_period));
                     }
-
-
-                    // forCompute+=period_long;
-
-                    endDate.setText(dateFormat.format(endCalendar.getTime()));
-
-                } else {
-                    etPeriodCount.setError(getString(R.string.first_enter_period));
                 }
             }
         };
@@ -447,40 +457,42 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
                 endCalendar = new GregorianCalendar(arg1, arg2, arg3);
                 endDate.setText(dateFormat.format(endCalendar.getTime()));
-                begCalendar = (Calendar) endCalendar.clone();
-                int period_long = 1;
-                if (!etPeriodCount.getText().toString().matches("")) {
-                    period_long = Integer.parseInt(etPeriodCount.getText().toString());
+                if(!forCustomPeriod) {
+                    begCalendar = (Calendar) endCalendar.clone();
+                    int period_long = 1;
+                    if (!etPeriodCount.getText().toString().matches("")) {
+                        period_long = Integer.parseInt(etPeriodCount.getText().toString());
 
-                    switch (periodPurpose.getSelectedItemPosition()) {
-                        case 1:
-                            //week
-                            begCalendar.add(Calendar.WEEK_OF_YEAR, - period_long);
+                        switch (periodPurpose.getSelectedItemPosition()) {
+                            case 1:
+                                //week
+                                begCalendar.add(Calendar.WEEK_OF_YEAR, -period_long);
 
 
-                            break;
-                        case 2:
-                            //year
-                            begCalendar.add(Calendar.MONTH, -  period_long);
+                                break;
+                            case 2:
+                                //year
+                                begCalendar.add(Calendar.MONTH, -period_long);
 
-                            break;
-                        case 3:
-                            //year
-                            begCalendar.add(Calendar.YEAR, - period_long);
-                            break;
-                        case 4:
-                            return;
-                        default:
-                            return;
+                                break;
+                            case 3:
+                                //year
+                                begCalendar.add(Calendar.YEAR, -period_long);
+                                break;
+                            case 4:
+                                return;
+                            default:
+                                return;
+                        }
+
+
+                        // forCompute+=period_long;
+
+                        beginDate.setText(dateFormat.format(begCalendar.getTime()));
+
+                    } else {
+                        etPeriodCount.setError(getString(R.string.first_enter_period));
                     }
-
-
-                    // forCompute+=period_long;
-
-                    beginDate.setText(dateFormat.format(begCalendar.getTime()));
-
-                } else {
-                    etPeriodCount.setError(getString(R.string.first_enter_period));
                 }
 
             }
@@ -558,6 +570,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     }
 
     public void forDateSyncFirst() {
+        if(!forCustomPeriod) {
         beginDate.setText(dateFormat.format(begCalendar.getTime()));
         endCalendar = (Calendar) begCalendar.clone();
         int period_long = 1;
@@ -593,11 +606,11 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
         } else {
             etPeriodCount.setError(getString(R.string.first_enter_period));
-        }
+        }}
     }
 
     public void forDateSyncLast() {
-
+        if(!forCustomPeriod) {
         endDate.setText(dateFormat.format(endCalendar.getTime()));
         begCalendar = (Calendar) endCalendar.clone();
         int period_long = 1;
@@ -633,7 +646,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
         } else {
             etPeriodCount.setError(getString(R.string.first_enter_period));
-        }
+        }}
 
     }
 

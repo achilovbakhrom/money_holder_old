@@ -1548,4 +1548,6 @@
     <string name="purpose_list_empty">Purpose list is empty</string>
     <string name="auto_op_is_empty">Auto operation list is empty</string>
     <string name="auto_operations">Auto operations</string>
+    <string name="god_and_years">years</string>
+    <string name="let_and_years">years</string>
 </resources>

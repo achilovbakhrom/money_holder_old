@@ -1605,4 +1605,19 @@ public class CommonOperations {
 			}
 		}
 	}
+    public String generateYearString(int t){
+        if (t > 1) {
+            if(t<5)
+                return  t+" "+context.getString(R.string.god_and_years);
+            else if(t<21)
+                return t+" "+context.getString(R.string.let_and_years);
+            else if(t>20&&t%10<5&&t>0)
+                return t+" "+context.getString(R.string.god_and_years);
+            else if(t>20)
+                return t+" "+context.getString(R.string.let_and_years);
+        } else {
+            return t+" "+context.getString(R.string.year);
+        }
+        return null;
+    }
 }

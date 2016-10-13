@@ -640,11 +640,10 @@
     <string name="percents">Проценты</string>
     <string name="other_income">Прочие</string>
     <string name="year">год</string>
-    <string name="moth">месяц</string>
-    <string name="day">день</string>
-    <string name="moths">месяцы</string>
-    <string name="years">годы</string>
-    <string name="days">дни</string>
+    <string name="moth">мес</string>
+    <string name="day">дн</string>
+    <string name="moths">мес</string>
+    <string name="days">дн</string>
     <string name="ends">Конец</string>
     <string name="archive">Архив</string>
     <string name="toritus">Данная система учета кредита, весьма гибкая. Условия кредита, могут быть различными, в связи с этим Вы можете настроить приложение под свои требования.</string>
@@ -1529,4 +1528,6 @@
     <string name="duration">Продолжительность</string>
     <string name="left_datee">Окончание:</string>
     <string name="left_acomuleted">Оставшаяся сумма:</string>
+    <string name="god_and_years">год</string>
+    <string name="let_and_years">лет</string>
 </resources>

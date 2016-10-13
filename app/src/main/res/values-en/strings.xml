@@ -1531,4 +1531,6 @@
     <string name="duration">Duration</string>
     <string name="left_datee">End:</string>
     <string name="left_acomuleted">Left amount:</string>
+    <string name="god_and_years">years</string>
+    <string name="let_and_years">years</string>
 </resources>

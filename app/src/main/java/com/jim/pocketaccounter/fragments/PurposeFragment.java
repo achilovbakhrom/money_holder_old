@@ -22,6 +22,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.Purpose;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
@@ -57,6 +58,8 @@ public class PurposeFragment extends Fragment {
     @Inject
     @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
+    @Inject
+    CommonOperations commonOperations;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.purpose_layout, container, false);
@@ -154,7 +157,7 @@ public class PurposeFragment extends Fragment {
             view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, persant));
 
 
-            if (item.getBegin() != null && item.getEnd() == null) {
+            if (item.getBegin() != null && item.getEnd() != null) {
                 view.leftdateGone.setVisibility(View.VISIBLE);
                 int t[] = InfoCreditFragment.getDateDifferenceInDDMMYYYY(item.getBegin().getTime(), item.getEnd().getTime());
                 if (t[0] * t[1] * t[2] < 0 && (t[0] + t[1] + t[2]) != 0) {
@@ -163,11 +166,9 @@ public class PurposeFragment extends Fragment {
                 } else {
                     String left_date_string = "";
                     if (t[0] != 0) {
-                        if (t[0] > 1) {
-                            left_date_string += Integer.toString(t[0]) + " " + getString(R.string.years);
-                        } else {
-                            left_date_string += Integer.toString(t[0]) + " " + getString(R.string.year);
-                        }
+
+                               left_date_string += commonOperations.generateYearString(t[0]);
+
                     }
                     if (t[1] != 0) {
                         if (!left_date_string.matches("")) {
