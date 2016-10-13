@@ -25,7 +25,10 @@ import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.melnykov.fab.FloatingActionButton;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -41,11 +44,13 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
     LogicManager logicManager;
     @Inject
     PAFragmentManager paFragmentManager;
+    @Inject
+    ToolbarManager toolbarManager;
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
     private AutoMarketDao autoMarketDao;
     private AutoAdapter autoAdapter;
-
+    private TextView ifListEmpty;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,12 +63,16 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(false);
         View rootView = inflater.inflate(R.layout.auto_market_layout, container, false);
+        ifListEmpty = (TextView) rootView.findViewById(R.id.ifListEmpty);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvAutoMarketFragment);
         autoAdapter = new AutoAdapter();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(autoAdapter);
-
+        toolbarManager.setToolbarIconsVisibility(View.GONE,View.GONE,View.GONE);
+        toolbarManager.setTitle(getResources().getString(R.string.auto_operations));
+        toolbarManager.setSpinnerVisibility(View.GONE);
+        toolbarManager.setSubtitle(null);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fbAutoMarketAdd);
         floatingActionButton.setOnClickListener(this);
         return rootView;
@@ -85,6 +94,13 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
 
         public AutoAdapter() {
             list = (ArrayList<AutoMarket>) autoMarketDao.loadAll();
+            if(list.size()==0){
+                ifListEmpty.setVisibility(View.VISIBLE);
+                ifListEmpty.setText(R.string.auto_op_is_empty);
+            }
+            else {
+                ifListEmpty.setVisibility(View.GONE);
+            }
         }
 
         public int getItemCount() {
@@ -95,7 +111,10 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
             view.catName.setText(list.get(position).getRootCategory().getName());
             view.subCatName.setText(list.get(position).getSubCategory() != null ?
                     list.get(position).getSubCategory().getName() : "no sub categry");
+            if(list.get(position).getSubCategory()==null)
             view.catIcon.setImageResource(getResources().getIdentifier(list.get(position).getRootCategory().getIcon(), "drawable", getActivity().getPackageName()));
+            else             view.catIcon.setImageResource(getResources().getIdentifier(list.get(position).getSubCategory() .getIcon(), "drawable", getActivity().getPackageName()));
+
             if (list.get(position).getAmount() == (int) list.get(position).getAmount()) {
                 view.amount.setText("" + ((int) list.get(position).getAmount()) + list.get(position).getCurrency().getAbbr());
             } else {

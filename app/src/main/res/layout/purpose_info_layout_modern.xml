@@ -216,6 +216,7 @@
             android:background="@drawable/edittext_with_toolbarcolor"
             android:layout_weight="1"/>
         <RelativeLayout
+            android:id="@+id/forGoneLeftDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >

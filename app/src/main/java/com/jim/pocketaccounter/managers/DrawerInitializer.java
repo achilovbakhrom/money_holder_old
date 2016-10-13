@@ -82,7 +82,7 @@ public class DrawerInitializer {
     TextView userName, userEmail;
     com.jim.pocketaccounter.utils.CircleImageView userAvatar;
     SharedPreferences spref;
-    public static SyncBase mySync;
+    public  SyncBase mySync;
 
     SharedPreferences.Editor ed;
     private RelativeLayout rlRecordsMain, rlRecordIncomes, rlRecordBalance;

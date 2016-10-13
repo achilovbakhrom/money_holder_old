@@ -17,7 +17,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -167,6 +169,11 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
             holder.left_date.setText(left_date_string);
         }
+
+        double template= itemCr.getValue_of_credit_with_procent()/100;
+        int procet=(int) (total_paid/template);
+        holder.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procet));
+
         if (itemCr.getValue_of_credit_with_procent() - total_paid <= 0) {
             holder.overall_amount.setText(context.getString(R.string.repaid));
             holder.pay_or_archive.setText(R.string.archive);
@@ -303,7 +310,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView nameCredit;
         View glav;
         ImageView iconn;
-
+        FrameLayout frameLayout;
         public myViewHolder(View v) {
             super(v);
             credit_procent = (TextView) v.findViewById(R.id.procent_of_credit);
@@ -315,6 +322,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             pay_or_archive = (TextView) v.findViewById(R.id.pay);
             nameCredit = (TextView) v.findViewById(R.id.NameCr);
             iconn = (ImageView) v.findViewById(R.id.iconaaa);
+            frameLayout = (FrameLayout) v.findViewById(R.id.zapolnit);
             glav = v;
         }
     }

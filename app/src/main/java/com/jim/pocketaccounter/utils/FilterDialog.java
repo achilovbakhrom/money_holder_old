@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.utils;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private FilterSelectable filterSelectable = null;
     private SharedPreferences sharedPreferences;
+
     public FilterDialog(Context context) {
         super(context);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -89,6 +91,7 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
             endTimeFilter.setText(dateFormat.format(endDate.getTime()));
         }
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,34 +142,28 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 dismiss();
             }
         });
+
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.spiner_gravity_right,
+                getContext(), R.layout.spiner_gravity_right4,
                 getContext().getResources().getStringArray(R.array.filter_titles_dialog));
-        String[] year = new String[51];
+        final String[] year = new String[51];
         for (int i = 0; i < 51; i++) {
             year[i] = (i + 2000) + "";
         }
         ArrayAdapter<String> yearAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.spiner_gravity_right, year);
+                getContext(), R.layout.spiner_gravity_right4, year);
         String[] months = getContext().getResources().getStringArray(R.array.months);
         ArrayAdapter<String> yearMonthAdapter = new ArrayAdapter<String>(
-                getContext(), R.layout.spiner_gravity_right, months);
+                getContext(), R.layout.spiner_gravity_right4, months);
+
         yearFilter.setAdapter(yearAdapter);
         yilFilter.setAdapter(yearAdapter);
         monthFilter.setAdapter(yearMonthAdapter);
         spinner.setAdapter(arrayAdapter);
-        spinner.setSelection(position);
-        for (int i = 0; i < year.length; i++) {
-            if (year[i].matches("" + Calendar.getInstance().get(Calendar.YEAR))) {
-                yearFilter.setSelection(i);
-                yilFilter.setSelection(i);
-            }
-        }
-        monthFilter.setSelection(Calendar.getInstance().get(Calendar.MONTH));
-        spinner.setOnItemSelectedListener(this);
+
         yearFilter.setOnItemSelectedListener(this);
-        yilFilter.setOnItemSelectedListener(this);
         monthFilter.setOnItemSelectedListener(this);
+        yilFilter.setOnItemSelectedListener(this);
         startTimeFilter.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -197,30 +194,39 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 return false;
             }
         });
+        spinner.setSelection(position);
+        spinner.setOnItemSelectedListener(this);
+        setOnShowListener(new OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                for (int i = 0; i < year.length; i++) {
+                    if (year[i].matches("" + Calendar.getInstance().get(Calendar.YEAR))) {
+                        yearFilter.setSelection(i);
+                        yilFilter.setSelection(i);
+                    }
+                }
+                monthFilter.setSelection(Calendar.getInstance().get(Calendar.MONTH));
+                spinner.setSelected(true);
+                spinner.setSelection(sharedPreferences.getInt("filter_pos", 0), true);
+            }
+        });
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
-            case R.id.spFilerStatistic:
-                mainSpinner(position);
-                break;
             case R.id.spFilterStatisticMonth:
                 if (monthFilter.getVisibility() != View.VISIBLE) return;
                 beginDate.set(Calendar.MONTH, position);
                 beginDate.set(Calendar.DAY_OF_MONTH, 1);
                 endDate = (Calendar) beginDate.clone();
                 endDate.set(Calendar.DAY_OF_MONTH, beginDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                Log.d("sss", format.format(beginDate.getTime())+":"+format.format(endDate.getTime())+"month");
                 break;
             case R.id.spFilterStatisticYearMont:
                 if (yilFilter.getVisibility() != View.VISIBLE) return;
                 beginDate.set(Calendar.YEAR, Integer.parseInt(yilFilter.getSelectedItem().toString()));
                 endDate.set(Calendar.YEAR, beginDate.get(Calendar.YEAR));
                 endDate.set(Calendar.DAY_OF_MONTH, endDate.getActualMaximum(Calendar.DAY_OF_MONTH));
-                SimpleDateFormat formatdate = new SimpleDateFormat("dd.MM.yyyy");
-                Log.d("sss", formatdate.format(beginDate.getTime())+":"+formatdate.format(endDate.getTime())+"year");
                 break;
             case R.id.etFilterStatisticYear:
                 if (yearFilter.getVisibility() != View.VISIBLE) return;
@@ -230,6 +236,9 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 endDate = (Calendar) beginDate.clone();
                 endDate.set(Calendar.MONTH, Calendar.DECEMBER);
                 endDate.set(Calendar.DAY_OF_MONTH, 31);
+                break;
+            case R.id.spFilerStatistic:
+                mainSpinner(position);
                 break;
         }
     }
@@ -303,7 +312,6 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
                 findViewById(R.id.yil_edit).setVisibility(View.VISIBLE);
                 findViewById(R.id.interval_edit).setVisibility(View.GONE);
 
-
                 beginDate.set(Calendar.YEAR, Integer.parseInt(yearFilter.getSelectedItem().toString()));
                 beginDate.set(Calendar.MONTH, Calendar.JANUARY);
                 beginDate.set(Calendar.DAY_OF_MONTH, 1);
@@ -325,9 +333,7 @@ public class FilterDialog extends Dialog implements AdapterView.OnItemSelectedLi
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
-
+    public void onNothingSelected(AdapterView<?> parent) {}
     public void setOnDateSelectedListener(FilterSelectable filterSelectable) {
         this.filterSelectable = filterSelectable;
     }

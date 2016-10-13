@@ -13,6 +13,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.DatePicker;
@@ -116,6 +117,7 @@ public class PocketAccounter extends AppCompatActivity {
     PocketAccounterActivityComponent component;
 
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
+
         if (component == null) {
             component = DaggerPocketAccounterActivityComponent
                     .builder()
@@ -126,12 +128,12 @@ public class PocketAccounter extends AppCompatActivity {
         return component;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        keyFromCalc=false;
-//        settingsManager.setup();
+        super.onCreate(null);
+        //        keyFromCalc=false;
+        //        settingsManager.setup();
+        Log.d("test11111", "onCreate: POCKET Activity");
         setContentView(R.layout.pocket_accounter);
         component((PocketAccounterApplication) getApplication()).inject(this);
         toolbarManager.init();

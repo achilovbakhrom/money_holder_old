@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -76,7 +77,7 @@ public class BorrowFragment extends Fragment {
     DaoSession daoSession;
     DebtBorrowDao debtBorrowDao;
     AccountDao accountDao;
-
+    TextView ifListEmpty;
     private RecyclerView recyclerView;
     private LinearLayoutManager mLayoutManager;
     private MyAdapter myAdapter;
@@ -111,6 +112,7 @@ public class BorrowFragment extends Fragment {
         debtBorrowDao = daoSession.getDebtBorrowDao();
         accountDao = daoSession.getAccountDao();
         recyclerView = (RecyclerView) view.findViewById(R.id.lvBorrowFragment);
+        ifListEmpty = (TextView) view.findViewById(R.id.ifListEmpty);
         myAdapter = new MyAdapter();
         mLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -156,6 +158,14 @@ public class BorrowFragment extends Fragment {
                     }
                 }
             }
+            if(persons.size()!=0){
+                ifListEmpty.setVisibility(View.GONE);
+            }
+            else {
+                //TODO Har bittasini zapisi bomi yomi tekshirish kere
+                ifListEmpty.setText("");
+                ifListEmpty.setVisibility(View.VISIBLE);
+            }
         }
 
         public int getItemCount() {
@@ -198,6 +208,14 @@ public class BorrowFragment extends Fragment {
                     qq += rk.getAmount();
                 }
             }
+
+            if(persons.get(position).getTo_archive())
+                view.forCango.setVisibility(View.GONE);
+            else view.forCango.setVisibility(View.VISIBLE);
+            double template= persons.get(position).getAmount()/100;
+            int procet=(int) (qq/template);
+            view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procet));
+
             String ss = (person.getAmount() - qq) == (int) (person.getAmount() - qq) ? "" + (int) (person.getAmount() - qq) : "" + (person.getAmount() - qq);
             if (person.getTo_archive() || qq >= person.getAmount()) {
                 view.BorrowPersonSumm.setText(getResources().getString(R.string.repaid));
@@ -220,6 +238,10 @@ public class BorrowFragment extends Fragment {
                 for (Recking rec : person.getReckings()) {
                     total += rec.getAmount();
                 }
+                double templatee= persons.get(position).getAmount()/100;
+                int procett=(int) (total/templatee);
+                view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procett));
+
                 if (total >= person.getAmount()) {
                     view.pay.setText(getString(R.string.archive));
                 } else view.pay.setText(getString(R.string.payy));
@@ -340,6 +362,9 @@ public class BorrowFragment extends Fragment {
                                                     for (Recking recking1 : persons.get(position).getReckings()) {
                                                         total += recking1.getAmount();
                                                     }
+                                                    double template= persons.get(position).getAmount()/100;
+                                                    int procet=(int) (total/template);
+                                                    view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procet));
                                                     if (persons.get(position).getAmount() <= total) {
                                                         view.pay.setText(getString(R.string.archive));
                                                     }
@@ -355,6 +380,9 @@ public class BorrowFragment extends Fragment {
                                                     for (Recking recking1 : persons.get(position).getReckings()) {
                                                         total += recking1.getAmount();
                                                     }
+                                                    double template= persons.get(position).getAmount()/100;
+                                                    int procet=(int) (total/template);
+                                                    view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procet));
                                                     if (persons.get(position).getAmount() <= total) {
                                                         view.pay.setText(getString(R.string.archive));
                                                     }
@@ -378,6 +406,9 @@ public class BorrowFragment extends Fragment {
                                             for (Recking recking1 : persons.get(position).getReckings()) {
                                                 total += recking1.getAmount();
                                             }
+                                            double template= persons.get(position).getAmount()/100;
+                                            int procet=(int) (total/template);
+                                            view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procet));
                                             if (persons.get(position).getAmount() <= total) {
                                                 view.pay.setText(getString(R.string.archive));
                                             }
@@ -401,6 +432,10 @@ public class BorrowFragment extends Fragment {
                                                 if (persons.get(position).getAmount() <= total) {
                                                     view.pay.setText(getString(R.string.archive));
                                                 }
+                                                double template= persons.get(position).getAmount()/100;
+                                                int procet=(int) (total/template);
+                                                view.frameLayout.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, procet));
+
                                                 logicManager.insertReckingDebt(recking);
                                                 view.BorrowPersonSumm.setText("" + ((persons.get(position).getAmount() - total) ==
                                                         ((int) (persons.get(position).getAmount() - total)) ?
@@ -500,7 +535,8 @@ public class BorrowFragment extends Fragment {
         public TextView call;
         public RelativeLayout rl;
         public LinearLayout fl;
-
+        public FrameLayout frameLayout;
+        public LinearLayout forCango;
         public ViewHolder(View view) {
             super(view);
             BorrowPersonName = (TextView) view.findViewById(R.id.tvBorrowPersonName);
@@ -513,6 +549,8 @@ public class BorrowFragment extends Fragment {
             call = (TextView) view.findViewById(R.id.call_person_debt_borrow);
             rl = (RelativeLayout) view.findViewById(R.id.rlDebtBorrowTop);
             fl = (LinearLayout) view.findViewById(R.id.frameLayout);
+            frameLayout = (FrameLayout) view.findViewById(R.id.zapolnit);
+            forCango = (LinearLayout) view.findViewById(R.id.forCango);
         }
     }
 

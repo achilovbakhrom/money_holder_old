@@ -445,7 +445,7 @@ public class CommonOperations {
     }
 
     public Calendar getFirstDay() {
-        Calendar calendar = null;
+        Calendar calendar = Calendar.getInstance();
         List<Account> accounts = daoSession.getAccountDao().loadAll();
         for (Account account : accounts) {
             if (calendar == null)

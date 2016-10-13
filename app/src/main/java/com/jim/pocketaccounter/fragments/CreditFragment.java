@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -39,10 +40,10 @@ public class CreditFragment extends Fragment {
     ToolbarManager toolbarManager;
 
     private CreditDetialsDao creditDetialsDao;
-    ArrayList<CreditDetials> crList;
     RecyclerView crRV;
     AdapterCridet crAdap;
     Context This;
+    TextView ifListEmpty;
     CreditTabLay.SvyazkaFragmentov svyaz;
     private CreditTabLay creditTabLay;
 
@@ -63,8 +64,6 @@ public class CreditFragment extends Fragment {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
-        crList= (ArrayList<CreditDetials>) creditDetialsDao.queryBuilder().list();
-        sortListFromDate(crList);
         This=getActivity();
     }
     public  CreditTabLay.ForFab getEvent(){
@@ -87,6 +86,13 @@ public class CreditFragment extends Fragment {
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
         View V=inflater.inflate(R.layout.fragment_credit, container, false);
+        ifListEmpty=(TextView) V.findViewById(R.id.ifListEmpty);
+        if(creditDetialsDao.queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list().size()==0){
+            ifListEmpty.setVisibility(View.VISIBLE);
+            ifListEmpty.setText(getResources().getString(R.string.credit_are_empty));
+        }
+        else ifListEmpty.setVisibility(View.GONE);
         crRV=(RecyclerView) V.findViewById(R.id.my_recycler_view);
         LinearManagerWithOutEx llm = new LinearManagerWithOutEx(This);
         crRV.setLayoutManager(llm);
@@ -134,6 +140,7 @@ public class CreditFragment extends Fragment {
     }
     public void updateToFirst(){
         Log.d("checkInterfaces", (crAdap==null)?"ADDING - AdapterIsNull":"ADDING - AdapterIsNotNull");
+         ifListEmpty.setVisibility(View.GONE);
         crAdap.updateList();
         try{
             (new Handler()).postDelayed(new Runnable() {

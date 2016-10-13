@@ -4,9 +4,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Handler;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
@@ -41,6 +46,7 @@ import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.report.ReportByAccount;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.TransferDialog;
@@ -50,6 +56,7 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,6 +69,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
@@ -100,7 +108,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	private int beltBalance;
 	private float oneDp;
 	private int black, grey;
-	private	SimpleDateFormat simpleDateFormat;
 	@Inject
 	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
@@ -110,11 +117,15 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 	@Inject SharedPreferences sharedPreferences;
 	@Inject @Named(value = "begin") Calendar begin;
 	@Inject @Named(value = "end") Calendar end;
+	@Inject @Named(value = "common_formatter") SimpleDateFormat simpleDateFormat;
+
+	Context context;
 	public RecordExpanseView(Context context, Calendar date) {
 		super(context);
 		((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
 		black = ContextCompat.getColor(context, R.color.toolbar_text_color);
 		grey = ContextCompat.getColor(context, R.color.toolbar_color);
+		this.context=context;
 		this.date = date;
 		gestureDetector = new GestureDetectorCompat(getContext(),this);
 		workspaceCornerRadius = getResources().getDimension(R.dimen.five_dp);
@@ -425,11 +436,124 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 									break;
 								}
 							}
+							final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 							switch(pos) {
 								case 0:
+
+									if(user!=null){
+										final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder((PocketAccounter) context);
+										builder.setMessage(R.string.sync_message)
+												.setPositiveButton(R.string.sync_short, new DialogInterface.OnClickListener() {
+													public void onClick(DialogInterface dialog, int id) {
+														FirebaseStorage storage = FirebaseStorage.getInstance();
+														StorageReference storageRef = storage.getReferenceFromUrl("gs://pocket-accounter.appspot.com");
+														SyncBase mySync;
+														mySync = new SyncBase(storageRef, (PocketAccounter)context, PocketAccounterGeneral.CURRENT_DB_NAME);
+
+
+														mySync.uploadBASE(user.getUid(), new SyncBase.ChangeStateLis() {
+															@Override
+															public void onSuccses() {
+																(new android.os.Handler()).postDelayed(new Runnable() {
+																	@Override
+																	public void run() {
+
+																	Toast.makeText(getContext(), R.string.sync_suc,Toast.LENGTH_SHORT).show();
+
+																	}
+																}, 2000);
+															}
+
+															@Override
+															public void onFailed(String e) {
+																Toast.makeText(getContext(), R.string.sync_failed,Toast.LENGTH_SHORT).show();
+															}
+														});
+
+													}
+												}).setNegativeButton(((PocketAccounter)context).getString(R.string.cancel1), new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog, int id) {
+												dialog.cancel();
+											}
+										});
+										builder.create().show();
+									}else {
+										Toast.makeText(getContext(),R.string.please_sign,Toast.LENGTH_SHORT).show();
+									}
+									for (int j=0; j<buttons.size(); j++)
+										buttons.get(j).setPressed(false);
+									PocketAccounter.PRESSED = false;
+									invalidate();
 									//google synchronization
 									break;
 								case 1:
+
+									if(user!=null) {
+										FirebaseStorage storage = FirebaseStorage.getInstance();
+										StorageReference storageRef = storage.getReferenceFromUrl("gs://pocket-accounter.appspot.com");
+										final SyncBase mySync;
+										mySync = new SyncBase(storageRef, (PocketAccounter)context, PocketAccounterGeneral.CURRENT_DB_NAME);
+
+										showProgressDialog(((PocketAccounter)context).getString(R.string.download));
+										mySync.meta_Message(user.getUid(), new SyncBase.ChangeStateLisMETA() {
+											@Override
+											public void onSuccses(final long inFormat) {
+												Date datee = new Date();
+												datee.setTime(inFormat);
+												final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(((PocketAccounter)context));
+												builder.setMessage(((PocketAccounter)context).getString(R.string.sync_last_data_sign_up) + (new SimpleDateFormat("dd.MM.yyyy kk:mm")).format(datee))
+														.setPositiveButton(((PocketAccounter)context).getString(R.string.yes), new DialogInterface.OnClickListener() {
+															public void onClick(DialogInterface dialog, int id) {
+																showProgressDialog(((PocketAccounter)context).getString(R.string.download));
+																mySync.downloadLast(user.getUid(), new SyncBase.ChangeStateLis() {
+																	@Override
+																	public void onSuccses() {
+																		((PocketAccounter)context).runOnUiThread(new Runnable() {
+																			@Override
+																			public void run() {
+																				hideProgressDialog();
+
+																			}
+																		});
+																	}
+
+																	@Override
+																	public void onFailed(String e) {
+																		hideProgressDialog();
+																		Toast.makeText(getContext(),R.string.sync_failed,Toast.LENGTH_SHORT).show();
+																	}
+																});
+															}
+														}).setNegativeButton(((PocketAccounter)context).getString(R.string.no), new DialogInterface.OnClickListener() {
+													public void onClick(DialogInterface dialog, int id) {
+														hideProgressDialog();
+														dialog.cancel();
+
+													}
+												});
+												builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+													@Override
+													public void onCancel(DialogInterface dialog) {
+														hideProgressDialog();
+													}
+												});
+												builder.create().show();
+											}
+
+											@Override
+											public void onFailed(Exception e) {
+												hideProgressDialog();
+
+											}
+										});
+									}
+									else {
+										Toast.makeText(getContext(),R.string.please_sign,Toast.LENGTH_SHORT).show();
+									}
+									for (int j=0; j<buttons.size(); j++)
+										buttons.get(j).setPressed(false);
+									PocketAccounter.PRESSED = false;
+									invalidate();
 									//google download
 									break;
 								case 2:
@@ -1115,6 +1239,22 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 		} else {
 			return null;
+		}
+	}
+	private ProgressDialog mProgressDialog;
+	public void showProgressDialog(String message) {
+		if (mProgressDialog == null) {
+			mProgressDialog = new ProgressDialog(((PocketAccounter)context));
+			mProgressDialog.setMessage(message);
+			mProgressDialog.setIndeterminate(true);
+		}
+
+		mProgressDialog.show();
+	}
+
+	public void hideProgressDialog() {
+		if (mProgressDialog != null && mProgressDialog.isShowing()) {
+			mProgressDialog.hide();
 		}
 	}
 }

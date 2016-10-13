@@ -26,6 +26,7 @@
                 android:layout_marginLeft="@dimen/ten_dp"
                 android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"
+                android:textColor="@color/black_for_glavniy_text"
                 android:layout_weight="1"
                 android:textSize="@dimen/sixteen_dp"/>
             <ImageView
@@ -61,21 +62,25 @@
             android:layout_height="wrap_content"
             android:id="@+id/tvTransferAddEditFrom"
             android:textSize="@dimen/fourteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:layout_marginTop="@dimen/ten_dp"
             android:layout_marginBottom="@dimen/five_dp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tvTransferAddEditTo"
+            android:textColor="@color/black_for_glavniy_text"
             android:textSize="@dimen/fourteen_dp"
             android:layout_marginBottom="@dimen/five_dp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/black_for_glavniy_text"
             android:id="@+id/tvTransferAddEditAmount"
             android:textSize="@dimen/fourteen_dp"/>
     </LinearLayout>
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
-        android:background="@color/toolbar_color"/>
+        android:background="@color/green_light_forline"/>
 </LinearLayout>

@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -54,7 +53,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     private RecyclerView recyclerView;
     private AddSmsParseFragment addSmsParseFragment;
     private FloatingActionButton floatingActionButton;
-
+    private TextView ifListEmpty;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +63,10 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_credit_tab_lay, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_sms_tab_lay, container, false);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
-        rootView.findViewById(R.id.viewpager).setVisibility(View.GONE);
-        rootView.findViewById(R.id.sliding_tabs).setVisibility(View.GONE);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvSmsParseAllList);
+        ifListEmpty = (TextView) rootView.findViewById(R.id.ifListEmpty);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         MyAdapter myAdapter = new MyAdapter();
@@ -95,7 +93,11 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
 
         public MyAdapter() {
             this.smsParseObjects = daoSession.getSmsParseObjectDao().loadAll();
-            Toast.makeText(getContext(), "" + smsParseObjects.size(), Toast.LENGTH_SHORT).show();
+            if(smsParseObjects.size()==0){
+                ifListEmpty.setVisibility(View.VISIBLE);
+                ifListEmpty.setText(R.string.sms_pars_list_empty);
+            }
+            else ifListEmpty.setVisibility(View.GONE);
         }
 
         public int getItemCount() {

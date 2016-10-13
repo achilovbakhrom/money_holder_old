@@ -122,28 +122,28 @@ public class ToolbarManager {
     }
     SearchFragment.TextChangeListnerW textChangeListnerW;
     SearchFragment searchFragment;
-     public void openSearchTools( ){
+    public void openSearchTools( ){
         setImageToHomeButton(R.drawable.ic_back_button);
         searchEditToolbar.setVisibility(View.VISIBLE);
         searchEditToolbar.setFocusableInTouchMode(true);
         searchEditToolbar.requestFocus();
 
-         if (searchFragment == null) {
+        if (searchFragment == null) {
 
-             searchFragment = new SearchFragment();
-             textChangeListnerW=searchFragment.getListnerChange();
+            searchFragment = new SearchFragment();
+            textChangeListnerW=searchFragment.getListnerChange();
 
-             searchEditToolbar.addTextChangedListener(new TextWatcher() {
-                 @Override
-                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                 @Override
-                 public void onTextChanged(CharSequence s, int start, int before, int count) {}
-                 @Override
-                 public void afterTextChanged(Editable s) {
-                     textChangeListnerW.onTextChange(searchEditToolbar.getText().toString());
-                 }
-             });
-         }
+            searchEditToolbar.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                @Override
+                public void afterTextChanged(Editable s) {
+                    textChangeListnerW.onTextChange(searchEditToolbar.getText().toString());
+                }
+            });
+        }
 
         fragmentManager.displayFragment(searchFragment, "salom");
 
@@ -172,7 +172,7 @@ public class ToolbarManager {
         toolbar.setTitle(null);
         toolbar.setSubtitle(null);
 
-     }
+    }
     Runnable runForItClose;
     public void closeSearchFragment(){
         whenKeyboardClosed=new Handler();

@@ -112,12 +112,12 @@ public class TransferAddEditDialog extends Dialog {
             });
             String fromName = getAccountOrPurposeNameById(result.get(position).getSourceId());
             if (fromName != null)
-                view.tvTransferAddEditFrom.setText(getContext().getResources().getString(R.string.from)+fromName);
+                view.tvTransferAddEditFrom.setText(getContext().getResources().getString(R.string.from)+" "+fromName);
             DecimalFormat dateFormat = new DecimalFormat("0.00");
             String toName = getAccountOrPurposeNameById(result.get(position).getTargetId());
             if (toName != null)
-                view.tvTransferAddEditTo.setText(getContext().getResources().getString(R.string.to)+toName);
-            view.tvTransferAddEditAmount.setText(getContext().getResources().getString(R.string.amount)+
+                view.tvTransferAddEditTo.setText(getContext().getResources().getString(R.string.to)+" "+toName);
+            view.tvTransferAddEditAmount.setText(getContext().getResources().getString(R.string.amount)+" "+
                     dateFormat.format(result.get(position).getAmount())+result.get(position).getCurrency().getAbbr());
         }
 

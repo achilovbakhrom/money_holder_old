@@ -47,6 +47,7 @@ import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -87,6 +88,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     IconChooseDialog iconChooseDialog;
     @Inject
     DatePicker datePicker;
+    @Inject
+    CommonOperations commonOperations;
 
     private String choosenIcon = "icons_1";
     private Purpose purpose;
@@ -131,10 +134,10 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        begCalendar = (Calendar) Calendar.getInstance().clone();
-        endCalendar = (Calendar) Calendar.getInstance().clone();
+        begCalendar = (Calendar) Calendar.getInstance();
+        endCalendar = (Calendar) Calendar.getInstance();
     }
-
+    boolean keyb=true;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.purpose_edit_layout_moder, container, false);
         purposeName = (EditText) rootView.findViewById(R.id.etPurposeEditName);
@@ -153,7 +156,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         for (Currency c : currencyDao.queryBuilder().list()) {
             curList.add(c.getAbbr());
         }
-        endDate = (EditText) rootView.findViewById(R.id.tvPurposeEndDate);
+
+        beginDate.setText(dateFormat.format(begCalendar.getTime()));
         // ------------ Toolbar setting ----------
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
@@ -202,8 +206,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         // ------------ icon set ----------
         int resId = getResources().getIdentifier(purpose != null ? purpose.getIcon() : choosenIcon, "drawable", getContext().getPackageName());
         Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-        Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
-                (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+        Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int)commonOperations.convertDpToPixel((int)getResources().getDimension(R.dimen.twentyfive_dp)) ,
+                (int)commonOperations.convertDpToPixel((int)getResources().getDimension(R.dimen.twentyfive_dp)), true);
         iconPurpose.setImageBitmap(bitmap);
         iconPurpose.setOnClickListener(new OnClickListener() {
             @Override
@@ -250,11 +254,12 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                 final EditText editText = (EditText) dialogView.findViewById(R.id.etDialogPurpose);
                 final EditText editTextSecond = (EditText) dialogView.findViewById(R.id.etDialogPurposeSecond);
                 final TextView textView = (TextView) dialogView.findViewById(R.id.tvDialogPurposeTitle);
-                if (begCalendar != null) {
+                if (begCalendar != null&&!keyb) {
                     forDateSyncFirst();
-                } else if (endCalendar != null) {
+                } else if (endCalendar != null&&!keyb) {
                     forDateSyncLast();
                 }
+
                 switch (position) {
                     case 0: {
                         relativeLayoutForGone.setVisibility(View.GONE);
@@ -263,8 +268,10 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         etPeriodCount.setVisibility(View.GONE);
                         begCalendar = null;
                         endCalendar = null;
-                        beginDate.setText("");
                         endDate.setText("");
+                        begCalendar = (Calendar) Calendar.getInstance();
+                        beginDate.setText(dateFormat.format(begCalendar.getTime()));
+                        keyb=true;
                         break;
                     }
                     case 1: {
@@ -272,7 +279,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         linearLayoutForGone.setVisibility(View.VISIBLE);
                         tvperido.setVisibility(View.GONE);
                         etPeriodCount.setVisibility(View.VISIBLE);
-
+                        keyb=false;
 //                        textView.setText("Enter count week");
 //                        editText.setHint("Enter week");
 //                        editTextSecond.setVisibility(View.GONE);
@@ -293,7 +300,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         linearLayoutForGone.setVisibility(View.VISIBLE);
                         tvperido.setVisibility(View.GONE);
                         etPeriodCount.setVisibility(View.VISIBLE);
-
+                        keyb=false;
 
 //                        textView.setText("Enter count month");
 //                        editText.setHint("Enter month");
@@ -315,6 +322,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         linearLayoutForGone.setVisibility(View.VISIBLE);
                         tvperido.setVisibility(View.GONE);
                         etPeriodCount.setVisibility(View.VISIBLE);
+                        keyb=false;
 //
 //                        textView.setText("Enter count year");
 //                        editText.setHint("Enter year");
@@ -336,6 +344,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         linearLayoutForGone.setVisibility(View.VISIBLE);
                         tvperido.setVisibility(View.VISIBLE);
                         etPeriodCount.setVisibility(View.GONE);
+                        keyb=false;
 //
 //                        textView.setText("Enter between date");
 //                        editTextSecond.setVisibility(View.VISIBLE);
@@ -519,9 +528,9 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (begCalendar != null) {
+                if (begCalendar != null&&!s.equals("")) {
                     forDateSyncFirst();
-                } else if (endCalendar != null) {
+                } else if (endCalendar != null&&!s.equals("")) {
                     forDateSyncLast();
                 }
             }

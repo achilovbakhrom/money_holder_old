@@ -1538,4 +1538,14 @@
     <string name="enter_the_amount">Enter the amount</string>
     <string name="term_of_purpose">Term of purpose</string>
     <string name="duration">Duration</string>
+    <string name="saved_money">Saved money:</string>
+    <string name="purpose_ammount">Purpose amount:</string>
+    <string name="sync_suc">Sycn sacsussful</string>
+    <string name="sync_failed">Sycn failed</string>
+    <string name="credit_are_empty">Cridet list is empty</string>
+    <string name="credit_arcive_are_empty">Archive list is empty</string>
+    <string name="sms_pars_list_empty">Sms parsing list is empty</string>
+    <string name="purpose_list_empty">Purpose list is empty</string>
+    <string name="auto_op_is_empty">Auto operation list is empty</string>
+    <string name="auto_operations">Auto operations</string>
 </resources>

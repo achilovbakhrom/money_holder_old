@@ -9,14 +9,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.jim.pocketaccounter.PocketAccounter;
+import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.credit.AdapterCridetArchive;
+import com.jim.pocketaccounter.database.CreditDetialsDao;
+import com.jim.pocketaccounter.database.DaoSession;
+
+import javax.inject.Inject;
 
 public class CreditArchiveFragment extends Fragment {
     RecyclerView crRV;
     AdapterCridetArchive crAdap;
     Context This;
+    @Inject
+    DaoSession daoSession;
+    TextView ifListEmpty;
     AdapterCridetArchive.GoCredFragForNotify svyazForNotifyFromArchAdap;
     public void setSvyazToAdapter(AdapterCridetArchive.GoCredFragForNotify goNotify){
         svyazForNotifyFromArchAdap=goNotify;
@@ -28,6 +38,7 @@ public class CreditArchiveFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
          This=getActivity();
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
     }
     public CreditTabLay.SvyazkaFragmentov getSvyaz(){
         return new CreditTabLay.SvyazkaFragmentov() {
@@ -43,6 +54,15 @@ public class CreditArchiveFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d("checkInterfaces", "onCreatView : " );
         View V=inflater.inflate(R.layout.fragment_credit, container, false);
+        ifListEmpty=(TextView) V.findViewById(R.id.ifListEmpty);
+        if(daoSession.getCreditDetialsDao().queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).build().list().size()==0){
+            ifListEmpty.setVisibility(View.VISIBLE);
+            ifListEmpty.setText(getResources().getString(R.string.credit_arcive_are_empty));
+        }
+        else {
+            ifListEmpty.setVisibility(View.GONE);
+        }
         crRV=(RecyclerView) V.findViewById(R.id.my_recycler_view);
         LinearLayoutManager llm = new LinearLayoutManager(This);
         crRV.setLayoutManager(llm);

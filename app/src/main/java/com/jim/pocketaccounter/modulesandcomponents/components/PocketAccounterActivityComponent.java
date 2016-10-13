@@ -21,6 +21,7 @@ import com.jim.pocketaccounter.fragments.AddSmsParseFragment;
 import com.jim.pocketaccounter.fragments.AutoMarketFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CategoryInfoFragment;
+import com.jim.pocketaccounter.fragments.CreditArchiveFragment;
 import com.jim.pocketaccounter.fragments.CreditFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyChooseFragment;
@@ -129,5 +130,6 @@ public interface PocketAccounterActivityComponent {
     void inject(ReportByIncomeExpanseBarFragment reportByIncomeExpanseBarFragment);
     void inject(AddSmsParseFragment addSmsParseFragment);
     void inject(TransferAddEditDialog transferAddEditDialog);
+    void inject(CreditArchiveFragment creditArchiveFragment);
     //    void inject(LogicManager logicManager);
 }

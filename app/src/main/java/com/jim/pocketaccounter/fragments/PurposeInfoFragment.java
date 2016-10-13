@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.database.PurposeDao;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -74,7 +76,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     FilterDialog filterDialog;
     @Inject
     TransferDialog transferDialog;
-
+    @Inject
+    CommonOperations commonOperations;
     private MyAdapter myAdapter;
     private Purpose purpose;
     private ImageView iconPurpose;
@@ -88,7 +91,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     private TextView Allcashes;
     private RecyclerView recyclerView;
     private boolean MODE = false;
-
+    private RelativeLayout forGoneLeftDate;
     private Calendar beginDate;
     private Calendar endDate;
 
@@ -106,6 +109,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         beginDate = null;
         endDate = null;
+        forGoneLeftDate = (RelativeLayout) rooView.findViewById(R.id.forGoneLeftDate);
         deleteOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoDelete);
         filterOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoFilter);
         cashAdd = (TextView) rooView.findViewById(R.id.tvPurposeInfoToCash);
@@ -126,6 +130,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         if (position == 0) {
                             paFragmentManager.displayFragment(new PurposeEditFragment(purpose));
+                            operationsListDialog.dismiss();
                         } else {
                             switch (logicManager.deletePurpose(purpose)) {
                                 case LogicManagerConstants.REQUESTED_OBJECT_NOT_FOUND: {
@@ -155,7 +160,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
 
         // ------- LEFT DATE MODUL -------
 
-
+        if(purpose.getBegin()!=null&&purpose.getEnd()!=null){
+            forGoneLeftDate.setVisibility(View.VISIBLE);
         int t[]=InfoCreditFragment.getDateDifferenceInDDMMYYYY(purpose.getBegin().getTime(),purpose.getEnd().getTime());
         if(t[0]*t[1]*t[2]<0&&(t[0]+t[1]+t[2])!=0){
             myLefDate.setText(R.string.ends);
@@ -194,6 +200,9 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             }
             myLefDate.setText(left_date_string);
         }
+        }else {
+            forGoneLeftDate.setVisibility(View.GONE);
+        }
 
 
         iconPurpose = (ImageView) rooView.findViewById(R.id.ivPurposeinfoIcon);
@@ -203,8 +212,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         // ---------- icon set start ---------
         int resId = getResources().getIdentifier(purpose.getIcon(), "drawable", getContext().getPackageName());
         Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-        Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
-                (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+        Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.twentyfive_dp) ,
+                (int)getResources().getDimension(R.dimen.twentyfive_dp), true);
         iconPurpose.setImageBitmap(bitmap);
         // ---------- end icon set ---------
         namePurpose.setText(purpose.getDescription());

@@ -53,38 +53,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/ten_dp"
+        android:paddingRight="@dimen/ten_dp"
+        android:paddingBottom="@dimen/ten_dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/sixteen_dp"
-            android:layout_marginRight="@dimen/sixteen_dp"
-            android:orientation="vertical">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/between"
-                    android:textColor="@color/black_for_glavniy_text"
-                    android:textSize="@dimen/sixteen_sp"
-                    android:layout_alignParentLeft="true"
-                    />
-
-                <Spinner
-                    android:id="@+id/spFilerStatistic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_alignParentRight="true"
-                    android:gravity="right"/>
-
-            </RelativeLayout>
+            android:orientation="vertical"
+            android:paddingTop="@dimen/two_dp"
+            android:layout_below="@+id/rlZayibsl"
+            >
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -108,7 +88,11 @@
                             android:text="@string/mont"
                             android:layout_alignParentLeft="true"
                             android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/sixteen_sp" />
+                            android:textSize="@dimen/sixteen_sp"
+                            android:gravity="center_vertical"
+                            android:layout_alignBottom="@+id/spFilterStatisticMonth"
+                            android:layout_alignTop="@+id/spFilterStatisticMonth"
+                            />
 
                         <Spinner
                             android:id="@+id/spFilterStatisticMonth"
@@ -130,6 +114,9 @@
                             android:text="@string/yearr"
                             android:layout_alignParentLeft="true"
                             android:textColor="@color/black_for_glavniy_text"
+                            android:gravity="center_vertical"
+                            android:layout_alignBottom="@+id/spFilterStatisticYearMont"
+                            android:layout_alignTop="@+id/spFilterStatisticYearMont"
                             android:textSize="@dimen/sixteen_sp" />
 
                         <Spinner
@@ -160,14 +147,19 @@
                             android:text="Начало"
                             android:textColor="@color/black_for_glavniy_text"
                             android:layout_alignParentLeft="true"
-                            android:textSize="@dimen/sixteen_sp" />
+                            android:textSize="@dimen/sixteen_sp"
+                            android:gravity="center_vertical"
+                            android:layout_alignBottom="@+id/etFilterStatisticStartTime"
+                            android:layout_alignTop="@+id/etFilterStatisticStartTime" />
 
                         <EditText
                             android:id="@+id/etFilterStatisticStartTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/ten_dp"
+                            android:text="start day"
                             android:layout_alignParentRight="true"
-                            android:text="start day" />
+                            />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -181,13 +173,17 @@
                             android:text="Конец"
                             android:layout_alignParentLeft="true"
                             android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/sixteen_sp" />
+                            android:textSize="@dimen/sixteen_sp"
+                            android:gravity="center_vertical"
+                            android:layout_alignBottom="@+id/etFilterStatisticEndTime"
+                            android:layout_alignTop="@+id/etFilterStatisticEndTime" />
 
                         <EditText
                             android:id="@+id/etFilterStatisticEndTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
+
                             android:text="end day"/>
                     </RelativeLayout>
 
@@ -219,6 +215,35 @@
             </RelativeLayout>
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ten_dp"
+            android:id="@+id/rlZayibsl"
+            android:layout_alignParentTop="true"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/between"
+                android:textColor="@color/black_for_glavniy_text"
+                android:textSize="@dimen/sixteen_sp"
+                android:gravity="center_vertical"
+                android:layout_alignParentLeft="true"
+                android:layout_alignBottom="@+id/spFilerStatistic"
+                android:layout_alignTop="@+id/spFilerStatistic" />
+
+            <Spinner
+                android:id="@+id/spFilerStatistic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                android:gravity="right"/>
+
+        </RelativeLayout>
     </RelativeLayout>
 
 
