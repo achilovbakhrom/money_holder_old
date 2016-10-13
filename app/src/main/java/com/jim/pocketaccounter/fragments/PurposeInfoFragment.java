@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,6 +90,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     private TextView Allcashes;
     private RecyclerView recyclerView;
     private boolean MODE = false;
+    private double qoldiq;
     private RelativeLayout forGoneLeftDate;
     private Calendar beginDate;
     private Calendar endDate;
@@ -105,8 +105,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rooView = inflater.inflate(R.layout.purpose_info_layout_modern, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        View rooView = inflater.inflate(R.layout.purpose_info_layout_modern, container, false);
         beginDate = null;
         endDate = null;
         forGoneLeftDate = (RelativeLayout) rooView.findViewById(R.id.forGoneLeftDate);
@@ -204,10 +204,9 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             forGoneLeftDate.setVisibility(View.GONE);
         }
 
-
         iconPurpose = (ImageView) rooView.findViewById(R.id.ivPurposeinfoIcon);
         namePurpose = (TextView) rooView.findViewById(R.id.tvPurposeInfoName);
-        amountPurpose = (TextView) rooView.findViewById(R.id.tvPurposeInfoAmount);
+        amountPurpose = (TextView) rooView.findViewById(R.id.tvPurposeInfoLeftAmount);
         recyclerView = (RecyclerView) rooView.findViewById(R.id.rvPurposeInfo);
         // ---------- icon set start ---------
         int resId = getResources().getIdentifier(purpose.getIcon(), "drawable", getContext().getPackageName());
@@ -309,6 +308,15 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         public MyAdapter() {
             allPurposes = (ArrayList<AccountOperation>) reportManager.getAccountOpertions(purpose);
             purposes = (ArrayList<AccountOperation>) allPurposes.clone();
+            double qoldiq = 0;
+            for (AccountOperation accountOperation: reportManager.getAccountOpertions(purpose)) {
+                if (accountOperation.getTargetId().equals(purpose.getId())) {
+                    qoldiq += accountOperation.getAmount();
+                } else {
+                    qoldiq -= accountOperation.getAmount();
+                }
+            }
+            Allcashes.setText(parseToWithoutNull(qoldiq)+purpose.getCurrency().getAbbr());
             tek = new boolean[purposes.size()];
         }
 

@@ -263,6 +263,7 @@ public class PocketAccounter extends AppCompatActivity {
                         daoSession.getFinanceRecordDao().insertOrReplace(financeRecord);
                 }
             }
+
         }
     }
 

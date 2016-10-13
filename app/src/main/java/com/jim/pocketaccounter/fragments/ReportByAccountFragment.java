@@ -288,7 +288,7 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                             }
                         }
                         for (int i=0; i<pairs.size(); i++)
-                            result.add(pairs.get(i).getAccount().getName() + ", "+pairs.get(i).getCurrency().getName());
+                            result.add(pairs.get(i).getAccount().getName() + ", "+pairs.get(i).getCurrency().getAbbr());
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                                 getContext(),
                                 R.layout.spiner_gravity_right2,

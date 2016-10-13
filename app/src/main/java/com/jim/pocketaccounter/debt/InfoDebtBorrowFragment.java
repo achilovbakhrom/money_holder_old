@@ -385,6 +385,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                                                    isCheks[i] = false;
                                                                }
                                                                payText.setText(getResources().getString(R.string.payy));
+                                                               mode = 1;
+                                                               peysAdapter.notifyDataSetChanged();
                                                                d.cancel();
                                                            }
                                                        });
@@ -623,6 +625,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                         isCheks[position] = !isCheks[position];
                     }
                 });
+            } else {
+                view.rootView.setOnClickListener(null);
             }
             if (!list.get(position).getComment().matches("")) {
                 view.comment.setText(getResources().getString(R.string.comment) + ": " + list.get(position).getComment());
