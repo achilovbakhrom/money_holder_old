@@ -79,7 +79,6 @@ public class ReportManager {
         accountDao = daoSession.getAccountDao();
         smsParseSuccessDao = daoSession.getSmsParseSuccessDao();
     }
-
     public List<ReportObject> getReportObjects(boolean toMainCurrency, Calendar begin, Calendar end, Class ...classes) {
         List<ReportObject> result = new ArrayList<>();
         for (Class cl : classes) {
@@ -182,12 +181,15 @@ public class ReportManager {
                         if (toMainCurrency) {
                             reportObject.setCurrency(commonOperations.getMainCurrency());
                             reportObject.setAmount(commonOperations.getCost(financeRecord.getDate(), financeRecord.getCurrency(), financeRecord.getAmount()));
-                        }
-                        else {
+                        } else {
                             reportObject.setCurrency(financeRecord.getCurrency());
                             reportObject.setAmount(financeRecord.getAmount());
                         }
-                        reportObject.setDescription(financeRecord.getCategory().getName());
+                        if (financeRecord.getSubCategory()==null) {
+                            reportObject.setDescription(financeRecord.getCategory().getName());
+                        } else {
+                            reportObject.setDescription(financeRecord.getCategory().getName() +","+ financeRecord.getSubCategory().getName());
+                        }
                         result.add(reportObject);
                     }
                 }
@@ -486,8 +488,10 @@ public class ReportManager {
         List<CreditDetials> credits = new ArrayList<>();
         for (CreditDetials creditDetials : temp) {
             for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-                if (reckingCredit.getPayDate().compareTo(begin)>=0 && reckingCredit.getPayDate().compareTo(end)<=0)
+                if (reckingCredit.getPayDate().compareTo(begin)>=0 && reckingCredit.getPayDate().compareTo(end)<=0) {
                     credits.add(creditDetials);
+                    break;
+                }
             }
         }
 
@@ -509,6 +513,25 @@ public class ReportManager {
             }
             creditTotalPaid = 0.0;
         }
+
+//        for (int i=0; i<credits.size(); i++) {
+//            for (int j=0; j<credits.get(i).getReckings().size(); j++) {
+//                if (credits.get(i).getReckings().get(j).getPayDate().compareTo(begin)>=0 && credits.get(i).getReckings().get(j).getPayDate().compareTo(end)<=0)
+//                    creditTotalPaid = creditTotalPaid
+//                            + commonOperations.getCost(credits.get(i).getReckings().get(j).getPayDate(),
+//                            credits.get(i).getValyute_currency(), credits.get(i).getReckings().get(j).getAmount());
+//            }
+//            if (creditTotalPaid != 0) {
+//                CategoryDataRow creditDataRow = new CategoryDataRow();
+//                RootCategory creditCategory = new RootCategory();
+//                creditCategory.setType(PocketAccounterGeneral.EXPENSE);
+//                creditCategory.setName(credits.get(i).getCredit_name());
+//                creditDataRow.setCategory(creditCategory);
+//                creditDataRow.setTotalAmount(creditTotalPaid);
+//                result.add(creditDataRow);
+//            }
+////            creditTotalPaid = 0.0;
+//        }
         //credit end
 
         //debt borrows begin
@@ -695,7 +718,7 @@ public class ReportManager {
                 reportObject.setAmount(fr.getAmount());
                 reportObject.setCurrency(fr.getCurrency());
                 reportObject.setAccount(fr.getAccount());
-                reportObject.setDescription(fr.getCategory().getName() + ",");
+                reportObject.setDescription(fr.getCategory().getName());
                 if (fr.getCategory().getType() == PocketAccounterGeneral.INCOME) {
                     reportObject.setType(PocketAccounterGeneral.INCOME);
                     incomes.add(reportObject);

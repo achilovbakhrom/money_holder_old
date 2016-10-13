@@ -1550,4 +1550,5 @@
     <string name="auto_operations">Auto operations</string>
     <string name="god_and_years">years</string>
     <string name="let_and_years">years</string>
+    <string name="report_by_account_title">Отчет по счетам</string>
 </resources>

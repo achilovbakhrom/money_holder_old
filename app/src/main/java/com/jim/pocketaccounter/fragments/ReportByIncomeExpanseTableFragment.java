@@ -74,7 +74,10 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
     SimpleDateFormat simpleDateFormat;
     @Inject
     ReportManager reportManager;
-    @Inject CommonOperations commonOperations;
+    @Inject
+    CommonOperations commonOperations;
+    @Inject
+    SharedPreferences sharedPreferences;
     private TableView tvReportIncomeExpance;
     private List<IncomeExpanseDataRow> sortReportIncomeExpance;
     private Calendar begin, end;
@@ -111,13 +114,6 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         tvAverageProfit = (TextView) rootView.findViewById(R.id.tvAverageProfit);
         init();
         sortReportIncomeExpance = reportManager.getIncomeExpanceReport(begin,end);
-        if (sortReportIncomeExpance.size() != 0) {
-            for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
-                Log.d("date", " : " + sortReportIncomeExpance.get(i).getDate());
-            }
-        } else {
-            Log.d("date", "Empty");
-        }
         tvReportIncomeExpance.setTitle(titles, false);
         tvReportIncomeExpance.setDatas((ArrayList<? extends Object>) sortReportIncomeExpance);
         calculateDatas();
@@ -127,13 +123,6 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         this.begin = (Calendar) begin.clone();
         this.end = (Calendar) end.clone();
         sortReportIncomeExpance = reportManager.getIncomeExpanceReport(begin,end);
-        if (sortReportIncomeExpance.size() != 0) {
-            for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
-                Log.d("date", " : " + sortReportIncomeExpance.get(i).getDate());
-            }
-        } else {
-            Log.d("date", "Empty");
-        }
         tvReportIncomeExpance.setDatas((ArrayList<? extends Object>) sortReportIncomeExpance);
         calculateDatas();
     }
@@ -149,7 +138,6 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         double totalIncome = 0.0, totalExpanse = 0.0, totalProfit = 0.0,
                 averageIncome = 0.0, averageExpanse = 0.0, averageProfit = 0.0;
         totalProfit = totalIncome - totalExpanse;
-        Log.d("total","totalProfit" + totalProfit);
         if (sortReportIncomeExpance != null) {
             for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
                 totalIncome = totalIncome + sortReportIncomeExpance.get(i).getTotalIncome();
@@ -168,7 +156,7 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         tvAverageProfit.setText(getString(R.string.report_income_expanse_aver_profit) + format.format(averageProfit) + abbr);
     }
     private void init() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String setting = sharedPreferences.getString("report_filter", "0");
         begin = Calendar.getInstance();
         end = Calendar.getInstance();

@@ -207,6 +207,7 @@ public class TableView extends LinearLayout {
                 holder.tvTableSecondCol.setText(format.format(row.getDate().getTime()));
 //                abbr = row.getCurrency().getAbbr();
 //                holder.tvTableThirdCol.setText(decimalFormat.format(row.getAmount()) + abbr);
+//                if (row.getDescription())
                 String text = row.getDescription();
 //                if (row.getDescription() != null)
 //                    text = text + ", " + row.getDescription();

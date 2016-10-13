@@ -151,6 +151,11 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                 R.layout.spiner_gravity_right2,
                 result);
         toolbarManager.getSpinner().setAdapter(arrayAdapter);
+        if (pairs.isEmpty()){
+            toolbarManager.setTitle(getString(R.string.report_by_account_title));
+        } else {
+            toolbarManager.setTitle("");
+        }
         toolbarManager.getSpinner().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -289,6 +294,11 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
                                 R.layout.spiner_gravity_right2,
                                 result);
                         toolbarManager.getSpinner().setAdapter(arrayAdapter);
+                        if (pairs.isEmpty()){
+                            toolbarManager.setTitle(getString(R.string.report_by_account_title));
+                        } else {
+                            toolbarManager.setTitle("");
+                        }
                     }
                 });
                 break;
@@ -359,7 +369,7 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
             else
                 totalExpanse = totalExpanse + sortReportByAccount.get(i).getAmount();
         }
-        tbReportByAccount.setDatas(sortReportByAccount);
+        tbReportByAccount.setDatas((ArrayList<? extends Object>) sortReportByAccount);
         totalProfit = totalIncome - totalExpanse;
         averageProfit = totalProfit / betweenDays;
         tvReportbyAccountTotalIncome.setText(getResources().getString(R.string.report_income_expanse_total_income) + decimalFormat.format(totalIncome) + abbr);
