@@ -109,7 +109,7 @@ public class SMSParseInfoFragment extends Fragment {
         private int posIncExp = -1;
         private int posAmount = -1;
 
-        int txSize = (int) getResources().getDimension(R.dimen.fourteen_dp);
+        int txSize = (int) ((int) getResources().getDimension(R.dimen.fourteen_dp)/getResources().getDisplayMetrics().density);
 
         public MyAdapter() {
             successList = daoSession.getSmsParseSuccessDao().queryBuilder().
@@ -234,8 +234,8 @@ public class SMSParseInfoFragment extends Fragment {
             final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
-            int eni = (int) ((int) (8 * getResources().getDisplayMetrics().widthPixels / 10
-                    - 2 * commonOperations.convertDpToPixel(22)) / getResources().getDisplayMetrics().density);
+            int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
+                    - 2 * commonOperations.convertDpToPixel(24)) / getResources().getDisplayMetrics().density);
 
             strings = smsBodyParse(successList.get(position).getBody());
             tvList = new ArrayList<>();

@@ -3,15 +3,17 @@ package com.jim.pocketaccounter.database;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.JoinProperty;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToMany;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-import com.jim.pocketaccounter.database.DaoSession;
+import org.greenrobot.greendao.annotation.Transient;
 
 
 @Entity(nameInDb = "CURRENCIES", active = true)
@@ -25,9 +27,12 @@ public class Currency {
 	private String id;
 	@Property
 	private boolean isMain = false;
-	@ToMany(referencedJoinProperty = "currencyId")
-	@NotNull
-	private List<CurrencyCost> costs;
+	@ToMany(joinProperties = {
+			@JoinProperty(name = "id", referencedName = "currencyId")
+	})
+	private List<UserEnteredCalendars> userEnteredCalendarses;
+	@Transient
+	private List<CurrencyCost> costs = new ArrayList<>();
 	/** Used for active entity operations. */
 	@Generated(hash = 1033120508)
 	private transient CurrencyDao myDao;
@@ -44,34 +49,33 @@ public class Currency {
 	@Generated(hash = 1387171739)
 	public Currency() {
 	}
+	@Keep
+	public List<CurrencyCost> getCosts() {
+		costs.clear();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+		Currency mainCur = daoSession.getCurrencyDao().queryBuilder().where(CurrencyDao.Properties.IsMain.eq(true)).list().get(0);
+		List<CurrencyCostState> costStateList = daoSession.getCurrencyCostStateDao()
+				.queryBuilder().where(CurrencyCostStateDao.Properties
+						.MainCurId.eq(mainCur.getId())).list();
 
-	public Currency(String currency_name) {
-		this.name = currency_name;
-	}
+		for (UserEnteredCalendars userCalendar: getUserEnteredCalendarses()) {
+			for (CurrencyCostState currencyCostState : costStateList) {
+				if (simpleDateFormat.format(userCalendar.getCalendar().getTime())
+						.equals(simpleDateFormat.format(currencyCostState.getDay().getTime()))) {
+					double cost = 0;
+					for (CurrencyWithAmount withAmount : currencyCostState.getCurrencyWithAmountList()) {
+						if (withAmount.getCurrencyId().equals(getId())) {
+							cost = withAmount.getAmount();
+							break;
+						}
+					}
+					CurrencyCost currencyCost = new CurrencyCost(cost, userCalendar.getCalendar());
+					costs.add(currencyCost);
+				}
+			}
+		}
 
-	public void setMain(boolean isMain) {
-		this.isMain = isMain;
-	} 
-	public boolean getMain() {
-		return isMain;
-	}
-	public void setAbbr(String abbr) {
-		this.abbr = abbr;
-	}
-	public String getAbbr() {
-		return this.abbr;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
+		return costs;
 	}
 	/**
 	 * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
@@ -107,48 +111,65 @@ public class Currency {
 		myDao.delete(this);
 	}
 	/** Resets a to-many relationship, making the next get call to query for a fresh result. */
-	@Generated(hash = 443003054)
-	public synchronized void resetCosts() {
-		costs = null;
+	@Generated(hash = 1792366061)
+	public synchronized void resetUserEnteredCalendarses() {
+		userEnteredCalendarses = null;
 	}
 	/**
 	 * To-many relationship, resolved on first access (and after reset).
 	 * Changes to to-many relations are not persisted, make changes to the target entity.
 	 */
-	@Generated(hash = 808286883)
-	public List<CurrencyCost> getCosts() {
-	    if (costs == null) {
+	@Generated(hash = 1064040940)
+	public List<UserEnteredCalendars> getUserEnteredCalendarses() {
+	    if (userEnteredCalendarses == null) {
 	        final DaoSession daoSession = this.daoSession;
 	        if (daoSession == null) {
 	            throw new DaoException("Entity is detached from DAO context");
 	        }
-	        CurrencyCostDao targetDao = daoSession.getCurrencyCostDao();
-	        List<CurrencyCost> costsNew = targetDao._queryCurrency_Costs(id);
+	        UserEnteredCalendarsDao targetDao = daoSession.getUserEnteredCalendarsDao();
+	        List<UserEnteredCalendars> userEnteredCalendarsesNew = targetDao._queryCurrency_UserEnteredCalendarses(id);
 	        synchronized (this) {
-	            if(costs == null) {
-	                costs = costsNew;
+	            if(userEnteredCalendarses == null) {
+	                userEnteredCalendarses = userEnteredCalendarsesNew;
 	            }
 	        }
 	    }
-	    return costs;
-	}
-
-	public boolean getIsMain() {
-		return this.isMain;
-	}
-	public void setIsMain(boolean isMain) {
-		this.isMain = isMain;
-	}
-	public void setCosts(List<CurrencyCost> currencyCosts) {
-		this.costs = currencyCosts;
-	}
-	public List<CurrencyCost> getCurrencyCosts() {
-		return costs;
+	    return userEnteredCalendarses;
 	}
 	/** called by internal mechanisms, do not call yourself. */
 	@Generated(hash = 869658167)
 	public void __setDaoSession(DaoSession daoSession) {
 		this.daoSession = daoSession;
 		myDao = daoSession != null ? daoSession.getCurrencyDao() : null;
+	}
+	public boolean getMain() {
+		return this.isMain;
+	}
+	public void setMain(boolean isMain) {
+		this.isMain = isMain;
+	}
+	public String getId() {
+		return this.id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getAbbr() {
+		return this.abbr;
+	}
+	public void setAbbr(String abbr) {
+		this.abbr = abbr;
+	}
+	public String getName() {
+		return this.name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public boolean getIsMain() {
+		return this.isMain;
+	}
+	public void setIsMain(boolean isMain) {
+		this.isMain = isMain;
 	}
 }

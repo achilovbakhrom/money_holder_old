@@ -60,7 +60,8 @@ public class MainPageFragment extends Fragment {
     @Inject PAFragmentManager paFragmentManager;
     @Inject @Named(value = "begin") Calendar begin;
     @Inject @Named(value = "end") Calendar end;
-    @Inject SharedPreferences preferences;
+    @Inject
+    SharedPreferences preferences;
     public MainPageFragment(Context context, Calendar day) {
         this.day = (Calendar) day.clone();
         this.pocketAccounter = (PocketAccounter) context;
@@ -133,6 +134,13 @@ public class MainPageFragment extends Fragment {
         rlRecordIncomes.addView(incomeView);
         calculateBalance();
     }
+    public void updateCalendarChanged() {
+        day.setTimeInMillis(dataCache.getEndDate().getTimeInMillis());
+        toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
+        calculateBalance();
+        expenseView.invalidate();
+        incomeView.invalidate();
+    }
     public void update() {
         toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
         calculateBalance();
@@ -170,6 +178,7 @@ public class MainPageFragment extends Fragment {
                 case PocketAccounterGeneral.INCOMES:
                     tvRecordIncome.setText(decFormat.format(balance.get(key)) + abbr);
                     break;
+
                 case PocketAccounterGeneral.EXPENSES:
                     tvRecordExpanse.setText(decFormat.format(balance.get(key)) + abbr);
                     break;
@@ -178,6 +187,7 @@ public class MainPageFragment extends Fragment {
                     break;
             }
         }
+
     }
 
     public static float dpToPx(Context context, float valueInDp) {
