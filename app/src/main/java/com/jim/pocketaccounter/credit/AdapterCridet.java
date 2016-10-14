@@ -41,6 +41,7 @@ import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -66,6 +67,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     DaoSession daoSession;
     @Inject
     LogicManager logicManager;
+    @Inject
+    DataCache dataCache;
     CreditDetialsDao creditDetialsDao;
     AccountDao accountDao;
 
@@ -440,6 +443,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                         int pos = cardDetials.indexOf(current);
                                         logicManager.insertReckingCredit(rec);
                                         current.resetReckings();
+                                        dataCache.updateOneDay(dataCache.getEndDate());
                                         notifyItemChanged(position);
                                         dialog.dismiss();
                                     }
@@ -459,6 +463,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         int pos = cardDetials.indexOf(current);
                         logicManager.insertReckingCredit(rec);
                         current.resetReckings();
+                        dataCache.updateOneDay(dataCache.getEndDate());
                         notifyItemChanged(pos);
                         dialog.dismiss();
                     }

@@ -14,6 +14,7 @@ import com.jim.pocketaccounter.fragments.CurrencyChooseFragment;
 import com.jim.pocketaccounter.fragments.CurrencyEditFragment;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.InfoCreditFragment;
+import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
 import com.jim.pocketaccounter.fragments.PurposeEditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.PurposeInfoFragment;
@@ -57,6 +58,7 @@ public interface PocketClassess {
     // Credit
     String CREDIT_FRAG = CreditTabLay.class.getName();
     String INFO_CREDIT= InfoCreditFragment.class.getName();
+    String INFO_CREDIT_ARCHIVE= InfoCreditFragmentForArchive.class.getName();
     String ADD_CREDIT = AddCreditFragment.class.getName();
 
     // Debt - Borrow

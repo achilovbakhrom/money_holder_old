@@ -633,7 +633,7 @@ public class LogicManager {
     }
 
     public void changeBoardButton(int type, int pos, String categoryId) {
-        int t = 100;
+        int t = PocketAccounterGeneral.CATEGORY;
         if (categoryId != null) {
             List<RootCategory> categoryList = daoSession.getRootCategoryDao().loadAll();
             boolean categoryFound = false, operationFound = false, creditFound = false,

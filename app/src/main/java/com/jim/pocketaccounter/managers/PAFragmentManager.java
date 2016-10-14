@@ -38,7 +38,7 @@ import static com.jim.pocketaccounter.PocketAccounter.PRESSED;
  * Created by DEV on 27.08.2016.
  */
 
-public class PAFragmentManager {
+public class    PAFragmentManager {
     private PocketAccounter activity;
     private FragmentManager fragmentManager;
     private int lastPos = 5000;
@@ -239,6 +239,7 @@ public class PAFragmentManager {
     public void remoteBackPress() {
         String fragName = getFragmentManager().findFragmentById(R.id.flMain).getClass().getName();
         Log.d("sss", fragName);
+
         int count = getFragmentManager().getBackStackEntryCount();
         while (count > 0) {
             getFragmentManager().popBackStack();
@@ -268,6 +269,10 @@ public class PAFragmentManager {
             } else if (fragName.equals(PocketClassess.ADD_AUTOMARKET)) {
                 displayFragment(new AutoMarketFragment());
             } else if (fragName.equals(PocketClassess.INFO_CREDIT) || fragName.equals(PocketClassess.ADD_CREDIT)) {
+                displayFragment(new CreditTabLay());
+            } else if (fragName.equals(PocketClassess.INFO_CREDIT_ARCHIVE)) {
+                CreditTabLay creditTabL=new CreditTabLay();
+                creditTabL.setArchivePosition();
                 displayFragment(new CreditTabLay());
             } else if (fragName.equals(PocketClassess.INFO_PURPOSE) || fragName.equals(PocketClassess.ADD_PURPOSE)) {
                 displayFragment(new PurposeFragment());

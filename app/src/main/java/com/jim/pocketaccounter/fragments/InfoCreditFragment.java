@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,6 +34,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
@@ -48,6 +51,7 @@ import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -70,6 +74,8 @@ public class InfoCreditFragment extends Fragment {
     PAFragmentManager paFragmentManager;
     @Inject
     DaoSession daoSession;
+    @Inject
+    DataCache dataCache;
     @Inject
     ToolbarManager toolbarManager;
     @Inject
@@ -131,6 +137,7 @@ public class InfoCreditFragment extends Fragment {
     }
     public void setContentFromMainWindow(CreditDetials temp,int positionOfBourd,int modeOfMain){
         fromMainWindow=true;
+
         currentCredit=temp;
         this.positionOfBourdMain=positionOfBourd;
         this.modeOfMain=modeOfMain;
@@ -156,6 +163,8 @@ public class InfoCreditFragment extends Fragment {
                              Bundle savedInstanceState) {
         View V=inflater.inflate(R.layout.fragment_info_credit, container, false);
         Date dateForSimpleDate = (new Date());
+        if(fromMainWindow)
+            paFragmentManager.setMainReturn(true);
         expandableBut=(ImageView) V.findViewById(R.id.wlyuzik_opener);
         expandablePanel=(FrameLayout) V.findViewById(R.id.shlyuzik);
         expandableLiniya=(FrameLayout) V.findViewById(R.id.with_wlyuzik);
@@ -195,9 +204,10 @@ public class InfoCreditFragment extends Fragment {
                         if(which==0) {
                             paFragmentManager.getFragmentManager().popBackStack();
                             AddCreditFragment forEdit=new AddCreditFragment();
+                            if(fromMainWindow)
                             forEdit.setDateFormatModes(modeOfMain,positionOfBourdMain);
                             forEdit.shareForEdit(currentCredit);
-                            openFragment(forEdit);
+                            paFragmentManager.displayFragment(forEdit);
                         }
                         else {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -208,9 +218,25 @@ public class InfoCreditFragment extends Fragment {
                                         }
                                     }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
+
                                     if(!fromMainWindow){
+
+                                        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                                        for(BoardButton boardButton:boardButtons){
+                                            if(boardButton.getCategoryId()!=null)
+                                            if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
+                                                if(boardButton.getType()==PocketAccounterGeneral.EXPANSE_MODE)
+                                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                                else
+                                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                                commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getType());
+                                                dataCache.updateOneDay(dataCache.getEndDate());
+                                            }
+                                        }
+
                                         logicManager.deleteCredit(currentCredit);
                                         A1.delete_item(currentPOS);
+
                                     }
                                     else if(fromSearch){
                                         logicManager.deleteCredit(currentCredit);
@@ -221,10 +247,19 @@ public class InfoCreditFragment extends Fragment {
                                             logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,positionOfBourdMain,null);
                                         else
                                             logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,positionOfBourdMain,null);
-
+                                        commonOperations.changeIconToNull(positionOfBourdMain,dataCache,modeOfMain);
                                     }
+                                    if(fromMainWindow)
+                                        dataCache.updateOneDay(dataCache.getEndDate());
+                                    if(fromMainWindow){
                                     getActivity().getSupportFragmentManager().popBackStack();
-                                    paFragmentManager.displayMainWindow();
+                                    paFragmentManager.displayMainWindow();}
+                                    else {
+
+                                        getActivity().getSupportFragmentManager().popBackStack();
+
+                                        paFragmentManager.displayFragment(new CreditTabLay());
+                                    }
 
                                 }
                             });
@@ -572,11 +607,13 @@ public class InfoCreditFragment extends Fragment {
 //                                        rcList.add(rec);
 //                                        currentCredit.getReckings().addAll(rcList);
                                         logicManager.insertReckingCredit(rec);
+                                        dataCache.updateOneDay(dataCache.getEndDate());
+                                        paFragmentManager.getCurrentFragment().update();
                                         currentCredit.resetReckings();
                                         rcList=currentCredit.getReckings();
                                         updateDate();
                                         adapRecyc.setMyList(rcList);
-                                        if(!fromMainWindow)
+                                        if(!fromMainWindow&&A1!=null)
                                         A1.change_item(currentCredit,currentPOS);
                                         isCheks = new boolean[rcList.size()];
                                         for (int i = 0; i < isCheks.length; i++) {
@@ -606,6 +643,8 @@ public class InfoCreditFragment extends Fragment {
                         rcList=currentCredit.getReckings();
                         adapRecyc.setMyList(rcList);
                         updateDate();
+                            dataCache.updateOneDay(dataCache.getEndDate());
+                        paFragmentManager.getCurrentFragment().update();
                         isCheks = new boolean[rcList.size()];
                         for (int i = 0; i < isCheks.length; i++) {
                             isCheks[i] = false;
@@ -690,6 +729,8 @@ public class InfoCreditFragment extends Fragment {
                                 isCheks[i] = false;
                             }
                             updateDate();
+                                dataCache.updateOneDay(dataCache.getEndDate());
+                            paFragmentManager.getCurrentFragment().update();
                         }
                     }).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {

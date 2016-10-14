@@ -45,7 +45,7 @@ public class CreditTabLay extends Fragment  implements View.OnClickListener, Vie
     private ArrayList<Fragment> list;
     public static int pos = 0;
     private ViewPager viewPager;
-
+    private int position = 0;
     public CreditTabLay() {
         Log.d("gogogo", "CreditTabLay: ");
         // Required empty public constructor
@@ -56,7 +56,9 @@ public class CreditTabLay extends Fragment  implements View.OnClickListener, Vie
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
     }
-
+    public void setArchivePosition(){
+        position=1;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,7 +94,7 @@ public class CreditTabLay extends Fragment  implements View.OnClickListener, Vie
                 (getActivity().getSupportFragmentManager(), list);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(this);
-        viewPager.setCurrentItem(pos
+        viewPager.setCurrentItem(position
         );
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

@@ -37,6 +37,8 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.CurrencyDao;
@@ -151,9 +153,7 @@ public class AddCreditFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        if (fromMainWindow) {
-            paFragmentManager.setMainReturn(true);
-        }
+
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
         currencyDao = daoSession.getCurrencyDao();
@@ -165,6 +165,9 @@ public class AddCreditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View V = inflater.inflate(R.layout.fragment_add_credit, container, false);
+        if (fromMainWindow) {
+            paFragmentManager.setMainReturn(true);
+        }
         context = getActivity();
         spiner_forValut = (Spinner) V.findViewById(R.id.spinner);
         spiner_procent = (Spinner) V.findViewById(R.id.spinner_procent);
@@ -950,7 +953,6 @@ public class AddCreditFragment extends Fragment {
                 }
                 dialog.dismiss();
                 if (isEdit()&&!fromMainWindow) {
-                    Log.d("testttt", "editing");
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
@@ -968,7 +970,12 @@ public class AddCreditFragment extends Fragment {
                     options.inPreferredConfig= Bitmap.Config.RGB_565;
                     Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
                     temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
-//                    dataCache.getBoardBitmapsCache().put(modeFromMain, temp);
+                    List<BoardButton> boardButtons=daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain),BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
+                    if(!boardButtons.isEmpty()){
+                        dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
+                                temp);
+                    }
+                        dataCache.updateOneDay(dataCache.getEndDate());
                     paFragmentManager.displayMainWindow();
                 }
                 else {

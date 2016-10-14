@@ -26,6 +26,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
@@ -47,6 +48,7 @@ import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.UserEnteredCalendars;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.database.TemplateSms;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import org.greenrobot.greendao.database.StandardDatabase;
 
@@ -127,6 +129,7 @@ public class CommonOperations {
         amount = amount/koeff;
         return amount;
     }
+
 
     public double getCost(Calendar date, Currency fromCurrency, Currency toCurrency, double amount) {
         //TODO tekwir bir yana
@@ -449,6 +452,7 @@ public class CommonOperations {
 
     public Calendar getFirstDay() {
         Calendar calendar = Calendar.getInstance();
+        calendar.set(2000,0,1);
         List<Account> accounts = daoSession.getAccountDao().loadAll();
         for (Account account : accounts) {
             if (calendar == null)
@@ -1619,5 +1623,21 @@ public class CommonOperations {
             return t+" "+context.getString(R.string.year);
         }
         return null;
+    }
+
+    public void changeIconToNull(int pos, DataCache dataCache, int table ) {
+        Bitmap scaled = null;
+        int resId = context.getResources().getIdentifier("no_category", "drawable", context.getPackageName());
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            scaled = BitmapFactory.decodeResource(context.getResources(), resId, options);
+
+        scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int) context.getResources().getDimension(R.dimen.thirty_dp), true);
+
+        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(table),BoardButtonDao.Properties.Pos.eq(pos)).build().list();
+        if(!boardButtons.isEmpty()){
+            dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
+                    scaled);
+        }
     }
 }

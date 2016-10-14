@@ -186,6 +186,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
                             if(!fromSearch)
                             A1.delete_item(POSITIOn);
                             getActivity().getSupportFragmentManager().popBackStack ();
+                            paFragmentManager.displayFragment(new CreditTabLay());
                         }
                     });
                     builder.create().show();
