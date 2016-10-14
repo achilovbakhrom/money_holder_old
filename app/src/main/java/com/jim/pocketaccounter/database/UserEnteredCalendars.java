@@ -17,7 +17,7 @@ import org.greenrobot.greendao.annotation.Generated;
 public class UserEnteredCalendars {
     @Property
     @Id
-    private long id;
+    private Long id;
     @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar calendar;
     @Property
@@ -34,14 +34,14 @@ public class UserEnteredCalendars {
     public void setCalendar(Calendar calendar) {
         this.calendar = calendar;
     }
-    public long getId() {
+    public Long getId() {
         return this.id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
-    @Generated(hash = 1203902453)
-    public UserEnteredCalendars(long id, Calendar calendar, String currencyId) {
+    @Generated(hash = 1845832029)
+    public UserEnteredCalendars(Long id, Calendar calendar, String currencyId) {
         this.id = id;
         this.calendar = calendar;
         this.currencyId = currencyId;
@@ -49,5 +49,6 @@ public class UserEnteredCalendars {
     @Generated(hash = 443835265)
     public UserEnteredCalendars() {
     }
+    
 
 }

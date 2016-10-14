@@ -64,7 +64,7 @@ public class CurrencyExchangeAdapter extends BaseAdapter {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		String text = dateFormat.format(result.get(position).getDay().getTime())
 					  + "    1"+ abbr
-					  + "=" + decFormat.format(1/result.get(position).getCost())+commonOperations.getMainCurrency().getAbbr();
+					  + "=" + decFormat.format(result.get(position).getCost())+commonOperations.getMainCurrency().getAbbr();
 		tvCurrencyExchangeListItem.setText(text);
 		CheckBox chbCurrencyExchangeListItem = (CheckBox) view.findViewById(R.id.chbCurrencyExchangeListItem);
 		chbCurrencyExchangeListItem.setOnCheckedChangeListener(new OnCheckedChangeListener() {

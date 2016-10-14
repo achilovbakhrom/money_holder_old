@@ -209,7 +209,7 @@ public class RecordButtonIncome {
 					RootCategory category = null;
 					List<RootCategory> categoryList = daoSession.getRootCategoryDao().loadAll();
 					for (RootCategory cat : categoryList) {
-						if (cat.getId().matches(boardButton.getCategoryId())) {
+						if (cat.getId().equals(boardButton.getCategoryId())) {
 							category = cat;
 							break;
 						}
@@ -261,7 +261,7 @@ public class RecordButtonIncome {
 					String[] operationNames = context.getResources().getStringArray(R.array.operation_names);
 					String icon = null;
 					for (int i = 0; i < operationIds.length; i++) {
-						if (operationIds[i].matches(boardButton.getCategoryId())) {
+						if (operationIds[i].equals(boardButton.getCategoryId())) {
 							icon = operationIcons[i];
 							name = operationNames[i];
 							break;
@@ -282,7 +282,7 @@ public class RecordButtonIncome {
 					String[] pageNames = context.getResources().getStringArray(R.array.page_names);
 					icon = null;
 					for (int i = 0; i < pageIds.length; i++) {
-						if (pageIds[i].matches(boardButton.getCategoryId())) {
+						if (pageIds[i].equals(boardButton.getCategoryId())) {
 							icon = pageIcons[i];
 							name = pageNames[i];
 							break;
@@ -303,12 +303,14 @@ public class RecordButtonIncome {
 			textPaint.setColor(ContextCompat.getColor(context, R.color.toolbar_text_color));
 			textPaint.setTextSize(context.getResources().getDimension(R.dimen.eleven_dp));
 			Rect bounds = new Rect();
-			for (int i=0; i < name.length(); i++) {
-				textPaint.getTextBounds(name, 0, i, bounds);
-				if (bounds.width() >= container.width()) {
-					name = name.substring(0, i-5);
-					name += "...";
-					break;
+			if (name.length()>=11) {
+				for (int i=10; i < name.length(); i++) {
+					textPaint.getTextBounds(name, 0, i, bounds);
+					if (bounds.width() >= container.width()) {
+						name = name.substring(0, i-5);
+						name += "...";
+						break;
+					}
 				}
 			}
 			textPaint.getTextBounds(name, 0, name.length(), bounds);

@@ -10,6 +10,8 @@ import org.greenrobot.greendao.annotation.ToMany;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
@@ -32,7 +34,7 @@ public class Currency {
 	})
 	private List<UserEnteredCalendars> userEnteredCalendarses;
 	@Transient
-	private List<CurrencyCost> costs = new ArrayList<>();
+	private List<CurrencyCost> costs;
 	/** Used for active entity operations. */
 	@Generated(hash = 1033120508)
 	private transient CurrencyDao myDao;
@@ -51,17 +53,23 @@ public class Currency {
 	}
 	@Keep
 	public List<CurrencyCost> getCosts() {
-		costs.clear();
+		costs = new ArrayList<>();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		Currency mainCur = daoSession.getCurrencyDao().queryBuilder().where(CurrencyDao.Properties.IsMain.eq(true)).list().get(0);
+		Currency mainCur = daoSession.getCurrencyDao()
+					.queryBuilder()
+					.where(CurrencyDao.Properties.IsMain.eq(true))
+					.list()
+					.get(0);
 		List<CurrencyCostState> costStateList = daoSession.getCurrencyCostStateDao()
-				.queryBuilder().where(CurrencyCostStateDao.Properties
-						.MainCurId.eq(mainCur.getId())).list();
-
-		for (UserEnteredCalendars userCalendar: getUserEnteredCalendarses()) {
+				.queryBuilder()
+				.where(CurrencyCostStateDao.Properties
+						.MainCurId.eq(mainCur.getId()))
+				.list();
+		for (UserEnteredCalendars userCalendar : getUserEnteredCalendarses()) {
 			for (CurrencyCostState currencyCostState : costStateList) {
-				if (simpleDateFormat.format(userCalendar.getCalendar().getTime())
-						.equals(simpleDateFormat.format(currencyCostState.getDay().getTime()))) {
+				String formattedUserCalendar = simpleDateFormat.format(userCalendar.getCalendar().getTime());
+				String formattedStateDay = simpleDateFormat.format(currencyCostState.getDay().getTime());
+				if (formattedUserCalendar.equals(formattedStateDay)) {
 					double cost = 0;
 					for (CurrencyWithAmount withAmount : currencyCostState.getCurrencyWithAmountList()) {
 						if (withAmount.getCurrencyId().equals(getId())) {
@@ -74,7 +82,12 @@ public class Currency {
 				}
 			}
 		}
-
+		Collections.sort(costs, new Comparator<CurrencyCost>() {
+			@Override
+			public int compare(CurrencyCost lhs, CurrencyCost rhs) {
+				return lhs.getDay().compareTo(rhs.getDay());
+			}
+		});
 		return costs;
 	}
 	/**
@@ -119,7 +132,7 @@ public class Currency {
 	 * To-many relationship, resolved on first access (and after reset).
 	 * Changes to to-many relations are not persisted, make changes to the target entity.
 	 */
-	@Generated(hash = 1064040940)
+	@Keep
 	public List<UserEnteredCalendars> getUserEnteredCalendarses() {
 	    if (userEnteredCalendarses == null) {
 	        final DaoSession daoSession = this.daoSession;
@@ -134,6 +147,12 @@ public class Currency {
 	            }
 	        }
 	    }
+		Collections.sort(userEnteredCalendarses, new Comparator<UserEnteredCalendars>() {
+			@Override
+			public int compare(UserEnteredCalendars lhs, UserEnteredCalendars rhs) {
+				return lhs.getCalendar().compareTo(rhs.getCalendar());
+			}
+		});
 	    return userEnteredCalendarses;
 	}
 	/** called by internal mechanisms, do not call yourself. */

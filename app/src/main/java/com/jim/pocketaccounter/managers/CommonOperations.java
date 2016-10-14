@@ -46,6 +46,7 @@ import com.jim.pocketaccounter.database.SmsParseSuccess;
 import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.UserEnteredCalendars;
+import com.jim.pocketaccounter.utils.CostMigrateObject;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.database.TemplateSms;
 import com.jim.pocketaccounter.utils.cache.DataCache;
@@ -57,6 +58,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -129,7 +132,6 @@ public class CommonOperations {
         amount = amount/koeff;
         return amount;
     }
-
 
     public double getCost(Calendar date, Currency fromCurrency, Currency toCurrency, double amount) {
         //TODO tekwir bir yana
@@ -452,7 +454,7 @@ public class CommonOperations {
 
     public Calendar getFirstDay() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2000,0,1);
+        calendar.set(2000, 0, 1);
         List<Account> accounts = daoSession.getAccountDao().loadAll();
         for (Account account : accounts) {
             if (calendar == null)
@@ -591,18 +593,18 @@ public class CommonOperations {
             currency.setId(currencyIds[i]);
             currency.setMain(i == 0);
             currency.setAbbr(currencySigns[i]);
-            UserEnteredCalendars enteredCalendars = new UserEnteredCalendars();
-            enteredCalendars.setCurrencyId(currency.getId());
-            enteredCalendars.setCalendar(momentDay);
-            enteredCalendars.setId(i);
             daoSession.getCurrencyDao().insertOrReplace(currency);
-            daoSession.getUserEnteredCalendarsDao().insertOrReplace(enteredCalendars);
+            UserEnteredCalendars userEnteredCalendars = new UserEnteredCalendars();
+            userEnteredCalendars.setCalendar(momentDay);
+            userEnteredCalendars.setCurrencyId(currency.getId());
+            daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
         }
 
         CurrencyCostState currencyCostState = new CurrencyCostState();
         currencyCostState.setDay(momentDay);
-        Currency mainCur = daoSession.getCurrencyDao().queryBuilder().where(
-                CurrencyDao.Properties.IsMain.eq(true)).list().get(0);
+        Currency mainCur = daoSession.getCurrencyDao()
+                .queryBuilder()
+                .where(CurrencyDao.Properties.IsMain.eq(true)).list().get(0);
         currencyCostState.setMainCurrency(mainCur);
         daoSession.getCurrencyCostStateDao().insertOrReplace(currencyCostState);
 
@@ -619,13 +621,14 @@ public class CommonOperations {
                     break;
                 }
             }
+
             daoSession.getCurrencyWithAmountDao().insertOrReplace(withAmount);
         }
+
         currencyCostState.resetCurrencyWithAmountList();
 
-        for (CurrencyWithAmount currencyWithAmount: currencyCostState.getCurrencyWithAmountList()) {
+        for (CurrencyWithAmount currencyWithAmount : currencyCostState.getCurrencyWithAmountList()) {
             CurrencyCostState costState = new CurrencyCostState();
-            costState.setId(2);
             costState.setDay(momentDay);
             costState.setMainCurrency(currencyWithAmount.getCurrency());
             daoSession.getCurrencyCostStateDao().insertOrReplace(costState);
@@ -636,12 +639,12 @@ public class CommonOperations {
             tempWithAmount.setParentId(costState.getId());
             daoSession.getCurrencyWithAmountDao().insertOrReplace(tempWithAmount);
             for (CurrencyWithAmount withAmount : currencyCostState.getCurrencyWithAmountList()) {
-                if (withAmount.getId() != currencyWithAmount.getId()) {
+                if (!withAmount.getCurrencyId().equals(currencyWithAmount.getCurrencyId())) {
                     CurrencyWithAmount newWithAmount = new CurrencyWithAmount();
                     newWithAmount.setCurrency(withAmount.getCurrency());
                     newWithAmount.setAmount(withAmount.getAmount()/currencyWithAmount.getAmount());
                     newWithAmount.setParentId(costState.getId());
-                    daoSession.getCurrencyWithAmountDao().insertOrReplace(tempWithAmount);
+                    daoSession.getCurrencyWithAmountDao().insertOrReplace(newWithAmount);
                 }
             }
         }
@@ -824,31 +827,93 @@ public class CommonOperations {
             newCurrency.setId(currId);
             newCurrency.setIsMain(cursor.getInt(cursor.getColumnIndex("currency_main"))!=0);
             newCurrency.setMain(cursor.getInt(cursor.getColumnIndex("currency_main"))!=0);
-            costCursor.moveToFirst();
-            while(!costCursor.isAfterLast()) {
-                if (costCursor.getString(costCursor.getColumnIndex("currency_id")).matches(currId)) {
-                    CurrencyCost newCurrencyCost = new CurrencyCost();
-                    try {
-                        Calendar day = Calendar.getInstance();
-                        day.setTime(dateFormat.parse(costCursor.getString(costCursor.getColumnIndex("date"))));
-                        newCurrencyCost.setDay(day);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-
-                    }
-                    newCurrencyCost.setCost(costCursor.getDouble(costCursor.getColumnIndex("cost")));
-//                    newCurrencyCost.setCurrencyId(currId);
-                    newCurrency.__setDaoSession(daoSession);
-                    newCurrency.getCosts().add(newCurrencyCost);
-//                    daoSession.getCurrencyCostDao().insertOrReplace(newCurrencyCost);
-                }
-                costCursor.moveToNext();
-            }
             daoSession.getCurrencyDao().insertOrReplace(newCurrency);
             currencies.add(newCurrency);
             cursor.moveToNext();
         }
+
+        //generate costs
+        List<CostMigrateObject> costMigrateObjects = new ArrayList<>();
+        costCursor.moveToFirst();
+        while(!costCursor.isAfterLast()) {
+            CostMigrateObject object = new CostMigrateObject();
+            object.setCurrencyId(costCursor.getString(costCursor.getColumnIndex("currency_id")));
+            try {
+                Calendar day = Calendar.getInstance();
+                day.setTime(dateFormat.parse(costCursor.getString(costCursor.getColumnIndex("date"))));
+                object.setDay(day);
+            } catch (ParseException e) {
+                e.printStackTrace();
+
+            }
+
+            object.setAmount(costCursor.getDouble(costCursor.getColumnIndex("cost")));
+            costMigrateObjects.add(object);
+            costCursor.moveToNext();
+        }
         costCursor.close();
+        Currency mainCurrency = null;
+        List<Currency> noneMainCurrencies = new ArrayList<>();
+        for (Currency currency : currencies) {
+            if (currency.getIsMain()) {
+                mainCurrency = currency;
+            }
+            else
+                noneMainCurrencies.add(currency);
+        }
+        Collections.sort(costMigrateObjects, new Comparator<CostMigrateObject>() {
+            @Override
+            public int compare(CostMigrateObject lhs, CostMigrateObject rhs) {
+                return lhs.getDay().compareTo(rhs.getDay());
+            }
+        });
+        Calendar day = (Calendar) costMigrateObjects.get(costMigrateObjects.size()-1).getDay().clone();
+        for (Currency currency : currencies) {
+            UserEnteredCalendars userEnteredCalendars = new UserEnteredCalendars();
+            userEnteredCalendars.setCalendar(day);
+            userEnteredCalendars.setCurrencyId(currency.getId());
+            daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
+        }
+        CurrencyCostState mainState = new CurrencyCostState();
+        mainState.setDay(day);
+        mainState.setMainCurrency(mainCurrency);
+        daoSession.getCurrencyCostStateDao().insertOrReplace(mainState);
+        for (Currency currency : noneMainCurrencies) {
+            CurrencyWithAmount withAmount = new CurrencyWithAmount();
+            withAmount.setParentId(mainState.getId());
+            withAmount.setCurrency(currency);
+            double amount = 1.0d;
+            for (int i = costMigrateObjects.size()-1; i >= 0; i--) {
+                if (costMigrateObjects.get(i).getCurrencyId().equals(currency.getId())) {
+                    amount = costMigrateObjects.get(i).getAmount();
+                    break;
+                }
+            }
+            withAmount.setAmount(1/amount);
+            daoSession.getCurrencyWithAmountDao().insertOrReplace(withAmount);
+        }
+        mainCurrency.resetUserEnteredCalendarses();
+        List<CurrencyWithAmount> currencyWithAmounts = mainState.getCurrencyWithAmountList();
+        for (CurrencyWithAmount currencyWithAmount : currencyWithAmounts) {
+            CurrencyCostState anotherState = new CurrencyCostState();
+            anotherState.setDay((Calendar)day.clone());
+            anotherState.setMainCurrency(currencyWithAmount.getCurrency());
+            daoSession.getCurrencyCostStateDao().insertOrReplace(anotherState);
+            CurrencyWithAmount anotherStatesAmount = new CurrencyWithAmount();
+            anotherStatesAmount.setCurrency(mainState.getMainCurrency());
+            anotherStatesAmount.setAmount(1/currencyWithAmount.getAmount());
+            anotherStatesAmount.setParentId(anotherState.getId());
+            daoSession.getCurrencyWithAmountDao().insertOrReplace(anotherStatesAmount);
+            for (CurrencyWithAmount amnt : currencyWithAmounts) {
+                if (!amnt.getCurrencyId().equals(currencyWithAmount.getCurrencyId())) {
+                    CurrencyWithAmount anotherStatesRestAmounts = new CurrencyWithAmount();
+                    anotherStatesRestAmounts.setCurrency(amnt.getCurrency());
+                    anotherStatesRestAmounts.setAmount(amnt.getAmount()/currencyWithAmount.getAmount());
+                    anotherStatesRestAmounts.setParentId(anotherState.getId());
+                    daoSession.getCurrencyWithAmountDao().insertOrReplace(anotherStatesRestAmounts);
+                }
+            }
+        }
         //loading categories
         List<RootCategory> categories = new ArrayList<>();
         Cursor catCursor = old.query("category_table", null, null, null, null, null, null);
@@ -1270,6 +1335,11 @@ public class CommonOperations {
         }
         cursor.close();
     }
+
+    private void migrateCosts(List<CostMigrateObject> costMigrateObjects, List<Currency> currencies) {
+
+    }
+
     private static void upgradeFromFourToFive(Context context, SQLiteDatabase db) {
         upgradeFromThreeToFour(context, db);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -1497,7 +1567,7 @@ public class CommonOperations {
 				}
 			}
 			category.setId(id);
-//			category.setSubCategories(subCategories);
+			category.setSubCategories(subCategories);
 			categories.add(category);
 			catsCursor.moveToNext();
 		}

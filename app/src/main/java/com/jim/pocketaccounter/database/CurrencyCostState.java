@@ -18,11 +18,11 @@ import org.greenrobot.greendao.DaoException;
 /**
  * Created by root on 10/12/16.
  */
-@Entity
+@Entity(nameInDb = "CURRENCY_COST_STATE", active = true)
 public class CurrencyCostState {
-    @Id(autoincrement = true)
+    @Id
     @Property
-    private long id;
+    private Long id;
     @Convert(converter = CalendarConvertor.class, columnType = String.class)
     private Calendar day;
     @Property
@@ -146,14 +146,14 @@ public class CurrencyCostState {
     public void setDay(Calendar day) {
         this.day = day;
     }
-    public long getId() {
+    public Long getId() {
         return this.id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
-    @Generated(hash = 1491723125)
-    public CurrencyCostState(long id, Calendar day, String mainCurId) {
+    @Generated(hash = 216855175)
+    public CurrencyCostState(Long id, Calendar day, String mainCurId) {
         this.id = id;
         this.day = day;
         this.mainCurId = mainCurId;

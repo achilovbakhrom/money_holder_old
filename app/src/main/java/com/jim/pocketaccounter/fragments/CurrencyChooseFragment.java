@@ -16,6 +16,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.UserEnteredCalendars;
 import com.jim.pocketaccounter.finance.CurrencyChooseAdapter;
 import com.jim.pocketaccounter.database.CurrencyCost;
 import com.jim.pocketaccounter.managers.LogicManager;
@@ -64,7 +65,7 @@ public class CurrencyChooseFragment extends Fragment {
         final String[] baseCurrencies = getResources().getStringArray(R.array.base_currencies);
         final String[] baseAbbrs = getResources().getStringArray(R.array.base_abbrs);
         final String[] currIds = getResources().getStringArray(R.array.currency_ids);
-        String[] costs = getResources().getStringArray(R.array.currency_costs);
+        final String[] costs = getResources().getStringArray(R.array.currency_costs);
         chbs = new boolean[baseCurrencies.length];
         for (int i = 0; i < currIds.length; i++) {
             boolean found = false;
@@ -83,11 +84,11 @@ public class CurrencyChooseFragment extends Fragment {
             currency.setAbbr(baseAbbrs[i]);
             currency.setName(baseCurrencies[i]);
             currency.setId(currIds[i]);
-            CurrencyCost cost = new CurrencyCost();
-            cost.setCost(Double.parseDouble(costs[i]));
-            cost.setDay(Calendar.getInstance());
-            ArrayList<CurrencyCost> tempCost = new ArrayList<CurrencyCost>();
-            tempCost.add(cost);
+//            CurrencyCost cost = new CurrencyCost();
+//            cost.setCost(Double.parseDouble(costs[i]));
+//            cost.setDay(Calendar.getInstance());
+//            ArrayList<CurrencyCost> tempCost = new ArrayList<CurrencyCost>();
+//            tempCost.add(cost);
 //            currency.setCosts(tempCost);
             currencies.add(currency);
         }
@@ -107,7 +108,6 @@ public class CurrencyChooseFragment extends Fragment {
                     Toast.makeText(getActivity(), getResources().getString(R.string.curr_not_choosen), Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 final List<Currency> checkedCurrencies = new ArrayList<>();
                 for (int i=0; i < chbs.length; i++) {
                     if (chbs[i]) {
@@ -153,6 +153,7 @@ public class CurrencyChooseFragment extends Fragment {
                     });
                 }
                 for (Currency currency : checkedCurrencies) {
+
                     boolean found = false;
                     for (Currency curr : daoSession.getCurrencyDao().loadAll()) {
                         if (currency.getId().matches(curr.getId())) {
@@ -161,8 +162,19 @@ public class CurrencyChooseFragment extends Fragment {
                         }
                     }
                     if (!found) {
-//                        daoSession.getCurrencyCostDao().insertInTx(currency.getCosts());
-                        daoSession.getCurrencyDao().insert(currency);
+                        int pos = 0;
+                        for (int i=0; i<currencies.size(); i++) {
+                            if (currency.getId().equals(currencies.get(i).getId())) {
+                                pos = i;
+                                break;
+                            }
+                        }
+                        UserEnteredCalendars userEnteredCalendars = new UserEnteredCalendars();
+                        userEnteredCalendars.setCurrencyId(currency.getId());
+                        userEnteredCalendars.setCalendar(Calendar.getInstance());
+                        daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
+                        daoSession.getCurrencyDao().insertOrReplace(currency);
+                        logicManager.generateWhenAddingNewCurrency(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
                     }
                 }
                 paFragmentManager.displayFragment(new CurrencyFragment());

@@ -222,9 +222,9 @@
     </string-array>
     <string-array name="currency_costs">
         <item>1.0</item>
-        <item>65.0</item>
-        <item>100.0</item>
-        <item>1.1</item>
+        <item>0.0154</item>
+        <item>0.9</item>
+        <item>1.0</item>
         <item>1.0</item>
         <item>1.0</item>
         <item>1.0</item>

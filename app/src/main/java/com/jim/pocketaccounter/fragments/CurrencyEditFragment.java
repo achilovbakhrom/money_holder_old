@@ -63,18 +63,12 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
     private Calendar day = Calendar.getInstance();
     private int mode = PocketAccounterGeneral.NORMAL_MODE;
     private boolean[] selected;
-    @Inject
-    PAFragmentManager paFragmentManager;
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    WarningDialog dialog;
-    @Inject
-    CommonOperations commonOperations;
+    @Inject PAFragmentManager paFragmentManager;
+    @Inject DaoSession daoSession;
+    @Inject LogicManager logicManager;
+    @Inject ToolbarManager toolbarManager;
+    @Inject WarningDialog dialog;
+    @Inject CommonOperations commonOperations;
 
     public CurrencyEditFragment(Currency currency) {
         this.currency = currency;
@@ -110,7 +104,9 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
     }
 
     private void refreshExchangeList() {
-        CurrencyExchangeAdapter adapter = new CurrencyExchangeAdapter(getActivity(), (ArrayList<CurrencyCost>) currency.getCosts(), selected, mode, currency.getAbbr());
+        currency.resetUserEnteredCalendarses();
+        CurrencyExchangeAdapter adapter = new CurrencyExchangeAdapter(getActivity(),
+                (ArrayList<CurrencyCost>) currency.getCosts(), selected, mode, currency.getAbbr());
         lvCurrencyEditExchange.setAdapter(adapter);
     }
 
@@ -204,7 +200,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
         if (currCost != null) {
             tvExchangeEditDate.setText(dateFormat.format(currCost.getDay().getTime()));
             day = (Calendar) currCost.getDay().clone();
-            cost = 1 / currCost.getCost();
+            cost = currCost.getCost();
         }
         tvExchangeEditDate.setText(dateFormat.format(day.getTime()));
         etExchange.setText(decFormat.format(cost));
@@ -217,31 +213,12 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
                     etExchange.setError(getString(R.string.incorrect_value));
                     return;
                 }
-
-                UserEnteredCalendars enteredCalendars = new UserEnteredCalendars();
-                enteredCalendars.setCalendar(day);
-                enteredCalendars.setCurrencyId(currency.getId());
-                daoSession.getUserEnteredCalendarsDao().insertOrReplace(enteredCalendars);
-                currency.getUserEnteredCalendarses().add(enteredCalendars);
-                daoSession.getCurrencyDao().insertOrReplace(currency);
-                if (currCost == null) {
-                    logicManager.generateForDefinetilyCurrentDay(day, Double.parseDouble(etExchange.getText().toString()), currency);
-                } else {
-                    logicManager.updateGenerateDefinetilyCurrentDay(day, Double.parseDouble(etExchange.getText().toString()), currency);
+                if (logicManager.insertUserEnteredCalendars(currency, (Calendar)day.clone()) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
+                    logicManager.updateGenerateDefinetilyCurrentDay((Calendar)day.clone(), Double.parseDouble(etExchange.getText().toString()), currency);
                 }
-
-                //sort currency costs by date
-
-
-//                for (int i = currency.getCosts().size() - 1; i > 0; i--) {
-//                    for (int j = 0; j < i; j++) {
-//                        if (currency.getCosts().get(j).getDay().compareTo(currency.getCosts().get(j + 1).getDay()) > 0) {
-//                            CurrencyCost balanceObject = currency.getCosts().get(j);
-//                            currency.getCosts().set(j, currency.getCosts().get(j + 1));
-//                            currency.getCosts().set(j + 1, balanceObject);
-//                        }
-//                    }
-//                }
+                else {
+                    logicManager.generateForDefinetilyCurrentDay((Calendar)day.clone(), Double.parseDouble(etExchange.getText().toString()), currency);
+                }
                 refreshExchangeList();
                 dialog.dismiss();
             }
@@ -259,16 +236,14 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
     }
 
     private void deleteCosts() {
-        List<CurrencyCost> currencyCostList = new ArrayList<>();
+        List<UserEnteredCalendars> currencyCostList = new ArrayList<>();
         for (int i = 0; i < selected.length; i++) {
             if (selected[i]) {
-                currencyCostList.add(currency.getCosts().get(i));
-                break;
+                currencyCostList.add(currency.getUserEnteredCalendarses().get(i));
             }
         }
-        if (currencyCostList.isEmpty()) return;
-        int result = logicManager.deleteCurrencyCosts(currencyCostList);
-        if (result == LogicManagerConstants.LIST_IS_EMPTY)
+        if (currencyCostList.isEmpty() || currencyCostList == null) return;
+        if (logicManager.deleteCurrencyCosts(currencyCostList, currency) == LogicManagerConstants.LIST_IS_EMPTY)
             Toast.makeText(getActivity(), getResources().getString(R.string.costs_selected_all_warning), Toast.LENGTH_SHORT).show();
         refreshExchangeList();
     }

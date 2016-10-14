@@ -10,16 +10,17 @@ import org.greenrobot.greendao.DaoException;
 /**
  * Created by root on 10/12/16.
  */
-@Entity
+@Entity(nameInDb = "CURRENCY_WITH_AMOUNT", active = true)
 public class CurrencyWithAmount {
-    @Id(autoincrement = true)
-    private long id;
+    @Id
+    @Property
+    private Long id;
     @Property
     private String currencyId;
     @Property
     private double amount;
     @Property
-    private long parentId;
+    private Long parentId;
     @Property
     @ToOne(joinProperty = "currencyId")
     private Currency currency;
@@ -97,10 +98,10 @@ public class CurrencyWithAmount {
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    public long getParentId() {
+    public Long getParentId() {
         return this.parentId;
     }
-    public void setParentId(long parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
     public double getAmount() {
@@ -115,15 +116,15 @@ public class CurrencyWithAmount {
     public void setCurrencyId(String currencyId) {
         this.currencyId = currencyId;
     }
-    public long getId() {
+    public Long getId() {
         return this.id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
-    @Generated(hash = 345015923)
-    public CurrencyWithAmount(long id, String currencyId, double amount,
-            long parentId) {
+    @Generated(hash = 2077889566)
+    public CurrencyWithAmount(Long id, String currencyId, double amount,
+            Long parentId) {
         this.id = id;
         this.currencyId = currencyId;
         this.amount = amount;

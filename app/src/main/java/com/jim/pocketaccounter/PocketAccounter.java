@@ -112,8 +112,7 @@ public class PocketAccounter extends AppCompatActivity {
     CommonOperations commonOperations;
     @Inject
     DataCache dataCache;
-    @Inject
-    WarningDialog warningDialog;
+
     PocketAccounterActivityComponent component;
 
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
@@ -363,6 +362,7 @@ public class PocketAccounter extends AppCompatActivity {
             } else
             paFragmentManager.remoteBackPress();
         } else {
+            final WarningDialog warningDialog = new WarningDialog(this);
             warningDialog.setOnYesButtonListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

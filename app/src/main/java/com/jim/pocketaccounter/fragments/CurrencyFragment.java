@@ -88,13 +88,6 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 			}
 		});
 		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-		toolbarManager.setImageToSecondImage(R.drawable.transfer_money);
-		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				openTransfersEditDialog();
-			}
-		});
 		toolbarManager.setSpinnerVisibility(View.GONE);
 		toolbarManager.setImageToSecondImage(R.drawable.pencil);
 		toolbarManager.setOnSecondImageClickListener(this);
@@ -151,10 +144,6 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 
 		refreshList();
 		return rootView;
-	}
-
-	private void openTransfersEditDialog() {
-
 	}
 
 	private void setEditMode() {

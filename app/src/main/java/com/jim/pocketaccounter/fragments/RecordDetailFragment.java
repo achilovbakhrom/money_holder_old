@@ -79,7 +79,7 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 for (int i = 0; i < size; i++) {
                     ((PocketAccounter)getContext()).getSupportFragmentManager().popBackStack();
                 }
-                paFragmentManager.initialize();
+                paFragmentManager.displayMainWindow();
             }
         });
         toolbarManager.setTitle(getResources().getString(R.string.records));
@@ -121,7 +121,6 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
 
-        Log.d("resulttt", "onActivityResult: Otlab ketib qoldi");
     }
 
     @Override
@@ -173,7 +172,6 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 holder.rlVisibleWhenHaveComment.setVisibility(View.VISIBLE);
             }
             boolean keyik=true;
-            Log.d("trannn", result.get(position).getAllTickets().size()+"");
             for (PhotoDetails temp:result.get(position).getAllTickets()){
                 File tmpFile=new File(temp.getPhotopath());
                 File tmpCacheFile=new File(temp.getPhotopathCache());
@@ -232,7 +230,6 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 holder.chbRecordDetail.setVisibility(View.VISIBLE);
                 holder.ivRecordDetail.setVisibility(View.GONE);
                 holder.chbRecordDetail.setChecked(selections[position]);
-                Log.d("sss", "pos"+position);
             }
             final FinanceRecord financeRecord= result.get(position);
             holder.root.setOnClickListener(new OnClickListener() {
@@ -240,7 +237,6 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 public void onClick(View v) {
 
                     if (mode == PocketAccounterGeneral.NORMAL_MODE) {
-                        Log.d("sss", "der");
                         paFragmentManager.displayFragment(new RecordEditFragment(null, financeRecord.getDate(), financeRecord, PocketAccounterGeneral.DETAIL));
                     }
                     else {
@@ -319,6 +315,7 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                         }
                     })).start();
                     logicManager.deleteRecord(result.get(i));
+                    dataCache.updateOneDay(date);
                     result.remove(i);
                 }
              }
