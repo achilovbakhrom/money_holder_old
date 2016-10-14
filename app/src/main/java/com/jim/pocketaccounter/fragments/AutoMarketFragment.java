@@ -124,7 +124,7 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
             String dates [] = list.get(position).getDates().split(",");
             int count = dates.length;
             String date = "";
-            if (count >= 10) {
+            if (count >= 8) {
                 for (int i = 0; i < dates.length; i++) {
                     date += count/2 == i ? ("\n" + dates[i] + ",") : dates[i] + ",";
                 }

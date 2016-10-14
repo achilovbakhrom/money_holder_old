@@ -2,16 +2,19 @@ package com.jim.pocketaccounter.database;
 
 import android.support.annotation.Keep;
 
+import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToOne;
 
+import java.util.Calendar;
 import java.util.UUID;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.convertors.CalendarConvertor;
 
 /**
  * Created by root on 9/15/16.
@@ -44,6 +47,8 @@ public class AutoMarket {
     private RootCategory rootCategory;
     @ToOne(joinProperty = "catSubId")
     private SubCategory subCategory;
+    @Convert(columnType = String.class, converter = CalendarConvertor.class)
+    private Calendar createDay;
     @Generated(hash = 861346724)
     private transient String subCategory__resolvedKey;
     @Generated(hash = 1021791985)
@@ -203,6 +208,22 @@ public class AutoMarket {
         }
         return currency;
     }
+    /** called by internal mechanisms, do not call yourself. */
+    @Generated(hash = 391731539)
+    public void __setDaoSession(DaoSession daoSession) {
+        this.daoSession = daoSession;
+        myDao = daoSession != null ? daoSession.getAutoMarketDao() : null;
+    }
+    public Calendar getCreateDay() {
+        createDay.set(Calendar.HOUR_OF_DAY, 0);
+        createDay.set(Calendar.MINUTE, 0);
+        createDay.set(Calendar.SECOND, 0);
+        createDay.set(Calendar.MILLISECOND, 0);
+        return this.createDay;
+    }
+    public void setCreateDay(Calendar createDay) {
+        this.createDay = createDay;
+    }
     public String getDates() {
         return this.dates;
     }
@@ -251,16 +272,10 @@ public class AutoMarket {
     public void setId(String id) {
         this.id = id;
     }
-    /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 391731539)
-    public void __setDaoSession(DaoSession daoSession) {
-        this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getAutoMarketDao() : null;
-    }
-    @Generated(hash = 1576085201)
+    @Generated(hash = 580426749)
     public AutoMarket(@NotNull String id, double amount, String curId,
             String accountId, String catId, String catSubId, boolean type,
-            String dates) {
+            String dates, Calendar createDay) {
         this.id = id;
         this.amount = amount;
         this.curId = curId;
@@ -269,5 +284,7 @@ public class AutoMarket {
         this.catSubId = catSubId;
         this.type = type;
         this.dates = dates;
+        this.createDay = createDay;
     }
+
 }

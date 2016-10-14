@@ -334,6 +334,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
             purposes = (ArrayList<AccountOperation>) allPurposes.clone();
             tek = new boolean[purposes.size()];
             refreshFilterPurpose();
+
 //            ReckingDao reckingDao = daoSession.getReckingDao();
 //            Query<Recking> reckingQuery = reckingDao.queryBuilder().join(Account.class, ReckingDao.Properties.AccountId)
         }
@@ -350,6 +351,15 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     }
                 }
             }
+            double qoldiq = 0;
+            for (AccountOperation accountOperation: reportManager.getAccountOpertions(purpose)) {
+                if (accountOperation.getTargetId().equals(purpose.getId())) {
+                    qoldiq += accountOperation.getAmount();
+                } else {
+                    qoldiq -= accountOperation.getAmount();
+                }
+            }
+            Allcashes.setText(parseToWithoutNull(qoldiq)+purpose.getCurrency().getAbbr());
         }
 
         public void onBindViewHolder(final ViewHolder view, final int position) {

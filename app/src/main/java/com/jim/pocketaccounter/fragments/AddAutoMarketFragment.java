@@ -59,6 +59,7 @@ import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -142,8 +143,6 @@ public class AddAutoMarketFragment extends Fragment {
                 R.layout.spiner_gravity_right, accs);
         ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getActivity()
                 , R.layout.spiner_gravity_right, curs);
-
-
 
         account_sp.setAdapter(adapter_scet);
         spCurrency.setAdapter(curAdapter);
@@ -264,6 +263,8 @@ public class AddAutoMarketFragment extends Fragment {
                     daoSession.getAutoMarketDao().insertOrReplace(autoMarket);
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new AutoMarketFragment());
+                } else if (selectCategory == -1 && selectSubCategory == -1) {
+                    Toast.makeText(getContext(), "select category", Toast.LENGTH_SHORT).show();
                 } else {
                     amount.setError(null);
                     AutoMarket autoMarket = new AutoMarket();
@@ -276,7 +277,7 @@ public class AddAutoMarketFragment extends Fragment {
                     autoMarket.setCurrency(currencyDao.queryBuilder().where(CurrencyDao.Properties.Abbr.eq(curs.get(spCurrency.getSelectedItemPosition()))).list().get(0));
                     autoMarket.setAccount(accountDao.loadAll().get(account_sp.getSelectedItemPosition()));
                     autoMarket.setType(type);
-                    autoMarket.__setDaoSession(daoSession);
+                    autoMarket.setCreateDay(Calendar.getInstance());
                     autoMarket.setDates(sequence.substring(0, sequence.length() - 1));
                     switch (logicManager.insertAutoMarket(autoMarket)) {
                         case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
@@ -296,7 +297,6 @@ public class AddAutoMarketFragment extends Fragment {
         ivCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
 //                final Dialog dialog = new Dialog(getContext());
 //                final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_category_auto_market, null);
@@ -625,7 +625,7 @@ public class AddAutoMarketFragment extends Fragment {
             } else {
                 days = new String[31];
                 for (int i = 0; i < days.length; i++) {
-                    days[i] = i < 9 ? " " + (i + 1) : "" + (i + 1);
+                    days[i] = i < 9 ? "" + (i + 1) : "" + (i + 1);
                 }
             }
             tek = new boolean[days.length];
@@ -680,8 +680,6 @@ public class AddAutoMarketFragment extends Fragment {
             return new ViewHolderDialog(view);
         }
     }
-
-
 
     public class ViewHolderDialog extends RecyclerView.ViewHolder {
         public TextView day;

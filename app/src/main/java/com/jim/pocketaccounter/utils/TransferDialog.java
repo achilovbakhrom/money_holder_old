@@ -64,12 +64,13 @@ public class TransferDialog extends Dialog {
     private OnTransferDialogSaveListener onTransferDialogSaveListener;
     private List<String> first, second;
     private AccountOperation accountOperation;
+
     public TransferDialog(Context context) {
         super(context);
         if (!context.getClass().getName().equals(PocketAccounter.class.getName()))
-            ((PocketAccounter) ((ContextThemeWrapper)context).getBaseContext()).component((PocketAccounterApplication)context.getApplicationContext()).inject(this);
+            ((PocketAccounter) ((ContextThemeWrapper) context).getBaseContext()).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
         else
-            ((PocketAccounter) context).component((PocketAccounterApplication)context.getApplicationContext()).inject(this);
+            ((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext()).inject(this);
         dialogView = getLayoutInflater().inflate(R.layout.account_transfer_dialog, null);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(dialogView);
@@ -80,7 +81,7 @@ public class TransferDialog extends Dialog {
         date = (TextView) dialogView.findViewById(R.id.tvAccountDialogDate);
         currencies = daoSession.getCurrencyDao().loadAll();
         String[] currs = new String[currencies.size()];
-        for (int i=0; i<currencies.size(); i++)
+        for (int i = 0; i < currencies.size(); i++)
             currs[i] = currencies.get(i).getAbbr();
         ArrayAdapter<String> currencyAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, currs);
         spAccManDialog.setAdapter(currencyAdapter);
@@ -88,7 +89,7 @@ public class TransferDialog extends Dialog {
         ivYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 if (etAccountEditName.getText().toString().isEmpty()) {
                     etAccountEditName.setError(getContext().getResources().getString(R.string.enter_amount_error));
@@ -106,7 +107,7 @@ public class TransferDialog extends Dialog {
                     if (account.getIsLimited()) {
                         Double limitAccess = logicManager.isLimitAccess(account, calendar);
                         Double amount = Double.parseDouble(etAccountEditName.getText().toString());
-                        if (limitAccess-amount<-account.getLimite()) {
+                        if (limitAccess - amount < -account.getLimite()) {
                             Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -114,7 +115,7 @@ public class TransferDialog extends Dialog {
                     if (account.getNoneMinusAccount()) {
                         Double limitAccess = logicManager.isLimitAccess(account, calendar);
                         Double amount = Double.parseDouble(etAccountEditName.getText().toString());
-                        if (limitAccess+amount<0) {
+                        if (limitAccess + amount < 0) {
                             Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -191,10 +192,12 @@ public class TransferDialog extends Dialog {
                 secondAdapter = new TransferAccountAdapter(getContext(), second);
                 spTransferSecond.setAdapter(secondAdapter);
             }
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
         int firstPos = 0;
-        for (int i=0; i<first.size(); i++) {
+        for (int i = 0; i < first.size(); i++) {
             if (first.get(i).equals(accountOperation.getSourceId())) {
                 firstPos = i;
                 break;
@@ -202,7 +205,7 @@ public class TransferDialog extends Dialog {
         }
         spTransferFirst.setSelection(firstPos);
         int secondPos = 0;
-        for (int i=0; i<second.size(); i++) {
+        for (int i = 0; i < second.size(); i++) {
             if (second.get(i).equals(accountOperation.getTargetId())) {
                 secondPos = i;
                 break;
@@ -211,7 +214,7 @@ public class TransferDialog extends Dialog {
         spTransferSecond.setSelection(secondPos);
         etAccountEditName.setText(Double.toString(accountOperation.getAmount()));
         int currencyPos = 0;
-        for (int i=0; i<currencies.size(); i++) {
+        for (int i = 0; i < currencies.size(); i++) {
             if (currencies.get(i).getId().equals(accountOperation.getCurrencyId())) {
                 currencyPos = i;
                 break;
@@ -222,42 +225,42 @@ public class TransferDialog extends Dialog {
 
     public void setAccountOrPurpose(String id, boolean type) {
         if (id != null) {
+            List<String> allTemp = new ArrayList<>();
             first = new ArrayList<>();
-            List<Account> accounts = daoSession.getAccountDao().loadAll();
-            for (Account account : accounts)
-                first.add(account.getId());
-            List<Purpose> purposes = daoSession.getPurposeDao().loadAll();
-            for (Purpose purpose : purposes)
-                first.add(purpose.getId());
+            second = new ArrayList<>();
             int selectedPos = 0;
-            for (int i=0; i<first.size(); i++) {
-                if (first.get(i).matches(id)) {
+
+            List<Account> accounts = daoSession.getAccountDao().loadAll();
+            for (Account account : accounts) {
+                allTemp.add(account.getId());
+            }
+            List<Purpose> purposes = daoSession.getPurposeDao().loadAll();
+            for (Purpose purpose : purposes) {
+                allTemp.add(purpose.getId());
+            }
+
+            for (int i = 0; i < allTemp.size(); i++) {
+                if (allTemp.get(i).matches(id)) {
                     selectedPos = i;
                     break;
                 }
             }
-            second = new ArrayList<>();
+
+            first.addAll(allTemp);
+            second.addAll(allTemp);
+
+            secondAdapter = new TransferAccountAdapter(getContext(), second);
+            spTransferSecond.setAdapter(secondAdapter);
             firstAdapter = new TransferAccountAdapter(getContext(), first);
             spTransferFirst.setAdapter(firstAdapter);
             if (type) {
                 spTransferFirst.setSelection(selectedPos);
-            }
-            spTransferFirst.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long pos) {
-                    String firstId = first.get(i);
-                    second.clear();
-                    for (String id : first) {
-                        if (!id.matches(firstId))
-                            second.add(id);
-                    }
-                    secondAdapter = new TransferAccountAdapter(getContext(), second);
-                    spTransferSecond.setAdapter(secondAdapter);
-                }
-                public void onNothingSelected(AdapterView<?> adapterView) {}
-            });
-            if (!type) {
-                spTransferSecond.setSelection(selectedPos - 1);
+                spTransferSecond.setSelection(selectedPos == 0
+                        ? ((allTemp.size() == 1) ? 0 : 1) : 0);
+            } else {
+                spTransferSecond.setSelection(selectedPos);
+                spTransferFirst.setSelection(selectedPos == 0
+                        ? ((allTemp.size() == 1) ? 0 : 1) : 0);
             }
         }
     }
@@ -267,7 +270,7 @@ public class TransferDialog extends Dialog {
         ivYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 if (etAccountEditName.getText().toString().isEmpty()) {
                     etAccountEditName.setError(getContext().getResources().getString(R.string.enter_amount_error));
@@ -285,7 +288,7 @@ public class TransferDialog extends Dialog {
                     if (account.getIsLimited()) {
                         Double limitAccess = logicManager.isLimitAccess(account, calendar);
                         Double amount = Double.parseDouble(etAccountEditName.getText().toString());
-                        if (limitAccess-amount<-account.getLimite()) {
+                        if (limitAccess - amount < -account.getLimite()) {
                             Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -293,14 +296,14 @@ public class TransferDialog extends Dialog {
                     if (account.getNoneMinusAccount()) {
                         Double limitAccess = logicManager.isLimitAccess(account, calendar);
                         Double amount = Double.parseDouble(etAccountEditName.getText().toString());
-                        if (limitAccess+amount<0) {
+                        if (limitAccess + amount < 0) {
                             Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
                 }
 //                if (accountOperation == null)
-                    accountOperation = new AccountOperation();
+                accountOperation = new AccountOperation();
                 accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
                 accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
                 accountOperation.setDate(calendar);
