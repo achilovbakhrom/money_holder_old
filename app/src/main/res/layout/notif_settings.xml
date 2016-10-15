@@ -3,12 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
         <TextView
             android:id="@+id/tvEqual"
             android:layout_width="wrap_content"
@@ -18,7 +16,6 @@
             android:layout_weight="1"
             android:text="Настройки уведомления"
             android:textColor="@color/toolbar_text_color" />
-
         <ImageView
             android:id="@+id/ivAccountClose"
             android:layout_width="@dimen/twentyfive_dp"
@@ -26,7 +23,6 @@
             android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/cancel_sign" />
-
         <ImageView
             android:id="@+id/ivAccountSave"
             android:layout_width="@dimen/twentyfive_dp"
@@ -34,9 +30,7 @@
             android:layout_margin="@dimen/sixteen_dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/check_sign" />
-
     </LinearLayout>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
@@ -48,6 +42,5 @@
         android:layout_margin="@dimen/sixteen_dp"
         android:orientation="vertical"
         android:id="@+id/llNotifSettingBody">
-
     </LinearLayout>
 </LinearLayout>

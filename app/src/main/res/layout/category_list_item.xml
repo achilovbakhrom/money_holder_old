@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants"
-    >
+    android:orientation="vertical">
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/sevent_dp"
         android:layout_marginLeft="@dimen/eight_dp"
         android:layout_marginRight="@dimen/eight_dp"
-        android:layout_marginBottom="@dimen/sevent_dp"
         android:layout_marginTop="@dimen/two_dp"
-        card:cardMaxElevation="@dimen/ten_dp"
-        card:cardElevation="@dimen/five_dp"
         card:cardCornerRadius="@dimen/eight_dp"
-        android:layout_gravity="center_horizontal">
+        card:cardElevation="@dimen/five_dp"
+        card:cardMaxElevation="@dimen/ten_dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,8 +23,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
                 <ImageView
                     android:id="@+id/ivCategoryItem"
                     android:layout_width="@dimen/fourty_dp"
@@ -49,44 +47,42 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="@color/green_light_forline"/>
+                android:background="@color/green_light_forline" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/grey_light2"
-                >
+                android:background="@color/grey_light2">
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="@string/add_subcategory"
-                    android:background="@drawable/knopka_zeleniy"
-                    android:textColor="@color/green_just"
-                    android:layout_marginTop="@dimen/sixteen_dp"
-                    android:layout_marginBottom="@dimen/ten_dp"
-                    android:layout_marginRight="@dimen/five_dp"
-                    android:layout_marginLeft="@dimen/sixteen_dp"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textSize="@dimen/twelve_dp"
                     android:id="@+id/tvCategoryMainSubCatAdd"
-                    android:layout_weight="1"/>
-                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/to_edit"
-                    android:background="@drawable/knopka_zeleniy"
-                    android:textColor="@color/green_just"
-                    android:layout_marginTop="@dimen/sixteen_dp"
-                    android:layout_marginBottom="@dimen/ten_dp"
-                    android:layout_marginRight="@dimen/sixteen_dp"
-                    android:layout_marginLeft="@dimen/five_dp"
                     android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:layout_marginLeft="@dimen/sixteen_dp"
+                    android:layout_marginRight="@dimen/five_dp"
+                    android:layout_marginTop="@dimen/sixteen_dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/knopka_zeleniy"
                     android:gravity="center"
-                    android:textSize="@dimen/twelve_dp"
+                    android:text="@string/add_subcategory"
+                    android:textColor="@color/green_just"
+                    android:textSize="@dimen/twelve_dp" />
+                <TextView
                     android:id="@+id/tvCategoryMainEdit"
-                    android:layout_weight="1"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/ten_dp"
+                    android:layout_marginLeft="@dimen/five_dp"
+                    android:layout_marginRight="@dimen/sixteen_dp"
+                    android:layout_marginTop="@dimen/sixteen_dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/knopka_zeleniy"
+                    android:gravity="center"
+                    android:text="@string/to_edit"
+                    android:textColor="@color/green_just"
+                    android:textSize="@dimen/twelve_dp" />
             </LinearLayout>
         </LinearLayout>
-
     </android.support.v7.widget.CardView>
 </LinearLayout>

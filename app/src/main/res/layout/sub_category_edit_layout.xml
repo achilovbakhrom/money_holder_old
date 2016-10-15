@@ -3,13 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:orientation="vertical" >
-
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
+        android:orientation="horizontal">
         <TextView
             android:id="@+id/tvCatEditName"
             android:layout_width="wrap_content"
@@ -21,7 +19,6 @@
             android:text="@string/sub_cat"
             android:textColor="@color/toolbar_text_color"
             android:textSize="@dimen/sixteen_dp" />
-
         <ImageView
             android:id="@+id/ivSubCatClose"
             android:layout_width="@dimen/twentyfive_dp"
@@ -29,7 +26,6 @@
             android:layout_gravity="center_vertical"
             android:layout_marginRight="@dimen/ten_dp"
             android:src="@drawable/cancel_sign" />
-
         <ImageView
             android:id="@+id/ivSubCatSave"
             android:layout_width="@dimen/twentyfive_dp"
@@ -38,9 +34,7 @@
             android:layout_marginRight="@dimen/twentyfour_dp"
             android:layout_marginTop="@dimen/eight_dp"
             android:src="@drawable/check_sign" />
-
     </LinearLayout>
-
     <ImageView
         android:id="@+id/ivCatIcon"
         android:layout_width="match_parent"
@@ -54,26 +48,26 @@
             android:id="@+id/etSubCategoryName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginBottom="@dimen/twentyfour_dp"
             android:layout_marginLeft="@dimen/twentyfour_dp"
             android:layout_marginRight="@dimen/twentyfour_dp"
             android:layout_marginTop="@dimen/twenty_dp"
+            android:layout_weight="1"
             android:ems="10"
             android:hint="@string/subcat_name"
             android:maxLength="22"
             android:textColor="@color/toolbar_text_color"
-            android:textSize="@dimen/sixteen_sp"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical">
+            android:textSize="@dimen/sixteen_sp">
             <requestFocus />
         </EditText>
         <com.jim.pocketaccounter.utils.FABIcon
             android:id="@+id/fabChooseIcon"
             android:layout_width="@dimen/fiftysix_dp"
             android:layout_height="@dimen/fiftysix_dp"
-            android:layout_marginRight="@dimen/sixteen_dp"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="@dimen/fifteen_dp"
-            android:layout_marginTop="@dimen/fifteen_dp"/>
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:layout_marginTop="@dimen/fifteen_dp" />
     </LinearLayout>
 </LinearLayout>

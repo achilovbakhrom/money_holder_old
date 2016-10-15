@@ -4,26 +4,23 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
     android:descendantFocusability="blocksDescendants">
-
     <ImageView
         android:id="@+id/ivAccountListIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="15dp" />
-
+        android:layout_width="@dimen/twenty_dp"
+        android:layout_height="@dimen/twenty_dp"
+        android:layout_marginBottom="@dimen/fiveteen_dp"
+        android:layout_marginLeft="@dimen/sexteen_sp"
+        android:layout_marginTop="@dimen/fiveteen_dp" />
     <TextView
         android:id="@+id/tvAccountListName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginBottom="@dimen/fiveteen_dp"
+        android:layout_marginLeft="@dimen/fiveteen_dp"
+        android:layout_marginRight="@dimen/sexteen_dp"
+        android:layout_marginTop="@dimen/fiveteen_dp"
         android:text="TextView"
         android:textColor="@color/toolbar_text_color"
-        android:textSize="14dp" />
-
+        android:textSize="@dimen/fourteen_dp" />
 </LinearLayout>

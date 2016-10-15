@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
              android:paddingTop="@dimen/ten_dp">
-
             <com.jim.pocketaccounter.utils.FABIcon
                 android:id="@+id/ivPurposeinfoIcon"
                 android:layout_width="@dimen/sixty_dp"
@@ -42,8 +41,7 @@
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:layout_marginRight="@dimen/sixteen_dp"
                     android:textSize="@dimen/twenty_dp"
-                    android:textColor="@color/black_for_glavniy_text"
-                    />
+                    android:textColor="@color/black_for_glavniy_text" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -63,7 +61,6 @@
                     android:text="TextView"
                     android:textColor="@color/black_for_glavniy_text"
                     android:textSize="@dimen/sixteen_dp"/>
-
             </LinearLayout>
         </LinearLayout>
         <HorizontalScrollView
@@ -91,16 +88,14 @@
             android:layout_marginLeft="@dimen/sixteen_dp"
             android:layout_marginRight="@dimen/sixteen_dp"
             android:layout_marginTop="@dimen/ten_dp"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/left_date"
                 android:textSize="@dimen/sixteen_dp"
                 android:layout_weight="1"
-                android:layout_marginRight="@dimen/ten_dp"
-                />
+                android:layout_marginRight="@dimen/ten_dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -111,9 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-
             android:layout_marginBottom="@dimen/ten_dp">
-
             <TextView
                 android:id="@+id/tvPurposeInfoToCash"
                 android:layout_width="match_parent"
@@ -125,7 +118,6 @@
                 android:gravity="center"
                 android:textColor="@color/green_light"
                 android:text="@string/spend" />
-
             <TextView
                 android:id="@+id/tvPurposeInfoReplanish"
                 android:layout_width="match_parent"
@@ -144,11 +136,6 @@
         android:layout_height="2px"
         android:background="@color/green_light_forline"
         android:layout_marginBottom="@dimen/ten_dp" />
-
-
-
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -218,8 +205,7 @@
         <RelativeLayout
             android:id="@+id/forGoneLeftDate"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -267,6 +253,5 @@
                 android:layout_toLeftOf="@+id/totaly"
                 android:layout_toStartOf="@+id/totaly" />
         </RelativeLayout>
-
     </LinearLayout>
 </LinearLayout>

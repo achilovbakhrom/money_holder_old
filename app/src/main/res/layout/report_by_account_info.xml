@@ -3,18 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
         android:background="@color/info_bg_border"
         android:id="@+id/imageView3" />
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="@dimen/one_dp"
         android:background="@color/info_bg_border"/>
-
     <ImageView
         android:layout_width="@dimen/twentyfour_dp"
         android:layout_height="@dimen/twentyfour_dp"

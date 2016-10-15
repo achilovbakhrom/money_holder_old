@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
-
     <ImageView
         android:id="@+id/ivSubItemIcon"
         android:layout_width="@dimen/twentyfive_dp"
@@ -11,7 +10,6 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="@dimen/fourty_dp"
         android:layout_marginRight="@dimen/sixteen_dp" />
-
     <TextView
         android:id="@+id/tvSubItemName"
         android:layout_width="match_parent"
@@ -23,5 +21,4 @@
         android:text="TextView"
         android:textColor="@color/toolbar_text_color"
         android:textSize="@dimen/fourteen_sp" />
-
 </LinearLayout>

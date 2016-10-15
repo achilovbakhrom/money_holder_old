@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
     android:descendantFocusability="blocksDescendants">
-
     <CheckBox
         android:id="@+id/chbSubCat"
         android:layout_width="wrap_content"
@@ -15,7 +14,6 @@
         android:scaleX="0.6"
         android:scaleY="0.6"
         android:visibility="gone" />
-
     <TextView
         android:id="@+id/tvSubCatName"
         android:layout_width="wrap_content"
@@ -30,7 +28,6 @@
         android:text="TextView"
         android:textColor="@color/for_darker"
         android:textSize="@dimen/sixteen_sp" />
-
     <ImageView
         android:src="@drawable/drawer_currency"
         android:layout_width="@dimen/twenty_dp"
@@ -38,5 +35,4 @@
         android:id="@+id/ivSubCategoryIcon"
         android:layout_gravity="center_vertical"
         android:layout_marginRight="@dimen/sixteen_dp"/>
-
 </LinearLayout>

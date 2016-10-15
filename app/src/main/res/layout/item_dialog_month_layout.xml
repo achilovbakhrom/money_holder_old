@@ -3,27 +3,23 @@
     android:layout_width="wrap_content"
     android:layout_height="@dimen/fourtyfive_dp"
     android:layout_marginTop="@dimen/five_dp"
-    android:paddingBottom="@dimen/three_dp"
-    >
-
+    android:paddingBottom="@dimen/three_dp">
     <FrameLayout
+        android:id="@+id/flItemDay"
         android:layout_width="2px"
         android:layout_height="match_parent"
-        android:background="#cfcbcb"
-        android:layout_marginTop="@dimen/three_dp"
         android:layout_marginBottom="@dimen/three_dp"
-        android:id="@+id/flItemDay"
-        />
-
+        android:layout_marginTop="@dimen/three_dp"
+        android:background="#cfcbcb" />
     <TextView
         android:id="@+id/tvItemDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/ten_dp"
         android:padding="@dimen/ten_dp"
         android:text="Mon"
         android:textColor="@color/black_for_secondary_text"
-        android:textSize="@dimen/sixteen_sp" />
-
+        android:textSize="@dimen/sixteen_sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>

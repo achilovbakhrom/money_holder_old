@@ -3,12 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!--PreferenceCategory android:title="@string/language"-->
-
     <Preference
-        android:title="@string/language"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
+        android:selectable="false"
+        android:title="@string/language" />
     <ListPreference
         android:defaultValue='@string/language_default'
         android:dialogIcon="@drawable/remove_red"
@@ -19,125 +17,109 @@
         android:summary="@string/choose_language" />
     <!--<PreferenceCategory android:title="@string/finance">-->
     <Preference
-        android:title="Main window"
+        android:layout="@layout/my_pref_layout"
         android:selectable="false"
-        android:layout="@layout/my_pref_layout"/>
+        android:title="Main window" />
     <Preference
         android:key="mainwind"
         android:summary="@string/pages_about"
         android:title="@string/count_pages" />
-
     <Preference
-        android:title="@string/finance"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/balance_mode_titles"
-            android:entryValues="@array/balance_mode_values"
-            android:key="balance_solve"
-            android:selectable="true"
-            android:summary="@string/balance_summary"
-            android:title="@string/balance_title"/>
+        android:selectable="false"
+        android:title="@string/finance" />
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/balance_mode_titles"
+        android:entryValues="@array/balance_mode_values"
+        android:key="balance_solve"
+        android:selectable="true"
+        android:summary="@string/balance_summary"
+        android:title="@string/balance_title" />
     <!--<PreferenceCategory android:title="@string/notifications">-->
     <Preference
-        android:title="@string/notifications"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <CheckBoxPreference
-            android:defaultValue="@bool/notif_default"
-            android:key="general_notif"
-            android:summary="@string/notifications_summary"
-            android:title="@string/notifications" />
-        <com.jim.pocketaccounter.utils.TimePreference
-            android:defaultValue="08:00"
-            android:summary="@string/planning_notif_summary"
-            android:showDefault="true"
-            android:dependency="@string/general_notif"
-            android:entries="@string/planning_notif_entry"
-            android:dialogLayout="@layout/time_preference"
-            android:title="@string/planning_notif_title"
-            android:key="planningNotifTime" />
+        android:selectable="false"
+        android:title="@string/notifications" />
+    <CheckBoxPreference
+        android:defaultValue="@bool/notif_default"
+        android:key="general_notif"
+        android:summary="@string/notifications_summary"
+        android:title="@string/notifications" />
+    <com.jim.pocketaccounter.utils.TimePreference
+        android:defaultValue="08:00"
+        android:dependency="@string/general_notif"
+        android:dialogLayout="@layout/time_preference"
+        android:entries="@string/planning_notif_entry"
+        android:key="planningNotifTime"
+        android:showDefault="true"
+        android:summary="@string/planning_notif_summary"
+        android:title="@string/planning_notif_title" />
     <!--<PreferenceCategory android:title="@string/filters">-->
     <Preference
-        android:title="@string/filters"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <ListPreference
-            android:defaultValue="2"
-            android:entries="@array/filter_titles"
-            android:entryValues="@array/filter_value"
-            android:key="report_filter"
-            android:summary="@string/filter_subtitle"
-            android:title="@string/filter_title" />
+        android:selectable="false"
+        android:title="@string/filters" />
+    <ListPreference
+        android:defaultValue="2"
+        android:entries="@array/filter_titles"
+        android:entryValues="@array/filter_value"
+        android:key="report_filter"
+        android:summary="@string/filter_subtitle"
+        android:title="@string/filter_title" />
     <!--<PreferenceCategory android:title="@string/sync">-->
     <Preference
-        android:title="@string/sync"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <Preference
-            android:key="save"
-            android:summary="@string/setting_save"
-            android:title="@string/save" />
-        <Preference
-            android:key="load"
-            android:summary="@string/setting_repair"
-            android:title="@string/repair" />
+        android:selectable="false"
+        android:title="@string/sync" />
+    <Preference
+        android:key="save"
+        android:summary="@string/setting_save"
+        android:title="@string/save" />
+    <Preference
+        android:key="load"
+        android:summary="@string/setting_repair"
+        android:title="@string/repair" />
     <!--<PreferenceCategory android:title="@string/google_sync">-->
     <Preference
-        android:title="@string/google_sync"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <Preference
-            android:key="backup"
-            android:summary="@string/backup_summary"
-            android:title="@string/backup" />
-        <Preference
-            android:key="logout"
-            android:title="@string/google_logout" />
-
-
+        android:selectable="false"
+        android:title="@string/google_sync" />
+    <Preference
+        android:key="backup"
+        android:summary="@string/backup_summary"
+        android:title="@string/backup" />
+    <Preference
+        android:key="logout"
+        android:title="@string/google_logout" />
     <!--<PreferenceCategory      android:title="@string/securee">-->
-
     <Preference
-        android:title="@string/securee"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <CheckBoxPreference
-            android:defaultValue="@bool/secure_default"
-            android:key="secure"
-            android:title="@string/secure_on"/>
-        <com.jim.pocketaccounter.utils.PasswordPreference
-            android:key="password"
-            android:title="@string/izmenit_parol"
-            android:dependency="secure"
-
-            />
-
+        android:selectable="false"
+        android:title="@string/securee" />
+    <CheckBoxPreference
+        android:defaultValue="@bool/secure_default"
+        android:key="secure"
+        android:title="@string/secure_on" />
+    <com.jim.pocketaccounter.utils.PasswordPreference
+        android:dependency="secure"
+        android:key="password"
+        android:title="@string/izmenit_parol" />
     <Preference
-        android:title="Widget"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
+        android:selectable="false"
+        android:title="Widget" />
     <CheckBoxPreference
         android:defaultValue="@bool/widget_def"
         android:key="securewidget"
-        android:title="@string/balance_invis"/>
-
+        android:title="@string/balance_invis" />
     <!--<PreferenceCategory        android:title="@string/sbrosit_title">-->
     <Preference
-        android:title="@string/sbrosit_title"
-        android:selectable="false"
         android:layout="@layout/my_pref_layout"
-        />
-        <Preference
-            android:key="sbros"
-            android:summary="@string/sbrosit_about"
-            android:title="@string/sbrosit" />
+        android:selectable="false"
+        android:title="@string/sbrosit_title" />
+    <Preference
+        android:key="sbros"
+        android:summary="@string/sbrosit_about"
+        android:title="@string/sbrosit" />
 </PreferenceScreen>

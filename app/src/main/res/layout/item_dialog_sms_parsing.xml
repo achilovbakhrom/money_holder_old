@@ -10,6 +10,7 @@
     android:layout_marginBottom="@dimen/ten_dp"
     >
 
+    android:paddingTop="@dimen/five_dp">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,6 +21,7 @@
         android:textColor="@color/toolbar_text_color"
         />
 
+        android:textSize="@dimen/sexteen_sp" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,4 +34,6 @@
         android:textColor="@color/toolbar_text_color"
         />
 
+        android:textSize = "@dimen/fourteen_sp"
+        android:gravity="right" />
 </LinearLayout>

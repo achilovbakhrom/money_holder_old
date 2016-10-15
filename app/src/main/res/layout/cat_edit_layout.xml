@@ -4,15 +4,12 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:clickable="true">
-
     <LinearLayout
         android:id="@+id/llCatEditHeader"
         android:layout_width="match_parent"
         android:layout_height="@dimen/hundred_and_twenty_dp"
         android:background="@color/toolbar_color"
-        android:orientation="vertical"
-        >
-
+        android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,8 +17,7 @@
             android:layout_marginLeft="@dimen/sixteen_dp"
             android:layout_marginRight="@dimen/sixteen_dp"
             android:layout_marginTop="@dimen/ten_dp"
-            android:orientation="horizontal" >
-
+            android:orientation="horizontal">
             <TextView
                 android:id="@+id/tvCatEditName"
                 android:layout_width="wrap_content"
@@ -30,7 +26,6 @@
                 android:text="@string/cat_name"
                 android:textColor="@color/toolbar_text_color"
                 android:textSize="@dimen/fourteen_sp" />
-
             <EditText
                 android:id="@+id/etAccountEditName"
                 android:layout_width="wrap_content"
@@ -39,21 +34,17 @@
                 android:ems="10"
                 android:maxLength="22"
                 android:textColor="@color/toolbar_text_color"
-                android:textSize="@dimen/sixteen_dp" >
-
+                android:textSize="@dimen/sixteen_dp">
                 <requestFocus />
             </EditText>
-
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/sixteen_dp"
             android:layout_marginLeft="@dimen/sixteen_dp"
             android:layout_marginRight="@dimen/sixteen_dp"
-            android:layout_marginTop="@dimen/fifteen_dp" >
-
+            android:layout_marginTop="@dimen/fifteen_dp">
             <CheckBox
                 android:id="@+id/chbCatEditExpanse"
                 android:layout_width="wrap_content"
@@ -63,7 +54,6 @@
                 android:paddingLeft="@dimen/ten_dp"
                 android:text="@string/expanse"
                 android:textColor="@color/toolbar_text_color" />
-
             <CheckBox
                 android:id="@+id/chbCatEditIncome"
                 android:layout_width="wrap_content"
@@ -73,11 +63,8 @@
                 android:paddingLeft="@dimen/ten_dp"
                 android:text="@string/income"
                 android:textColor="@color/toolbar_text_color" />
-
         </LinearLayout>
-
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -85,44 +72,34 @@
         android:layout_marginBottom="@dimen/sixteen_dp"
         android:layout_marginLeft="@dimen/sixteen_dp"
         android:layout_marginRight="@dimen/sixteen_dp"
-        android:orientation="vertical" >
-        <TabHost
+        android:orientation="vertical">
+        <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/thCategoryEdit"
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-
                 <TabWidget
                     android:id="@android:id/tabs"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </TabWidget>
-
+                    android:layout_height="wrap_content"/>
                 <FrameLayout
                     android:id="@android:id/tabcontent"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
                     <LinearLayout
                         android:id="@+id/llTab1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical">
-                    </LinearLayout>
-
+                        android:orientation="vertical"/>
                     <LinearLayout
                         android:id="@+id/llTab2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical">
-                    </LinearLayout>
-
+                        android:orientation="vertical"/>
                 </FrameLayout>
             </LinearLayout>
         </TabHost>
@@ -136,19 +113,16 @@
             android:text="@string/sub_cats"
             android:textColor="@color/currency_chooser"
             android:textSize="@dimen/fourteen_sp" />
-
         <ImageView
             android:id="@+id/ivAccountListIcon"
             android:layout_width="match_parent"
             android:layout_height="@dimen/one_dp"
             android:background="@color/message_color" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/four_dp"
-            android:layout_marginTop="@dimen/four_dp" >
-
+            android:layout_marginTop="@dimen/four_dp">
             <ImageView
                 android:id="@+id/ivSubCatAdd"
                 android:layout_width="@dimen/thirty_dp"
@@ -156,7 +130,6 @@
                 android:layout_margin="@dimen/five_dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/subcat_add" />
-
             <ImageView
                 android:id="@+id/ivSubCatDelete"
                 android:layout_width="@dimen/thirty_dp"
@@ -165,21 +138,16 @@
                 android:layout_marginLeft="@dimen/five_dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/subcat_delete" />
-
         </LinearLayout>
-
         <ListView
             android:id="@+id/lvAccountHistory"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/listview_bg"
             android:divider="@color/message_color"
-            android:dividerHeight="@dimen/one_dp" >
-
+            android:dividerHeight="@dimen/one_dp">
         </ListView>
-
     </LinearLayout>
-
     <com.jim.pocketaccounter.utils.FABIcon
         android:id="@+id/fabAccountIcon"
         android:layout_width="@dimen/fiftysix_dp"
@@ -187,5 +155,4 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/sixteen_dp"
         android:layout_marginTop="@dimen/ninetytwo_dp" />
-
 </RelativeLayout>

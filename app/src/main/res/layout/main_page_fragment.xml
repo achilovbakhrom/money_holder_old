@@ -14,7 +14,6 @@
             android:id="@+id/rlRecordExpanses"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
         </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,7 +38,6 @@
                         android:text="@string/income"
                         android:textColor="@color/toolbar_text_color"
                         android:textSize="@dimen/fourteen_sp" />
-
                     <TextView
                         android:id="@+id/tvRecordIncome"
                         android:layout_width="match_parent"
@@ -50,7 +48,6 @@
                         android:textColor="@color/green_just"
                         android:textSize="@dimen/twelve_sp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -68,7 +65,6 @@
                         android:text="@string/balanse"
                         android:textColor="@color/toolbar_text_color"
                         android:textSize="@dimen/fourteen_sp" />
-
                     <TextView
                         android:id="@+id/tvRecordBalanse"
                         android:layout_width="match_parent"
@@ -79,14 +75,12 @@
                         android:textColor="@color/toolbar_text_color"
                         android:textSize="@dimen/twelve_sp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:layout_marginBottom="@dimen/ten_dp">
-
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -98,7 +92,6 @@
                         android:text="@string/expanse"
                         android:textColor="@color/toolbar_text_color"
                         android:textSize="@dimen/fourteen_sp" />
-
                     <TextView
                         android:id="@+id/tvRecordExpanse"
                         android:layout_width="match_parent"
@@ -111,7 +104,6 @@
                         android:textSize="@dimen/twelve_sp" />
                 </LinearLayout>
         </LinearLayout>
-
         <RelativeLayout
             android:id="@+id/rlRecordIncomes"
             android:layout_width="match_parent"
