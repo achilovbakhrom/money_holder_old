@@ -360,7 +360,6 @@ public class AddSmsParseFragment extends Fragment {
                 }
             }
             c.close();
-            Toast.makeText(getContext(), "" + lstSms.size(), Toast.LENGTH_SHORT).show();
             return lstSms;
         }
         return null;

@@ -243,7 +243,7 @@ public class CommonOperations {
                     }
                     else {
                         regex += "(\\b"+incomeKeyword+").*\\s*";
-                        regex += "(\\b"+splittedText.get(amountPos-1)+")\\s*";
+                        regex += "(["+splittedText.get(amountPos-1)+"])\\s*";
                         regex += "("+numberPattern+").*\\s*";
                         amountBlockPos = 3;
                     }
@@ -252,7 +252,7 @@ public class CommonOperations {
                     regex = "";
                     if (amountPos != 0) {
                         regex += ".*\\s*";
-                        regex += "(\\b" + splittedText.get(amountPos - 1) + ")\\s*";
+                        regex += "([" + splittedText.get(amountPos - 1) + "])\\s*";
                     }
                     regex += "("+numberPattern+").*\\s*";
                     regex += "(\\b"+incomeKeyword+").*\\s*";
@@ -275,7 +275,7 @@ public class CommonOperations {
                     }
                     else {
                         regex += "(\\b"+expenseKeyword+").*\\s*";
-                        regex += "(\\b"+splittedText.get(amountPos-1)+")\\s*";
+                        regex += "(["+splittedText.get(amountPos-1)+"])\\s*";
                         regex += "("+numberPattern+").*\\s*";
                         amountBlockPos = 3;
                     }
@@ -284,7 +284,7 @@ public class CommonOperations {
                     regex = "";
                     if (amountPos != 0) {
                         regex += ".*\\s*";
-                        regex += "(\\b" + splittedText.get(amountPos - 1) + ")\\s*";
+                        regex += "([" + splittedText.get(amountPos - 1) + "])\\s*";
                     }
                     regex += "("+numberPattern+").*\\s*";
                     regex += "(\\b"+expenseKeyword+").*\\s*";
@@ -300,8 +300,8 @@ public class CommonOperations {
             for (String amountKeyword : amountKeywords) {
                 for (String incomeKeyword : incomeKeywords) {
                     int type = PocketAccounterGeneral.INCOME;
-                    String regex = "(.*\\s*((\\b"+incomeKeyword+").*\\s*(\\b"+amountKeyword+")\\s*("+numberPattern+")))|" +
-                            "(.*\\s*((\\b"+amountKeyword+")\\s*("+numberPattern+").*\\s*(\\b"+incomeKeyword+")))";
+                    String regex = "(.*\\s*((\\b"+incomeKeyword+").*\\s*(["+amountKeyword+"])\\s*("+numberPattern+")))|" +
+                            "(.*\\s*((["+amountKeyword+"])\\s*("+numberPattern+").*\\s*(\\b"+incomeKeyword+")))";
                     amountBlockPos = 5;
                     int amountBlockPosSecond = 9;
                     TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
@@ -312,8 +312,8 @@ public class CommonOperations {
             for (String amountKeyword : amountKeywords) {
                 for (String expenseKeyword : expenseKeywords) {
                     int type = PocketAccounterGeneral.EXPENSE;
-                    String regex = "(.*\\s*((\\b"+expenseKeyword+").*\\s*(\\b"+amountKeyword+")\\s*("+numberPattern+")))|" +
-                            "(.*\\s*((\\b"+amountKeyword+")\\s*("+numberPattern+").*\\s*(\\b"+expenseKeyword+")))";
+                    String regex = "(.*\\s*((\\b"+expenseKeyword+").*\\s*(["+amountKeyword+"])\\s*("+numberPattern+")))|" +
+                            "(.*\\s*((["+amountKeyword+"])\\s*("+numberPattern+").*\\s*(\\b"+expenseKeyword+")))";
                     amountBlockPos = 5;
                     int amountBlockPosSecond = 9;
                     TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);

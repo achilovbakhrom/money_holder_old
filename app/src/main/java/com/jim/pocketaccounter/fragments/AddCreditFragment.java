@@ -128,18 +128,19 @@ public class AddCreditFragment extends Fragment {
     private String mode = PocketAccounterGeneral.EVERY_DAY, sequence = "";
     private Spinner spNotifMode;
     private ArrayList<String> adapter;
-    boolean fromMainWindow=false;
+    boolean fromMainWindow = false;
     int modeFromMain;
     int posFromMain;
+
     public AddCreditFragment() {
         // Required empty public constructor
         ThisFragment = this;
     }
 
-    public AddCreditFragment setDateFormatModes( int mode, int pos){
-        fromMainWindow=true;
-        this.modeFromMain=mode;
-        this.posFromMain=pos;
+    public AddCreditFragment setDateFormatModes(int mode, int pos) {
+        fromMainWindow = true;
+        this.modeFromMain = mode;
+        this.posFromMain = pos;
         return this;
     }
 
@@ -885,16 +886,16 @@ public class AddCreditFragment extends Fragment {
                 String sloution = solution.getText().toString();
                 if (sloution.indexOf(',') != -1)
                     sloution = sloution.substring(0, sloution.indexOf(',')) + "." + sloution.substring(sloution.indexOf(',') + 1, sloution.length());
-                CreditDetials A1 ;
+                CreditDetials A1;
                 Account account = accounts.get(spiner_trasnact.getSelectedItemPosition());
 
                 if (account.getIsLimited() && key) {
                     double limit = account.getLimite();
                     double accounted = logicManager.isLimitAccess(account, new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]));
-                    if (isEdit()&&currentCredit.getKey_for_include()){
+                    if (isEdit() && currentCredit.getKey_for_include()) {
                         for (ReckingCredit reckingCredit : currentCredit.getReckings()) {
                             if (currentCredit.getTake_time().getTimeInMillis() == reckingCredit.getPayDate().getTimeInMillis())
-                                accounted=+commonOperations.getCost(reckingCredit.getPayDate(), currentCredit.getValyute_currency(), reckingCredit.getAmount());
+                                accounted = +commonOperations.getCost(reckingCredit.getPayDate(), currentCredit.getValyute_currency(), reckingCredit.getAmount());
                         }
                     }
                     accounted = accounted - commonOperations.getCost((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), currencies.get(spiner_forValut.getSelectedItemPosition()), account.getCurrency(), Double.parseDouble(transactionCred.getText().toString()));
@@ -905,7 +906,7 @@ public class AddCreditFragment extends Fragment {
                 }
 
                 if (isEdit()) {
-                    Log.d("sbb",Double.parseDouble(sb.toString())+"" );
+                    Log.d("sbb", Double.parseDouble(sb.toString()) + "");
                     A1 = new CreditDetials(selectedIcon, nameCred.getText().toString(), new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]),
                             Double.parseDouble(sb.toString()), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString()),
                             currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution), currentCredit.getMyCredit_id());
@@ -928,7 +929,7 @@ public class AddCreditFragment extends Fragment {
                                 A1.getMyCredit_id(), getString(R.string.this_first_comment));
                     }
                     first_pay.__setDaoSession(daoSession);
-                    if (isEdit()){
+                    if (isEdit()) {
                         List<ReckingCredit> tempiker = currentCredit.getReckings();
                         boolean iskeeeep = true;
                         for (ReckingCredit temp : tempiker) {
@@ -940,10 +941,9 @@ public class AddCreditFragment extends Fragment {
                             }
                         }
                         if (iskeeeep) {
-                           logicManager.insertReckingCredit(first_pay);
+                            logicManager.insertReckingCredit(first_pay);
                         }
-                    }
-                else {
+                    } else {
                         logicManager.insertReckingCredit(first_pay);
                     }
                 }
@@ -969,44 +969,44 @@ public class AddCreditFragment extends Fragment {
                             .where(BoardButtonDao.Properties.CategoryId.eq(A1.getMyCredit_id()))
                             .list().get(0).getId(), temp);
 
-                        temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
-                        List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain), BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
-                        if (!boardButtons.isEmpty()) {
-                            dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
-                                    temp);
-                        }
-                        dataCache.updateOneDay(dataCache.getEndDate());
-
+                    temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+                    List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain), BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
+                    if (!boardButtons.isEmpty()) {
+                        dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
+                                temp);
                     }
+                    dataCache.updateOneDay(dataCache.getEndDate());
+
+                }
 
                 if (isEdit()) {
                     logicManager.insertCredit(A1);
                     //TODO CLOSE ALL FRAGMENTS
                 } else {
-                    switch(logicManager.insertCredit(A1)) {
+                    switch (logicManager.insertCredit(A1)) {
                         case LogicManagerConstants.SAVED_SUCCESSFULL: {
                             break;
                         }
                     }
                 }
                 dialog.dismiss();
-                if (isEdit()&&!fromMainWindow) {
+                if (isEdit() && !fromMainWindow) {
 
-                    List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
-                    for(BoardButton boardButton:boardButtons){
-                        if(boardButton.getCategoryId()!=null)
-                            if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
-                                if(boardButton.getTable()==PocketAccounterGeneral.EXPANSE_MODE)
-                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),Long.toString(A1.getMyCredit_id()));
+                    List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
+                    for (BoardButton boardButton : boardButtons) {
+                        if (boardButton.getCategoryId() != null)
+                            if (boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))) {
+                                if (boardButton.getTable() == PocketAccounterGeneral.EXPANSE_MODE)
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, boardButton.getPos(), Long.toString(A1.getMyCredit_id()));
                                 else
-                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),Long.toString(A1.getMyCredit_id()));
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, boardButton.getPos(), Long.toString(A1.getMyCredit_id()));
 
-                                BitmapFactory.Options options=new BitmapFactory.Options();
-                                options.inPreferredConfig= Bitmap.Config.RGB_565;
-                                Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
-                                temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
-                                    dataCache.getBoardBitmapsCache().put(boardButton.getId(),
-                                            temp);
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                                Bitmap temp = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(A1.getIcon_ID(), "drawable", context.getPackageName()), options);
+                                temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+                                dataCache.getBoardBitmapsCache().put(boardButton.getId(),
+                                        temp);
 
                                 dataCache.updateAllPercents();
                                 paFragmentManager.updateAllFragmentsOnViewPager();
@@ -1018,29 +1018,27 @@ public class AddCreditFragment extends Fragment {
                     paFragmentManager.displayFragment(new CreditTabLay());
 
 
-                }
-                else if(fromMainWindow){
+                } else if (fromMainWindow) {
                     Log.d("testttt", "fromMainWindow");
-                    if(modeFromMain==PocketAccounterGeneral.EXPANSE_MODE)
-                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,posFromMain,Long.toString(A1.getMyCredit_id()));
+                    if (modeFromMain == PocketAccounterGeneral.EXPANSE_MODE)
+                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, posFromMain, Long.toString(A1.getMyCredit_id()));
                     else
-                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,posFromMain,Long.toString(A1.getMyCredit_id()));
+                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, posFromMain, Long.toString(A1.getMyCredit_id()));
 
 
-                    BitmapFactory.Options options=new BitmapFactory.Options();
-                    options.inPreferredConfig= Bitmap.Config.RGB_565;
-                    Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
-                    temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
-                    List<BoardButton> boardButtons=daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain),BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
-                    if(!boardButtons.isEmpty()){
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    Bitmap temp = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(A1.getIcon_ID(), "drawable", context.getPackageName()), options);
+                    temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+                    List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain), BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
+                    if (!boardButtons.isEmpty()) {
                         dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
                                 temp);
                     }
                     dataCache.updateAllPercents();
                     paFragmentManager.updateAllFragmentsOnViewPager();
                     paFragmentManager.displayMainWindow();
-                }
-                else {
+                } else {
                     Log.d("testttt", "adding");
                     paFragmentManager.getFragmentManager().popBackStack();
                 }
@@ -1069,7 +1067,7 @@ public class AddCreditFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        if(!fromMainWindow){
+        if (!fromMainWindow) {
             if (!onSucsessed && currentCredit == null)
                 eventLis.canceledAdding();
             else if (currentCredit == null) {

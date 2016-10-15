@@ -166,10 +166,13 @@ public class BorrowFragment extends Fragment {
             }
             if(persons.size()!=0){
                 ifListEmpty.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 //TODO Har bittasini zapisi bomi yomi tekshirish kere
-                ifListEmpty.setText("");
+                String isEmpty = "";
+                if (TYPE == DebtBorrow.BORROW) isEmpty = "Borrow ";
+                else if (TYPE == DebtBorrow.DEBT) isEmpty = "Debt ";
+                else isEmpty = "Archive ";
+                ifListEmpty.setText(isEmpty + "is empty");
                 ifListEmpty.setVisibility(View.VISIBLE);
             }
         }

@@ -27,6 +27,7 @@ import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
 import com.jim.pocketaccounter.fragments.SMSParseInfoFragment;
 import com.jim.pocketaccounter.fragments.SearchFragment;
 import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
+import com.jim.pocketaccounter.fragments.TableBarFragment;
 
 /**
  * Created by user on 6/16/2016.
@@ -75,7 +76,7 @@ public interface PocketClassess {
     // Report by Account
     String REPORT_ACCOUNT = ReportByAccountFragment.class.getName();
     String REPORT_CATEGORY = ReportByCategory.class.getName();
-    String REPORT_BY_INCOME_EXPANCE = ReportByIncomeExpanseBarFragment.class.getName();
+    String REPORT_BY_INCOME_EXPANCE = TableBarFragment.class.getName();
 
     // Sms Parsing
     String SMS_PARSE_FRAGMENT = SmsParseMainFragment.class.getName();
