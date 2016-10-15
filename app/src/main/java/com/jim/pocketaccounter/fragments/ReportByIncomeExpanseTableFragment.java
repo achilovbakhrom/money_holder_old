@@ -61,23 +61,14 @@ import jxl.write.WriteException;
 import jxl.write.Number;
 
 public class ReportByIncomeExpanseTableFragment extends Fragment {
-    @Inject
-    PAFragmentManager paFragmentManager;
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    FilterDialog filterDialog;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    @Named(value = "display_formatter")
-    SimpleDateFormat simpleDateFormat;
-    @Inject
-    ReportManager reportManager;
-    @Inject
-    CommonOperations commonOperations;
-    @Inject
-    SharedPreferences sharedPreferences;
+    @Inject PAFragmentManager paFragmentManager;
+    @Inject DaoSession daoSession;
+    @Inject FilterDialog filterDialog;
+    @Inject ToolbarManager toolbarManager;
+    @Inject @Named(value = "display_formatter") SimpleDateFormat simpleDateFormat;
+    @Inject ReportManager reportManager;
+    @Inject CommonOperations commonOperations;
+    @Inject SharedPreferences sharedPreferences;
     private TableView tvReportIncomeExpance;
     private List<IncomeExpanseDataRow> sortReportIncomeExpance;
     private Calendar begin, end;
@@ -123,7 +114,7 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         this.begin = (Calendar) begin.clone();
         this.end = (Calendar) end.clone();
         sortReportIncomeExpance = reportManager.getIncomeExpanceReport(begin,end);
-        tvReportIncomeExpance.setDatas((ArrayList<? extends Object>) sortReportIncomeExpance);
+        tvReportIncomeExpance.setDatas(sortReportIncomeExpance);
         calculateDatas();
     }
     private void calculateDatas() {
@@ -156,7 +147,6 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         tvAverageProfit.setText(getString(R.string.report_income_expanse_aver_profit) + format.format(averageProfit) + abbr);
     }
     private void init() {
-//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String setting = sharedPreferences.getString("report_filter", "0");
         begin = Calendar.getInstance();
         end = Calendar.getInstance();

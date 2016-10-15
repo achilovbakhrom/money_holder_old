@@ -3,6 +3,7 @@ package com.jim.pocketaccounter.fragments;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -52,6 +53,7 @@ import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.finance.IconAdapterAccount;
+import com.jim.pocketaccounter.intropage.IntroIndicator;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
@@ -169,6 +171,7 @@ public class AddCreditFragment extends Fragment {
             paFragmentManager.setMainReturn(true);
         }
         context = getActivity();
+
         spiner_forValut = (Spinner) V.findViewById(R.id.spinner);
         spiner_procent = (Spinner) V.findViewById(R.id.spinner_procent);
         spinner_peiod = (Spinner) V.findViewById(R.id.spinner_period);
@@ -494,7 +497,7 @@ public class AddCreditFragment extends Fragment {
                         Bitmap iconik = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp), (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
 
                         if (!daoSession.getBoardButtonDao().queryBuilder()
-                                .where(BoardButtonDao.Properties.CategoryId.eq(currentCredit.getMyCredit_id()))
+                                .where(BoardButtonDao.Properties.CategoryId.eq(Long.toString(currentCredit.getMyCredit_id())))
                                 .list().isEmpty()) {
                             dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
                                     .where(BoardButtonDao.Properties.CategoryId.eq(currentCredit.getMyCredit_id()))

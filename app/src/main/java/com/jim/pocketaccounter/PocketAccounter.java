@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,7 @@ import com.jim.pocketaccounter.database.AutoMarket;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.debt.PocketClassess;
+import com.jim.pocketaccounter.intropage.IntroIndicator;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
 import com.jim.pocketaccounter.managers.SettingsManager;
@@ -55,6 +59,7 @@ import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -134,6 +139,11 @@ public class PocketAccounter extends AppCompatActivity {
         super.onCreate(null);
         setContentView(R.layout.pocket_accounter);
         component((PocketAccounterApplication) getApplication()).inject(this);
+        String lang = preferences.getString("language", getResources().getString(R.string.language_default));
+        if (lang.matches(getResources().getString(R.string.language_default)))
+            setLocale(Locale.getDefault().getLanguage());
+        else
+            setLocale(lang);
         checkAutoMarket();
         toolbarManager.init();
         date = Calendar.getInstance();
@@ -174,6 +184,16 @@ public class PocketAccounter extends AppCompatActivity {
         }
 
     }
+
+    public void setLocale(String lang) {
+        Locale myLocale = new Locale(lang);
+        Resources res = getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+    }
+
     public Calendar getDate() {
         return date;
     }

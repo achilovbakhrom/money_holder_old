@@ -597,34 +597,14 @@ public class ReportManager {
         return result;
     }
 
-    public Calendar getFirstDay() {
-        end.setTimeInMillis(System.currentTimeMillis());
-        for (FinanceRecord financeRecord : financeRecordDao.loadAll()) {
-            if (financeRecord.getDate().compareTo(end) <= 0)
-                end = financeRecord.getDate();
-        }
-        for (DebtBorrow debtBorrow : debtBorrowDao.loadAll()) {
-            if (debtBorrow.getTakenDate().compareTo(end) <= 0)
-                end = debtBorrow.getTakenDate();
-        }
-        for (CreditDetials creditDetials : creditDetialsDao.loadAll()) {
-            if (creditDetials.getTake_time().compareTo(end) <= 0)
-                end = creditDetials.getTake_time();
-        }
-        for (Account account : accountDao.loadAll()) {
-            if (account.getCalendar().compareTo(end) <= 0)
-                end = account.getCalendar();
-        }
-        return end;
-    }
-
     public Map<Currency, Double> getRemain(Account account) {
-        List<ReportObject> list = getReportObjects(false, account.getCalendar(), Calendar.getInstance(),
+        List<ReportObject> list = getReportObjects(false, commonOperations.getFirstDay(), Calendar.getInstance(),
                 Account.class,
                 AccountOperation.class,
                 FinanceRecord.class,
                 DebtBorrow.class,
-                CreditDetials.class);
+                CreditDetials.class,
+                SmsParseSuccess.class);
         Map<Currency, Double> result = new HashMap<>();
         for(ReportObject reportObject : list) {
             if (reportObject.getAccount().getId().equals(account.getId())) {
@@ -809,48 +789,46 @@ public class ReportManager {
 
     public List<IncomeExpanseDataRow> getIncomeExpanceReport(Calendar begin, Calendar end) {
         Calendar recordBegin = (Calendar) begin.clone();
+        begin.set(Calendar.HOUR_OF_DAY, 0);
+        begin.set(Calendar.MINUTE, 0);
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
         Calendar recordEnd = (Calendar) end.clone();
-        ArrayList<IncomeExpanseDataRow> result = new ArrayList<IncomeExpanseDataRow>();
+        end.set(Calendar.HOUR_OF_DAY, 23);
+        end.set(Calendar.MINUTE, 59);
+        end.set(Calendar.SECOND, 59);
+        end.set(Calendar.MILLISECOND, 59);
+        ArrayList<IncomeExpanseDataRow> result = new ArrayList<>();
         // Finance Record
-        ArrayList<FinanceRecord> records = new ArrayList<FinanceRecord>();
+        ArrayList<FinanceRecord> records = new ArrayList<>();
         for (FinanceRecord fr : daoSession.getFinanceRecordDao().loadAll()) {
-            if (fr.getDate().compareTo(begin) > 0 && fr.getDate().compareTo(end) < 0) {
+            if (fr.getDate().compareTo(begin) >= 0 && fr.getDate().compareTo(end) <= 0) {
                 records.add(fr);
             }
         }
         // Debt Borrows
-        ArrayList<DebtBorrow> debtBorrowMain = new ArrayList<DebtBorrow>();
-        ArrayList<DebtBorrow> debtBorrowRecking = new ArrayList<DebtBorrow>();
+        ArrayList<DebtBorrow> debtBorrows = new ArrayList<DebtBorrow>();
         for (DebtBorrow db : debtBorrowDao.queryBuilder().list()) {
-            if (db.getTakenDate().compareTo(begin) > 0 && db.getTakenDate().compareTo(end) < 0 && db.getCalculate()) {
-                debtBorrowMain.add(db);
-                for (int j=0; j<db.getReckings().size(); j++) {
-                    Recking recking = db.getReckings().get(j);
-                    Calendar cal = Calendar.getInstance();
-                    try {
-                        cal.setTime(dateFormat.parse(recking.getPayDate().toString()));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    if (cal.compareTo(begin) >= 0 && cal.compareTo(end) <= 0) {
-                        debtBorrowRecking.add(db);
-                        break;
-                    }
+            if (db.getTakenDate().compareTo(begin) >= 0 && db.getTakenDate().compareTo(end) <= 0 && db.getCalculate()) {
+                debtBorrows.add(db);
+                continue;
+            }
+            for (int j=0; j<db.getReckings().size(); j++) {
+                Recking recking = db.getReckings().get(j);
+                if (recking.getPayDate().compareTo(begin) >= 0 && recking.getPayDate().compareTo(end) <= 0) {
+                    debtBorrows.add(db);
+                    break;
                 }
             }
         }
         // Credit
         ArrayList<CreditDetials> credits = new ArrayList<CreditDetials>();
         for (CreditDetials cr : creditDetialsDao.loadAll()) {
+            if (!cr.getKey_for_include()) continue;
             for (ReckingCredit reckingCredit : cr.getReckings()) {
-                if (reckingCredit.getPayDate().compareTo(begin) > 0 && reckingCredit.getPayDate().compareTo(end) < 0 && cr.getKey_for_include()) {
-                    ReckingCredit recking = reckingCredit;
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTimeInMillis(recking.getPayDate().getTimeInMillis());
-                    if (cal.compareTo(begin) >= 0 && cal.compareTo(end) <= 0) {
-                        credits.add(cr);
-                        break;
-                    }
+                if (reckingCredit.getPayDate().compareTo(begin) >= 0 && reckingCredit.getPayDate().compareTo(end) <= 0) {
+                    credits.add(cr);
+                    break;
                 }
             }
         }
@@ -898,12 +876,12 @@ public class ReportManager {
                 }
             }
             //accumulate debtborrow mains
-            for (int i=0; i<debtBorrowMain.size(); i++) {
-                if (debtBorrowMain.get(i).getTakenDate().compareTo(b) >= 0 &&
-                        debtBorrowMain.get(i).getTakenDate().compareTo(e) <= 0) {
+            for (int i=0; i<debtBorrows.size(); i++) {
+                if (debtBorrows.get(i).getTakenDate().compareTo(b) >= 0 &&
+                        debtBorrows.get(i).getTakenDate().compareTo(e) <= 0) {
                     IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
                     RootCategory category = new RootCategory();
-                    if (debtBorrowMain.get(i).getType() == DebtBorrow.BORROW) {
+                    if (debtBorrows.get(i).getType() == DebtBorrow.BORROW) {
                         category.setName(context.getResources().getString(R.string.borrow_statistics));
                         category.setType(PocketAccounterGeneral.EXPENSE);
                     }
@@ -913,16 +891,16 @@ public class ReportManager {
                     }
                     detail.setCategory(category);
                     detail.setSubCategory(null);
-                    detail.setAmount(debtBorrowMain.get(i).getAmount());
-                    detail.setCurrency(debtBorrowMain.get(i).getCurrency());
+                    detail.setAmount(debtBorrows.get(i).getAmount());
+                    detail.setCurrency(debtBorrows.get(i).getCurrency());
                     details.add(detail);
                 }
             }
 
             //accumulate debtborrow reckings
-            for (int i=0; i<debtBorrowRecking.size(); i++) {
-                for (int j=0; j<debtBorrowRecking.get(i).getReckings().size(); j++) {
-                    Recking recking = debtBorrowRecking.get(i).getReckings().get(j);
+            for (int i=0; i<debtBorrows.size(); i++) {
+                for (int j=0; j<debtBorrows.get(i).getReckings().size(); j++) {
+                    Recking recking = debtBorrows.get(i).getReckings().get(j);
                     Calendar cal = Calendar.getInstance();
                     try {
                         cal.setTime(dateFormat.parse(recking.getPayDate().toString()));
@@ -932,7 +910,7 @@ public class ReportManager {
                     if (cal.compareTo(b) >= 0 && cal.compareTo(e) <= 0) {
                         IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
                         RootCategory category = new RootCategory();
-                        if (debtBorrowRecking.get(i).getType() == DebtBorrow.BORROW) {
+                        if (debtBorrows.get(i).getType() == DebtBorrow.BORROW) {
                             category.setName(context.getResources().getString(R.string.borrow_recking_statistics));
                             category.setType(PocketAccounterGeneral.INCOME);
                         }
@@ -943,7 +921,7 @@ public class ReportManager {
                         detail.setCategory(category);
                         detail.setSubCategory(null);
                         detail.setAmount(recking.getAmount());
-                        detail.setCurrency(debtBorrowRecking.get(i).getCurrency());
+                        detail.setCurrency(debtBorrows.get(i).getCurrency());
                         details.add(detail);
                     }
                 }

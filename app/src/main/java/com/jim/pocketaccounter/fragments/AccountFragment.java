@@ -92,7 +92,7 @@ public class AccountFragment extends Fragment {
 
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
 		toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
-		toolbarManager.setOnSecondImageClickListener(new OnClickListener() {
+		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				drawerInitializer.getDrawer().openLeftSide();

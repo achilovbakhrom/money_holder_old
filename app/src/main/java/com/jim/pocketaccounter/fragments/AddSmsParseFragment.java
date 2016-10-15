@@ -635,6 +635,7 @@ public class AddSmsParseFragment extends Fragment {
                     tvList.add(textView);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams
                             (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins((int) getResources().getDimension(R.dimen.five_dp), 0, 0, 0);
                     textView.setLayoutParams(lp);
                     textView.setOnClickListener(MyAdapter.this);
                     linearLayout1.addView(textView);
@@ -718,7 +719,6 @@ public class AddSmsParseFragment extends Fragment {
                     posIncExp = (int) v.getTag() - 1;
                     v.setBackgroundResource(R.drawable.select_green);
                     parsingkey.setText(((TextView)v).getText().toString());
-//                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.table_selected));
                 } else {
                     if (posAmount != -1){
                         amountkey.setText(getResources().getString(R.string.select_word));
@@ -727,7 +727,6 @@ public class AddSmsParseFragment extends Fragment {
                     posAmount = (int) v.getTag() - 1;
                     amountkey.setText(((TextView)v).getText().toString());
                     v.setBackgroundResource(R.drawable.select_yellow);
-//                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bar_income));
                 }
             }
         }

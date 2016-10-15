@@ -18,8 +18,6 @@ import javax.inject.Inject;
 public class IncomeExpanseDataRow {
     @Inject
     CommonOperations commonOperations;
-//    @Inject
-//    Calendar calendar;
     private Calendar date;
     private ArrayList<IncomeExpanseDayDetails> details;
     private double totalIncome;
@@ -56,9 +54,9 @@ public class IncomeExpanseDataRow {
         totalProfit = 0;
         for (int i = 0; i < details.size(); i++) {
             if (details.get(i).getCategory().getType() == PocketAccounterGeneral.INCOME) {
-                totalIncome = totalIncome + commonOperations.getCost(date, details.get(i).getCurrency(), commonOperations.getMainCurrency(), details.get(i).getAmount());
+                totalIncome = totalIncome + commonOperations.getCost(date, details.get(i).getCurrency(), details.get(i).getAmount());
             } else {
-                totalExpanse = totalExpanse + commonOperations.getCost(date, details.get(i).getCurrency(), commonOperations.getMainCurrency(), details.get(i).getAmount());
+                totalExpanse = totalExpanse + commonOperations.getCost(date, details.get(i).getCurrency(), details.get(i).getAmount());
             }
         }
         totalProfit = totalIncome - totalExpanse;

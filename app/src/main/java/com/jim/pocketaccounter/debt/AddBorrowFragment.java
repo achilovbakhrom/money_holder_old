@@ -554,10 +554,11 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         } catch (NumberFormatException e) {
                             temp = BitmapFactory.decodeFile(currentDebtBorrow.getPerson().getPhoto());
                         }
-                    } else
+                    }
+                    if (temp == null)
                         temp = BitmapFactory.decodeResource(getResources(), R.drawable.no_photo, options);
 
-                    temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+                    temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
 
                     if (!paFragmentManager.isMainReturn()) {
 

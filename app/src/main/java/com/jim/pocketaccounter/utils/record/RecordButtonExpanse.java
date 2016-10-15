@@ -478,9 +478,8 @@ public class RecordButtonExpanse {
 								scaled = BitmapFactory.decodeFile(debtBorrow.getPerson().getPhoto());
 							}
 						}
-						else {
+						if (scaled == null)
 							scaled = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_photo, options);
-						}
 						scaled = Bitmap.createScaledBitmap(scaled, thirtyDp, thirtyDp, true);
 						dataCache.getBoardBitmapsCache().put(boardButton.getId(), scaled);
 					}
@@ -533,8 +532,8 @@ public class RecordButtonExpanse {
 			if (name.length()>=11) {
 				for (int i=10; i < name.length(); i++) {
 					textPaint.getTextBounds(name, 0, i, bounds);
-					if (bounds.width() >= container.width()) {
-						name = name.substring(0, i-5);
+					if (bounds.width() >= container.width()-aLetterHeight) {
+						name = name.substring(0, i-3);
 						name += "...";
 						break;
 					}

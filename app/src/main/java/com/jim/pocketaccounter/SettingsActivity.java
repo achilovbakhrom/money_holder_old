@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -101,7 +102,15 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
         if (language.getValue().matches(getResources().getString(R.string.language_default))) {
             language.setValue(Locale.getDefault().getLanguage());
         }
-
+        language.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                Intent intent = new Intent(SettingsActivity.this, PocketAccounter.class);
+                startActivity(intent);
+                SettingsActivity.this.finish();
+                return true;
+            }
+        });
         updatePrefs("language");
         Preference save = (Preference) findPreference("save");
         save.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

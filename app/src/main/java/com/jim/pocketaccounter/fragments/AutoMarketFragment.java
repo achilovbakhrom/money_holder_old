@@ -72,7 +72,7 @@ public class AutoMarketFragment extends Fragment implements View.OnClickListener
         toolbarManager.setToolbarIconsVisibility(View.GONE,View.GONE,View.GONE);
         toolbarManager.setTitle(getResources().getString(R.string.auto_operations));
         toolbarManager.setSpinnerVisibility(View.GONE);
-        toolbarManager.setSubtitle(null);
+        toolbarManager.setSubtitle("");
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fbAutoMarketAdd);
         floatingActionButton.setOnClickListener(this);
         return rootView;

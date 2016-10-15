@@ -546,7 +546,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 							String[] pageIds = getResources().getStringArray(R.array.page_ids);
 							int pos = 0;
 							for (int i=0; i<pageIds.length; i++) {
-								if (pageIds[i].matches(buttons.get(position).getCategory().getCategoryId())) {
+								if (pageIds[i].equals(buttons.get(position).getCategory().getCategoryId())) {
 									pos = i;
 									break;
 								}
@@ -602,7 +602,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 							String[] functionIds = getResources().getStringArray(R.array.operation_ids);
 							int pos = 0;
 							for (int i = 0; i<functionIds.length; i++) {
-								if (functionIds[i].matches(buttons.get(position).getCategory().getCategoryId())) {
+								if (functionIds[i].equals(buttons.get(position).getCategory().getCategoryId())) {
 									pos = i;
 									break;
 								}

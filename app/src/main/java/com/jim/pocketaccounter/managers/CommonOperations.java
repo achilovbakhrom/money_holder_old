@@ -102,7 +102,7 @@ public class CommonOperations {
         long diff = record.getDate().getTimeInMillis() - record.getCurrency().getCosts().get(0).getDay().getTimeInMillis();
         if (diff < 0) {
             koeff = record.getCurrency().getCosts().get(0).getCost();
-            return record.getAmount()/koeff;
+            return record.getAmount()*koeff;
         }
         int pos = 0;
         while (diff >= 0 && pos < record.getCurrency().getCosts().size()) {
@@ -134,55 +134,35 @@ public class CommonOperations {
     }
 
     public double getCost(Calendar date, Currency fromCurrency, Currency toCurrency, double amount) {
-        //TODO tekwir bir yana
-
-        if (fromCurrency.getId().matches(toCurrency.getId())) return amount;
-        double tokoeff = 1.0;
-        double fromkoeff2 = 1.0;
-        long todiff1 = date.getTimeInMillis() - toCurrency.getCosts().get(0).getDay().getTimeInMillis();
-        long fromdiff = date.getTimeInMillis() - fromCurrency.getCosts().get(0).getDay().getTimeInMillis();
-        if (todiff1 < 0) {
-            tokoeff = toCurrency.getCosts().get(0).getCost();
+        if (fromCurrency.getId().equals(toCurrency.getId())) return amount;
+        double fromKoeff = 1.0;
+        double toKoeff = 1.0;
+        long fromDiff = date.getTimeInMillis() - fromCurrency.getCosts().get(0).getDay().getTimeInMillis();
+        long toDiff = date.getTimeInMillis() - toCurrency.getCosts().get(0).getDay().getTimeInMillis();
+        if(fromDiff < 0){
+            fromKoeff = fromCurrency.getCosts().get(0).getCost();
         }
-        if(fromdiff < 0){
-            fromkoeff2 = fromCurrency.getCosts().get(0).getCost();
+        if (toDiff < 0) {
+            toKoeff = toCurrency.getCosts().get(0).getCost();
         }
         int pos = 0;
-        while (todiff1 >= 0 && pos < toCurrency.getCosts().size()) {
-            todiff1 = date.getTimeInMillis() - toCurrency.getCosts().get(pos).getDay().getTimeInMillis();
-            if(todiff1>=0)
-                tokoeff = toCurrency.getCosts().get(pos).getCost();
+        while (fromDiff >= 0 && pos < fromCurrency.getCosts().size()) {
+            fromDiff = date.getTimeInMillis() - fromCurrency.getCosts().get(pos).getDay().getTimeInMillis();
+            if(fromDiff>=0)
+                fromKoeff = fromCurrency.getCosts().get(pos).getCost();
             pos++;
         }
         pos=0;
-        while (fromdiff >= 0 && pos < fromCurrency.getCosts().size()) {
-            fromdiff = date.getTimeInMillis() - fromCurrency.getCosts().get(pos).getDay().getTimeInMillis();
-            if(fromdiff>=0)
-                fromkoeff2 = fromCurrency.getCosts().get(pos).getCost();
+        while (toDiff >= 0 && pos < toCurrency.getCosts().size()) {
+            toDiff = date.getTimeInMillis() - toCurrency.getCosts().get(pos).getDay().getTimeInMillis();
+            if(toDiff>=0)
+                toKoeff = toCurrency.getCosts().get(pos).getCost();
             pos++;
         }
-        amount = tokoeff*amount/fromkoeff2;
+        amount = toKoeff*amount/fromKoeff;
         return amount;
     }
 
-    public int countOfDayBetweenCalendars(Calendar begin, Calendar end) {
-        int countOfDays = 0;
-        Calendar b = (Calendar) begin.clone();
-        b.set(Calendar.HOUR_OF_DAY, 0);
-        b.set(Calendar.MINUTE, 0);
-        b.set(Calendar.SECOND, 0);
-        b.set(Calendar.MILLISECOND, 0);
-        Calendar e = (Calendar) end.clone();
-        e.set(Calendar.HOUR_OF_DAY, 23);
-        e.set(Calendar.MINUTE, 59);
-        e.set(Calendar.SECOND, 59);
-        e.set(Calendar.MILLISECOND, 59);
-        while (b.compareTo(e) <= 0) {
-            countOfDays++;
-            b.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        return countOfDays;
-    }
     public float convertDpToPixel(float dp) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
@@ -221,11 +201,8 @@ public class CommonOperations {
 
     public Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
         BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inJustDecodeBounds = true;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
-//        BitmapFactory.decodeResource(res, resId, options);
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-//        options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
@@ -929,7 +906,7 @@ public class CommonOperations {
             subcatCursor.moveToFirst();
             List<SubCategory> subCats = new ArrayList<>();
             while(!subcatCursor.isAfterLast()) {
-                if (subcatCursor.getString(subcatCursor.getColumnIndex("category_id")).matches(catId)) {
+                if (subcatCursor.getString(subcatCursor.getColumnIndex("category_id")).equals(catId)) {
                     SubCategory newSubCategory = new SubCategory();
                     newSubCategory.setName(subcatCursor.getString(subcatCursor.getColumnIndex("subcategory_name")));
                     newSubCategory.setId(subcatCursor.getString(subcatCursor.getColumnIndex("subcategory_id")));
@@ -953,7 +930,7 @@ public class CommonOperations {
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
             RootCategory newCategory = new RootCategory();
-            if (cursor.getString(cursor.getColumnIndex("category_name")).matches(context.getResources().getString(R.string.no_category))) {
+            if (cursor.getString(cursor.getColumnIndex("category_name")).equals(context.getResources().getString(R.string.no_category))) {
                 incomes.add(null);
                 cursor.moveToNext();
                 continue;
@@ -972,7 +949,7 @@ public class CommonOperations {
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
             RootCategory newCategory = new RootCategory();
-            if (cursor.getString(cursor.getColumnIndex("category_name")).matches(context.getResources().getString(R.string.no_category))) {
+            if (cursor.getString(cursor.getColumnIndex("category_name")).equals(context.getResources().getString(R.string.no_category))) {
                 expenses.add(null);
             } else {
                 newCategory.setName(cursor.getString(cursor.getColumnIndex("category_name")));
@@ -1082,7 +1059,7 @@ public class CommonOperations {
             newAccount.setLimitCurId(limitCurrencyId);
             if (startMoneyCurrencyId != null) {
                 for (Currency currency : currencies) {
-                    if (currency.getId().matches(startMoneyCurrencyId)) {
+                    if (currency.getId().equals(startMoneyCurrencyId)) {
                         newAccount.setStartMoneyCurrency(currency);
                         break;
                     }
@@ -1113,23 +1090,23 @@ public class CommonOperations {
             for (int i=0; i<categories.size(); i++) {
                 if (cursor.getString(cursor.getColumnIndex("category_id")).equals(categories.get(i).getId())) {
                     newRecord.setCategory(categories.get(i));
-                    if (cursor.getString(cursor.getColumnIndex("subcategory_id")).matches(context.getResources().getString(R.string.no_category))) {
+                    if (cursor.getString(cursor.getColumnIndex("subcategory_id")).equals(context.getResources().getString(R.string.no_category))) {
                         newRecord.setSubCategory(null);
                         break;
                     }
                     for (int j=0; j<categories.get(i).getSubCategories().size(); j++) {
-                        if (cursor.getString(cursor.getColumnIndex("subcategory_id")).matches(categories.get(i).getSubCategories().get(j).getId()))
+                        if (cursor.getString(cursor.getColumnIndex("subcategory_id")).equals(categories.get(i).getSubCategories().get(j).getId()))
                             newRecord.setSubCategory(categories.get(i).getSubCategories().get(j));
                     }
                     break;
                 }
             }
             for (int i=0; i<accounts.size(); i++) {
-                if (cursor.getString(cursor.getColumnIndex("account_id")).matches(accounts.get(i).getId()))
+                if (cursor.getString(cursor.getColumnIndex("account_id")).equals(accounts.get(i).getId()))
                     newRecord.setAccount(accounts.get(i));
             }
             for (int i=0; i<currencies.size(); i++) {
-                if (cursor.getString(cursor.getColumnIndex("currency_id")).matches(currencies.get(i).getId()))
+                if (cursor.getString(cursor.getColumnIndex("currency_id")).equals(currencies.get(i).getId()))
                     newRecord.setCurrency(currencies.get(i));
             }
             newRecord.setRecordId(cursor.getString(cursor.getColumnIndex("record_id")));
@@ -1139,7 +1116,7 @@ public class CommonOperations {
             Cursor cursorPhotoTable = old.query("record_photo_table", null, null, null, null, null, null);
             cursorPhotoTable.moveToFirst();
             while (!cursorPhotoTable.isAfterLast()) {
-                if(cursorPhotoTable.getString(cursorPhotoTable.getColumnIndex("record_id")).matches(newRecord.getRecordId())){
+                if(cursorPhotoTable.getString(cursorPhotoTable.getColumnIndex("record_id")).equals(newRecord.getRecordId())){
                     PhotoDetails temp=new PhotoDetails();
                     temp.setPhotopath(cursorPhotoTable.getString(cursorPhotoTable.getColumnIndex("photopath")));
                     temp.setPhotopathCache(cursorPhotoTable.getString(cursorPhotoTable.getColumnIndex("photopathCache")));
@@ -1173,7 +1150,7 @@ public class CommonOperations {
                 Calendar takenCalendar = Calendar.getInstance();
                 Calendar returnCalendar = Calendar.getInstance();
                 takenCalendar.setTime(dateFormat.parse(dbCursor.getString(dbCursor.getColumnIndex("taken_date"))));
-                if (dbCursor.getString(dbCursor.getColumnIndex("return_date")).matches(""))
+                if (dbCursor.getString(dbCursor.getColumnIndex("return_date")).equals(""))
                     returnCalendar = null;
                 else
                     returnCalendar.setTime(dateFormat.parse(dbCursor.getString(dbCursor.getColumnIndex("return_date"))));
@@ -1185,7 +1162,7 @@ public class CommonOperations {
             String accountId = dbCursor.getString(dbCursor.getColumnIndex("account_id"));
             String currencyId = dbCursor.getString(dbCursor.getColumnIndex("currency_id"));
             for (int i=0; i<accounts.size(); i++) {
-                if (accounts.get(i).getId().matches(accountId)) {
+                if (accounts.get(i).getId().equals(accountId)) {
                     newDebtBorrow.setAccount(accounts.get(i));
                     break;
                 }
@@ -1205,7 +1182,7 @@ public class CommonOperations {
             reckCursor.moveToFirst();
             ArrayList<Recking> list = new ArrayList<Recking>();
             while (!reckCursor.isAfterLast()) {
-                if (id.matches(reckCursor.getString(reckCursor.getColumnIndex("id")))) {
+                if (id.equals(reckCursor.getString(reckCursor.getColumnIndex("id")))) {
                     try {
                         Recking recking = new Recking();
                         Calendar calendar = Calendar.getInstance();
@@ -1272,7 +1249,7 @@ public class CommonOperations {
             String currencyId = curCreditTable.getString(curCreditTable.getColumnIndex("currency_id"));
             Currency currency = null;
             for (int i = 0; i<currencies.size(); i++)  {
-                if (currencyId.matches(currencies.get(i).getId())) {
+                if (currencyId.equals(currencies.get(i).getId())) {
                     currency = currencies.get(i);
                     break;
                 }
@@ -1316,14 +1293,14 @@ public class CommonOperations {
 //            object.setAmountWords(cursor.getString(cursor.getColumnIndex("amount_words")));
 //            String accountId = cursor.getString(cursor.getColumnIndex("account_id"));
 //            for (int i=0; i<accounts.size(); i++) {
-//                if (accountId.matches(accounts.get(i).getId())) {
+//                if (accountId.equals(accounts.get(i).getId())) {
 //                    object.setAccount(accounts.get(i));
 //                    break;
 //                }
 //            }
 //            String currencyId = cursor.getString(cursor.getColumnIndex("currency_id"));
 //            for (int i=0; i<currencies.size(); i++) {
-//                if (currencyId.matches(currencies.get(i).getId())) {
+//                if (currencyId.equals(currencies.get(i).getId())) {
 //                    object.setCurrency(currencies.get(i));
 //                    break;
 //                }
@@ -1353,7 +1330,7 @@ public class CommonOperations {
             newCurrency.setMain(curCursor.getInt(curCursor.getColumnIndex("currency_main"))!=0);
             curCostCursor.moveToFirst();
             while(!curCostCursor.isAfterLast()) {
-                if (curCostCursor.getString(curCostCursor.getColumnIndex("currency_id")).matches(currId)) {
+                if (curCostCursor.getString(curCostCursor.getColumnIndex("currency_id")).equals(currId)) {
                     CurrencyCost newCurrencyCost = new CurrencyCost();
                     try {
                         Calendar day = Calendar.getInstance();
@@ -1452,7 +1429,7 @@ public class CommonOperations {
 			boolean catIdFound = false;
 			int pos = 0;
 			for (int i=0; i<resCatsId.length; i++) {
-				if (resCatsId[i].matches(id)) {
+				if (resCatsId[i].equals(id)) {
 					catIdFound = true;
 					pos = i;
 					break;
@@ -1463,7 +1440,7 @@ public class CommonOperations {
 				category.setIcon(resCatIcons[pos]);
 				subCatsCursor.moveToFirst();
 				while(!subCatsCursor.isAfterLast()) {
-					if (id.matches(subCatsCursor.getString(subCatsCursor.getColumnIndex("category_id")))) {
+					if (id.equals(subCatsCursor.getString(subCatsCursor.getColumnIndex("category_id")))) {
 						SubCategory subCategory = new SubCategory();
 						subCategory.setName(subCatsCursor.getString(subCatsCursor.getColumnIndex("subcategory_name")));
 						String subCatId = subCatsCursor.getString(subCatsCursor.getColumnIndex("subcategory_id"));
@@ -1473,7 +1450,7 @@ public class CommonOperations {
 							int s = 0;
 							String[] scn = context.getResources().getStringArray(subcatIconArrayId);
 							for (int i=0; i<scn.length; i++) {
-								if (scn[i].matches(subCatId)) {
+								if (scn[i].equals(subCatId)) {
 									q = true;
 									s = i;
 									break;
@@ -1538,7 +1515,7 @@ public class CommonOperations {
 					category.setIcon("category_not_selected");
 				subCatsCursor.moveToFirst();
 				while (!subCatsCursor.isAfterLast()) {
-					if (id.matches(subCatsCursor.getString(subCatsCursor.getColumnIndex("category_id")))) {
+					if (id.equals(subCatsCursor.getString(subCatsCursor.getColumnIndex("category_id")))) {
 						SubCategory subCategory = new SubCategory();
 						subCategory.setName(subCatsCursor.getString(subCatsCursor.getColumnIndex("subcategory_name")));
 						String subCatId = subCatsCursor.getString(subCatsCursor.getColumnIndex("subcategory_id"));
@@ -1629,7 +1606,7 @@ public class CommonOperations {
 				continue;
 			}
 			for (int j=0; j<categories.size(); j++) {
-				if (incomesId.get(i).matches(categories.get(j).getId())) {
+				if (incomesId.get(i).equals(categories.get(j).getId())) {
 					values.put("category_name", categories.get(j).getName());
 					values.put("category_id", categories.get(j).getId());
 					values.put("category_type", categories.get(j).getType());
@@ -1664,7 +1641,7 @@ public class CommonOperations {
 				continue;
 			}
 			for (int j=0; j<categories.size(); j++) {
-				if (expensesId.get(i).matches(categories.get(j).getId())) {
+				if (expensesId.get(i).equals(categories.get(j).getId())) {
 					values.put("category_name", categories.get(j).getName());
 					values.put("category_id", categories.get(j).getId());
 					values.put("category_type", categories.get(j).getType());

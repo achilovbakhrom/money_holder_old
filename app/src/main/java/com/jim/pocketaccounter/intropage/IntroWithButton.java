@@ -36,7 +36,7 @@ public class IntroWithButton extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View V=inflater.inflate(R.layout.fragment_intro_with_button, container, false);
-        sPref=getActivity().getSharedPreferences("infoFirst",MODE_PRIVATE);
+        sPref=getActivity().getSharedPreferences("infoFirst", MODE_PRIVATE);
         ed=sPref.edit();
 
         textLets=(TextView) V.findViewById(R.id.textView8) ;

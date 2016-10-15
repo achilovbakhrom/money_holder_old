@@ -60,7 +60,7 @@ public class ReportByIncomeExpanseDialogAdapter extends BaseAdapter {
         tvReportByCategoryListSubCatName.setText(text);
         TextView tvReportByCategoryListSubCatAmount = (TextView) view.findViewById(R.id.tvReportByCategoryListSubCatAmount);
         DecimalFormat format = new DecimalFormat("0.00##");
-        tvReportByCategoryListSubCatAmount.setText(format.format(commonOperations.getCost(date, result.get(position).getCurrency(), commonOperations.getMainCurrency(), result.get(position).getAmount())) + commonOperations.getMainCurrency().getAbbr());
+        tvReportByCategoryListSubCatAmount.setText(format.format(commonOperations.getCost(date, result.get(position).getCurrency(), result.get(position).getAmount())) + commonOperations.getMainCurrency().getAbbr());
         return view;
     }
 }
