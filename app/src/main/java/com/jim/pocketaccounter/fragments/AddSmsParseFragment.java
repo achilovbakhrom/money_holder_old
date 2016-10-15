@@ -222,24 +222,6 @@ public class AddSmsParseFragment extends Fragment {
                         smsParseObject.setNumber(etNumber.getText().toString());
                         daoSession.getTemplateSmsDao().insertInTx(templateSmsList);
                         daoSession.getSmsParseObjectDao().insertOrReplace(smsParseObject);
-                        //
-                        List<Sms> smsList = new ArrayList<>();
-                        for (Sms sms : getAllSms()) {
-                            if (sms.getNumber().equals(smsParseObject.getNumber()))
-                                smsList.add(sms);
-                        }
-                        SmsParseSuccess smsParseSuccess = new SmsParseSuccess();
-                        smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
-                        smsParseSuccess.setNumber(smsParseObject.getNumber());
-                        smsParseSuccess.setType(PocketAccounterGeneral.INCOME);
-                        smsParseSuccess.setCurrency(smsParseObject.getCurrency());
-                        smsParseSuccess.setAccount(smsParseObject.getAccount());
-                        smsParseSuccess.setAmount(136);
-                        smsParseSuccess.setBody("dasdasdas dad ada d ad 3434  423");
-                        smsParseSuccess.setDate(Calendar.getInstance());
-                        smsParseSuccess.setIsSuccess(false);
-                        daoSession.getSmsParseSuccessDao().insertOrReplace(smsParseSuccess);
-                        //
                         paFragmentManager.getFragmentManager().popBackStack();
                         paFragmentManager.displayFragment(new SmsParseMainFragment());
                     }
@@ -267,14 +249,21 @@ public class AddSmsParseFragment extends Fragment {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                List<Sms> smsList = new ArrayList<>();
-                for (Sms sms : getAllSms()) {
-                    if (sms != null && sms.getNumber().equals(s.toString())) {
-                        smsList.add(sms);
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_SMS},
+                            REQUEST_CODE_ASK_PERMISSIONS);
+                } else {
+                    List<Sms> smsList = new ArrayList<>();
+                    for (Sms sms : getAllSms()) {
+                        if (sms != null && sms.getNumber().equals(s.toString())) {
+                            smsList.add(sms);
+                        }
                     }
+                    myAdapter = new MyAdapter(myAdapter.getTypeSort(), smsList);
+                    rvSmsList.setAdapter(myAdapter);
                 }
-                myAdapter = new MyAdapter(myAdapter.getTypeSort(), smsList);
-                rvSmsList.setAdapter(myAdapter);
             }
             @Override
             public void afterTextChanged(Editable s) {}
@@ -289,11 +278,18 @@ public class AddSmsParseFragment extends Fragment {
                 final RecyclerView recyclerView = (RecyclerView) dialogView.findViewById(R.id.rvSmsParseDialog);
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
                 recyclerView.setLayoutManager(layoutManager);
-                MyNumberAdapter myAdapter = new MyNumberAdapter();
-                recyclerView.setAdapter(myAdapter);
-                int width = getResources().getDisplayMetrics().widthPixels;
-                dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                dialog.show();
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_SMS},
+                            REQUEST_CODE_ASK_PERMISSIONS);
+                } else {
+                    MyNumberAdapter myAdapter = new MyNumberAdapter();
+                    recyclerView.setAdapter(myAdapter);
+                    int width = getResources().getDisplayMetrics().widthPixels;
+                    dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                    dialog.show();
+                }
             }
         });
         if (oldObject != null) {
@@ -330,12 +326,6 @@ public class AddSmsParseFragment extends Fragment {
     }
 
     public List<Sms> getAllSms() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_SMS},
-                    REQUEST_CODE_ASK_PERMISSIONS);
-        } else {
             List<Sms> lstSms = new ArrayList<>();
             Sms objSms;
             Uri message = Uri.parse("content://sms/");
@@ -361,8 +351,6 @@ public class AddSmsParseFragment extends Fragment {
             }
             c.close();
             return lstSms;
-        }
-        return null;
     }
 
     class Sms {

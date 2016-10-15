@@ -4,6 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/five_dp"
+    android:layout_marginLeft="@dimen/sixteen_dp"
+    android:layout_marginRight="@dimen/sixteen_dp"
+    android:layout_marginTop="@dimen/ten_dp"
+    android:layout_marginBottom="@dimen/ten_dp"
     >
 
     <TextView
@@ -12,7 +16,8 @@
         android:id="@+id/tvSmsParseDialogItemNumber"
         android:text="+998974406272"
         android:layout_weight="1"
-        android:textSize="16sp"
+        android:textSize="@dimen/fifteen_sp"
+        android:textColor="@color/toolbar_text_color"
         />
 
     <TextView
@@ -21,8 +26,10 @@
         android:id="@+id/tvSmsParseDialogItemDate"
         android:text="23.03.2016"
         android:layout_weight="1"
-        android:textSize = "14sp"
+        android:textSize = "@dimen/fifteen_sp"
         android:gravity="right"
+        android:layout_gravity="center_vertical"
+        android:textColor="@color/toolbar_text_color"
         />
 
 </LinearLayout>
