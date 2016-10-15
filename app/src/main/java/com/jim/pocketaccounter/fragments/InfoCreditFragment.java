@@ -225,16 +225,19 @@ public class InfoCreditFragment extends Fragment {
                                         for(BoardButton boardButton:boardButtons){
                                             if(boardButton.getCategoryId()!=null)
                                             if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
-                                                if(boardButton.getType()==PocketAccounterGeneral.EXPANSE_MODE)
+                                                if(boardButton.getTable()==PocketAccounterGeneral.EXPANSE_MODE)
                                                     logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
                                                 else
                                                     logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
-                                                commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getType());
-                                                dataCache.updateOneDay(dataCache.getEndDate());
+                                                commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+
                                             }
                                         }
 
                                         logicManager.deleteCredit(currentCredit);
+                                        dataCache.updateAllPercents();
+                                        paFragmentManager.updateAllFragmentsOnViewPager();
+
                                         A1.delete_item(currentPOS);
 
                                     }
@@ -294,9 +297,39 @@ public class InfoCreditFragment extends Fragment {
                     {
                         A1.to_Archive(currentPOS);
                         paFragmentManager.getFragmentManager().popBackStack();
+                        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                        for(BoardButton boardButton:boardButtons){
+                            if(boardButton.getCategoryId()!=null)
+                                if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
+                                    if(boardButton.getTable()==PocketAccounterGeneral.EXPANSE_MODE)
+                                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                    else
+                                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                    commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+
+                                }
+                        }
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
 
                     }
                     else if(fromSearch){
+
+                        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                        for(BoardButton boardButton:boardButtons){
+                            if(boardButton.getCategoryId()!=null)
+                                if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
+                                    if(boardButton.getTable()==PocketAccounterGeneral.EXPANSE_MODE)
+                                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                    else
+                                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                    commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+
+                                }
+                        }
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
+
                         paFragmentManager.getFragmentManager().popBackStack();
                     }
                     else {
@@ -305,7 +338,9 @@ public class InfoCreditFragment extends Fragment {
                         else
                             logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,positionOfBourdMain,null);
 
-                        paFragmentManager.getFragmentManager().popBackStack();
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
+                        commonOperations.changeIconToNull(positionOfBourdMain,dataCache,modeOfMain);
                         paFragmentManager.displayMainWindow();
                     }
                 }
@@ -536,7 +571,11 @@ public class InfoCreditFragment extends Fragment {
         } else {
             dialogView.findViewById(R.id.is_calc).setVisibility(View.GONE);
         }
-        final Calendar date = Calendar.getInstance();
+        final Calendar date ;
+        if(fromMainWindow)
+            date = dataCache.getEndDate();
+        else       date  = Calendar.getInstance();
+
         enterDate.setText(dateFormat.format(date.getTime()));
         ImageView cancel = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowCancel);
         ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
@@ -607,8 +646,9 @@ public class InfoCreditFragment extends Fragment {
 //                                        rcList.add(rec);
 //                                        currentCredit.getReckings().addAll(rcList);
                                         logicManager.insertReckingCredit(rec);
-                                        dataCache.updateOneDay(dataCache.getEndDate());
-                                        paFragmentManager.getCurrentFragment().update();
+                                        dataCache.updateAllPercents();
+                                        paFragmentManager.updateAllFragmentsOnViewPager();
+//                                        paFragmentManager.getCurrentFragment().update();
                                         currentCredit.resetReckings();
                                         rcList=currentCredit.getReckings();
                                         updateDate();
@@ -643,8 +683,8 @@ public class InfoCreditFragment extends Fragment {
                         rcList=currentCredit.getReckings();
                         adapRecyc.setMyList(rcList);
                         updateDate();
-                            dataCache.updateOneDay(dataCache.getEndDate());
-                        paFragmentManager.getCurrentFragment().update();
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
                         isCheks = new boolean[rcList.size()];
                         for (int i = 0; i < isCheks.length; i++) {
                             isCheks[i] = false;
@@ -729,8 +769,11 @@ public class InfoCreditFragment extends Fragment {
                                 isCheks[i] = false;
                             }
                             updateDate();
-                                dataCache.updateOneDay(dataCache.getEndDate());
-                            paFragmentManager.getCurrentFragment().update();
+
+
+
+                            dataCache.updateAllPercents();
+                            paFragmentManager.updateAllFragmentsOnViewPager();
                         }
                     }).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {

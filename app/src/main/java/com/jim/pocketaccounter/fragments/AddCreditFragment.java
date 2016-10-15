@@ -953,9 +953,32 @@ public class AddCreditFragment extends Fragment {
                 }
                 dialog.dismiss();
                 if (isEdit()&&!fromMainWindow) {
+
+                    List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                    for(BoardButton boardButton:boardButtons){
+                        if(boardButton.getCategoryId()!=null)
+                            if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
+                                if(boardButton.getTable()==PocketAccounterGeneral.EXPANSE_MODE)
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),Long.toString(A1.getMyCredit_id()));
+                                else
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),Long.toString(A1.getMyCredit_id()));
+
+                                BitmapFactory.Options options=new BitmapFactory.Options();
+                                options.inPreferredConfig= Bitmap.Config.RGB_565;
+                                Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
+                                temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
+                                    dataCache.getBoardBitmapsCache().put(boardButton.getId(),
+                                            temp);
+
+                                dataCache.updateAllPercents();
+                                paFragmentManager.updateAllFragmentsOnViewPager();
+
+                            }
+                    }
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
+
 
                 }
                 else if(fromMainWindow){
@@ -975,7 +998,8 @@ public class AddCreditFragment extends Fragment {
                         dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
                                 temp);
                     }
-                        dataCache.updateOneDay(dataCache.getEndDate());
+                    dataCache.updateAllPercents();
+                    paFragmentManager.updateAllFragmentsOnViewPager();
                     paFragmentManager.displayMainWindow();
                 }
                 else {

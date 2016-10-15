@@ -231,7 +231,7 @@ public class SMSParseInfoFragment extends Fragment {
             dialog.setContentView(dialogView);
             final ImageView close = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowCancel);
             final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
-            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
+//            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
@@ -291,7 +291,7 @@ public class SMSParseInfoFragment extends Fragment {
                     linearLayout1.addView(textView);
                 }
             }
-            content.setText(successList.get(position).getBody());
+//            content.setText(successList.get(position).getBody());
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -327,6 +327,9 @@
                         android:paddingTop="@dimen/two_dp"
                         android:text="Account for sms parsing : "
                         android:textColor="@color/black_for_glavniy_text"
+                        android:layout_alignTop="@+id/spSmsParseAddAccount"
+                        android:layout_alignBottom="@+id/spSmsParseAddAccount"
+                        android:gravity="center_vertical"
                         android:textSize="@dimen/fourteen_dp" />
 
                     <Spinner
@@ -335,7 +338,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        />
+                        android:layout_toRightOf="@+id/procent_credit"
+                        android:layout_toEndOf="@+id/procent_credit" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -345,10 +349,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true">
 
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/one_dp"
-                            android:background="@color/green_light_forline" />
+
                     </RelativeLayout>
                 </RelativeLayout>
 
@@ -395,7 +396,13 @@
                         android:paddingTop="@dimen/two_dp"
                         android:text="Operations will calculate :"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="@dimen/fourteen_dp" />
+                        android:textSize="@dimen/fourteen_dp"
+                        android:id="@+id/textView23"
+                        android:layout_alignTop="@+id/spSmsParseAddCurrency"
+                        android:layout_alignBottom="@+id/spSmsParseAddCurrency"
+                        android:gravity="center_vertical"
+
+                        />
 
                     <Spinner
                         android:id="@+id/spSmsParseAddCurrency"
@@ -403,7 +410,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        />
+                        android:layout_toRightOf="@+id/textView23"
+                        android:layout_toEndOf="@+id/textView23"
+                        android:layout_marginTop="@dimen/ten_dp"/>
 
                 </RelativeLayout>
 

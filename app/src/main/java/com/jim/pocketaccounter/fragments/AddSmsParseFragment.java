@@ -138,7 +138,7 @@ public class AddSmsParseFragment extends Fragment {
             cursStrings.add(cr.getAbbr());
         }
         ArrayAdapter<String> cursAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_list_item_1, cursStrings);
+                R.layout.spiner_gravity_right, cursStrings);
         spCurrency.setAdapter(cursAdapter);
 
         myAdapter = new MyAdapter(ALL_SMS, null);
@@ -566,7 +566,8 @@ public class AddSmsParseFragment extends Fragment {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adding_sms_item, parent, false);
             return new ViewHolder(view);
         }
-
+        TextView amountkey;
+        TextView parsingkey;
         private void dialogSms(final boolean type, final int position) {
             posIncExp = -1;
             posAmount = -1;
@@ -576,7 +577,9 @@ public class AddSmsParseFragment extends Fragment {
             dialog.setContentView(dialogView);
             final ImageView close = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowCancel);
             final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
-            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
+            amountkey = (TextView) dialogView.findViewById(R.id.amountKey);
+            parsingkey = (TextView) dialogView.findViewById(R.id.parsingKey);
+//            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
@@ -627,6 +630,7 @@ public class AddSmsParseFragment extends Fragment {
                     TextView textView = new TextView(getContext());
                     textView.setTag(row++);
                     textView.setTextSize(txSize);
+                    textView.setBackgroundResource(R.drawable.select_grey);
                     textView.setText(lt.get(i));
                     tvList.add(textView);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams
@@ -636,7 +640,7 @@ public class AddSmsParseFragment extends Fragment {
                     linearLayout1.addView(textView);
                 }
             }
-            content.setText(list.get(position).getBody());
+//            content.setText(list.get(position).getBody());
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -696,7 +700,7 @@ public class AddSmsParseFragment extends Fragment {
                 }
             });
             int width = getResources().getDisplayMetrics().widthPixels;
-            dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setLayout(9 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
             dialog.show();
         }
 
@@ -707,15 +711,23 @@ public class AddSmsParseFragment extends Fragment {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(strings.get((Integer) v.getTag() - 1));
                 if (!matcher.matches() && !strings.get((int) v.getTag() - 1).matches("\\s?[0-9]+\\s?")) {
-                    if (posIncExp != -1)
-                        tvList.get(posIncExp).setBackgroundDrawable(null);
+                    if (posIncExp != -1){
+                        parsingkey.setText(getResources().getString(R.string.select_word));
+                        tvList.get(posIncExp).setBackgroundResource(R.drawable.select_grey);
+                    }
                     posIncExp = (int) v.getTag() - 1;
-                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.table_selected));
+                    v.setBackgroundResource(R.drawable.select_green);
+                    parsingkey.setText(((TextView)v).getText().toString());
+//                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.table_selected));
                 } else {
-                    if (posAmount != -1)
-                        tvList.get(posAmount).setBackgroundDrawable(null);
+                    if (posAmount != -1){
+                        amountkey.setText(getResources().getString(R.string.select_word));
+                        tvList.get(posAmount).setBackgroundResource(R.drawable.select_grey);
+                    }
                     posAmount = (int) v.getTag() - 1;
-                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bar_income));
+                    amountkey.setText(((TextView)v).getText().toString());
+                    v.setBackgroundResource(R.drawable.select_yellow);
+//                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bar_income));
                 }
             }
         }

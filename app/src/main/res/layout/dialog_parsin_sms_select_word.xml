@@ -15,10 +15,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/ivInfoDebtBorrowCancel"
-            android:layout_marginLeft="@dimen/sixteen_dp"
             android:text="@string/select_word_for_parsing"
+            android:layout_marginLeft="@dimen/sixteen_dp"
             android:textColor="@color/for_darker"
-            android:textSize="@dimen/twenty_dp" />
+            android:textSize="@dimen/sixteen_dp"
+            android:layout_toLeftOf="@+id/ivInfoDebtBorrowCancel"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/ivInfoDebtBorrowCancel" />
 
         <ImageView
             android:id="@+id/ivInfoDebtBorrowSave"
@@ -51,25 +55,7 @@
 
         android:background="@color/green_light_forline" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/sixteen_dp"
-        android:layout_marginRight="@dimen/sixteen_dp"
-        android:layout_marginTop="@dimen/ten_dp"
-        android:text="Message content :"
-        android:textColor="@color/black_for_glavniy_text"
-        android:textSize="@dimen/sixteen_dp" />
 
-    <TextView
-        android:id="@+id/tvSmsParseAddDialogContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/sixteen_dp"
-        android:layout_marginRight="@dimen/sixteen_dp"
-        android:text="Oplata za obslugu sostavlyaet 300.0 $. Vy mojete dlya udobnogo polzovaniya nashu prilojeniyu ! Vash balans 200 041 $. National Bank Uzbekistan"
-        android:textColor="@color/for_darker"
-        android:textSize="@dimen/twelve_sp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -79,12 +65,14 @@
         android:layout_marginTop="@dimen/ten_dp"
         android:text="@string/income_decide_with_static_word"
         android:textColor="@color/black_for_glavniy_text"
+        android:layout_marginBottom="@dimen/ten_dp"
         android:textSize="@dimen/sixteen_dp" />
     <!--NasimxonSizgaContener-->
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <LinearLayout
             android:id="@+id/llDialogSmsParseAdd"
@@ -95,27 +83,71 @@
             android:orientation="vertical" />
 
     </ScrollView>
-
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/sixteen_dp"
-        android:layout_marginRight="@dimen/sixteen_dp"
         android:layout_marginTop="@dimen/ten_dp"
-        android:text="@string/ammount_of_operation"
-        android:textColor="@color/black_for_glavniy_text"
-        android:textSize="@dimen/sixteen_dp" />
-    <!--NasimxonSizgaContener-->
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/key_for_type"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/fourteen_dp"
+            android:id="@+id/textView16" />
 
-    <FrameLayout
+        <TextView
+            android:id="@+id/parsingKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/select_word"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/textView16"
+            android:layout_toEndOf="@+id/textView16" />
+    </RelativeLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/ten_dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/amount_operation"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/fourteen_dp"
+            android:id="@+id/textView21" />
+
+        <TextView
+            android:id="@+id/amountKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/select_word"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toRightOf="@+id/textView21"
+            android:layout_toEndOf="@+id/textView21" />
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="2px"
+        android:layout_marginTop="@dimen/ten_dp"
         android:background="@color/green_light_forline" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

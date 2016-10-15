@@ -443,7 +443,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                         int pos = cardDetials.indexOf(current);
                                         logicManager.insertReckingCredit(rec);
                                         current.resetReckings();
-                                        dataCache.updateOneDay(dataCache.getEndDate());
+                                        dataCache.updateAllPercents();
+                                        paFragmentManager.updateAllFragmentsOnViewPager();
                                         notifyItemChanged(position);
                                         dialog.dismiss();
                                     }
@@ -463,7 +464,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         int pos = cardDetials.indexOf(current);
                         logicManager.insertReckingCredit(rec);
                         current.resetReckings();
-                        dataCache.updateOneDay(dataCache.getEndDate());
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
                         notifyItemChanged(pos);
                         dialog.dismiss();
                     }

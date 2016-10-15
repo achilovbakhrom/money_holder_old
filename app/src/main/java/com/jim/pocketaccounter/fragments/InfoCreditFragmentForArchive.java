@@ -27,8 +27,10 @@ import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +52,10 @@ public class InfoCreditFragmentForArchive extends Fragment {
     PAFragmentManager paFragmentManager;
     @Inject
     DaoSession daoSession;
+    @Inject
+    LogicManager logicManager;
+    @Inject
+    DataCache dataCache;
     private CreditDetialsDao creditDetialsDao;
     private ReckingCreditDao reckingCreditDao;
     private AccountDao accountDao;
@@ -184,9 +190,19 @@ public class InfoCreditFragmentForArchive extends Fragment {
                             }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             if(!fromSearch)
-                            A1.delete_item(POSITIOn);
+                                A1.delete_item(POSITIOn);
+                            else
+                                logicManager.deleteCredit(currentCredit);
+                            //TODO CHALSI BOR PROSENTI YENGILAVOR Ozin eslab kor sardor
+                            dataCache.updateAllPercents();
+                            paFragmentManager.updateAllFragmentsOnViewPager();
                             getActivity().getSupportFragmentManager().popBackStack ();
+
+                            if(fromSearch)
+                                paFragmentManager.displayMainWindow();
                             paFragmentManager.displayFragment(new CreditTabLay());
+
+
                         }
                     });
                     builder.create().show();

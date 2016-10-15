@@ -1552,4 +1552,7 @@
     <string name="let_and_years">years</string>
     <string name="report_by_account_title">Отчет по счетам</string>
     <string name="transfer_isnt_done">Перевод не осуществлен!</string>
+    <string name="key_for_type">Key for parsing type:</string>
+    <string name="amount_operation">Ammount of operation :</string>
+    <string name="select_word">select word</string>
 </resources>
