@@ -394,8 +394,24 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
                 }
                 rootCategory.setSubCategories(subCategories);
                 rootCategory.setId(categoryId);
-                if (category != null)
+                if (category != null) {
                     daoSession.getRootCategoryDao().insertOrReplace(rootCategory);
+                    List<BoardButton> list = daoSession
+                            .getBoardButtonDao()
+                            .queryBuilder()
+                            .where(BoardButtonDao.Properties.CategoryId.eq(category.getId()))
+                            .list();
+                    if (!list.isEmpty()) {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.RGB_565;
+                        int resId = getResources().getIdentifier(category.getIcon(), "drawable", getContext().getPackageName());
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId, options);
+                        bitmap = Bitmap.createScaledBitmap(bitmap, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
+                        dataCache
+                                .getBoardBitmapsCache()
+                                .put(list.get(0).getId(), bitmap);
+                    }
+                }
                 else {
                     if (logicManager.insertRootCategory(rootCategory) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
                         Toast.makeText(getContext(), R.string.category_name_error, Toast.LENGTH_SHORT).show();

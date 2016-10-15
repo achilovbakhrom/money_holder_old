@@ -1336,10 +1336,6 @@ public class CommonOperations {
         cursor.close();
     }
 
-    private void migrateCosts(List<CostMigrateObject> costMigrateObjects, List<Currency> currencies) {
-
-    }
-
     private static void upgradeFromFourToFive(Context context, SQLiteDatabase db) {
         upgradeFromThreeToFour(context, db);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
