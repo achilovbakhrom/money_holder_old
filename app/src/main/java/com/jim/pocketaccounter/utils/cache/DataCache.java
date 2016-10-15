@@ -155,7 +155,7 @@ public class DataCache {
             if (debtBorrow.getTakenDate().compareTo(begin) >= 0 &&
                     debtBorrow.getTakenDate().compareTo(end) <= 0) {
                 debtBorrows.add(debtBorrow);
-                break;
+                continue;
             }
             for (Recking recking : debtBorrow.getReckings()) {
                 if (recking.getPayDate().compareTo(begin) >= 0 &&

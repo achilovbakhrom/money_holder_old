@@ -24,11 +24,13 @@ import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.RootCategoryDao;
+import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.fragments.AccountFragment;
+import com.jim.pocketaccounter.fragments.AddCreditFragment;
 import com.jim.pocketaccounter.fragments.AutoMarketFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
@@ -406,10 +408,14 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, currentPage*4+pos, date));
 											break;
 										case 1:
-
+											paFragmentManager.setMainReturn(true);
+											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.EXPANSE_MODE,currentPage*4 + pos));
 											break;
 										case 2:
-
+											paFragmentManager.setMainReturn(true);
+											AddBorrowFragment fragment = (AddBorrowFragment) AddBorrowFragment.getInstance(DebtBorrow.BORROW, null);
+											fragment.setMainView(currentPage*4 + pos, PocketAccounterGeneral.INCOME);
+											paFragmentManager.displayFragment(fragment);
 											break;
 									}
 									break;

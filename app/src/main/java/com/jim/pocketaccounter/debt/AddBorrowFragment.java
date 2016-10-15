@@ -43,6 +43,8 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
@@ -126,22 +128,26 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private ArrayList<String> adapter;
     private FrameLayout btnDetalization;
     private String mode = PocketAccounterGeneral.EVERY_DAY, sequence = "";
+    private int MAINTYPE;
 
-    public static Fragment getInstance(int type, DebtBorrow debtBorrow) {
+    public static AddBorrowFragment getInstance(int type, DebtBorrow debtBorrow) {
         AddBorrowFragment fragment = new AddBorrowFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("type", type);
+        if (debtBorrow != null) {
+            bundle.putString("key", debtBorrow.getId());
+            mainView = true;
+        }
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    private boolean mainView = false;
+    private static boolean mainView = false;
     private int posMain = -1;
 
     public AddBorrowFragment setMainView(int posMain, int type) {
-        mainView = true;
         this.posMain = posMain;
-        this.TYPE = type;
+        this.MAINTYPE = type;
         return this;
     }
 
@@ -160,13 +166,6 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         accountDao = daoSession.getAccountDao();
         currencyDao = daoSession.getCurrencyDao();
         adapter = new ArrayList<>();
-    }
-
-    public AddBorrowFragment() {
-    }
-
-    public DebtBorrow isEdit() {
-        return currentDebtBorrow;
     }
 
     private DatePickerDialog.OnDateSetListener getDatesetListener = new DatePickerDialog.OnDateSetListener() {
@@ -259,7 +258,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         PersonValyuta = (Spinner) view.findViewById(R.id.spBorrowAddPopupValyuta);
         PersonAccount = (Spinner) view.findViewById(R.id.spBorrowAddPopupAccount);
         calculate = (CheckBox) view.findViewById(R.id.chbAddDebtBorrowCalculate);
-        getDate = paFragmentManager.isMainReturn() ? dataCache.getBeginDate() : Calendar.getInstance();
+        getDate = paFragmentManager.isMainReturn() ? dataCache.getEndDate() : Calendar.getInstance();
         if (TYPE == DebtBorrow.DEBT) {
             PersonSumm.setHint(getResources().getString(R.string.enter_borrow_amoount));
             ((TextView) view.findViewById(R.id.summ_zayma)).setText(R.string.amount_borrow);
@@ -410,7 +409,11 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 PersonDataRepeat.setText(dateFormat.format(currentDebtBorrow.getReturnDate().getTime()));
             }
             if (!currentDebtBorrow.getPerson().getPhoto().isEmpty()) {
-                imageView.setImageBitmap(decodeFile(new File(currentDebtBorrow.getPerson().getPhoto())));
+                try {
+                    imageView.setImageBitmap(queryContactImage(Integer.parseInt(currentDebtBorrow.getPerson().getPhoto())));
+                } catch (Exception e) {
+                    imageView.setImageBitmap(decodeFile(new File(currentDebtBorrow.getPerson().getPhoto())));
+                }
                 photoPath = currentDebtBorrow.getPerson().getPhoto();
             }
             if (!currentDebtBorrow.getReckings().isEmpty() && dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()).matches(dateFormat.format(getDate.getTime())))
@@ -473,8 +476,10 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                     if (currentDebtBorrow != null) {
                         if (calculate.isChecked())
                             currentDebtBorrow.setAccount(account);
-                        currentDebtBorrow.setPerson(new Person(PersonName.getText().toString(),
-                                PersonNumber.getText().toString(), file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath));
+                        currentDebtBorrow.getPerson().setName(PersonName.getText().toString());
+                        currentDebtBorrow.getPerson().setPhoneNumber(PersonNumber.getText().toString());
+                        currentDebtBorrow.getPerson().setPhoto(file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath);
+
                         currentDebtBorrow.setAmount(Double.parseDouble(PersonSumm.getText().toString()));
                         currentDebtBorrow.setCurrency(currency);
                         currentDebtBorrow.setCalculate(calculate.isChecked());
@@ -485,6 +490,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         if (!isMumkin(currentDebtBorrow)) {
                             return;
                         } else {
+                            logicManager.insertPerson(currentDebtBorrow.getPerson());
                             logicManager.insertDebtBorrow(currentDebtBorrow);
                         }
                         if (!firstPay.getText().toString().isEmpty()) {
@@ -538,37 +544,51 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         count--;
                     }
                     paFragmentManager.displayFragment(new DebtBorrowFragment());
-                    if (!paFragmentManager.isMainReturn()) {
-                        count = paFragmentManager.getFragmentManager().getBackStackEntryCount();
-                        while (count > 0) {
-                            paFragmentManager.getFragmentManager().popBackStack();
-                            count--;
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    Bitmap temp = null;
+                    if (!currentDebtBorrow.getPerson().getPhoto().isEmpty()) {
+                        try {
+                            temp = queryContactImage(Integer.parseInt(currentDebtBorrow.getPerson().getPhoto()));
+                        } catch (NumberFormatException e) {
+                            temp = BitmapFactory.decodeFile(currentDebtBorrow.getPerson().getPhoto());
                         }
-                        paFragmentManager.displayFragment(new DebtBorrowFragment());
+                    } else
+                        temp = BitmapFactory.decodeResource(getResources(), R.drawable.no_photo, options);
+
+                    temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+
+                    if (!paFragmentManager.isMainReturn()) {
+
+                        if (!daoSession.getBoardButtonDao().queryBuilder()
+                                .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
+                                .list().isEmpty()) {
+                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                                    .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
+                                    .list().get(0).getId(), temp);
+                        }
+
                         dataCache.updateAllPercents();
                         paFragmentManager.updateAllFragmentsOnViewPager();
+                        paFragmentManager.getFragmentManager().popBackStackImmediate();
+                        if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0)
+                            paFragmentManager.getFragmentManager().popBackStackImmediate();
+                        paFragmentManager.displayFragment(new DebtBorrowFragment());
                     } else {
                         paFragmentManager.getFragmentManager().popBackStack();
-                        if(TYPE == DebtBorrow.BORROW)
-                            logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, posMain, currentDebtBorrow.getId());
-                        else
-                            logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, posMain,currentDebtBorrow.getId());
+                        logicManager.changeBoardButton(MAINTYPE, posMain, currentDebtBorrow.getId());
 
-                        BitmapFactory.Options options=new BitmapFactory.Options();
-                        options.inPreferredConfig= Bitmap.Config.RGB_565;
-                        Bitmap temp = null;
-                        if (!currentDebtBorrow.getPerson().getPhoto().isEmpty()) {
-                            try {
-                                temp = queryContactImage(Integer.parseInt(currentDebtBorrow.getPerson().getPhoto()));
-                            } catch (NumberFormatException e) {
-                                temp = BitmapFactory.decodeFile(currentDebtBorrow.getPerson().getPhoto());
-                            }
-                        } else
-                            temp = BitmapFactory.decodeResource(getResources(), R.drawable.no_photo, options);
-
-                        temp = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
-
-                        dataCache.getBoardBitmapsCache().put((long) posMain, temp);
+                        if (!mainView) {
+                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                                    .where(BoardButtonDao.Properties.Table.eq(MAINTYPE),
+                                            BoardButtonDao.Properties.Pos.eq(posMain)).list().get(0).getId(), temp);
+                        } else {
+                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                                    .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
+                                    .list().get(0).getId(), temp);
+                        }
+                        mainView = false;
                         paFragmentManager.displayMainWindow();
                         dataCache.updateAllPercents();
                         paFragmentManager.updateAllFragmentsOnViewPager();

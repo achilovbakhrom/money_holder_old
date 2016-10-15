@@ -37,6 +37,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.BoardButton;
+import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
@@ -50,6 +51,8 @@ import com.jim.pocketaccounter.utils.DatePicker;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.cache.DataCache;
+
+import org.greenrobot.greendao.query.Query;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -178,7 +181,17 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             if (position == 0) {
-                                Fragment addBorrowFragment = AddBorrowFragment.getInstance(TYPE, debtBorrow);
+                                AddBorrowFragment addBorrowFragment = AddBorrowFragment.getInstance(TYPE, debtBorrow);
+
+                                if(!daoSession.getBoardButtonDao().queryBuilder()
+                                        .where(BoardButtonDao.Properties.CategoryId.eq(debtBorrow.getId()))
+                                        .list().isEmpty()) {
+                                    BoardButton boardButton = daoSession.getBoardButtonDao().queryBuilder()
+                                            .where(BoardButtonDao.Properties.CategoryId.eq(debtBorrow.getId()))
+                                            .list().get(0);
+                                    addBorrowFragment.setMainView(boardButton.getPos(), boardButton.getTable());
+                                }
+
                                 int count = paFragmentManager.getFragmentManager().getBackStackEntryCount();
                                 while (count > 0) {
                                     paFragmentManager.getFragmentManager().popBackStack();

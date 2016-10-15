@@ -489,18 +489,26 @@ public class AddCreditFragment extends Fragment {
                     @Override
                     public void OnIconPick(String icon) {
                         int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+
                         Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
                         Bitmap iconik = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp), (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+
+                        if (!daoSession.getBoardButtonDao().queryBuilder()
+                                .where(BoardButtonDao.Properties.CategoryId.eq(currentCredit.getMyCredit_id()))
+                                .list().isEmpty()) {
+                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                                    .where(BoardButtonDao.Properties.CategoryId.eq(currentCredit.getMyCredit_id()))
+                                    .list().get(0).getId(), temp);
+                        }
+
                         icona.setImageBitmap(iconik);
                         selectedIcon = icon;
                         iconChooseDialog.dismiss();
                     }
                 });
                 iconChooseDialog.show();
-
             }
         });
-
 
         V.findViewById(R.id.pustoyy).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -941,6 +949,28 @@ public class AddCreditFragment extends Fragment {
                 imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);
 
                 A1.setInfo(mode + ":" + sequence);
+
+                if (!daoSession.getBoardButtonDao().queryBuilder()
+                        .where(BoardButtonDao.Properties.CategoryId.eq(A1.getMyCredit_id()))
+                        .list().isEmpty()) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.RGB_565;
+                    Bitmap temp = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(A1.getIcon_ID(), "drawable", context.getPackageName()), options);
+
+                    dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                            .where(BoardButtonDao.Properties.CategoryId.eq(A1.getMyCredit_id()))
+                            .list().get(0).getId(), temp);
+
+                        temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+                        List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain), BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
+                        if (!boardButtons.isEmpty()) {
+                            dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
+                                    temp);
+                        }
+                        dataCache.updateOneDay(dataCache.getEndDate());
+
+                    }
+
                 if (isEdit()) {
                     logicManager.insertCredit(A1);
                     //TODO CLOSE ALL FRAGMENTS
