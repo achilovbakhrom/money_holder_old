@@ -955,7 +955,12 @@ public class AddCreditFragment extends Fragment {
                         .list().isEmpty()) {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.RGB_565;
-                    Bitmap temp = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(A1.getIcon_ID(), "drawable", context.getPackageName()), options);
+//                    int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+
+//                    Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
+//                    Bitmap iconik = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp), (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+
+                    Bitmap temp = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(selectedIcon, "drawable", context.getPackageName()), options);
 
                     dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
                             .where(BoardButtonDao.Properties.CategoryId.eq(A1.getMyCredit_id()))
