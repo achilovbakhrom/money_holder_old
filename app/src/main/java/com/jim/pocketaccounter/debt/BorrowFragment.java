@@ -37,6 +37,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
@@ -45,12 +46,15 @@ import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.DatePicker;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -75,6 +79,8 @@ public class BorrowFragment extends Fragment {
     CommonOperations commonOperations;
     @Inject
     DaoSession daoSession;
+    @Inject
+    DataCache dataCache;
     DebtBorrowDao debtBorrowDao;
     AccountDao accountDao;
     TextView ifListEmpty;
@@ -389,6 +395,8 @@ public class BorrowFragment extends Fragment {
                                                     view.BorrowPersonSumm.setText(getResources().getString(R.string.repaid));
                                                     dialog.dismiss();
                                                 }
+                                                paFragmentManager.updateAllFragmentsOnViewPager();
+                                                dataCache.updateAllPercents();
                                             }
                                         });
                                         if (tek) {
@@ -417,6 +425,8 @@ public class BorrowFragment extends Fragment {
                                                     ((int) (persons.get(position).getAmount() - total)) ?
                                                     ("" + (int) (persons.get(position).getAmount() - total)) :
                                                     ("" + (persons.get(position).getAmount() - total))) + person.getCurrency().getAbbr());
+                                            paFragmentManager.updateAllFragmentsOnViewPager();
+                                            dataCache.updateAllPercents();
                                             dialog.dismiss();
                                         } else {
                                             if (!person.getCalculate()) {
@@ -441,6 +451,8 @@ public class BorrowFragment extends Fragment {
                                                         ((int) (persons.get(position).getAmount() - total)) ?
                                                         ("" + (int) (persons.get(position).getAmount() - total)) :
                                                         ("" + (persons.get(position).getAmount() - total))) + person.getCurrency().getAbbr());
+                                                paFragmentManager.updateAllFragmentsOnViewPager();
+                                                dataCache.updateAllPercents();
                                                 dialog.dismiss();
                                             }
                                         }
@@ -459,6 +471,19 @@ public class BorrowFragment extends Fragment {
                             if (debtBorrowDao.loadAll().get(i).getId().matches(person.getId())) {
                                 debtBorrowDao.queryBuilder().list().get(i).setTo_archive(true);
                                 person.setTo_archive(true);
+                                List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                                for(BoardButton boardButton:boardButtons){
+                                    if(boardButton.getCategoryId()!=null)
+                                        if(boardButton.getCategoryId().equals(persons.get(position).getId())){
+                                            if(boardButton.getType()== PocketAccounterGeneral.EXPANSE_MODE)
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                            else
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                            commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+                                        }
+                                }
+                                paFragmentManager.updateAllFragmentsOnViewPager();
+                                dataCache.updateAllPercents();
                                 logicManager.insertDebtBorrow(person);
                                 try {
                                     persons.remove(position);

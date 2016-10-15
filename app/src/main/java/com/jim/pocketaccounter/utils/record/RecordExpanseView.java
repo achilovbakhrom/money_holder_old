@@ -29,6 +29,7 @@ import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
+import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.fragments.AddAutoMarketFragment;
 import com.jim.pocketaccounter.fragments.AddCreditFragment;
@@ -372,7 +373,9 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.DEBT_BORROW) {
-
+							Fragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.BORROW);
+							paFragmentManager.setMainReturn(true);
+							paFragmentManager.displayFragment(fragment);
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.PAGE) {
 							String[] pageIds = getResources().getStringArray(R.array.page_ids);
@@ -828,7 +831,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 										case 2:
 											paFragmentManager.setMainReturn(true);
 											AddBorrowFragment fragment = (AddBorrowFragment) AddBorrowFragment.getInstance(DebtBorrow.BORROW, null);
-											fragment.setMainView(pos, DebtBorrow.BORROW);
+											fragment.setMainView(pos, DebtBorrow.DEBT);
 											paFragmentManager.displayFragment(fragment);
 											break;
 									}

@@ -149,7 +149,7 @@ public class AddSmsParseFragment extends Fragment {
             }
         };
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-        toolbarManager.setImageToSecondImage(R.drawable.checked_sign);
+        toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -438,7 +438,7 @@ public class AddSmsParseFragment extends Fragment {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(words.get(i));
             if (!matcher.matches()) {
-                regex = "([\\sa-zA-Z]*)([0-9]+[.,]?[0-9]*)([^0-9]*)";
+                regex = "(\\s*[^0-9]*)([0-9]+[.,]?[0-9]*)([^0-9]*)";
                 pattern = Pattern.compile(regex);
                 matcher = pattern.matcher(words.get(i));
                 matcher.matches();

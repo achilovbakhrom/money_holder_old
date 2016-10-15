@@ -259,7 +259,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         PersonValyuta = (Spinner) view.findViewById(R.id.spBorrowAddPopupValyuta);
         PersonAccount = (Spinner) view.findViewById(R.id.spBorrowAddPopupAccount);
         calculate = (CheckBox) view.findViewById(R.id.chbAddDebtBorrowCalculate);
-        getDate = Calendar.getInstance();
+        getDate = paFragmentManager.isMainReturn() ? dataCache.getBeginDate() : Calendar.getInstance();
         if (TYPE == DebtBorrow.DEBT) {
             PersonSumm.setHint(getResources().getString(R.string.enter_borrow_amoount));
             ((TextView) view.findViewById(R.id.summ_zayma)).setText(R.string.amount_borrow);
@@ -294,7 +294,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Calendar calender = Calendar.getInstance();
+                    Calendar calender = paFragmentManager.isMainReturn() ? dataCache.getEndDate() : Calendar.getInstance();
                     Dialog mDialog = new DatePickerDialog(getContext(),
                             getDatesetListener, calender.get(Calendar.YEAR),
                             calender.get(Calendar.MONTH), calender
@@ -545,6 +545,8 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                             count--;
                         }
                         paFragmentManager.displayFragment(new DebtBorrowFragment());
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
                     } else {
                         paFragmentManager.getFragmentManager().popBackStack();
                         if(TYPE == DebtBorrow.BORROW)
@@ -554,12 +556,22 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 
                         BitmapFactory.Options options=new BitmapFactory.Options();
                         options.inPreferredConfig= Bitmap.Config.RGB_565;
-                        Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(currentDebtBorrow.getId(),"drawable",getActivity().getPackageName()),options);
-                        temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
-                        List<Bitmap> bitmaps=new ArrayList<>();
-                        bitmaps.add(temp);
-                        dataCache.getBoardBitmapsCache().put((long) posMain,temp);
+                        Bitmap temp = null;
+                        if (!currentDebtBorrow.getPerson().getPhoto().isEmpty()) {
+                            try {
+                                temp = queryContactImage(Integer.parseInt(currentDebtBorrow.getPerson().getPhoto()));
+                            } catch (NumberFormatException e) {
+                                temp = BitmapFactory.decodeFile(currentDebtBorrow.getPerson().getPhoto());
+                            }
+                        } else
+                            temp = BitmapFactory.decodeResource(getResources(), R.drawable.no_photo, options);
+
+                        temp = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
+
+                        dataCache.getBoardBitmapsCache().put((long) posMain, temp);
                         paFragmentManager.displayMainWindow();
+                        dataCache.updateAllPercents();
+                        paFragmentManager.updateAllFragmentsOnViewPager();
                         paFragmentManager.setMainReturn(false);
                     }
                 }

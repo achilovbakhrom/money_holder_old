@@ -100,7 +100,6 @@
         </receiver>
 
         <service android:name=".credit.notificat.AutoMarketService"/>
-        <service android:name=".helper.SmsService"/>
 
         <activity android:name=".photocalc.PhotoViewActivity"
             android:screenOrientation="portrait"/>

@@ -36,6 +36,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
@@ -47,6 +48,8 @@ import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.DatePicker;
 import com.jim.pocketaccounter.utils.OperationsListDialog;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -80,6 +83,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
     SimpleDateFormat dateFormat;
     @Inject
     DaoSession daoSession;
+    @Inject
+    DataCache dataCache;
     DebtBorrowDao debtBorrowDao;
     AccountDao accountDao;
 
@@ -192,6 +197,20 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                         Toast.makeText(getContext(), "Success delete", Toast.LENGTH_SHORT).show();
                                         paFragmentManager.getFragmentManager().popBackStack();
                                         paFragmentManager.displayFragment(new DebtBorrowFragment());
+                                        dataCache.updateAllPercents();
+                                        paFragmentManager.updateAllFragmentsOnViewPager();
+
+                                        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                                        for(BoardButton boardButton:boardButtons){
+                                            if(boardButton.getCategoryId()!=null)
+                                                if(boardButton.getCategoryId().equals(debtBorrow.getId())){
+                                                    if(boardButton.getType()== PocketAccounterGeneral.EXPANSE_MODE)
+                                                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                                    else
+                                                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                                    commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+                                                }
+                                        }
                                         operationsListDialog.dismiss();
                                         break;
                                     }
@@ -228,7 +247,19 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                     bundle.putInt("pos", debtBorrow.getTo_archive() ? 2 : debtBorrow.getType());
                                     fragment.setArguments(bundle);
                                     paFragmentManager.displayFragment(fragment);
-                                    Toast.makeText(getContext(), "Delete success", Toast.LENGTH_SHORT).show();
+                                    List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                                    for(BoardButton boardButton:boardButtons){
+                                        if(boardButton.getCategoryId()!=null)
+                                            if(boardButton.getCategoryId().equals(debtBorrow.getId())){
+                                                if(boardButton.getType()==PocketAccounterGeneral.EXPANSE_MODE)
+                                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                                else
+                                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                                commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+                                            }
+                                    }
+                                    paFragmentManager.updateAllFragmentsOnViewPager();
+                                    dataCache.updateAllPercents();
                                     break;
                                 }
                             }
@@ -566,6 +597,19 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                 count --;
             }
             paFragmentManager.displayFragment(new DebtBorrowFragment());
+            List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+            for(BoardButton boardButton:boardButtons){
+                if(boardButton.getCategoryId()!=null)
+                    if(boardButton.getCategoryId().equals(debtBorrow.getId())){
+                        if(boardButton.getType()==PocketAccounterGeneral.EXPANSE_MODE)
+                            logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                        else
+                            logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                        commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+                    }
+            }
+            paFragmentManager.updateAllFragmentsOnViewPager();
+            dataCache.updateAllPercents();
         }
     }
 
@@ -672,6 +716,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             if (debtBorrow.getReckings().isEmpty()) {
                 isHaveReking.setVisibility(View.GONE);
             }
+            dataCache.updateAllPercents();
+            paFragmentManager.updateAllFragmentsOnViewPager();
         }
 
         public void setDataChanged(Calendar clDate, double value, String accountId, String comment) {
@@ -706,6 +752,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             for (int i = 0; i < isCheks.length; i++) {
                 isCheks[i] = false;
             }
+            dataCache.updateAllPercents();
+            paFragmentManager.updateAllFragmentsOnViewPager();
         }
     }
 

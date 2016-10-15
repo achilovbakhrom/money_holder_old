@@ -254,7 +254,7 @@ public class    PAFragmentManager {
                     || fragName.equals(PocketClassess.ACCOUNT_FRAG) || fragName.equals(PocketClassess.CREDIT_FRAG)
                     || fragName.equals(PocketClassess.PURPOSE_FRAG) || fragName.equals(PocketClassess.REPORT_ACCOUNT)
                     || fragName.equals(PocketClassess.REPORT_CATEGORY) || fragName.equals(PocketClassess.SMS_PARSE_FRAGMENT)
-                    || fragName.equals(PocketClassess.RECORD_DETEIL_FRAGMENT)) {
+                    || fragName.equals(PocketClassess.RECORD_DETEIL_FRAGMENT) || fragName.equals(PocketClassess.REPORT_BY_INCOME_EXPANCE)) {
                 displayMainWindow();
             } else if (fragName.equals(PocketClassess.ADD_DEBTBORROW) || fragName.equals(PocketClassess.INFO_DEBTBORROW)) {
                 displayFragment(new DebtBorrowFragment());
