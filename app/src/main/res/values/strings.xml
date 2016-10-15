@@ -1551,4 +1551,5 @@
     <string name="god_and_years">years</string>
     <string name="let_and_years">years</string>
     <string name="report_by_account_title">Отчет по счетам</string>
+    <string name="transfer_isnt_done">Перевод не осуществлен!</string>
 </resources>

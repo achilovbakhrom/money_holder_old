@@ -41,6 +41,7 @@ import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -127,8 +128,8 @@ public class CategoryInfoFragment extends Fragment {
 		});
 		refreshOperationsList(filterDialog.getBeginDate(), filterDialog.getEndDate());
 		tvCategoryInfoTotal = (TextView) rootView.findViewById(R.id.tvCategoryInfoTotal);
-		tvCategoryInfoTotal.setText(getResources().getString(R.string.total)+" "+Double.toString(
-				reportManager.getTotalAmountByCategory(rootCategory, filterDialog.getBeginDate(), filterDialog.getEndDate()))+
+		DecimalFormat format = new DecimalFormat("0.##");
+		tvCategoryInfoTotal.setText(getResources().getString(R.string.total)+" "+format.format(reportManager.getTotalAmountByCategory(rootCategory, filterDialog.getBeginDate(), filterDialog.getEndDate()))+
 				commonOperations.getMainCurrency().getAbbr());
 		tvCategoryInfoSubcategories = (TextView) rootView.findViewById(R.id.tvCategoryInfoSubcategories);
 		if (!rootCategory.getSubCategories().isEmpty()) {

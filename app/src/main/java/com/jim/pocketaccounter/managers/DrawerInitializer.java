@@ -263,7 +263,6 @@ public class DrawerInitializer {
                                     .setPositiveButton(R.string.sync_short, new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             mAnimationDrawable.start();
-//                                            financeManager.saveAllDatas();
                                             mySync.uploadBASE(userim.getUid(), new SyncBase.ChangeStateLis() {
                                                 @Override
                                                 public void onSuccses() {
@@ -420,13 +419,6 @@ public class DrawerInitializer {
                                 break;
                             case 14:
                                 fragmentManager.displayFragment(new SmsParseMainFragment());
-
-//                                Intent zssettings = new Intent(pocketAccounter, SettingsActivity.class);
-//                                PocketAccounter.openActivity=true;
-//                                for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
-//                                    fragmentManager.popBackStack();
-//                                }
-//                                startActivityForResult(zssettings, key_for_restat);
                                 break;
                             case 15:
 
@@ -438,25 +430,15 @@ public class DrawerInitializer {
                                 pocketAccounter.startActivityForResult(zssettings, key_for_restat);
                                 break;
                             case 16:
-//                                if (keyboardVisible) {
-//                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
-//                                }
-//
-//                                findViewById(R.id.change).setVisibility(View.VISIBLE);
-//                                Intent rate_app_web = new Intent(Intent.ACTION_VIEW);
-//                                PocketAccounter.openActivity=true;
-//
-//                                rate_app_web.setData(Uri.parse(getString(R.string.rate_app_web)));
-//                                startActivity(rate_app_web);
-                                break;
-                            case 17:
-//                                if (keyboardVisible) {
-//                                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                                    imm.hideSoftInputFromWindow(mainRoot.getWindowToken(), 0);
-//                                }
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                                 Intent rate_app_web = new Intent(Intent.ACTION_VIEW);
+                                PocketAccounter.openActivity=true;
+                                rate_app_web.setData(Uri.parse(pocketAccounter.getResources().getString(R.string.rate_app_web)));
+                                pocketAccounter.startActivity(rate_app_web);
+                                break;
+                            case 17:
+                                pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
+                                rate_app_web = new Intent(Intent.ACTION_VIEW);
                                 PocketAccounter.openActivity=true;
                                 rate_app_web.setData(Uri.parse(pocketAccounter.getString(R.string.rate_app_web)));
                                 pocketAccounter.startActivity(rate_app_web);

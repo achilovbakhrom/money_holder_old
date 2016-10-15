@@ -111,7 +111,7 @@ public class CommonOperations {
                 koeff = record.getCurrency().getCosts().get(pos).getCost();
             pos++;
         }
-        amount = record.getAmount()/koeff;
+        amount = record.getAmount()*koeff;
         return amount;
     }
     public double getCost(Calendar date, Currency currency, double amount) {
@@ -120,7 +120,7 @@ public class CommonOperations {
         long diff = date.getTimeInMillis() - currency.getCosts().get(0).getDay().getTimeInMillis();
         if (diff < 0) {
             koeff = currency.getCosts().get(0).getCost();
-            return amount/koeff;
+            return amount*koeff;
         }
         int pos = 0;
         while (diff >= 0 && pos < currency.getCosts().size()) {
@@ -129,7 +129,7 @@ public class CommonOperations {
                 koeff = currency.getCosts().get(pos).getCost();
             pos++;
         }
-        amount = amount/koeff;
+        amount = amount*koeff;
         return amount;
     }
 

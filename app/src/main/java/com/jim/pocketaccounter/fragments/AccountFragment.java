@@ -119,7 +119,7 @@ public class AccountFragment extends Fragment {
 					transferAddEditDialog.show();
 				}
 				else
-					Toast.makeText(getContext(), "Перевод не осуществлен!", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getContext(), R.string.transfer_isnt_done, Toast.LENGTH_SHORT).show();
 			}
 		});
         toolbarManager.setSpinnerVisibility(View.GONE);
@@ -192,14 +192,14 @@ public class AccountFragment extends Fragment {
 			view.tvAccStartMoney.setText(startMoney);
 			Map<Currency, Double> map = reportManager.getRemain(result.get(position));
 			String text = "";
-			boolean isfirst=true;
+			boolean isFirst = true;
 			for (Currency currency : map.keySet()){
-				if(isfirst){
+				if(isFirst){
 					text = text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
-					isfirst=false;
+					isFirst = false;
 				}
 				else
-				text = "\n" + text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
+					text = text + "\n" + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
 
 			}
 			view.view.setOnClickListener(new OnClickListener() {
@@ -209,47 +209,14 @@ public class AccountFragment extends Fragment {
 				}
 			});
 			if(!text.equals(""))
-			view.tvContent.setText(text);
+				view.tvContent.setText(text);
 			else
-			view.tvContent.setVisibility(View.INVISIBLE);
-			view.pay.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					TransferDialog transferDialog = new TransferDialog(getContext());
-					transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
-					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
-						@Override
-						public void OnTransferDialogSave() {
-							refreshList();
-						}
-					});
-					transferDialog.show();
-				}
-			});
-			view.earn.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if (daoSession.getPurposeDao().loadAll().isEmpty()) {
-						final WarningDialog warningDialog = new WarningDialog(getContext());
-						warningDialog.setText(getString(R.string.purpose_list_is_empty));
-						warningDialog.setOnYesButtonListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								paFragmentManager.getFragmentManager().popBackStack();
-								paFragmentManager.displayFragment(new PurposeFragment());
-								warningDialog.dismiss();
-							}
-						});
-						warningDialog.setOnNoButtonClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								warningDialog.dismiss();
-							}
-						});
-						warningDialog.show();
-					} else {
+				view.tvContent.setVisibility(View.INVISIBLE);
+				view.pay.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
 						TransferDialog transferDialog = new TransferDialog(getContext());
-						transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
+						transferDialog.setAccountOrPurpose(result.get(position).getId(), false);
 						transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 							@Override
 							public void OnTransferDialogSave() {
@@ -258,8 +225,41 @@ public class AccountFragment extends Fragment {
 						});
 						transferDialog.show();
 					}
-				}
-			});
+				});
+				view.earn.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						if (daoSession.getPurposeDao().loadAll().isEmpty()) {
+							final WarningDialog warningDialog = new WarningDialog(getContext());
+							warningDialog.setText(getString(R.string.purpose_list_is_empty));
+							warningDialog.setOnYesButtonListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									paFragmentManager.getFragmentManager().popBackStack();
+									paFragmentManager.displayFragment(new PurposeFragment());
+									warningDialog.dismiss();
+								}
+							});
+							warningDialog.setOnNoButtonClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									warningDialog.dismiss();
+								}
+							});
+							warningDialog.show();
+						} else {
+							TransferDialog transferDialog = new TransferDialog(getContext());
+							transferDialog.setAccountOrPurpose(result.get(position).getId(), true);
+							transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+								@Override
+								public void OnTransferDialogSave() {
+									refreshList();
+								}
+							});
+							transferDialog.show();
+						}
+					}
+				});
         }
 
         public ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
@@ -275,7 +275,6 @@ public class AccountFragment extends Fragment {
         TextView tvContent;
 		TextView pay;
 		TextView earn;
-
 		View view;
         public ViewHolder(View view) {
             super(view);

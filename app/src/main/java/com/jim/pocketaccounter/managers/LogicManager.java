@@ -43,6 +43,7 @@ import com.jim.pocketaccounter.database.SubCategoryDao;
 import com.jim.pocketaccounter.database.UserEnteredCalendars;
 import com.jim.pocketaccounter.database.UserEnteredCalendarsDao;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -64,6 +65,8 @@ public class LogicManager {
     DaoSession daoSession;
     @Inject
     CommonOperations commonOperations;
+    @Inject
+    DataCache dataCache;
     private Context context;
     private CurrencyDao currencyDao;
     private FinanceRecordDao recordDao;
@@ -734,6 +737,7 @@ public class LogicManager {
             if (boardButton.getCategoryId() != null && boardButton.getCategoryId().matches(category.getId())) {
                 boardButton.setCategoryId(null);
                 boardButtonDao.insertOrReplace(boardButton);
+                commonOperations.changeIconToNull(boardButton.getPos(), dataCache, boardButton.getTable());
             }
         rootCategoryDao.delete(category);
         return LogicManagerConstants.DELETED_SUCCESSFUL;

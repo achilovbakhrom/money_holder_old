@@ -1124,7 +1124,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 	}
 	private void changeIconInCache(int pos, String icon) {
 		Bitmap scaled = null;
-		if (buttons.get(pos).getCategory().getType() != PocketAccounterGeneral.DEBT_BORROW) {
+		if (icon.equals("no_category") || buttons.get(pos).getCategory().getType() != PocketAccounterGeneral.DEBT_BORROW) {
 			int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inPreferredConfig = Bitmap.Config.RGB_565;
