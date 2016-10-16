@@ -253,6 +253,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		DecimalFormat format = new DecimalFormat("0.00");
 		float aLetterHeight = letBound.height();
 		for (final RecordButtonIncome button : buttons) {
+			if (button.getCategory().getType() == PocketAccounterGeneral.CREDIT) continue;
 			Double percent = dataCache.getPercent(PocketAccounterGeneral.INCOME,
 					date, button.getCategory().getPos());
 			if (percent == 0) continue;

@@ -290,7 +290,6 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 		DecimalFormat format = new DecimalFormat("0.00");
 		float aLetterHeight = letBound.height();
 		for (final RecordButtonExpanse button : buttons) {
-			if (button.getCategory().getType() == PocketAccounterGeneral.CREDIT) continue;
 			Double percent = dataCache.getPercent(PocketAccounterGeneral.EXPENSE,
 					date, button.getCategory().getPos());
 			if (percent == 0) continue;
