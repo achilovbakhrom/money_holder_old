@@ -120,10 +120,13 @@ public class PocketAccounter extends AppCompatActivity {
     CommonOperations commonOperations;
     @Inject
     DataCache dataCache;
+    @Inject
+    SharedPreferences sharedPreferences;
 
     PocketAccounterActivityComponent component;
 
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
+
         if (component == null) {
             component = DaggerPocketAccounterActivityComponent
                     .builder()
@@ -144,10 +147,20 @@ public class PocketAccounter extends AppCompatActivity {
             setLocale(Locale.getDefault().getLanguage());
         else
             setLocale(lang);
-        ContentValues values = new ContentValues();
-        values.put("address", "+998909517443");
-        values.put("body", "body of sms");
-        getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
+
+        if (getSharedPreferences("infoFirst", MODE_PRIVATE).getBoolean("FIRST_KEY", true)) {
+            try {
+                Intent first = new Intent(this, IntroIndicator.class);
+                PocketAccounter.openActivity=true;
+
+                startActivity(first);
+                finish();
+            } finally {
+
+            }
+        }
+
+
         checkAutoMarket();
         toolbarManager.init();
         date = Calendar.getInstance();
@@ -403,6 +416,13 @@ public class PocketAccounter extends AppCompatActivity {
             warningDialog.getWindow().setLayout(8*width/10, ViewGroup.LayoutParams.WRAP_CONTENT);
             warningDialog.show();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        dataCache.updateAllPercents();
+        paFragmentManager.updateAllFragmentsOnViewPager();
     }
 
     @Override

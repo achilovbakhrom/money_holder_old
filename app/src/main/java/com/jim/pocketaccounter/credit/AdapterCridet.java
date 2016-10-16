@@ -30,6 +30,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
@@ -41,6 +42,7 @@ import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
@@ -225,6 +227,22 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     logicManager.insertCredit(toArc);
                     cardDetials.set(position,toArc);
                     notifyItemChanged(position);
+
+                    List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                    for(BoardButton boardButton:boardButtons){
+                        if(boardButton.getCategoryId()!=null)
+                            if(boardButton.getCategoryId().equals(Long.toString(cardDetials.get(position).getMyCredit_id()))){
+                                if(boardButton.getTable()== PocketAccounterGeneral.EXPANSE_MODE)
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                else
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+
+                            }
+                    }
+
+                    dataCache.updateAllPercents();
+                    paFragmentManager.updateAllFragmentsOnViewPager();
                     svyaz.itemInsertedToArchive();
                 } else
                     openDialog(itemCr, position);

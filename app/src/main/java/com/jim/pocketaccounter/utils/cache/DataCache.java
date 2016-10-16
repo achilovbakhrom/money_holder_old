@@ -78,6 +78,16 @@ public class DataCache {
     public LruCache<Integer, Bitmap> getElements() {
         return elements;
     }
+
+    public LruCache<String, List<BoardButtonPercent>> getPercents() {
+        return percents;
+    }
+    public void clearAllCaches(){
+        boardBitmaps.evictAll();
+        elements.evictAll();
+        percents.evictAll();
+    }
+
     public CategoryEditFragmentDatas getCategoryEditFragmentDatas() {
         if (categoryEditFragmentDatas == null)
             categoryEditFragmentDatas = new CategoryEditFragmentDatas();

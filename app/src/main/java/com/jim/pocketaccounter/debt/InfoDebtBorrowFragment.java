@@ -210,8 +210,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                         Toast.makeText(getContext(), "Success delete", Toast.LENGTH_SHORT).show();
                                         paFragmentManager.getFragmentManager().popBackStack();
                                         paFragmentManager.displayFragment(new DebtBorrowFragment());
-                                        dataCache.updateAllPercents();
-                                        paFragmentManager.updateAllFragmentsOnViewPager();
+
 
                                         List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
                                         for(BoardButton boardButton:boardButtons){
@@ -224,6 +223,8 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                                     commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
                                                 }
                                         }
+                                        dataCache.updateAllPercents();
+                                        paFragmentManager.updateAllFragmentsOnViewPager();
                                         operationsListDialog.dismiss();
                                         break;
                                     }

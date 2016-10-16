@@ -45,6 +45,7 @@ public class CreditArchiveFragment extends Fragment {
             @Override
             public void itemInsertedToArchive() {
                 updateList();
+                ifListEmpty.setVisibility(View.GONE);
                 Log.d("checkInterfaces", "ARCHIVE - updateList();");
             }
         };

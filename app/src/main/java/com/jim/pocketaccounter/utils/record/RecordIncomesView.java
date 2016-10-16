@@ -26,6 +26,7 @@ import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.database.RootCategoryDao;
 import com.jim.pocketaccounter.debt.AddBorrowFragment;
 import com.jim.pocketaccounter.debt.DebtBorrowFragment;
+import com.jim.pocketaccounter.debt.InfoDebtBorrowFragment;
 import com.jim.pocketaccounter.finance.CategoryAdapterForDialog;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.RootCategory;
@@ -35,6 +36,7 @@ import com.jim.pocketaccounter.fragments.AutoMarketFragment;
 import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
+import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
@@ -71,6 +73,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.DisplayMetrics;
@@ -537,10 +540,16 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.CREDIT) {
-
+							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(buttons.get(position).getCategory().getCategoryId()));
+							InfoCreditFragment temp = new InfoCreditFragment();
+							temp.setContentFromMainWindow(item,currentPage * 4 + position,PocketAccounterGeneral.INCOME_MODE);
+							paFragmentManager.setMainReturn(true);
+							paFragmentManager.displayFragment(temp);
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.DEBT_BORROW) {
-
+							Fragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.DEBT);
+							paFragmentManager.setMainReturn(true);
+							paFragmentManager.displayFragment(fragment);
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.PAGE) {
 							String[] pageIds = getResources().getStringArray(R.array.page_ids);
@@ -865,7 +874,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialog.setContentView(dialogView);
 			final ArrayList<IconWithName> categories = new ArrayList<>();
-			creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
+//			creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
 			for (CreditDetials creditDetials : creditDetialsList) {
 				IconWithName iconWithName = new IconWithName(creditDetials.getIcon_ID(),
 						creditDetials.getCredit_name(), Long.toString(creditDetials.getMyCredit_id()));

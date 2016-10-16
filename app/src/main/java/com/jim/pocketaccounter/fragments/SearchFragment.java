@@ -511,6 +511,7 @@ public class SearchFragment extends Fragment {
                     });
 
                     break;
+                case CREDIT_ARCHIVE:
                 case CREDIT_RECKING:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -543,6 +544,7 @@ public class SearchFragment extends Fragment {
                     });
 
                     break;
+
                 case DEBT_VAR:
                 case BORROW_VAR:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {

@@ -51,9 +51,12 @@ import com.jim.pocketaccounter.modulesandcomponents.modules.PocketAccounterAppli
 import com.jim.pocketaccounter.syncbase.SignInGoogleMoneyHold;
 import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.cache.DataCache;
 import com.jim.pocketaccounter.widget.SettingsWidget;
 import com.jim.pocketaccounter.widget.WidgetKeys;
 import com.jim.pocketaccounter.widget.WidgetProvider;
+
+import org.greenrobot.greendao.AbstractDao;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,6 +67,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -85,7 +89,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     SharedPreferences sharedPreferences;
     @Inject
     PocketAccounterApplicationModule pocketAccounterApplicationModule;
-
+    @Inject
+    DataCache dataCache;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://pocket-accounter.appspot.com");
 
@@ -273,13 +278,12 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                         String DB_PATH;
 
 
-                        String packageName = getPackageName();
-                        DB_PATH = String.format("//data//data//%s//databases//"+PocketAccounterGeneral.CURRENT_DB_NAME, packageName);
-                        File db_path=new File(DB_PATH);
-                        if(db_path.exists()){
-                            db_path.delete();
-                        }
 
+                        for(AbstractDao abstractDao:daoSession.getAllDaos())
+                                abstractDao.deleteAll();
+                        CommonOperations.createDefaultDatas(sharedPreferences,SettingsActivity.this,daoSession);
+
+                        dataCache.clearAllCaches();
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
 

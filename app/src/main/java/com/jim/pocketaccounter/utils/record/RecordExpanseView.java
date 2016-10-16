@@ -367,7 +367,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.CREDIT) {
 							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(buttons.get(position).getCategory().getCategoryId()));
 							InfoCreditFragment temp = new InfoCreditFragment();
-							temp.setContentFromMainWindow(item,position,PocketAccounterGeneral.EXPANSE_MODE);
+							temp.setContentFromMainWindow(item,currentPage * 16 + position,PocketAccounterGeneral.EXPANSE_MODE);
 							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(temp);
 
@@ -1153,7 +1153,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			dialog.setContentView(dialogView);
 			final ArrayList<IconWithName> categories = new ArrayList<>();
-			creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
+//			creditDetialsList = daoSession.getCreditDetialsDao().loadAll();
 			for (CreditDetials creditDetials : creditDetialsList) {
 				IconWithName iconWithName = new IconWithName(creditDetials.getIcon_ID(),
 						creditDetials.getCredit_name(), Long.toString(creditDetials.getMyCredit_id()));

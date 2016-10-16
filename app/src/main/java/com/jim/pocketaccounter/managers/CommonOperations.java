@@ -645,7 +645,7 @@ public class CommonOperations {
             account.setNoneMinusAccount(false);
             account.setCalendar(Calendar.getInstance());
             account.__setDaoSession(daoSession);
-            daoSession.getAccountDao().insert(account);
+            daoSession.getAccountDao().insertOrReplace(account);
         }
 
         //inserting categories
@@ -673,12 +673,12 @@ public class CommonOperations {
                     subCategory.setIcon(tempIcons[j]);
                     subCategories.add(subCategory);
                     subCategory.__setDaoSession(daoSession);
-                    daoSession.getSubCategoryDao().insert(subCategory);
+                    daoSession.getSubCategoryDao().insertOrReplace(subCategory);
                 }
                 rootCategory.setSubCategories(subCategories);
                 rootCategory.__setDaoSession(daoSession);
             }
-            daoSession.getRootCategoryDao().insert(rootCategory);
+            daoSession.getRootCategoryDao().insertOrReplace(rootCategory);
         }
 
         List<RootCategory> incomes = daoSession.getRootCategoryDao()

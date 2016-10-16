@@ -243,6 +243,20 @@ public class InfoCreditFragment extends Fragment {
                                     }
                                     else if(fromSearch){
                                         logicManager.deleteCredit(currentCredit);
+                                        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
+                                        for(BoardButton boardButton:boardButtons){
+                                            if(boardButton.getCategoryId()!=null)
+                                                if(boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))){
+                                                    if(boardButton.getTable()==PocketAccounterGeneral.EXPANSE_MODE)
+                                                        logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
+                                                    else
+                                                        logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);
+                                                    commonOperations.changeIconToNull(boardButton.getPos(),dataCache,boardButton.getTable());
+
+                                                }
+                                        }
+                                        dataCache.updateAllPercents();
+                                        paFragmentManager.updateAllFragmentsOnViewPager();
                                     }
                                     else{
                                         logicManager.deleteCredit(currentCredit);

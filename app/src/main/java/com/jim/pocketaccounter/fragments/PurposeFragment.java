@@ -190,7 +190,9 @@ public class PurposeFragment extends Fragment {
                             left_date_string += Integer.toString(t[2]) + " " + getString(R.string.day);
                         }
                     }
+                    if(!left_date_string.equals(""))
                     view.tvLeftDate.setText(left_date_string);
+                    else view.tvLeftDate.setText(R.string.ends);
                 }
             } else {
                 view.leftdateGone.setVisibility(View.GONE);

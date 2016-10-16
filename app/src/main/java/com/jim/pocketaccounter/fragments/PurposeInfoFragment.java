@@ -198,7 +198,9 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     left_date_string+=Integer.toString(t[2])+" "+getString(R.string.day);
                 }
             }
-            myLefDate.setText(left_date_string);
+            if(!left_date_string.equals(""))
+                myLefDate.setText(left_date_string);
+            else myLefDate.setText(R.string.ends);
         }
         }else {
             forGoneLeftDate.setVisibility(View.GONE);
@@ -277,7 +279,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void OnTransferDialogSave() {
                         myAdapter = new MyAdapter();
-                        Toast.makeText(getContext(), "" + reportManager.getAccountOpertions(purpose).size(), Toast.LENGTH_SHORT).show();
                         recyclerView.setAdapter(myAdapter);
                     }
                 });
@@ -291,7 +292,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void OnTransferDialogSave() {
                         myAdapter = new MyAdapter();
-                        Toast.makeText(getContext(), "" + reportManager.getAccountOpertions(purpose).size(), Toast.LENGTH_SHORT).show();
                         recyclerView.setAdapter(myAdapter);
                     }
                 });

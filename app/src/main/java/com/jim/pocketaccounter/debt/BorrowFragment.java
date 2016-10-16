@@ -474,6 +474,7 @@ public class BorrowFragment extends Fragment {
                             if (debtBorrowDao.loadAll().get(i).getId().matches(person.getId())) {
                                 debtBorrowDao.queryBuilder().list().get(i).setTo_archive(true);
                                 person.setTo_archive(true);
+
                                 List<BoardButton> boardButtons=daoSession.getBoardButtonDao().loadAll();
                                 for(BoardButton boardButton:boardButtons){
                                     if(boardButton.getCategoryId()!=null)
@@ -487,6 +488,7 @@ public class BorrowFragment extends Fragment {
                                 }
                                 paFragmentManager.updateAllFragmentsOnViewPager();
                                 dataCache.updateAllPercents();
+
                                 logicManager.insertDebtBorrow(person);
                                 try {
                                     persons.remove(position);
