@@ -547,7 +547,8 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 							paFragmentManager.displayFragment(temp);
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.DEBT_BORROW) {
-							Fragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.DEBT);
+							InfoDebtBorrowFragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.DEBT);
+							fragment.setMainItems (currentPage*4+position);
 							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(fragment);
 						}

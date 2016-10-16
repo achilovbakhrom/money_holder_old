@@ -713,7 +713,7 @@ public class LogicManager {
             boardButton = list.get(0);
             boardButton.setCategoryId(categoryId);
         }
-        if (categoryId != null)
+        if (boardButton != null)
             boardButton.setType(t);
         boardButtonDao.insertOrReplace(boardButton);
     }

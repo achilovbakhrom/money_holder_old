@@ -509,7 +509,6 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                     } else {
                         Person person = new Person(PersonName.getText().toString(),
                                 PersonNumber.getText().toString(), file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath);
-                        person.__setDaoSession(daoSession);
                         logicManager.insertPerson(person);
                         currentDebtBorrow = new DebtBorrow(person,
                                 getDate,
@@ -561,17 +560,16 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                     temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
 
                     if (!paFragmentManager.isMainReturn()) {
-
                         if (!daoSession.getBoardButtonDao().queryBuilder()
                                 .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
                                 .list().isEmpty()) {
                             dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
                                     .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
                                     .list().get(0).getId(), temp);
+                            dataCache.updateAllPercents();
+                            paFragmentManager.updateAllFragmentsOnViewPager();
                         }
 
-                        dataCache.updateAllPercents();
-                        paFragmentManager.updateAllFragmentsOnViewPager();
                         paFragmentManager.getFragmentManager().popBackStackImmediate();
                         if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0)
                             paFragmentManager.getFragmentManager().popBackStackImmediate();

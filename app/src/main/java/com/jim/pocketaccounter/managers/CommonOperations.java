@@ -1677,7 +1677,8 @@ public class CommonOperations {
 
         scaled = Bitmap.createScaledBitmap(scaled, (int)context.getResources().getDimension(R.dimen.thirty_dp), (int) context.getResources().getDimension(R.dimen.thirty_dp), true);
 
-        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(table),BoardButtonDao.Properties.Pos.eq(pos)).build().list();
+        List<BoardButton> boardButtons=daoSession.getBoardButtonDao().queryBuilder()
+                .where(BoardButtonDao.Properties.Table.eq(table),BoardButtonDao.Properties.Pos.eq(pos)).build().list();
         if(!boardButtons.isEmpty()){
             dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
                     scaled);

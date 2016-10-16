@@ -373,7 +373,8 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.DEBT_BORROW) {
-							Fragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.BORROW);
+							InfoDebtBorrowFragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.BORROW);
+							fragment.setMainItems (currentPage*16+position);
 							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(fragment);
 						}
