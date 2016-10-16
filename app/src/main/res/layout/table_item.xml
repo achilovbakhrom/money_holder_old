@@ -24,8 +24,7 @@
                 android:id="@+id/tvTableFirstCol"
                 android:text="first"
                 android:layout_centerInParent="true"
-                android:gravity="center"
-                />
+                android:gravity="center" />
         </RelativeLayout>
         <TextView
             android:layout_width="wrap_content"
@@ -35,8 +34,7 @@
             android:id="@+id/tvTableSecondCol"
             android:layout_weight="1"
             android:text="second"
-            android:gravity="center"
-            />
+            android:gravity="center" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,8 +43,7 @@
             android:id="@+id/tvTableThirdCol"
             android:layout_weight="1"
             android:text="third"
-            android:gravity="center"
-            />
+            android:gravity="center" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

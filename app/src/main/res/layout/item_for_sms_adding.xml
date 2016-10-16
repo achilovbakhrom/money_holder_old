@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="35dp">
+    android:layout_height="@dimen/thirtyfive_dp">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:background="@color/green_light_forline"
-        />
+        android:background="@color/green_light_forline" />
     <FrameLayout
         android:layout_width="2px"
         android:layout_height="match_parent"
-        android:background="@color/green_light_forline"
-        />
+        android:background="@color/green_light_forline" />
     <FrameLayout
         android:layout_width="2px"
         android:layout_height="match_parent"
@@ -27,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:textSize="@dimen/sixteen_dp"
-        android:text="+ Add"
+        android:text="@string/plus_add"
         android:textColor="@color/green_light"
         android:gravity="center"
         android:layout_marginTop="@dimen/five_dp"
@@ -41,11 +39,11 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="(add key word)"
+            android:hint="@string/add_key_word"
             android:gravity="center"
             android:textSize="@dimen/twelve_dp"/>
         <ImageView
-            android:layout_width="40dp"
+            android:layout_width="@dimen/fourty_dp"
             android:layout_height="match_parent"
             android:src="@drawable/right_password"
             android:layout_marginRight="@dimen/sixteen_dp"

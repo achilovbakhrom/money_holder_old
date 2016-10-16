@@ -1,61 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingRight="@dimen/eighteen_sp"
-    android:paddingLeft="@dimen/eighteen_sp"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/eighteen_sp"
-    android:paddingTop="@dimen/ten_dp"
-    >
+    android:paddingLeft="@dimen/eighteen_sp"
+    android:paddingRight="@dimen/eighteen_sp"
+    android:paddingTop="@dimen/ten_dp">
     <TextView
         android:id="@+id/idtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/five_dp"
+        android:layout_marginTop="@dimen/five_dp"
         android:text="@string/how_much_pages_you_need"
         android:textColor="@color/black_for_glavniy_text"
-        android:textSize="@dimen/eightteen_dp"
-        android:layout_marginTop="@dimen/five_dp"
-        android:layout_marginBottom="@dimen/five_dp"
-        />
+        android:textSize="@dimen/eightteen_dp" />
     <EditText
         android:id="@+id/firstPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/twentyfive_dp"
         android:inputType="number"
         android:maxLength="4"
-        />
+        android:textSize="@dimen/twentyfive_dp" />
     <TextView
         android:id="@+id/passwordTextShould"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/in_window_expense_top_window"
-        android:gravity="left"
         android:layout_marginLeft="@dimen/five_dp"
-        android:textSize="@dimen/twelve_dp"
-        android:textColor="@color/black_for_secondary_text"/>
+        android:gravity="left"
+        android:text="@string/in_window_expense_top_window"
+        android:textColor="@color/black_for_secondary_text"
+        android:textSize="@dimen/twelve_dp" />
     <EditText
         android:id="@+id/secondPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/twentyfive_dp"
         android:inputType="number"
         android:maxLength="4"
-        />
+        android:textSize="@dimen/twentyfive_dp" />
     <TextView
         android:id="@+id/passwordRepiat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/twenty_dp"
+        android:layout_marginLeft="@dimen/five_dp"
         android:gravity="left"
         android:text="@string/in_windows_incomes_bottom_window"
-        android:layout_marginLeft="@dimen/five_dp"
-        android:textSize="@dimen/twelve_dp"
         android:textColor="@color/black_for_secondary_text"
-        android:layout_marginBottom="@dimen/twenty_dp"/>
+        android:textSize="@dimen/twelve_dp" />
     <Button
         android:id="@+id/okbuttt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/twenty_dp"
-        android:text="@string/ok"/>
+        android:text="@string/ok" />
 </LinearLayout>

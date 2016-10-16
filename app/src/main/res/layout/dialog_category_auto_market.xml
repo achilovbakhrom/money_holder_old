@@ -8,27 +8,22 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:padding="4dp"
+            android:padding="@dimen/four_dp"
             android:src="@android:drawable/ic_menu_close_clear_cancel" />
     </RelativeLayout>
-
     <LinearLayout
         android:id="@+id/llDialogAddAutoMarket"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:visibility="gone"
-        >
-
+        android:visibility="gone">
         <ImageView
             android:id="@+id/ivDialogAutoItemCat"
             android:layout_width="@dimen/ninetytwo_dp"
@@ -38,34 +33,29 @@
             android:background="@drawable/eclicse_button"
             android:padding="@dimen/twentysix_dp"
             android:src="@drawable/icons_4" />
-
         <TextView
+            android:id="@+id/tvAddAutoMarketCatName"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
             android:paddingLeft="@dimen/five_dp"
-            android:id="@+id/tvAddAutoMarketCatName"
-            android:text="HOME" />
-
+            android:text="@string/home" />
     </LinearLayout>
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="70dp">
-
+        android:layout_height="@dimen/seventy_dp">
         <TextView
             android:id="@+id/tvDialogAddAutoMarketCat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_marginBottom="14dp"
-            android:text="Choose Category"
+            android:layout_marginBottom="@dimen/fourteen_sp"
+            android:text="@string/choose_category"
             android:textColor="#000000"
-            android:textSize="24sp" />
+            android:textSize="@dimen/twentyfour_sp" />
     </RelativeLayout>
-
     <GridView
         android:id="@+id/gvDialogAddAutoMarket"
         android:layout_width="match_parent"
@@ -77,25 +67,22 @@
         android:layout_weight="1"
         android:background="@drawable/gv_icon"
         android:numColumns="4" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <Button
             android:id="@+id/btnDialogAddAutoMarketCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#FFFFFF"
-            android:text="Cancel" />
-
+            android:text="@string/cancel" />
         <Button
             android:id="@+id/btnDialogAddAutoMarketOk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="#FFFFFF"
-            android:text="Next" />
+            android:text="@string/next" />
     </LinearLayout>
 </LinearLayout>

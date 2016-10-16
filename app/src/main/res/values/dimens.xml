@@ -105,4 +105,9 @@
     <dimen name="fiveteen_dp">15dp</dimen>
     <dimen name="ninety_eight_dp">98dp</dimen>
     <dimen name="hundred_fivety_four">154dp</dimen>
+    <dimen name="sexteen_sp">16sp</dimen>
+    <dimen name="sexteen_dp">16dp</dimen>
+    <dimen name="sex_dp">6dp</dimen>
+    <dimen name="hundred_dp">100dp</dimen>
+    <dimen name="sexty_dp">60dp</dimen>
 </resources>

@@ -5,102 +5,89 @@
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <ImageView
             android:id="@+id/ivAddAutoMarketCategory"
             android:layout_width="@dimen/seventy_dp"
             android:layout_height="@dimen/seventy_dp"
             android:layout_marginBottom="@dimen/sixteen_dp"
-            android:layout_marginLeft="10dp"
-            android:padding="10dp"
+            android:layout_marginLeft="@dimen/ten_dp"
+            android:padding="@dimen/ten_dp"
             android:src="@android:drawable/ic_menu_camera" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <TextView
                 android:id="@+id/tvAddAutoMarketCatName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/tvAddAutoMarketSubCatName"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/four_dp"
                 android:gravity="left"
-                android:text="Home"
+                android:text="@string/home"
                 android:textColor="#414141"
-                android:textSize="18sp" />
-
+                android:textSize="@dimen/eighteen_sp" />
             <TextView
                 android:id="@+id/tvAddAutoMarketSubCatName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="14dp"
+                android:layout_marginBottom="@dimen/fourteen_sp"
                 android:gravity="left"
-                android:text="Repair"
+                android:text="@string/repair"
                 android:textColor="#000000"
-                android:textSize="24sp" />
+                android:textSize="@dimen/twentyfour_sp" />
         </RelativeLayout>
     </LinearLayout>
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_below="@+id/linlay_first"
         android:background="#414141" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/sixteen_dp"
-        android:paddingRight="@dimen/sixteen_dp"
-        >
-
-        <TextView
-            android:id="@+id/tvSum"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            android:gravity="left"
-            android:text="Summa"
-            android:textColor="#414141"
-            android:textSize="18sp" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:background="@color/green_light_forline" />
-    </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/sixteen_dp"
         android:paddingRight="@dimen/sixteen_dp">
-
+        <TextView
+            android:id="@+id/tvSum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/four_dp"
+            android:layout_marginTop="@dimen/four_dp"
+            android:gravity="left"
+            android:text="@string/summa"
+            android:textColor="#414141"
+            android:textSize="@dimen/eighteen_sp" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/one_dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/eight_dp"
+            android:background="@color/green_light_forline" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/sixteen_dp"
+        android:paddingRight="@dimen/sixteen_dp">
         <EditText
             android:id="@+id/etAddAutoMarketAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|left"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginLeft="@dimen/four_dp"
+            android:layout_marginTop="@dimen/four_dp"
             android:gravity="left"
+            android:hint="@string/enter_amount"
             android:inputType="numberDecimal"
-            android:hint="Enter amount"
             android:textColor="#414141"
-            android:textSize="18sp" />
-
+            android:textSize="@dimen/eightteen_dp" />
         <Spinner
             android:id="@+id/spAddAutoMarketCurrency"
             android:layout_width="wrap_content"
@@ -108,80 +95,65 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center|right" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingLeft="@dimen/sixteen_dp"
         android:paddingRight="@dimen/sixteen_dp">
-
         <TextView
             android:id="@+id/tvPer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginLeft="@dimen/four_dp"
+            android:layout_marginTop="@dimen/four_dp"
             android:gravity="left"
-            android:text="Period"
+            android:text="@string/period"
             android:textColor="#414141"
-            android:textSize="18sp" />
-
+            android:textSize="@dimen/eighteen_sp" />
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="@dimen/one_dp"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/eight_dp"
             android:background="@color/green_light_forline" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_gravity="center"
         android:gravity="center"
+        android:orientation="horizontal"
         android:paddingLeft="@dimen/sixteen_dp"
         android:paddingRight="@dimen/sixteen_dp">
-
         <RadioGroup
+            android:id="@+id/rgMonthWeek"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/rgMonthWeek"
             android:layout_gravity="center"
             android:gravity="center"
-            android:orientation="horizontal"
-            >
-
+            android:orientation="horizontal">
             <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
                 android:id="@+id/rbtnAddAutoMarketWeek"
-                android:text="Week days"
-                />
-
-            <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:text="@string/week_days" />
+            <RadioButton
                 android:id="@+id/rbtnAddAutoMarketMonth"
-                android:text="Months"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/fifteen_dp"
-                />
-
+                android:text="@string/months" />
         </RadioGroup>
-
     </LinearLayout>
-
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvAddAutoMarketPerItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/six_dp"
         android:layout_gravity="center"
-        android:id="@+id/rvAddAutoMarketPerItems"
         android:background="@drawable/days_shape"
+        android:padding="@dimen/six_dp"
         android:paddingLeft="@dimen/sixteen_dp"
-        android:paddingRight="@dimen/sixteen_dp"/>
-
-
+        android:paddingRight="@dimen/sixteen_dp" />
 </LinearLayout>

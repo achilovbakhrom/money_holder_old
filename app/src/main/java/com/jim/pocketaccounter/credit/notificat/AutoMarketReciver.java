@@ -11,7 +11,7 @@ import android.widget.Toast;
 public class AutoMarketReciver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "ishladi", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, "ishladi", Toast.LENGTH_SHORT).show();
         intent = new Intent(context, AutoMarketService.class);
         context.startService(intent);
     }

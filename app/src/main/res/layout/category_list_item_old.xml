@@ -32,5 +32,4 @@
         android:text="TextView"
         android:textColor="@color/toolbar_text_color"
         android:textSize="@dimen/sixteen_sp" />
-
 </LinearLayout>

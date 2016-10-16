@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical">
-
     <RelativeLayout
         android:id="@+id/llFilterStatistic"
         android:layout_width="match_parent"
@@ -12,18 +11,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="@dimen/five_dp"
         android:background="@color/grey_light2">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="@dimen/ten_dp"
             android:text="@string/between_dates"
             android:textSize="@dimen/thirteen_dp" />
-
         <ImageView
             android:id="@+id/ivFilterStatisticCancel"
             android:layout_width="@dimen/twenty_dp"
@@ -32,7 +29,6 @@
             android:layout_toLeftOf="@+id/ivFilterStatisticSave"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/cancel_sign" />
-
         <ImageView
             android:id="@+id/ivFilterStatisticSave"
             android:layout_width="@dimen/twentyfive_dp"
@@ -42,211 +38,168 @@
             android:layout_margin="@dimen/sixteen_dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/check_sign" />
-
     </RelativeLayout>
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="2px"
         android:layout_marginBottom="@dimen/ten_dp"
         android:background="@color/green_light_forline" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/ten_dp"
         android:paddingLeft="@dimen/ten_dp"
-        android:paddingRight="@dimen/ten_dp"
-        android:paddingBottom="@dimen/ten_dp">
-
+        android:paddingRight="@dimen/ten_dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/two_dp"
             android:layout_below="@+id/rlZayibsl"
-            >
-
+            android:orientation="vertical"
+            android:paddingTop="@dimen/two_dp">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
                 <LinearLayout
+                    android:id="@+id/yi_oy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:id="@+id/yi_oy"
-                    >
-
+                    android:orientation="vertical">
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
-
+                        android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/mont"
-                            android:layout_alignParentLeft="true"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/sixteen_sp"
-                            android:gravity="center_vertical"
                             android:layout_alignBottom="@+id/spFilterStatisticMonth"
+                            android:layout_alignParentLeft="true"
                             android:layout_alignTop="@+id/spFilterStatisticMonth"
-                            />
-
+                            android:gravity="center_vertical"
+                            android:text="@string/mont"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:textSize="@dimen/sixteen_sp" />
                         <Spinner
                             android:id="@+id/spFilterStatisticMonth"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
                             android:layout_alignParentRight="true"
+                            android:layout_centerInParent="true"
                             android:text="oy" />
                     </RelativeLayout>
-
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
-
+                        android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/yearr"
-                            android:layout_alignParentLeft="true"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:gravity="center_vertical"
                             android:layout_alignBottom="@+id/spFilterStatisticYearMont"
+                            android:layout_alignParentLeft="true"
                             android:layout_alignTop="@+id/spFilterStatisticYearMont"
+                            android:gravity="center_vertical"
+                            android:text="@string/yearr"
+                            android:textColor="@color/black_for_glavniy_text"
                             android:textSize="@dimen/sixteen_sp" />
-
                         <Spinner
                             android:id="@+id/spFilterStatisticYearMont"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
                             android:layout_alignParentRight="true"
+                            android:layout_centerInParent="true"
                             android:text="oy" />
                     </RelativeLayout>
-
                 </LinearLayout>
-
                 <LinearLayout
+                    android:id="@+id/interval_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:id="@+id/interval_edit">
-
+                    android:orientation="vertical">
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
-
+                        android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Начало"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:layout_alignParentLeft="true"
-                            android:textSize="@dimen/sixteen_sp"
-                            android:gravity="center_vertical"
                             android:layout_alignBottom="@+id/etFilterStatisticStartTime"
-                            android:layout_alignTop="@+id/etFilterStatisticStartTime" />
-
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignTop="@+id/etFilterStatisticStartTime"
+                            android:gravity="center_vertical"
+                            android:text="@string/nachalo"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:textSize="@dimen/sixteen_sp" />
                         <EditText
                             android:id="@+id/etFilterStatisticStartTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/ten_dp"
-                            android:text="start day"
                             android:layout_alignParentRight="true"
-                            />
+                            android:layout_marginTop="@dimen/ten_dp"
+                            android:text="@string/start_day" />
                     </RelativeLayout>
-
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        >
-
+                        android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Конец"
-                            android:layout_alignParentLeft="true"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/sixteen_sp"
-                            android:gravity="center_vertical"
                             android:layout_alignBottom="@+id/etFilterStatisticEndTime"
-                            android:layout_alignTop="@+id/etFilterStatisticEndTime" />
-
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignTop="@+id/etFilterStatisticEndTime"
+                            android:gravity="center_vertical"
+                            android:text="@string/konets"
+                            android:textColor="@color/black_for_glavniy_text"
+                            android:textSize="@dimen/sixteen_sp" />
                         <EditText
                             android:id="@+id/etFilterStatisticEndTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
-
-                            android:text="end day"/>
+                            android:text="@string/end_day" />
                     </RelativeLayout>
-
                 </LinearLayout>
-
                 <RelativeLayout
+                    android:id="@+id/yil_edit"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/yil_edit">
-
+                    android:layout_height="wrap_content">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Год"
                         android:layout_alignParentLeft="true"
+                        android:text="@string/god"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/sixteen_sp" />
-
                     <Spinner
                         android:id="@+id/etFilterStatisticYear"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_alignParentRight="true"
-                        android:text="yil"/>
-
+                        android:layout_centerHorizontal="true"
+                        android:text="yil" />
                 </RelativeLayout>
-
             </RelativeLayout>
-
         </LinearLayout>
-
         <RelativeLayout
+            android:id="@+id/rlZayibsl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ten_dp"
-            android:id="@+id/rlZayibsl"
             android:layout_alignParentTop="true"
-            >
-
+            android:layout_marginTop="@dimen/ten_dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/between"
-                android:textColor="@color/black_for_glavniy_text"
-                android:textSize="@dimen/sixteen_sp"
-                android:gravity="center_vertical"
-                android:layout_alignParentLeft="true"
                 android:layout_alignBottom="@+id/spFilerStatistic"
-                android:layout_alignTop="@+id/spFilerStatistic" />
-
+                android:layout_alignParentLeft="true"
+                android:layout_alignTop="@+id/spFilerStatistic"
+                android:gravity="center_vertical"
+                android:text="@string/period"
+                android:textColor="@color/black_for_glavniy_text"
+                android:textSize="@dimen/sixteen_sp" />
             <Spinner
                 android:id="@+id/spFilerStatistic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
                 android:layout_alignParentRight="true"
-                android:gravity="right"/>
-
+                android:layout_gravity="right"
+                android:gravity="right" />
         </RelativeLayout>
     </RelativeLayout>
-
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="2px"

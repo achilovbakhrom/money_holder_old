@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.jim.pocketaccounter.InfoCreditFragment"
     android:background="#fff">
-
     <RelativeLayout
         android:id="@+id/pustooyy"
         android:layout_width="match_parent"
@@ -16,7 +15,6 @@
             android:id="@+id/linearLayout"
             android:layout_above="@+id/realitver"
             android:layout_alignParentTop="true">
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,7 +55,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/left_amuont"
                     android:paddingRight="@dimen/ten_dp"
-
                     android:textSize="@dimen/twentysix_sp"
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:textColor="@color/red"
@@ -92,7 +89,6 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true" />
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -121,7 +117,6 @@
                         android:layout_alignParentEnd="true" />
                 </RelativeLayout>
             </LinearLayout>
-
             <FrameLayout
                 android:id="@+id/shlyuzik"
                 android:visibility="gone"
@@ -129,22 +124,16 @@
                 android:layout_height="wrap_content"
                 android:background="@color/grey_light_backgr">
                 <LinearLayout
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-
                     android:paddingLeft="@dimen/twenty_dp"
-                    android:paddingRight="@dimen/sixteen_dp"
-                    >
+                    android:paddingRight="@dimen/sixteen_dp">
                     <RelativeLayout
-
                         android:layout_below="@+id/linearforline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/eight_dp"
-                        >
-
+                        android:layout_marginTop="@dimen/eight_dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -156,7 +145,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/procentCredInfo" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -169,12 +157,10 @@
                             android:layout_alignParentStart="true" />
                     </RelativeLayout>
                     <RelativeLayout
-
                         android:layout_below="@+id/linearforline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/four_dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -186,7 +172,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/leftDateInfo" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -199,12 +184,10 @@
                             android:layout_alignParentStart="true" />
                     </RelativeLayout>
                     <RelativeLayout
-
                         android:layout_below="@+id/linearforline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/four_dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -216,7 +199,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/intervalCreditInfo" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -229,11 +211,9 @@
                             android:layout_alignParentStart="true" />
                     </RelativeLayout>
                     <RelativeLayout
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/four_dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -245,7 +225,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/takedtimeInfo" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -258,11 +237,9 @@
                             android:layout_alignParentStart="true" />
                     </RelativeLayout>
                     <RelativeLayout
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/four_dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -275,7 +252,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/takedValueInfo" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -288,7 +264,6 @@
                             android:layout_alignParentStart="true" />
                     </RelativeLayout>
                     <RelativeLayout
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/four_dp">
@@ -304,7 +279,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/totalReturnValueInfo" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -314,16 +288,13 @@
                             android:id="@+id/totalReturnValueText"
                             android:layout_alignParentTop="true"
                             android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            />
+                            android:layout_alignParentStart="true" />
                     </RelativeLayout>
                     <RelativeLayout
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/four_dp"
                         android:layout_marginBottom="@dimen/eight_dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -335,7 +306,6 @@
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true"
                             android:id="@+id/it_is_include_balance" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -347,30 +317,21 @@
                             android:layout_alignParentLeft="true"
                             android:layout_alignParentStart="true"
                             android:layout_marginBottom="@dimen/eight_dp"/>
-
                     </RelativeLayout>
                 </LinearLayout>
-
             </FrameLayout>
-
             <FrameLayout
                 android:id="@+id/with_wlyuzik"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="2px"
-                android:background="@color/green_light_forline"
-                />
-
-
-
+                android:background="@color/green_light_forline" />
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/twenty_dp"
                 android:layout_marginTop="@dimen/twenty_dp"
                 android:layout_marginBottom="@dimen/five_dp">
-
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -398,9 +359,7 @@
                 android:layout_marginLeft="@dimen/twenty_dp"
                 android:layout_marginRight="@dimen/twenty_dp"
                 android:background="@color/green_light_forline"
-                android:layout_marginTop="@dimen/five_dp"
-                />
-
+                android:layout_marginTop="@dimen/five_dp" />
             <android.support.v7.widget.RecyclerView
                 android:layout_marginRight="@dimen/twenty_dp"
                 android:layout_marginLeft="@dimen/twenty_dp"
@@ -408,16 +367,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:listitem="@layout/payed_item"/>
-
         </LinearLayout>
         <RelativeLayout
             android:id="@+id/realitver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="@dimen/ten_dp"
-
-            >
+            android:layout_marginTop="@dimen/ten_dp">
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="2px"
@@ -427,7 +383,6 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -455,7 +410,5 @@
                 android:layout_alignParentTop="true"
                 android:id="@+id/textView13" />
         </RelativeLayout>
-
     </RelativeLayout>
-
 </FrameLayout>

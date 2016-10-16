@@ -5,26 +5,23 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical">
-
     <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/rvSmsParseAllList"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/sliding_tabs"
-        android:background="@android:color/white"
-        />
+        android:background="@android:color/white" />
     <com.jim.pocketaccounter.utils.FloatingActionButton
         android:id="@+id/fbDebtBorrowFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/sexteen_dp"
         android:src="@drawable/currency_add"
         app:fab_colorNormal="@color/green_light" />
     <android.support.design.widget.TabLayout
@@ -34,21 +31,21 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        app:tabIndicatorColor="@color/green_light_forline"
-        app:tabBackground="@color/expp"
         android:background="@color/expp"
+        app:tabBackground="@color/expp"
         app:tabGravity="fill"
-        app:tabTextAppearance="@style/MineCustomTabText"
+        app:tabIndicatorColor="@color/green_light_forline"
         app:tabMaxWidth="0dp"
-        app:tabMode="fixed" />
+        app:tabMode="fixed"
+        app:tabTextAppearance="@style/MineCustomTabText" />
     <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Press button for\n adding credit"-->
-        <!--android:textColor="@color/black_for_secondary_text"-->
-        <!--android:gravity="right|center_vertical"-->
-        <!--android:layout_toLeftOf="@+id/fbDebtBorrowFragment"-->
-        <!--android:layout_toStartOf="@+id/fbDebtBorrowFragment"-->
-        <!--android:layout_alignBottom="@+id/fbDebtBorrowFragment"-->
-        <!--android:layout_alignTop="@+id/fbDebtBorrowFragment" />-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="Press button for\n adding credit"-->
+    <!--android:textColor="@color/black_for_secondary_text"-->
+    <!--android:gravity="right|center_vertical"-->
+    <!--android:layout_toLeftOf="@+id/fbDebtBorrowFragment"-->
+    <!--android:layout_toStartOf="@+id/fbDebtBorrowFragment"-->
+    <!--android:layout_alignBottom="@+id/fbDebtBorrowFragment"-->
+    <!--android:layout_alignTop="@+id/fbDebtBorrowFragment" />-->
 </RelativeLayout>

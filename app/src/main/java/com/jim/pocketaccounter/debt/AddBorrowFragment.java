@@ -804,9 +804,9 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                         Manifest.permission.READ_CONTACTS)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Contacts access needed");
+                    builder.setTitle(R.string.contact_access_needed);
                     builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setMessage("please confirm Contacts access");//TODO put real question
+                    builder.setMessage(R.string.please_confirm_contact_access);//TODO put real question
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @TargetApi(Build.VERSION_CODES.M)
                         @Override

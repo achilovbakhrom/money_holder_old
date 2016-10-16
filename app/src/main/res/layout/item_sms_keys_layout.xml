@@ -3,22 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="@dimen/ten_dp"
-    >
-
+    android:padding="@dimen/ten_dp">
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/chbItemDialogSmsKeys"
         android:layout_marginRight="@dimen/ten_dp"
-        android:visibility="gone"
-        />
-
+        android:visibility="gone" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvItemDialogSmsKeys"
-        android:textSize="@dimen/sixteen_sp"
-        />
-
+        android:textSize="@dimen/sixteen_sp" />
 </LinearLayout>

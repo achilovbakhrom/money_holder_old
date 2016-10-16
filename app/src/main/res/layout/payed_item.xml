@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="wrap_content">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/rlRootView"
-        >
+        android:id="@+id/rlRootView">
         <CheckBox
             android:id="@+id/for_delete_check_box"
             android:layout_width="wrap_content"
@@ -33,7 +31,6 @@
             android:layout_alignBottom="@+id/linearLayout2"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,42 +43,33 @@
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/paid_value"
             android:layout_toEndOf="@+id/for_delete_check_box"
-            android:layout_toRightOf="@+id/for_delete_check_box"
-
-            >
+            android:layout_toRightOf="@+id/for_delete_check_box">
             <TextView
                 android:id="@+id/via_acount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-
                 android:textColor="@color/for_darker"
                 android:textSize="@dimen/sixteen_sp"/>
-
             <TextView
                 android:id="@+id/date_of_trans"
                 android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/for_darker"
-                android:textSize="@dimen/twelve_sp"
-                />
-
+                android:textSize="@dimen/twelve_sp" />
             <TextView
-
                 android:id="@+id/comment_trans"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/twelve_sp"
-                android:visibility="visible"
-               />
+                android:visibility="visible" />
         </LinearLayout>
         <FrameLayout
             android:layout_width="2px"
             android:layout_height="wrap_content"
             android:background="@color/green_light_forline"
             android:layout_alignBottom="@+id/linearLayout2"
-
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
@@ -91,13 +79,11 @@
             android:layout_height="wrap_content"
             android:background="@color/green_light_forline"
             android:layout_alignBottom="@+id/linearLayout2"
-
             android:layout_alignParentTop="true"
             android:id="@+id/frameLayout6" />
     </RelativeLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:background="@color/green_light_forline"
-        />
+        android:background="@color/green_light_forline" />
 </LinearLayout>

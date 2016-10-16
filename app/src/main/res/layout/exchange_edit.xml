@@ -4,11 +4,9 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical" >
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
         <TextView
             android:id="@+id/tvCurrencyExchangeListItem"
             android:layout_width="wrap_content"
@@ -20,7 +18,6 @@
             android:text="@string/enter_exchange"
             android:textColor="@color/toolbar_text_color"
             android:textSize="@dimen/sixteen_sp" />
-
         <ImageView
             android:id="@+id/ivCurrencyEditDialogCancel"
             android:layout_width="@dimen/twentyfive_dp"
@@ -28,7 +25,6 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="@dimen/ten_dp"
             android:src="@drawable/cancel_sign" />
-
         <ImageView
             android:id="@+id/ivCurrencyEditDialogOk"
             android:layout_width="@dimen/twentyfive_dp"
@@ -37,9 +33,7 @@
             android:layout_marginLeft="@dimen/ten_dp"
             android:layout_marginRight="@dimen/sixteen_dp"
             android:src="@drawable/check_sign" />
-
     </LinearLayout>
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="match_parent"
@@ -78,16 +72,12 @@
             android:layout_marginRight="@dimen/sixteen_dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />
-
-
     </RelativeLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ten_dp"
         android:layout_marginBottom="@dimen/sixteen_dp"
-
         android:orientation="horizontal">
         <TextView
             android:id="@+id/glava"
@@ -109,7 +99,6 @@
             android:padding="@dimen/five_dp"
             android:textSize="@dimen/sixteen_sp"
             android:inputType="numberDecimal">
-
             <requestFocus />
         </EditText>
     </LinearLayout>
