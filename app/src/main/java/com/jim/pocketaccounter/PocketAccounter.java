@@ -123,7 +123,6 @@ public class PocketAccounter extends AppCompatActivity {
     PocketAccounterActivityComponent component;
 
     public PocketAccounterActivityComponent component(PocketAccounterApplication application) {
-
         if (component == null) {
             component = DaggerPocketAccounterActivityComponent
                     .builder()

@@ -59,6 +59,7 @@ import com.jim.pocketaccounter.syncbase.SyncBase;
 import com.jim.pocketaccounter.report.ReportByIncomeExpanseDialogAdapter;
 import com.jim.pocketaccounter.report.TableView;
 import com.jim.pocketaccounter.utils.SMSMonitor;
+import com.jim.pocketaccounter.utils.SmsService;
 import com.jim.pocketaccounter.utils.SubCatAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferAddEditDialog;
 import com.jim.pocketaccounter.utils.TransferDialog;
@@ -133,5 +134,6 @@ public interface PocketAccounterActivityComponent {
     void inject(TransferAddEditDialog transferAddEditDialog);
     void inject(CreditArchiveFragment creditArchiveFragment);
     void inject(SMSMonitor smsMonitor);
+    void inject(SmsService smsService);
     //    void inject(LogicManager logicManager);
 }
