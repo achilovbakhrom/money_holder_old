@@ -103,5 +103,6 @@
 
         <activity android:name=".photocalc.PhotoViewActivity"
             android:screenOrientation="portrait"/>
+        <service android:name=".utils.SmsService"/>
     </application>
 </manifest>
