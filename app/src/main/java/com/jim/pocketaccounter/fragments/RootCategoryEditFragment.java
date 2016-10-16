@@ -404,12 +404,12 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
                     if (!list.isEmpty()) {
                         BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inPreferredConfig = Bitmap.Config.RGB_565;
-                        int resId = getResources().getIdentifier(category.getIcon(), "drawable", getContext().getPackageName());
-                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId, options);
-                        bitmap = Bitmap.createScaledBitmap(bitmap, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
-                        dataCache
-                                .getBoardBitmapsCache()
-                                .put(list.get(0).getId(), bitmap);
+                        for (BoardButton boardButton : list) {
+                            int resId = getResources().getIdentifier(category.getIcon(), "drawable", getContext().getPackageName());
+                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId, options);
+                            bitmap = Bitmap.createScaledBitmap(bitmap, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
+                            dataCache.getBoardBitmapsCache().put(boardButton.getId(), bitmap);
+                        }
                     }
                 }
                 else {

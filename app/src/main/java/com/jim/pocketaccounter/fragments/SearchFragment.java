@@ -348,7 +348,7 @@ public class SearchFragment extends Fragment {
 
             if(searchItemsToSendForUse.size()==0){
                 textViewSearch.setVisibility(View.VISIBLE);
-                textViewSearch.setText("I can't find \""+searchSt+"\"");
+                textViewSearch.setText(getResources().getString(R.string.cant_find)+" \""+searchSt+"\"");
             }
             else
             {

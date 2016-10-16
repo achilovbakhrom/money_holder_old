@@ -141,8 +141,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        begCalendar = (Calendar) Calendar.getInstance();
-        endCalendar = (Calendar) Calendar.getInstance();
+        begCalendar = Calendar.getInstance();
+        endCalendar = Calendar.getInstance();
     }
 
     boolean keyb = true;
@@ -174,10 +174,10 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
             @Override
             public void onClick(View v) {
                 if (amountPurpose.getText().toString().isEmpty()) {
-                    amountPurpose.setError("Enter amount");
+                    amountPurpose.setError(getResources().getString(R.string.enter_amount));
                 } else if (purposeName.getText().toString().isEmpty()) {
                     amountPurpose.setError(null);
-                    purposeName.setError("Enter purpose name");
+                    purposeName.setError(getResources().getString(R.string.enter_name_error));
                 } else {
                     if (purpose == null) {
                         purpose = new Purpose();
@@ -200,7 +200,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                     purpose.setCurrency(currencyy);
                     switch (logicManager.insertPurpose(purpose)) {
                         case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
-                            Toast.makeText(getContext(), "such name have", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.such_name_exists, Toast.LENGTH_SHORT).show();
                             break;
                         }
                         case LogicManagerConstants.SAVED_SUCCESSFULL: {
@@ -279,7 +279,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         begCalendar = null;
                         endCalendar = null;
                         endDate.setText("");
-                        begCalendar = (Calendar) Calendar.getInstance();
+                        begCalendar = Calendar.getInstance();
                         beginDate.setText(dateFormat.format(begCalendar.getTime()));
                         keyb = true;
                         forCustomPeriod = false;
@@ -623,8 +623,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                     case 1:
                         //week
                         begCalendar.add(Calendar.WEEK_OF_YEAR, -period_long);
-
-
                         break;
                     case 2:
                         //year
@@ -640,9 +638,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                     default:
                         return;
                 }
-
-
-                // forCompute+=period_long;
 
                 beginDate.setText(dateFormat.format(begCalendar.getTime()));
 
