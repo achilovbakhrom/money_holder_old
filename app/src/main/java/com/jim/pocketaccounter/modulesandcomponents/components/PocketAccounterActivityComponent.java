@@ -133,7 +133,5 @@ public interface PocketAccounterActivityComponent {
     void inject(AddSmsParseFragment addSmsParseFragment);
     void inject(TransferAddEditDialog transferAddEditDialog);
     void inject(CreditArchiveFragment creditArchiveFragment);
-    void inject(SMSMonitor smsMonitor);
-    void inject(SmsService smsService);
     //    void inject(LogicManager logicManager);
 }

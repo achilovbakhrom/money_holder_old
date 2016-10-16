@@ -14,6 +14,7 @@ import com.jim.pocketaccounter.database.SmsParseSuccess;
 import com.jim.pocketaccounter.database.TemplateSms;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,10 +30,12 @@ public class SmsService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ((PocketAccounter) getApplicationContext()).component((PocketAccounterApplication)getApplication()).inject(this);
-        SmsParseObject smsParseObject =daoSession.getSmsParseObjectDao().queryBuilder()
-                .where(SmsParseObjectDao.Properties.Number.eq(intent.getStringExtra("number"))).list().get(0);
-        if (smsParseObject != null) {
+        ((PocketAccounterApplication) getApplicationContext()).component().inject(this);
+        List<SmsParseObject> smsParseObjects = daoSession.getSmsParseObjectDao().queryBuilder()
+                .where(SmsParseObjectDao.Properties.Number.eq(intent.getStringExtra("number"))).list();
+
+        if (!smsParseObjects.isEmpty()) {
+            SmsParseObject smsParseObject = smsParseObjects.get(0);
             SmsParseSuccess smsParseSuccess = null;
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(intent.getLongExtra("date", 0));

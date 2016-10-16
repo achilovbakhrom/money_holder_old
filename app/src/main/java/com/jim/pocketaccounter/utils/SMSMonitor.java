@@ -56,9 +56,9 @@ public class SMSMonitor extends BroadcastReceiver {
 //                putSmsToDatabase(contentResolver, sms);
 
 //                checkSmsParse(address, messages, sms.getTimestampMillis(), context);
-                Intent myIntent = new Intent();
+                Intent myIntent = new Intent(context, SmsService.class);
                 myIntent.putExtra("number", address);
-                myIntent.putExtra("body", messages);
+                myIntent.putExtra("body", messages.replaceAll("\n", " "));
                 myIntent.putExtra("date", sms.getTimestampMillis());
                 context.startService(myIntent);
             }

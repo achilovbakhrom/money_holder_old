@@ -2,6 +2,7 @@ package com.jim.pocketaccounter;
 
 import android.app.Dialog;
 import android.appwidget.AppWidgetManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -143,6 +144,10 @@ public class PocketAccounter extends AppCompatActivity {
             setLocale(Locale.getDefault().getLanguage());
         else
             setLocale(lang);
+        ContentValues values = new ContentValues();
+        values.put("address", "+998909517443");
+        values.put("body", "body of sms");
+        getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
         checkAutoMarket();
         toolbarManager.init();
         date = Calendar.getInstance();
