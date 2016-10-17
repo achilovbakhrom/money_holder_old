@@ -163,6 +163,7 @@ public class AccountInfoFragment extends Fragment {
 					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 						@Override
 						public void OnTransferDialogSave() {
+							refreshOperationsList();
 							transferDialog.dismiss();
 						}
 					});
@@ -179,6 +180,7 @@ public class AccountInfoFragment extends Fragment {
 				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 					@Override
 					public void OnTransferDialogSave() {
+						refreshOperationsList();
 						transferDialog.dismiss();
 					}
 				});

@@ -15,6 +15,7 @@ import com.jim.pocketaccounter.R;
 
 public class WarningDialog extends Dialog {
     private TextView tv;
+    private TextView title;
     View dialogView;
     public WarningDialog(Context context) {
         super(context);
@@ -22,6 +23,7 @@ public class WarningDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(dialogView);
         tv = ((TextView) dialogView.findViewById(R.id.tvWarningText));
+        title = ((TextView) dialogView.findViewById(R.id.tvCatEditName));
         tv.setText(context.getResources().getString(R.string.currency_delete_warning));
     }
 
@@ -32,7 +34,9 @@ public class WarningDialog extends Dialog {
     protected WarningDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
     }
-
+    public void setMyTitle(String title){
+        this.title.setText(title);
+    }
     public void setText(String text) {
         tv.setText(text);
     }

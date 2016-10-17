@@ -589,7 +589,7 @@
     <string name="currency_exchange_warning">Данные по курсам валют и записи будут утеряны, так как вы не выбрали ранее вами выбранную валюту!</string>
     <string name="currency_delete_warning">Записи по выбранным валютам будут удалены!</string>
     <string name="currency_empty_warning">Список валют не должен быть пуст!</string>
-    <string name="warning">Внимание !</string>
+    <string name="warning">Внимание</string>
     <string name="add">Добавить</string>
     <string name="expanse">Расход</string>
     <string name="income">Доход</string>

@@ -160,7 +160,7 @@ public class PocketAccounter extends AppCompatActivity {
 
             }
         }
-
+        notific = new NotificationManagerCredit(PocketAccounter.this);
         checkAutoMarket();
         toolbarManager.init();
         date = Calendar.getInstance();
@@ -183,6 +183,18 @@ public class PocketAccounter extends AppCompatActivity {
             });
         }
 
+        boolean notif = sharedPreferences.getBoolean("general_notif", true);
+        if (!notif) {
+            (new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        notific.cancelAllNotifs();
+                    } catch (Exception o) {
+                    }
+                }
+            })).start();
+        }
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (preferences.getBoolean("secure", false)) {
             pwPassword.setVisibility(View.VISIBLE);
@@ -404,6 +416,7 @@ public class PocketAccounter extends AppCompatActivity {
                 paFragmentManager.remoteBackPress();
         } else {
             final WarningDialog warningDialog = new WarningDialog(this);
+            warningDialog.setMyTitle(getResources().getString(R.string.warning));
             warningDialog.setText(getResources().getString(R.string.dou_you_want_quit));
             warningDialog.setOnYesButtonListener(new View.OnClickListener() {
                 @Override
@@ -444,18 +457,19 @@ public class PocketAccounter extends AppCompatActivity {
 //        }
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        boolean notif = prefs.getBoolean("general_notif", true);
-//        if (notif) {
-//            try {
-//                notific.cancelAllNotifs();
-//                notific.notificSetDebt();
-//                notific.notificSetCredit();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            notific.cancelAllNotifs();
-//        }
 //        financeManager.saveRecords();
+        boolean notif = sharedPreferences.getBoolean("general_notif", true);
+        if (notif) {
+            try {
+                notific.cancelAllNotifs();
+                notific.notificSetDebt();
+                notific.notificSetCredit();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            notific.cancelAllNotifs();
+        }
         SharedPreferences sPref;
         sPref = getSharedPreferences("infoFirst", MODE_PRIVATE);
         WidgetID = sPref.getInt(WidgetKeys.SPREF_WIDGET_ID, -1);

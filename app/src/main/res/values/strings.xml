@@ -564,7 +564,7 @@
     <string name="currency_exchange_warning">Data on exchange rates and the recording will be lost because you did not select the previously selected currency!</string>
     <string name="currency_delete_warning">Entries for selected currencies will be deleted!</string>
     <string name="currency_empty_warning">List of currency must not be empty!</string>
-    <string name="warning">Caution!!!</string>
+    <string name="warning">Caution</string>
     <string name="add">Add</string>
     <string name="expanse">Expense</string>
     <string name="income">Income</string>
