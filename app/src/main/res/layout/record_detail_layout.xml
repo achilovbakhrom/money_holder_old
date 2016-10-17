@@ -8,6 +8,7 @@
         android:id="@+id/rvRecordDetail"
         android:scrollbars="vertical"
         android:paddingTop="@dimen/five_dp"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

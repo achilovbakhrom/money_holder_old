@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.utils;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -31,27 +32,31 @@ public class SmsService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         ((PocketAccounterApplication) getApplicationContext()).component().inject(this);
+        Bundle bundle = intent.getExtras();
+        if(bundle==null)
+            return 0;
+
         List<SmsParseObject> smsParseObjects = daoSession.getSmsParseObjectDao().queryBuilder()
-                .where(SmsParseObjectDao.Properties.Number.eq(intent.getStringExtra("number"))).list();
+                .where(SmsParseObjectDao.Properties.Number.eq(bundle.getString("number"))).list();
 
         if (!smsParseObjects.isEmpty()) {
             SmsParseObject smsParseObject = smsParseObjects.get(0);
             SmsParseSuccess smsParseSuccess = null;
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(intent.getLongExtra("date", 0));
+            calendar.setTimeInMillis(bundle.getLong("date", 0));
             for (TemplateSms templateSms : smsParseObject.getTemplates()) {
                 Pattern pattern = Pattern.compile(templateSms.getRegex());
-                Matcher matcher = pattern.matcher(intent.getStringExtra("body"));
+                Matcher matcher = pattern.matcher(bundle.getString("body"));
                 matcher.matches();
                 if (matcher.matches()) {
                     smsParseSuccess = new SmsParseSuccess();
-                    smsParseSuccess.setBody(intent.getStringExtra("body"));
+                    smsParseSuccess.setBody(bundle.getString("body"));
                     double summ = 0;
                     try {
                         smsParseSuccess.setDate(calendar);
                         smsParseSuccess.setCurrency(smsParseObject.getCurrency());
                         smsParseSuccess.setAccount(smsParseObject.getAccount());
-                        smsParseSuccess.setNumber(intent.getStringExtra("number"));
+                        smsParseSuccess.setNumber(bundle.getString("number"));
                         smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
                         if (matcher.group(templateSms.getPosAmountGroup()) != null
                                 && !matcher.group(templateSms.getPosAmountGroup()).isEmpty()) {

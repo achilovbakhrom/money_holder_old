@@ -13,6 +13,7 @@
             android:layout_height="match_parent"
             android:paddingTop="@dimen/eight_dp"
             android:scrollbars="none"
+            android:clipToPadding="false"
             tools:context=".MainActivity"
             tools:listitem="@layout/moder_titem" />
 

@@ -124,6 +124,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
     private Animation buttonClick;
     private TextView comment;
     private EditText comment_add;
+    private String commentBackRoll;
     private String oraliqComment = "";
     boolean keykeboard = false;
     private boolean keyForDeleteAllPhotos = true;
@@ -545,6 +546,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 TransitionManager.beginDelayedTransition(linbutview);
                 linbutview.setVisibility(View.GONE);
                 keyforback = false;
+                commentBackRoll = comment_add.getText().toString();
                 openAddingDialog = true;
                 PocketAccounter.isCalcLayoutOpen = true;
                 (new Handler()).postDelayed(new Runnable() {
@@ -566,31 +568,199 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         view.findViewById(R.id.savesecbut).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                keyForDeleteAllPhotos = false;
-                if (keykeboard) {
-                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    if (imm == null)
-                        return;
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
-                    PocketAccounter.isCalcLayoutOpen = false;
+                openAddingDialog = false;
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
+                    if (keykeboard) {
+                        RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
+                        keyforback = true;
+                        (new Handler()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                    if (imm == null)
+                                        return;
+                                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                } catch (Exception o) {
+                                    o.printStackTrace();
+                                }
+                            }
+                        }, 120);
+                        PocketAccounter.isCalcLayoutOpen = false;
+                        comment.setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.scroleditext).setVisibility(View.GONE);
+                        view.findViewById(R.id.commenee).setVisibility(View.GONE);
+                        view.findViewById(R.id.savepanel).setVisibility(View.GONE);
+                        oraliqComment = comment_add.getText().toString();
+                        if (!oraliqComment.matches("")) {
+                            comment.setText(oraliqComment);
+                        } else {
+                            comment.setText(getString(R.string.add_comment));
+                        }
+                        headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
+                    } else {
+                        RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
+                        keyforback = true;
+                        (new Handler()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    LinearLayout linbutview = (LinearLayout) view.findViewById(R.id.numbersbut);
+                                    myListPhoto.setVisibility(View.VISIBLE);
+                                    linbutview.setVisibility(View.VISIBLE);
+                                } catch (Exception o) {
+                                    o.printStackTrace();
+                                }
 
-                    (new Handler()).postDelayed(new Runnable() {
+                            }
+                        }, 120);
+                        comment.setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
+                        view.findViewById(R.id.scroleditext).setVisibility(View.GONE);
+                        view.findViewById(R.id.commenee).setVisibility(View.GONE);
+                        view.findViewById(R.id.savepanel).setVisibility(View.GONE);
+                        oraliqComment = commentBackRoll;
+                        if (!oraliqComment.matches("")) {
+                            comment.setText(oraliqComment);
+                            comment_add.setText(oraliqComment);
+                        } else {
+                            comment_add.setText("");
+                            comment.setText(getString(R.string.add_comment));
+                        }
+                        headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
+                    }
+                } else if (keykeboard) {
+                    RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
+                    AutoTransition cus = new AutoTransition();
+                    keyforback = true;
+                    PocketAccounter.isCalcLayoutOpen = false;
+                    cus.addListener(new Transition.TransitionListener() {
                         @Override
-                        public void run() {
-                            v.startAnimation(buttonClick);
-                            if (lastDot || lastOperator) {
+                        public void onTransitionStart(Transition transition) {
+
+                        }
+
+                        @Override
+                        public void onTransitionEnd(Transition transition) {
+                            if (mainView == null) {
                                 return;
                             }
-                            createNewRecord();
-                        }
-                    }, 300);
-                } else {
-                    v.startAnimation(buttonClick);
-                    if (lastDot || lastOperator) {
-                        return;
-                    }
-                    createNewRecord();
+                            (new Handler()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        if (imm == null) return;
+                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+                                    } catch (Exception o) {
+                                        o.printStackTrace();
+                                    }
+                                }
+                            }, 120);
+                        }
+
+                        @Override
+                        public void onTransitionCancel(Transition transition) {
+
+                        }
+
+                        @Override
+                        public void onTransitionPause(Transition transition) {
+
+                        }
+
+                        @Override
+                        public void onTransitionResume(Transition transition) {
+
+                        }
+                    });
+                    cus.setDuration(200);
+                    cus.setStartDelay(0);
+                    TransitionManager.beginDelayedTransition(headermain, cus);
+                    comment.setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.scroleditext).setVisibility(View.GONE);
+                    view.findViewById(R.id.commenee).setVisibility(View.GONE);
+                    view.findViewById(R.id.savepanel).setVisibility(View.GONE);
+                    oraliqComment = commentBackRoll;
+                    if (!oraliqComment.matches("")) {
+                        comment.setText(oraliqComment);
+                        comment_add.setText(oraliqComment);
+                    } else {
+                        comment_add.setText("");
+                        comment.setText(getString(R.string.add_comment));
+                    }
+
+                    headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
+                } else {
+                    RelativeLayout headermain = (RelativeLayout) view.findViewById(R.id.headermain);
+                    AutoTransition cus = new AutoTransition();
+                    keyforback = true;
+                    cus.addListener(new Transition.TransitionListener() {
+                        @Override
+                        public void onTransitionStart(Transition transition) {
+
+                        }
+
+                        @Override
+                        public void onTransitionEnd(Transition transition) {
+                            if (mainView == null) {
+                                return;
+                            }
+                            try {
+
+                                AutoTransition cus = new AutoTransition();
+                                cus.setDuration(300);
+                                cus.setStartDelay(0);
+                                LinearLayout linbutview = (LinearLayout) view.findViewById(R.id.numbersbut);
+                                TransitionManager.beginDelayedTransition(myListPhoto);
+                                myListPhoto.setVisibility(View.VISIBLE);
+                                TransitionManager.beginDelayedTransition(linbutview, cus);
+                                linbutview.setVisibility(View.VISIBLE);
+                            } catch (Exception o) {
+                                o.printStackTrace();
+                            }
+
+                        }
+
+                        @Override
+                        public void onTransitionCancel(Transition transition) {
+
+                        }
+
+                        @Override
+                        public void onTransitionPause(Transition transition) {
+
+                        }
+
+                        @Override
+                        public void onTransitionResume(Transition transition) {
+
+                        }
+                    });
+                    cus.setDuration(200);
+                    cus.setStartDelay(0);
+                    TransitionManager.beginDelayedTransition(headermain, cus);
+                    comment.setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.addphotopanel).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.pasdigi).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.scroleditext).setVisibility(View.GONE);
+                    view.findViewById(R.id.commenee).setVisibility(View.GONE);
+                    view.findViewById(R.id.savepanel).setVisibility(View.GONE);
+                    oraliqComment = commentBackRoll;
+                    if (!oraliqComment.matches("")) {
+                        comment.setText(oraliqComment);
+                        comment_add.setText(oraliqComment);
+                    } else {
+                        comment_add.setText("");
+                        comment.setText(getString(R.string.add_comment));
+                    }
+                    headermain.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) commonOperations.convertDpToPixel((getResources().getDimension(R.dimen.hundred_fivety_four) / getResources().getDisplayMetrics().density))));
                 }
             }
         });

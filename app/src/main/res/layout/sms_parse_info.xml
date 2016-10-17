@@ -7,5 +7,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvSmsParseInfo"
         android:layout_width="wrap_content"
+        android:padding="@dimen/six_dp"
+        android:clipToPadding="false"
         android:layout_height="wrap_content" />
 </RelativeLayout>

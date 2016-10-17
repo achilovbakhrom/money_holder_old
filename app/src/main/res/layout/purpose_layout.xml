@@ -8,7 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/rvPurposes"
-        android:paddingTop="@dimen/sevent_dp" />
+        android:paddingTop="@dimen/sevent_dp"
+        android:clipToPadding="false"
+        />
     <com.jim.pocketaccounter.utils.FABIcon
         android:layout_width="@dimen/fiftysix_dp"
         android:layout_height="@dimen/fiftysix_dp"

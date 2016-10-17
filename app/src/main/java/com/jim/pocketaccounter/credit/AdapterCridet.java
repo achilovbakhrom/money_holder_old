@@ -235,7 +235,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     for(BoardButton boardButton:boardButtons){
                         if(boardButton.getCategoryId()!=null)
                             if(boardButton.getCategoryId().equals(Long.toString(cardDetials.get(position).getMyCredit_id()))){
-                                if(boardButton.getTable()== PocketAccounterGeneral.EXPANSE_MODE)
+                                if(boardButton.getTable()== PocketAccounterGeneral.EXPENSE)
                                     logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE,boardButton.getPos(),null);
                                 else
                                     logicManager.changeBoardButton(PocketAccounterGeneral.INCOME,boardButton.getPos(),null);

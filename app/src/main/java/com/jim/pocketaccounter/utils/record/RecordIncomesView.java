@@ -39,7 +39,11 @@ import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
+import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
+import com.jim.pocketaccounter.fragments.ReportByCategory;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
+import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
+import com.jim.pocketaccounter.fragments.TableBarFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -356,7 +360,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 		lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, pos, categories.get(position).getId());
+				logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, currentPage*PocketAccounterGeneral.INCOME_BUTTONS_COUNT+pos, categories.get(position).getId());
 				changeIconInCache(pos, categories.get(position).getIcon());
 				initButtons();
 				for (int i=0; i<buttons.size(); i++)
@@ -409,11 +413,11 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 									switch (position) {
 										case 0:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, currentPage*4+pos, date));
+											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.INCOME_MODE, currentPage*4+pos, date));
 											break;
 										case 1:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.EXPANSE_MODE,currentPage*4 + pos));
+											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.INCOME,currentPage*4 + pos));
 											break;
 										case 2:
 											paFragmentManager.setMainReturn(true);
@@ -541,11 +545,13 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.CREDIT) {
+
 							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(buttons.get(position).getCategory().getCategoryId()));
 							InfoCreditFragment temp = new InfoCreditFragment();
-							temp.setContentFromMainWindow(item,currentPage * 4 + position,PocketAccounterGeneral.INCOME_MODE);
+							temp.setContentFromMainWindow(item,currentPage * 4 + position,PocketAccounterGeneral.INCOME);
 							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(temp);
+
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.DEBT_BORROW) {
 							InfoDebtBorrowFragment fragment = InfoDebtBorrowFragment.getInstance(buttons.get(position).getCategory().getCategoryId(), DebtBorrow.DEBT);
@@ -592,16 +598,20 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 									paFragmentManager.displayFragment(new DebtBorrowFragment());
 									break;
 								case 7:
-									//report by account
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new ReportByAccountFragment());
 									break;
 								case 8:
-									//report by incomes and expenses
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new TableBarFragment());
 									break;
 								case 9:
-									//report by category
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new ReportByCategory());
 									break;
 								case 10:
-									//SMS parsing
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new SmsParseMainFragment());
 									break;
 								case 11:
 									Intent intent = new Intent(getContext(), SettingsActivity.class);
@@ -888,7 +898,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			lvDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-					logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, currentPage*PocketAccounterGeneral.EXPENSE_BUTTONS_COUNT+pos, categories.get(position).getId());
+					logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, currentPage*PocketAccounterGeneral.INCOME_BUTTONS_COUNT+pos, categories.get(position).getId());
 					changeIconInCache(pos, categories.get(position).getIcon());
 					initButtons();
 					for (int i = 0; i < buttons.size(); i++)

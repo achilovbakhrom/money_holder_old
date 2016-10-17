@@ -1606,4 +1606,5 @@
     <string name="no_success">not success</string>
     <string name="no_parsing">not parsing</string>
     <string name="choose_amount">Choose amount</string>
+    <string name="cancelb">CANCEL</string>
 </resources>

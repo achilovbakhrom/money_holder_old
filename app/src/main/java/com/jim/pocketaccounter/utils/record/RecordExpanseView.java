@@ -41,7 +41,11 @@ import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
+import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
+import com.jim.pocketaccounter.fragments.ReportByCategory;
 import com.jim.pocketaccounter.fragments.RootCategoryEditFragment;
+import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
+import com.jim.pocketaccounter.fragments.TableBarFragment;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -389,41 +393,52 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 							}
 							switch (pos) {
 								case 0:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new CurrencyFragment());
 									break;
 								case 1:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new CategoryFragment());
 									break;
 								case 2:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new AccountFragment());
 
 									break;
 								case 3:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new PurposeFragment());
 
 									break;
 								case 4:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new AutoMarketFragment());
 
 									break;
 								case 5:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new CreditTabLay());
 
 									break;
 								case 6:
+									paFragmentManager.setMainReturn(true);
 									paFragmentManager.displayFragment(new DebtBorrowFragment());
 									break;
 								case 7:
-									//report by account
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new ReportByAccountFragment());
 									break;
 								case 8:
-									//report by incomes and expenses
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new TableBarFragment());
 									break;
 								case 9:
-									//report by category
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new ReportByCategory());
 									break;
 								case 10:
-									//SMS parsing
+									paFragmentManager.setMainReturn(true);
+									paFragmentManager.displayFragment(new SmsParseMainFragment());
 									break;
 								case 11:
 									Intent intent = new Intent(getContext(), SettingsActivity.class);

@@ -81,10 +81,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/sixteen_dp"
-            android:layout_marginRight="@dimen/sixteen_dp"
             android:text="@string/key_for_type"
             android:textColor="@color/black_for_glavniy_text"
-            android:textSize="@dimen/fourteen_dp" />
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_marginRight="@dimen/ten_dp"
+            android:layout_toLeftOf="@+id/parsingKey"
+
+            android:layout_toStartOf="@+id/parsingKey" />
         <TextView
             android:id="@+id/parsingKey"
             android:layout_width="wrap_content"
@@ -92,12 +95,12 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/sixteen_dp"
-            android:layout_toEndOf="@+id/textView16"
-            android:layout_toRightOf="@+id/textView16"
-            android:gravity="right"
+            android:gravity="right|bottom"
             android:text="@string/select_word"
-            android:textColor="@color/black_for_glavniy_text"
-            android:textSize="@dimen/fourteen_dp" />
+            android:textColor="@color/green_light"
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_alignBottom="@+id/textView16"
+            android:layout_alignParentTop="true" />
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -123,7 +126,7 @@
             android:layout_toRightOf="@+id/textView21"
             android:gravity="right"
             android:text="@string/select_word"
-            android:textColor="@color/black_for_glavniy_text"
+            android:textColor="#cf8e29"
             android:textSize="@dimen/fourteen_dp" />
     </RelativeLayout>
     <FrameLayout

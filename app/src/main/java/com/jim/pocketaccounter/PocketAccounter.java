@@ -37,6 +37,7 @@ import com.jim.pocketaccounter.database.AutoMarket;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.debt.PocketClassess;
+import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.intropage.IntroIndicator;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
@@ -389,7 +390,11 @@ public class PocketAccounter extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
-        if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0) {
+        if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
+                paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain).
+                        getClass().getName().equals(PocketClassess.RECORD_EDIT_FRAGMENT) && isCalcLayoutOpen) {
+            ((RecordEditFragment)paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain)).closeLayout();
+        } else if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0) {
             if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
                     paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain).
                             getClass().getName().equals(PocketClassess.SEARCH_FRAGMENT)) {

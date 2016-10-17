@@ -9,6 +9,7 @@
         android:id="@+id/rvSmsParseList"
         android:layout_width="match_parent"
         android:paddingTop="@dimen/sevent_dp"
+        android:clipToPadding="false"
         android:layout_height="match_parent"/>
     <com.jim.pocketaccounter.utils.FloatingActionButton
         android:layout_width="@dimen/fiftysix_dp"

@@ -474,7 +474,6 @@ public class AddSmsParseFragment extends Fragment {
             amountKeys = new ArrayList<>();
             templateSmsList = new ArrayList<>();
             amountKeyOld = new ArrayList<>();
-            tvSmsCount.setText("" + list.size());
         }
 
         public void oldTemplateChange () {
@@ -562,6 +561,7 @@ public class AddSmsParseFragment extends Fragment {
         private void dialogSms(final boolean type, final int position) {
             posIncExp = -1;
             posAmount = -1;
+            posAmount = -1;
             dialog = new Dialog(getActivity());
             View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_parsin_sms_select_word, null);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -620,6 +620,7 @@ public class AddSmsParseFragment extends Fragment {
                     TextView textView = new TextView(getContext());
                     textView.setTag(row++);
                     textView.setTextSize(txSize);
+//                    textView.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
                     textView.setBackgroundResource(R.drawable.select_grey);
                     textView.setText(lt.get(i));
                     tvList.add(textView);

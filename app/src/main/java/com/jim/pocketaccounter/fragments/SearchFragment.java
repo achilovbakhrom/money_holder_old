@@ -468,7 +468,7 @@ public class SearchFragment extends Fragment {
                                             paFragmentManager.displayMainWindow();
                                         }
                                     });
-                                    toolbarManager.closeSearchFragment();
+                                    toolbarManager.setVisiblityEditSearch();
                                     paFragmentManager.displayFragment(new RecordEditFragment(null, ((FinanceRecord) item.getParrentObject()).getDate(), ((FinanceRecord) item.getParrentObject()), PocketAccounterGeneral.DETAIL));
 
                                 }
