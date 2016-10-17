@@ -224,6 +224,7 @@ public class AddSmsParseFragment extends Fragment {
                         smsParseObject.setNumber(etNumber.getText().toString());
                         daoSession.getTemplateSmsDao().insertInTx(templateSmsList);
                         daoSession.getSmsParseObjectDao().insertOrReplace(smsParseObject);
+
                         paFragmentManager.getFragmentManager().popBackStack();
                         paFragmentManager.displayFragment(new SmsParseMainFragment());
                     }

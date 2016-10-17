@@ -166,6 +166,7 @@ public class SMSParseInfoFragment extends Fragment {
                 view.tvAmount.setText(R.string.no_success);
                 view.tvAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
                 view.tvType.setText(R.string.no_parsing);
+
                 view.thisExpance.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -231,7 +232,11 @@ public class SMSParseInfoFragment extends Fragment {
             return words;
         }
 
+        TextView amountkey;
+        TextView parsingkey;
         private void dialogSms(final boolean type, final int position) {
+            posIncExp = -1;
+            posAmount = -1;
             final Dialog dialog = new Dialog(getActivity());
             View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_parsin_sms_select_word, null);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -240,7 +245,8 @@ public class SMSParseInfoFragment extends Fragment {
             final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
 //            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
-
+            amountkey = (TextView) dialogView.findViewById(R.id.amountKey);
+            parsingkey = (TextView) dialogView.findViewById(R.id.parsingKey);
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
                     - 2 * commonOperations.convertDpToPixel(24)) / getResources().getDisplayMetrics().density);
 
@@ -291,14 +297,15 @@ public class SMSParseInfoFragment extends Fragment {
                     textView.setTextSize(txSize);
                     textView.setText(lt.get(i));
                     tvList.add(textView);
+                    textView.setBackgroundResource(R.drawable.select_grey);
                     LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams
                             (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lp.setMargins((int) getResources().getDimension(R.dimen.five_dp), 0, 0, 0);
                     textView.setLayoutParams(lp);
                     textView.setOnClickListener(MyAdapter.this);
                     linearLayout1.addView(textView);
                 }
             }
-//            content.setText(successList.get(position).getBody());
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -410,15 +417,21 @@ public class SMSParseInfoFragment extends Fragment {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(strings.get((Integer) v.getTag() - 1));
                 if (!matcher.matches() && !strings.get((int) v.getTag() - 1).matches("\\s?[0-9]+\\s?")) {
-                    if (posIncExp != -1)
-                        tvList.get(posIncExp).setBackgroundDrawable(null);
+                    if (posIncExp != -1) {
+                        parsingkey.setText(getResources().getString(R.string.select_word));
+                        tvList.get(posIncExp).setBackgroundResource(R.drawable.select_grey);
+                    }
                     posIncExp = (int) v.getTag() - 1;
-                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.table_selected));
+                    v.setBackgroundResource(R.drawable.select_green);
+                    parsingkey.setText(((TextView)v).getText().toString());
                 } else {
-                    if (posAmount != -1)
-                        tvList.get(posAmount).setBackgroundDrawable(null);
+                    if (posAmount != -1) {
+                        amountkey.setText(getResources().getString(R.string.select_word));
+                        tvList.get(posAmount).setBackgroundResource(R.drawable.select_grey);
+                    }
                     posAmount = (int) v.getTag() - 1;
-                    v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.bar_income));
+                    v.setBackgroundResource(R.drawable.select_yellow);
+                    amountkey.setText(((TextView)v).getText().toString());
                 }
             }
         }
