@@ -176,7 +176,6 @@ public class PocketAccounter extends AppCompatActivity {
                 public void onPasswordRight() {
                     pwPassword.setVisibility(View.GONE);
                 }
-
                 @Override
                 public void onExit() {
                     finish();

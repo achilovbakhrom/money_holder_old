@@ -619,6 +619,7 @@ public class LogicManager {
             }
         }
         currencyDao.insertOrReplaceInTx(currencies);
+        daoSession.clear();
     }
 
     //currency costs
