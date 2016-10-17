@@ -74,7 +74,7 @@ public class AccountInfoFragment extends Fragment {
 		this.account = account;
 	}
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_info_layout, container, false);
 		((PocketAccounter)getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);

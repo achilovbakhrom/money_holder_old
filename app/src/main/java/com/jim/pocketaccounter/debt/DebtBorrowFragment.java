@@ -47,7 +47,6 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
     private ViewPager viewPager;
     private FloatingActionButton fb;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -74,7 +74,6 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
         this.currency = currency;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.currency_edit, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);

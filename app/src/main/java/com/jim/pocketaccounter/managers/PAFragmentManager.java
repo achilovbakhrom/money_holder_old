@@ -234,7 +234,6 @@ public class    PAFragmentManager {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void remoteBackPress() {
         String fragName = getFragmentManager().findFragmentById(R.id.flMain).getClass().getName();
         int count = getFragmentManager().getBackStackEntryCount();

@@ -75,7 +75,6 @@ public class CategoryInfoFragment extends Fragment {
 	public CategoryInfoFragment(RootCategory rootCategory) {
 		this.rootCategory = rootCategory;
 	}
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_info_layout, container, false);
 		((PocketAccounter)getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);

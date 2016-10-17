@@ -211,7 +211,6 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 						return;
 					}
 					dialog.setOnYesButtonListener(new OnClickListener() {
-						@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 						@Override
 						public void onClick(View v) {
 							List<Currency> currencies = daoSession.getCurrencyDao().loadAll();

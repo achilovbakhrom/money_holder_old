@@ -398,7 +398,6 @@ public class PocketAccounter extends AppCompatActivity {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
         if (!drawerInitializer.getDrawer().isClosed()) {

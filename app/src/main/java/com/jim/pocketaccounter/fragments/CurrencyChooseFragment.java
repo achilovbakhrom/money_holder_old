@@ -43,7 +43,6 @@ public class CurrencyChooseFragment extends Fragment {
     @Inject
     ToolbarManager toolbarManager;
     WarningDialog dialog;
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.currency_choose_fragment, container, false);

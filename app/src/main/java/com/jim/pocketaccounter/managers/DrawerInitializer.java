@@ -376,7 +376,6 @@ public class DrawerInitializer {
                 }
                 drawer.closeLeftSide();
                 drawer.postDelayed(new Runnable() {
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void run() {
                         switch (position) {

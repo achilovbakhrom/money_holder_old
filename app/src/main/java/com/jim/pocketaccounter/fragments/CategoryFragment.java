@@ -55,7 +55,6 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	@Inject	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	DataCache dataCache;
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_layout, container, false);
 		rootView.postDelayed(new Runnable() {

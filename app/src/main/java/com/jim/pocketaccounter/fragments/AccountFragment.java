@@ -78,7 +78,6 @@ public class AccountFragment extends Fragment {
 	PAFragmentManager paFragmentManager;
 	@Inject
 	DrawerInitializer drawerInitializer;
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_layout, container, false);
 		rootView.postDelayed(new Runnable() {

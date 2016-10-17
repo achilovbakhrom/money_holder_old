@@ -89,7 +89,6 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
         this.pos = pos;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.cat_edit_layout, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
@@ -240,7 +239,6 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

@@ -86,7 +86,6 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
         this.account = account;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.account_edit_layout, container, false);
         rootView.postDelayed(new Runnable() {
