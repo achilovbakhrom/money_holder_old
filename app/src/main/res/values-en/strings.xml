@@ -1618,4 +1618,6 @@
     <string name="choose_amount">Amount is not choosen</string>
     <string name="no_parsing">Not parsed</string>
     <string name="no_success">Not processed</string>
+    <string name="period_of_save">Set period</string>
+    <string name="select_category">Select category</string>
 </resources>

@@ -1616,4 +1616,6 @@
     <string name="choose_amount">Сумма не выбрана</string>
     <string name="no_parsing">Не опознано</string>
     <string name="no_success">Не обработано</string>
+    <string name="period_of_save">Введите период</string>
+    <string name="select_category">Выберите категорию</string>
 </resources>

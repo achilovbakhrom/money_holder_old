@@ -155,7 +155,7 @@
                         android:layout_marginRight="@dimen/six_dp"
                         android:layout_toLeftOf="@+id/spPurposePeriod"
                         android:layout_toStartOf="@+id/spPurposePeriod"
-                        android:hint="Period of save"
+                        android:hint="@string/period_of_save"
                         android:inputType="number"
                         android:maxLength="3"
                         android:textSize="@dimen/fourteen_sp" />

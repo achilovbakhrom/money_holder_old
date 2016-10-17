@@ -139,7 +139,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                                     break;
                                 }
                                 case LogicManagerConstants.DELETED_SUCCESSFUL: {
-                                    Toast.makeText(getContext(), "Success delete", Toast.LENGTH_SHORT).show();
                                     paFragmentManager.getFragmentManager().popBackStack();
                                     paFragmentManager.displayFragment(new PurposeFragment());
                                     operationsListDialog.dismiss();

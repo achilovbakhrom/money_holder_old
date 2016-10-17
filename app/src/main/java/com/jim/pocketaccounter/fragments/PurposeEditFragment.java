@@ -165,7 +165,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                     purpose.setPurpose(Double.parseDouble(amountPurpose.getText().toString()));
                     purpose.setBegin(begCalendar);
                     purpose.setEnd(endCalendar);
-                    purpose.setPeriodSize(Integer.parseInt(etPeriodCount.getText().toString()));
+                    if (!etPeriodCount.getText().toString().equals(""))
+                        purpose.setPeriodSize(Integer.parseInt(etPeriodCount.getText().toString()));
                     Currency currencyy = null;
                     List<Currency> curListTemp = daoSession.getCurrencyDao().loadAll();
                     for (Currency temp : curListTemp) {
