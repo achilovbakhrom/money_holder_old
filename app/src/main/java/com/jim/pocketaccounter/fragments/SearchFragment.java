@@ -356,9 +356,7 @@ public class SearchFragment extends Fragment {
             }
             rvAdapterSearch.setDataList(searchItemsToSendForUse, getActivity(), searchSt);
         }
-
         rvAdapterSearch.notifyDataSetChanged();
-
     }
 
 
@@ -454,6 +452,7 @@ public class SearchFragment extends Fragment {
             }
 
             /*Set Onclick Listner*/
+            paFragmentManager.setMainReturn(true);
             switch (item.getStTypeSearch()) {
                 case SIMPLE_RECKING:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
@@ -490,6 +489,7 @@ public class SearchFragment extends Fragment {
                             hand.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    toolbarManager.closeSearchFragment();
                                     if(((CreditDetials) item.getParrentObject()).getKey_for_archive()){
                                         InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
                                         temp.setConteentFragment((CreditDetials) item.getParrentObject());
@@ -521,6 +521,7 @@ public class SearchFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     ReckingCredit reckingCredit=(ReckingCredit) item.getParrentObject();
+                                    toolbarManager.closeSearchFragment();
                                     CreditDetials parentCreditDetials = daoSession.getCreditDetialsDao().load(reckingCredit.getMyCredit_id());
                                     if(parentCreditDetials.getKey_for_archive()){
                                         InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
@@ -550,13 +551,13 @@ public class SearchFragment extends Fragment {
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             Handler hand = new Handler();
                             hand.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     Fragment infoDebtBorrowFragment = InfoDebtBorrowFragment.getInstance(((DebtBorrow) item.getParrentObject()).getId(),
                                             ((DebtBorrow) item.getParrentObject()).getType());
+                                    toolbarManager.closeSearchFragment();
                                     paFragmentManager.displayFragment(infoDebtBorrowFragment);
                                     Toast.makeText(context, "BORROW_VAR", Toast.LENGTH_SHORT).show();
                                 }
@@ -580,6 +581,7 @@ public class SearchFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     Recking recking = (Recking) item.getParrentObject();
+                                    toolbarManager.closeSearchFragment();
                                     Fragment infoDebtBorrowFragment = InfoDebtBorrowFragment.getInstance(recking.getDebtBorrowsId(),
                                             daoSession.getDebtBorrowDao().load(recking.getDebtBorrowsId()).getType());
                                     paFragmentManager.displayFragment(infoDebtBorrowFragment);
@@ -592,7 +594,6 @@ public class SearchFragment extends Fragment {
 
                         }
                     });
-
                     break;
 
             }

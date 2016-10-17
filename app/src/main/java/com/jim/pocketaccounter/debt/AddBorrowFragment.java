@@ -560,12 +560,13 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                     temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
 
                     if (!paFragmentManager.isMainReturn()) {
-                        if (!daoSession.getBoardButtonDao().queryBuilder()
+                        List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
                                 .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
-                                .list().isEmpty()) {
-                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
-                                    .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
-                                    .list().get(0).getId(), temp);
+                                .list();
+                        if (!buttons.isEmpty()) {
+                            for (BoardButton button : buttons) {
+                                dataCache.getBoardBitmapsCache().put(button.getId(), temp);
+                            }
                             dataCache.updateAllPercents();
                             paFragmentManager.updateAllFragmentsOnViewPager();
                         }
@@ -579,13 +580,19 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         logicManager.changeBoardButton(MAINTYPE, posMain, currentDebtBorrow.getId());
 
                         if (!mainView) {
-                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                            List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
                                     .where(BoardButtonDao.Properties.Table.eq(MAINTYPE),
-                                            BoardButtonDao.Properties.Pos.eq(posMain)).list().get(0).getId(), temp);
+                                            BoardButtonDao.Properties.Pos.eq(posMain)).list();
+                            for (BoardButton boardButton : buttons) {
+                                dataCache.getBoardBitmapsCache().put(boardButton.getId(), temp);
+                            }
                         } else {
-                            dataCache.getBoardBitmapsCache().put(daoSession.getBoardButtonDao().queryBuilder()
+                            List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
                                     .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
-                                    .list().get(0).getId(), temp);
+                                    .list();
+                            for (BoardButton button : buttons) {
+                                dataCache.getBoardBitmapsCache().put(button.getId(), temp);
+                            }
                         }
                         mainView = false;
                         paFragmentManager.displayMainWindow();
@@ -600,7 +607,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 
     private boolean isMumkin(DebtBorrow debt) {
         Account account = accountDao.queryBuilder().list().get(PersonAccount.getSelectedItemPosition());
-        if (account != null && account.getIsLimited()) {
+        if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
             double limit = account.getLimite();
             double accounted = logicManager.isLimitAccess(account, getDate);
             if (debt.getType() == DebtBorrow.DEBT) {
@@ -625,9 +632,16 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 }
             }
 
-            if (-limit > accounted) {
-                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                return false;
+            if (account.getNoneMinusAccount()) {
+                if (accounted < 0) {
+                    Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            } else {
+                if (-limit > accounted) {
+                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
             }
         }
         return true;

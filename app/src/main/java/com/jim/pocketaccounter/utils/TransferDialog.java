@@ -285,7 +285,7 @@ public class TransferDialog extends Dialog {
                 List<Account> accounts = daoSession.getAccountDao().queryBuilder().where(AccountDao.Properties.Id.eq(firstId)).list();
                 if (!accounts.isEmpty()) {
                     Account account = accounts.get(0);
-                    if (account.getIsLimited()) {
+                    if (account.getIsLimited() || account.getNoneMinusAccount()) {
                         Double limitAccess = logicManager.isLimitAccess(account, calendar);
                         Double amount = Double.parseDouble(etAccountEditName.getText().toString());
                         if (limitAccess - amount < -account.getLimite()) {
@@ -302,7 +302,7 @@ public class TransferDialog extends Dialog {
                         }
                     }
                 }
-//                if (accountOperation == null)
+                if (accountOperation == null)
                 accountOperation = new AccountOperation();
                 accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
                 accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));

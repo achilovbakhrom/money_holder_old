@@ -175,6 +175,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
         }
         toolbarManager.setImageToSecondImage(R.drawable.ic_delete_black);
         toolbarManager.setSpinnerVisibility(View.GONE);
+        toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         if (!debtBorrow.getTo_archive()) {
             toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
@@ -224,7 +225,6 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                                         break;
                                                     }
                                                     case LogicManagerConstants.DELETED_SUCCESSFUL: {
-                                                        Toast.makeText(getContext(), "Success delete", Toast.LENGTH_SHORT).show();
                                                         if (paFragmentManager.isMainReturn()) {
                                                             paFragmentManager.displayMainWindow();
                                                         } else {
@@ -506,7 +506,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                 break;
             }
         }
-        if (account != null && account.getIsLimited()) {
+        if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
             double limit = account.getLimite();
             double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
             if (debt.getType() == DebtBorrow.DEBT) {
@@ -514,10 +514,16 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             } else {
                 accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),account.getCurrency(), summ);
             }
-
-            if (-limit > accounted) {
-                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                return false;
+            if (account.getNoneMinusAccount()) {
+                if (accounted < 0) {
+                    Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            } else {
+                if (-limit > accounted) {
+                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
             }
         }
         return true;

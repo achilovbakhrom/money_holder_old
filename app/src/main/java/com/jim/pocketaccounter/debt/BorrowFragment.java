@@ -512,7 +512,7 @@ public class BorrowFragment extends Fragment {
                     break;
                 }
             }
-            if (account != null && account.getIsLimited()) {
+            if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
                 double limit = account.getLimite();
                 double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
                 if (debt.getType() == DebtBorrow.DEBT) {
@@ -520,9 +520,16 @@ public class BorrowFragment extends Fragment {
                 } else {
                     accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(), summ);
                 }
-                if (-limit > accounted) {
-                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                    return false;
+                if (account.getNoneMinusAccount()) {
+                    if (accounted < 0) {
+                        Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                } else {
+                    if (-limit > accounted) {
+                        Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
                 }
             }
             return true;

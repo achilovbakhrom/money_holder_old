@@ -1,9 +1,7 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,15 +13,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountOperation;
 import com.jim.pocketaccounter.database.DaoSession;
+import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.Purpose;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.DrawerInitializer;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
@@ -31,6 +33,7 @@ import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.TransferDialog;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,6 +52,8 @@ public class PurposeFragment extends Fragment {
     DrawerInitializer drawerInitializer;
     @Inject
     DaoSession daoSession;
+    @Inject
+    LogicManager logicManager;
     @Inject
     PAFragmentManager paFragmentManager;
     @Inject
@@ -128,6 +133,7 @@ public class PurposeFragment extends Fragment {
                     transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                         @Override
                         public void OnTransferDialogSave() {
+                            notifyItemChanged(position);
                             transferDialog.dismiss();
                         }
                     });
@@ -141,6 +147,7 @@ public class PurposeFragment extends Fragment {
                     transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
                         @Override
                         public void OnTransferDialogSave() {
+                            notifyItemChanged(position);
                             transferDialog.dismiss();
                         }
                     });
@@ -166,9 +173,7 @@ public class PurposeFragment extends Fragment {
                 } else {
                     String left_date_string = "";
                     if (t[0] != 0) {
-
                                left_date_string += commonOperations.generateYearString(t[0]);
-
                     }
                     if (t[1] != 0) {
                         if (!left_date_string.matches("")) {
@@ -197,9 +202,7 @@ public class PurposeFragment extends Fragment {
             } else {
                 view.leftdateGone.setVisibility(View.GONE);
             }
-
         }
-
 
         public PurposeFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.purpose_list_item, parent, false);
@@ -215,22 +218,14 @@ public class PurposeFragment extends Fragment {
 
     public Double lefAmmount(Purpose purpose){
         double qoldiq = 0;
-
         for (AccountOperation accountOperation: reportManager.getAccountOpertions(purpose)) {
+            if (accountOperation.getTargetId().equals(purpose.getId()))
             qoldiq += accountOperation.getAmount();
+            else qoldiq -= accountOperation.getAmount();
         }
-
         return purpose.getPurpose() - qoldiq;
     }
-    public Double allAmmount(Purpose purpose){
-        double qoldiq = 0;
 
-        for (AccountOperation accountOperation: reportManager.getAccountOpertions(purpose)) {
-            qoldiq += accountOperation.getAmount();
-        }
-
-        return purpose.getPurpose() - qoldiq;
-    }
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivPurposeItem;
         TextView tvPurposeName;

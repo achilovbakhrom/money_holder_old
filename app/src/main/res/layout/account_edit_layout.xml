@@ -25,7 +25,6 @@
             android:textColor="@color/toolbar_text_color"
             android:textSize="@dimen/sixteen_sp"
             android:hint="@string/cat_name"
-
             android:layout_marginRight="@dimen/ten_dp"
             android:layout_gravity="center_vertical"
             android:layout_alignParentLeft="true"
@@ -76,6 +75,7 @@
             android:layout_alignParentEnd="true"
             android:id="@+id/chbAccountStartSumEnabled" />
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/rlStartSumContainer"
         android:layout_width="match_parent"
@@ -96,7 +96,6 @@
             android:textSize="@dimen/sixteen_sp"
             android:inputType="numberDecimal"
             android:layout_gravity="center_vertical"
-
             android:layout_toLeftOf="@+id/spStartMoneyCurrency"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
@@ -113,6 +112,73 @@
             android:layout_alignBottom="@+id/etStartMoney"
             android:layout_alignParentTop="true" />
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/limit_sum"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:textColor="@color/black_for_glavniy_text"
+            android:layout_marginTop="@dimen/sixteen_sp"
+            android:textSize="@dimen/fourteen_dp"
+            android:layout_toLeftOf="@+id/chbAccountEnabledLimit"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/tvAccountLimit"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/sixteen_dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/chbAccountEnabledLimit" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rlStartLimitContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/sixteen_dp"
+        android:layout_marginRight="@dimen/sixteen_dp"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/etStartLimit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:maxLength="25"
+            android:hint="@string/limit_sum"
+            android:textColor="@color/black_for_glavniy_text"
+            android:textSize="@dimen/sixteen_sp"
+            android:inputType="numberDecimal"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/spStartLimitCurrency"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spStartLimitCurrency"
+            android:layout_gravity="center_vertical"
+            android:gravity="right"
+            android:layout_marginLeft="@dimen/sixteen_dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@+id/etStartLimit"
+            android:layout_alignParentTop="true" />
+    </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

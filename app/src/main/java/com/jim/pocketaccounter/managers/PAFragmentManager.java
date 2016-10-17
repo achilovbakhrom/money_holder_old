@@ -234,12 +234,9 @@ public class    PAFragmentManager {
         }
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void remoteBackPress() {
         String fragName = getFragmentManager().findFragmentById(R.id.flMain).getClass().getName();
-        Log.d("sss", fragName);
-
         int count = getFragmentManager().getBackStackEntryCount();
         while (count > 0) {
             getFragmentManager().popBackStack();
@@ -277,7 +274,7 @@ public class    PAFragmentManager {
             } else if (fragName.equals(PocketClassess.INFO_PURPOSE) || fragName.equals(PocketClassess.ADD_PURPOSE)) {
                 displayFragment(new PurposeFragment());
             } else if (fragName.equals(PocketClassess.RECORD_EDIT_FRAGMENT)) {
-                displayFragment(new RecordDetailFragment(dataCache.getBeginDate()));
+                displayFragment(new RecordDetailFragment(dataCache.getEndDate()));
             } else if (fragName.equals(PocketClassess.ADD_SMS_PARSE_FRAGMENT) || fragName.equals(PocketClassess.INFO_SMS_PARSE_FRAGMENT)) {
                 displayFragment(new SmsParseMainFragment());
             }

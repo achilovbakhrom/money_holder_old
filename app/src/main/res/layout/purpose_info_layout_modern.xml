@@ -114,8 +114,10 @@
                 android:layout_marginLeft="@dimen/sixteen_dp"
                 android:layout_marginRight="@dimen/five_dp"
                 android:layout_weight="1"
+                android:padding="@dimen/five_dp"
                 android:background="@drawable/knopka_zeleniy"
                 android:gravity="center"
+                android:textSize="@dimen/fourteen_sp"
                 android:textColor="@color/green_light"
                 android:text="@string/spend" />
             <TextView
@@ -125,8 +127,10 @@
                 android:layout_marginLeft="@dimen/five_dp"
                 android:layout_marginRight="@dimen/sixteen_dp"
                 android:layout_weight="1"
+                android:padding="@dimen/five_dp"
                 android:background="@drawable/knopka_zeleniy"
                 android:gravity="center"
+                android:textSize="@dimen/fourteen_sp"
                 android:textColor="@color/green_light"
                 android:text="@string/replanish" />
         </LinearLayout>

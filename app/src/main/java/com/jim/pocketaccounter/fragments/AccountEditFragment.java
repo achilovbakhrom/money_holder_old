@@ -30,6 +30,7 @@ import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
+import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
@@ -55,201 +56,244 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class AccountEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
-    @Inject LogicManager logicManager;
-    @Inject ToolbarManager toolbarManager;
-    @Inject DaoSession daoSession;
-	@Inject	@Named(value = "display_formatter")	SimpleDateFormat dateFormat;
-	@Inject	PAFragmentManager paFragmentManager;
-	@Inject	IconChooseDialog iconChooseDialog;
-	@Inject	DatePicker datePicker;
-	private Account account;
-	private EditText etAccountEditName;
-	private FABIcon fabAccountIcon;
-	private RelativeLayout checkBoxSum;
-	private CheckBox chbAccountStartSumEnabled;
-	private RelativeLayout rlStartSumContainer;
-	private EditText etStartMoney;
-	private Spinner spStartMoneyCurrency;
-	private CheckBox chbAccountNoneZero;
-	private String choosenIcon = "icons_1";
-	private TextView tvNoneMinusAccountTitle, tvStartSumAccountTitle;
-	@SuppressLint("ValidFragment")
-	public AccountEditFragment(Account account) {
-		this.account = account;
-	}
+    @Inject
+    LogicManager logicManager;
+    @Inject
+    ToolbarManager toolbarManager;
+    @Inject
+    DaoSession daoSession;
+    @Inject
+    @Named(value = "display_formatter")
+    SimpleDateFormat dateFormat;
+    @Inject
+    PAFragmentManager paFragmentManager;
+    @Inject
+    IconChooseDialog iconChooseDialog;
+    @Inject
+    DatePicker datePicker;
+    private Account account;
+    private EditText etAccountEditName;
+    private FABIcon fabAccountIcon;
+    private RelativeLayout checkBoxSum;
+    private CheckBox chbAccountStartSumEnabled;
+    private RelativeLayout rlStartSumContainer;
+    private RelativeLayout rlStartLimitContainer;
+    private EditText etStartMoney;
+    private EditText etStartLimit;
+    private Spinner spStartMoneyCurrency;
+    private CheckBox chbAccountNoneZero;
+    private CheckBox chbAccountLimit;
+    private Spinner spStartLimit;
+    private String choosenIcon = "icons_1";
+    private TextView tvNoneMinusAccountTitle, tvStartSumAccountTitle;
 
-	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @SuppressLint("ValidFragment")
+    public AccountEditFragment(Account account) {
+        this.account = account;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View rootView = inflater.inflate(R.layout.account_edit_layout, container, false);
-		rootView.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
-			}
-		},100);
+        final View rootView = inflater.inflate(R.layout.account_edit_layout, container, false);
+        rootView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+            }
+        }, 100);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-		toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
-		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				paFragmentManager.getFragmentManager().popBackStack();
-				paFragmentManager.displayFragment(new AccountFragment());
-			}
-		});
+        toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
+        toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                paFragmentManager.getFragmentManager().popBackStack();
+                paFragmentManager.displayFragment(new AccountFragment());
+            }
+        });
         toolbarManager.setTitle(getResources().getString(R.string.addedit));
         toolbarManager.setSubtitle("");
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setSpinnerVisibility(View.GONE);
-		toolbarManager.setImageToSecondImage(R.drawable.check_sign);
-		toolbarManager.setOnSecondImageClickListener(this);
-		List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
-		String[] items = new String[currencies.size()];
-		int mainCurrencyPos = 0;
-		for (int i=0; i<currencies.size(); i++) {
-			if (currencies.get(i).getMain())
-				mainCurrencyPos = i;
-			items[i] = currencies.get(i).getAbbr();
-		}
-		ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, items);
+        toolbarManager.setImageToSecondImage(R.drawable.check_sign);
+        toolbarManager.setOnSecondImageClickListener(this);
+        List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
+        String[] items = new String[currencies.size()];
+        int mainCurrencyPos = 0;
+        for (int i = 0; i < currencies.size(); i++) {
+            if (currencies.get(i).getMain())
+                mainCurrencyPos = i;
+            items[i] = currencies.get(i).getAbbr();
+        }
+        ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, items);
 
-		//1 account name
-		etAccountEditName = (EditText) rootView.findViewById(R.id.etAccountEditName);
+        //1 account name
+        etAccountEditName = (EditText) rootView.findViewById(R.id.etAccountEditName);
 
-		//2 account icon
-		fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon);
-		int resId = getResources().getIdentifier(choosenIcon, "drawable", getContext().getPackageName());
-		Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-		Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.twentyfive_dp),
-				(int)getResources().getDimension(R.dimen.twentyfive_dp), false);
-		fabAccountIcon.setImageBitmap(bitmap);
-		fabAccountIcon.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
-					@Override
-					public void OnIconPick(String icon) {
-						choosenIcon = icon;
-						int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
-						Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-						Bitmap b = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
-								(int) getResources().getDimension(R.dimen.twentyfive_dp), false);
-						fabAccountIcon.setImageBitmap(b);
-						iconChooseDialog.setSelectedIcon(icon);
-						iconChooseDialog.dismiss();
-					}
-				});
-				iconChooseDialog.show();
-			}
-		});
+        //2 account icon
+        fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon);
+        int resId = getResources().getIdentifier(choosenIcon, "drawable", getContext().getPackageName());
+        Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
+        Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
+                (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+        fabAccountIcon.setImageBitmap(bitmap);
+        fabAccountIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
+                    @Override
+                    public void OnIconPick(String icon) {
+                        choosenIcon = icon;
+                        int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
+                        Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
+                        Bitmap b = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
+                                (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+                        fabAccountIcon.setImageBitmap(b);
+                        iconChooseDialog.setSelectedIcon(icon);
+                        iconChooseDialog.dismiss();
+                    }
+                });
+                iconChooseDialog.show();
+            }
+        });
 
-		//3 account start sum
-		chbAccountStartSumEnabled = (CheckBox) rootView.findViewById(R.id.chbAccountStartSumEnabled);
-		chbAccountStartSumEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked)
-					rlStartSumContainer.setVisibility(View.VISIBLE);
-				else
-					rlStartSumContainer.setVisibility(View.GONE);
-			}
-		});
-		checkBoxSum = (RelativeLayout) rootView.findViewById(R.id.checkBoxSum);
-		rlStartSumContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartSumContainer);
-		rlStartSumContainer.setVisibility(View.GONE);
-		etStartMoney = (EditText) rootView.findViewById(R.id.etStartMoney);
-		spStartMoneyCurrency = (Spinner) rootView.findViewById(R.id.spStartMoneyCurrency);
-		spStartMoneyCurrency.setAdapter(arrayAdapter);
-		spStartMoneyCurrency.setSelection(mainCurrencyPos);
-		tvStartSumAccountTitle = (TextView) rootView.findViewById(R.id.tvStartSumAccountTitle);
-		tvStartSumAccountTitle.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				chbAccountStartSumEnabled.toggle();
-			}
-		});
-		//4 account none zero
-		chbAccountNoneZero = (CheckBox) rootView.findViewById(R.id.noneZeroAccount);
-		tvNoneMinusAccountTitle = (TextView) rootView.findViewById(R.id.tvNoneMinusAccountTitle);
-		tvNoneMinusAccountTitle.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				chbAccountNoneZero.toggle();
-			}
-		});
-		if (account != null) {
-			etAccountEditName.setText(account.getName());
-			resId = getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
-			temp = BitmapFactory.decodeResource(getResources(), resId);
-			bitmap = Bitmap.createScaledBitmap(temp, (int)getResources().getDimension(R.dimen.twentyfive_dp),
-					(int)getResources().getDimension(R.dimen.twentyfive_dp), false);
-			fabAccountIcon.setImageBitmap(bitmap);
-			chbAccountNoneZero.setChecked(account.getNoneMinusAccount());
-			iconChooseDialog.setSelectedIcon(account.getIcon());
-			if (account.getAmount()!=0) {
-				chbAccountStartSumEnabled.setChecked(true);
-				rlStartSumContainer.setVisibility(View.VISIBLE);
-				etStartMoney.setText(Double.toString(account.getAmount()));
-				for (int i=0; i<currencies.size(); i++)
-					if (currencies.get(i).getId().matches(account.getStartMoneyCurrency().getId())) {
-						spStartMoneyCurrency.setSelection(i);
-						break;
-					}
-			}
-		}
-		return rootView;
-	}
+        //3 account start sum
+        chbAccountStartSumEnabled = (CheckBox) rootView.findViewById(R.id.chbAccountStartSumEnabled);
+        rlStartLimitContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartLimitContainer);
+        chbAccountStartSumEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    rlStartSumContainer.setVisibility(View.VISIBLE);
+                else
+                    rlStartSumContainer.setVisibility(View.GONE);
+            }
+        });
+        chbAccountLimit = (CheckBox) rootView.findViewById(R.id.chbAccountEnabledLimit);
+        chbAccountLimit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked)
+                    rlStartLimitContainer.setVisibility(View.VISIBLE);
+                else
+                    rlStartLimitContainer.setVisibility(View.GONE);
+            }
+        });
+        checkBoxSum = (RelativeLayout) rootView.findViewById(R.id.checkBoxSum);
+        rlStartSumContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartSumContainer);
+        rlStartSumContainer.setVisibility(View.GONE);
+        etStartMoney = (EditText) rootView.findViewById(R.id.etStartMoney);
+        spStartMoneyCurrency = (Spinner) rootView.findViewById(R.id.spStartMoneyCurrency);
+        spStartMoneyCurrency.setAdapter(arrayAdapter);
+        spStartMoneyCurrency.setSelection(mainCurrencyPos);
+        tvStartSumAccountTitle = (TextView) rootView.findViewById(R.id.tvStartSumAccountTitle);
+        etStartLimit = (EditText) rootView.findViewById(R.id.etStartLimit);
+        spStartLimit = (Spinner) rootView.findViewById(R.id.spStartLimitCurrency);
+        spStartLimit.setAdapter(arrayAdapter);
+
+        tvStartSumAccountTitle.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chbAccountStartSumEnabled.toggle();
+            }
+        });
+
+        //4 account none zero
+        chbAccountNoneZero = (CheckBox) rootView.findViewById(R.id.noneZeroAccount);
+        tvNoneMinusAccountTitle = (TextView) rootView.findViewById(R.id.tvNoneMinusAccountTitle);
+        tvNoneMinusAccountTitle.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chbAccountNoneZero.toggle();
+            }
+        });
+        if (account != null) {
+            etAccountEditName.setText(account.getName());
+            resId = getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
+            temp = BitmapFactory.decodeResource(getResources(), resId);
+            bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
+                    (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+            fabAccountIcon.setImageBitmap(bitmap);
+            chbAccountNoneZero.setChecked(account.getNoneMinusAccount());
+            iconChooseDialog.setSelectedIcon(account.getIcon());
+            if (account.getAmount() != 0) {
+                chbAccountStartSumEnabled.setChecked(true);
+                rlStartSumContainer.setVisibility(View.VISIBLE);
+                etStartMoney.setText(Double.toString(account.getAmount()));
+                for (int i = 0; i < currencies.size(); i++)
+                    if (currencies.get(i).getId().matches(account.getStartMoneyCurrency().getId())) {
+                        spStartMoneyCurrency.setSelection(i);
+                        break;
+                    }
+            }
+            if (account.getIsLimited()) {
+                chbAccountLimit.setChecked(true);
+                etStartLimit.setText("" + account.getLimite());
+                for (int i = 0; i < currencies.size(); i++) {
+                    if (currencies.get(i).getId().equals(account.getLimitCurId())) {
+                        spStartLimit.setSelection(i);
+                        break;
+                    }
+                }
+            }
+        }
+        return rootView;
+    }
 
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		paFragmentManager.getFragmentManager().popBackStack();
-	}
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        paFragmentManager.getFragmentManager().popBackStack();
+    }
 
-	@Override
-	public void onClick(View v) {
-		switch(v.getId()) {
-			case R.id.ivToolbarMostRight:
-				InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-				if (etAccountEditName.getText().toString().matches("")) {
-					etAccountEditName.setError(getString(R.string.enter_name_error));
-					return;
-				}
-				Account account;
-				if (this.account == null) {
-					account = new Account();
-					account.setId(UUID.randomUUID().toString());
-					account.setCalendar(Calendar.getInstance());
-				}
-				else
-					account = this.account;
-				account.setName(etAccountEditName.getText().toString());
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.ivToolbarMostRight:
+                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                if (etAccountEditName.getText().toString().matches("")) {
+                    etAccountEditName.setError(getString(R.string.enter_name_error));
+                    return;
+                }
+                Account account;
+                if (this.account == null) {
+                    account = new Account();
+                    account.setId(UUID.randomUUID().toString());
+                    account.setCalendar(Calendar.getInstance());
+                } else
+                    account = this.account;
+                account.setName(etAccountEditName.getText().toString());
 
-				if (!etStartMoney.getText().toString().matches("") && Double.parseDouble(etStartMoney.getText().toString()) != 0)
-					account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
-				else
-					account.setAmount(0);
-				account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
-						.get(spStartMoneyCurrency.getSelectedItemPosition()));
-				account.setIcon(choosenIcon);
-				account.setNoneMinusAccount(chbAccountNoneZero.isChecked());
-				if (this.account != null) {
-					daoSession.getAccountDao().insertOrReplace(account);
-					paFragmentManager.getFragmentManager().popBackStack();
-					paFragmentManager.displayFragment(new AccountFragment());
-				}
-				else {
-					if (logicManager.insertAccount(account) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
-						etAccountEditName.setError(getString(R.string.such_account_name_exists_error));
-						return;
-					}
-					else {
-						paFragmentManager.getFragmentManager().popBackStack();
-						paFragmentManager.displayFragment(new AccountFragment());
-					}
-				}
-				break;
-		}
-	}
+                if (!etStartMoney.getText().toString().matches("") && Double.parseDouble(etStartMoney.getText().toString()) != 0)
+                    account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
+                else
+                    account.setAmount(0);
+                if (chbAccountLimit.isChecked()) {
+                    account.setIsLimited(true);
+                    account.setLimite(Double.parseDouble(etStartLimit.getText().toString()));
+                    account.setLimitCurId(daoSession.getCurrencyDao().queryBuilder().where
+                            (CurrencyDao.Properties.Abbr.eq(spStartLimit.
+                                    getSelectedItem().toString())).list().get(0).getId());
+                }
+                account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
+                        .get(spStartMoneyCurrency.getSelectedItemPosition()));
+                account.setIcon(choosenIcon);
+                account.setNoneMinusAccount(chbAccountNoneZero.isChecked());
+                if (this.account != null) {
+                    daoSession.getAccountDao().insertOrReplace(account);
+                    paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.displayFragment(new AccountFragment());
+                } else {
+                    if (logicManager.insertAccount(account) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
+                        etAccountEditName.setError(getString(R.string.such_account_name_exists_error));
+                        return;
+                    } else {
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayFragment(new AccountFragment());
+                    }
+                }
+                break;
+        }
+    }
 }

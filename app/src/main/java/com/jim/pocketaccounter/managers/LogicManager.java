@@ -929,6 +929,13 @@ public class LogicManager {
                 }
             }
         }
+        for (SmsParseSuccess success: smsParseSuccessDao.loadAll()) {
+            if (success.getType() == PocketAccounterGeneral.INCOME) {
+                accounted += commonOperations.getCost(success.getDate(), success.getCurrency(), success.getAmount());
+            } else {
+                accounted -= commonOperations.getCost(success.getDate(), success.getCurrency(), success.getAmount());
+            }
+        }
         return accounted;
     }
 

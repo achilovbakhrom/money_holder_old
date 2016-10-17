@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.microedition.khronos.opengles.GL10;
 
 @SuppressLint("ValidFragment")
 public class RecordDetailFragment extends Fragment implements OnClickListener {
@@ -71,6 +72,7 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
         toolbarManager.setImageToSecondImage(R.drawable.pencil);
         toolbarManager.setOnSecondImageClickListener(this);
         toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
+        toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,15 +237,14 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
             holder.root.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     if (mode == PocketAccounterGeneral.NORMAL_MODE) {
-                        paFragmentManager.displayFragment(new RecordEditFragment(null, financeRecord.getDate(), financeRecord, PocketAccounterGeneral.DETAIL));
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayFragment(new RecordEditFragment(null,
+                                financeRecord.getDate(), financeRecord, PocketAccounterGeneral.DETAIL));
                     }
                     else {
                         holder.chbRecordDetail.setChecked(!holder.chbRecordDetail.isChecked());
                     }
-
-
                 }
             });
             holder.chbRecordDetail.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

@@ -136,6 +136,40 @@ public class AccountInfoFragment extends Fragment {
 				filterDialog.show();
 			}
 		});
+		sendPay.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (daoSession.getPurposeDao().loadAll().isEmpty()) {
+					final WarningDialog warningDialog = new WarningDialog(getContext());
+					warningDialog.setText(getString(R.string.purpose_list_is_empty));
+					warningDialog.setOnYesButtonListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							paFragmentManager.getFragmentManager().popBackStack();
+							paFragmentManager.displayFragment(new PurposeFragment());
+							warningDialog.dismiss();
+						}
+					});
+					warningDialog.setOnNoButtonClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							warningDialog.dismiss();
+						}
+					});
+					warningDialog.show();
+				} else {
+					final TransferDialog transferDialog = new TransferDialog(getContext());
+					transferDialog.setAccountOrPurpose(account.getId(), true);
+					transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
+						@Override
+						public void OnTransferDialogSave() {
+							transferDialog.dismiss();
+						}
+					});
+					transferDialog.show();
+				}
+			}
+		});
 		getPay.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -145,22 +179,6 @@ public class AccountInfoFragment extends Fragment {
 				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
 					@Override
 					public void OnTransferDialogSave() {
-						Toast.makeText(getContext(), "saved", Toast.LENGTH_LONG).show();
-						transferDialog.dismiss();
-					}
-				});
-			}
-		});
-		sendPay.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				final TransferDialog transferDialog = new TransferDialog(getContext());
-				transferDialog.show();
-				transferDialog.setAccountOrPurpose(account.getId(), true);
-				transferDialog.setOnTransferDialogSaveListener(new TransferDialog.OnTransferDialogSaveListener() {
-					@Override
-					public void OnTransferDialogSave() {
-						Toast.makeText(getContext(), "saved", Toast.LENGTH_SHORT).show();
 						transferDialog.dismiss();
 					}
 				});

@@ -316,6 +316,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     qoldiq -= accountOperation.getAmount();
                 }
             }
+            amountPurpose.setText("" + (purpose.getPurpose() - qoldiq) + purpose.getCurrency().getAbbr());
             Allcashes.setText(parseToWithoutNull(qoldiq)+purpose.getCurrency().getAbbr());
             tek = new boolean[purposes.size()];
         }
@@ -359,6 +360,7 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     qoldiq -= accountOperation.getAmount();
                 }
             }
+            amountPurpose.setText("" + (purpose.getPurpose() - qoldiq) + purpose.getCurrency().getAbbr());
             Allcashes.setText(parseToWithoutNull(qoldiq)+purpose.getCurrency().getAbbr());
         }
 
