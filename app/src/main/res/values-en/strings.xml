@@ -1376,7 +1376,7 @@
     <string name="such_account_name_exists_error">Account with such name is already exist!</string>
     <string name="none_zero_account">Not a negative account</string>
     <string name="operations">Operations</string>
-    <string name="add_subcategory">Добавить подкатегорию</string>
+    <string name="add_subcategory">Add subcategory</string>
     <string name="such_subcat_exist">Subcategory with such name is exists!</string>
     <string name="purposes">Purposes</string>
     <string name="earn">Saving box</string>

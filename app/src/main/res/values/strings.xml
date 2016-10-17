@@ -1353,7 +1353,7 @@
     <string name="operations">Operations</string>
     <string name="none_minusable_account">Not a negative account</string>
     <string name="minusable_account">Account can be negative</string>
-    <string name="add_subcategory">Добавить подкатегорию</string>
+    <string name="add_subcategory">Add subcategory</string>
     <string name="such_subcat_exist">Subcategory with such name is exists!</string>
     <string name="purposes">Purposes</string>
     <string name="earn">Saving box</string>
