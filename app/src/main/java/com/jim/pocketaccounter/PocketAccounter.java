@@ -481,7 +481,6 @@ public class PocketAccounter extends AppCompatActivity {
         drawerInitializer.onStopSuniy();
     }
 
-
     @Override
     public void onRestart() {
         super.onRestart();
@@ -497,7 +496,6 @@ public class PocketAccounter extends AppCompatActivity {
                 public void onPasswordRight() {
                     pwPassword.setVisibility(View.GONE);
                 }
-
                 @Override
                 public void onExit() {
                     finish();
@@ -512,7 +510,6 @@ public class PocketAccounter extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         findViewById(R.id.change).setVisibility(View.VISIBLE);
         drawerInitializer.onActivResultForDrawerCalls(requestCode, resultCode, data);
-
         if (requestCode == key_for_restat && resultCode == 1111) {
             if (WidgetID >= 0) {
                 if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
