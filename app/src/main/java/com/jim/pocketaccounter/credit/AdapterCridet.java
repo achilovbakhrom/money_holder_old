@@ -477,6 +477,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 current.getValyute_currency().getAbbr() + "." + context.getString(R.string.payment_balance2) +
                                 parseToWithoutNull(Double.parseDouble(amount) - (current.getValue_of_credit_with_procent() - total_paid)) +
                                 current.getValyute_currency().getAbbr());
+                        warningDialog.show();
                     } else {
                         ReckingCredit rec = null;
                         if (!amount.matches("") && current.getKey_for_include())

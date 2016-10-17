@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -32,7 +31,6 @@ import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
-import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
@@ -559,7 +557,6 @@ public class SearchFragment extends Fragment {
                                             ((DebtBorrow) item.getParrentObject()).getType());
                                     toolbarManager.closeSearchFragment();
                                     paFragmentManager.displayFragment(infoDebtBorrowFragment);
-                                    Toast.makeText(context, "BORROW_VAR", Toast.LENGTH_SHORT).show();
                                 }
                             }, 500);
 
@@ -585,7 +582,7 @@ public class SearchFragment extends Fragment {
                                     Fragment infoDebtBorrowFragment = InfoDebtBorrowFragment.getInstance(recking.getDebtBorrowsId(),
                                             daoSession.getDebtBorrowDao().load(recking.getDebtBorrowsId()).getType());
                                     paFragmentManager.displayFragment(infoDebtBorrowFragment);
-                                    Toast.makeText(context, "BORROW_RECKING", Toast.LENGTH_SHORT).show();
+
                                 }
                             }, 500);
 
