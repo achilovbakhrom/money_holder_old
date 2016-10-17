@@ -474,6 +474,7 @@ public class AddSmsParseFragment extends Fragment {
             amountKeys = new ArrayList<>();
             templateSmsList = new ArrayList<>();
             amountKeyOld = new ArrayList<>();
+            tvSmsCount.setText("" + list.size());
         }
 
         public void oldTemplateChange () {
@@ -488,6 +489,7 @@ public class AddSmsParseFragment extends Fragment {
             }
             notifyDataSetChanged();
             templateSmsList.addAll(oldObject.getTemplates());
+            tvSmsCount.setText("" + list.size());
         }
 
         public int getTypeSort() {
@@ -568,7 +570,6 @@ public class AddSmsParseFragment extends Fragment {
             final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
             amountkey = (TextView) dialogView.findViewById(R.id.amountKey);
             parsingkey = (TextView) dialogView.findViewById(R.id.parsingKey);
-//            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
@@ -630,7 +631,6 @@ public class AddSmsParseFragment extends Fragment {
                     linearLayout1.addView(textView);
                 }
             }
-//            content.setText(list.get(position).getBody());
             close.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -685,6 +685,7 @@ public class AddSmsParseFragment extends Fragment {
                             etExpance.setText(exps.substring(0, exps.length() - 1));
                         etAmount.setText(ams.substring(0, ams.length() - 1));
                         notifyDataSetChanged();
+                        tvSmsCount.setText("" + list.size());
                     }
                     dialog.dismiss();
                 }
