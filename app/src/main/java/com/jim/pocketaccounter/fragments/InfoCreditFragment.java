@@ -85,7 +85,7 @@ public class InfoCreditFragment extends Fragment {
     LogicManager logicManager;
     @Inject
     LogicManager financeManager;
-    @Inject
+
     WarningDialog warningDialog;
 
     CreditDetialsDao creditDetialsDao;
@@ -163,6 +163,8 @@ public class InfoCreditFragment extends Fragment {
         accountDao = daoSession.getAccountDao();
         formater = new DecimalFormat("0.##");
         context = getActivity();
+        warningDialog = new WarningDialog(context);
+
     }
 
 

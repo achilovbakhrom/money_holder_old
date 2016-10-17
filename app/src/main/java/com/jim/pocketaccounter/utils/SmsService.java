@@ -32,7 +32,9 @@ public class SmsService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         ((PocketAccounterApplication) getApplicationContext()).component().inject(this);
-        Bundle bundle = intent.getExtras();
+        Bundle bundle=null;
+        if(intent!=null)
+        bundle= intent.getExtras();
         if(bundle==null)
             return 0;
 

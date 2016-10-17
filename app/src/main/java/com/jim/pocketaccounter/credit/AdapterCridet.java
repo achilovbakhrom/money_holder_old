@@ -72,7 +72,6 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     LogicManager logicManager;
     @Inject
     DataCache dataCache;
-    @Inject
     WarningDialog warningDialog;
     CreditDetialsDao creditDetialsDao;
     AccountDao accountDao;
@@ -96,6 +95,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
     public AdapterCridet(Context This, CreditTabLay.SvyazkaFragmentov svyaz) {
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
+        warningDialog = new WarningDialog(This);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
         this.cardDetials=creditDetialsDao.queryBuilder()
