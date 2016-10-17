@@ -238,7 +238,7 @@ public class PocketAccounter extends AppCompatActivity {
                     currentDay.set(Calendar.SECOND, 0);
                     currentDay.set(Calendar.MILLISECOND, 0);
 
-                    while (currentDay.compareTo(autoMarket.getCreateDay()) >= 0) {
+                    while (currentDay.compareTo(autoMarket.getCreateDay()) > 0) {
                         FinanceRecord financeRecord = new FinanceRecord();
                         financeRecord.setRecordId("auto" + UUID.randomUUID().toString());
                         financeRecord.setCategory(autoMarket.getRootCategory());
@@ -276,7 +276,7 @@ public class PocketAccounter extends AppCompatActivity {
                         currentDay.set(Calendar.WEEK_OF_YEAR, currentDay.get(Calendar.WEEK_OF_YEAR));
                         currentDay.set(Calendar.DAY_OF_WEEK, pos);
                     }
-                    while (currentDay.compareTo(autoMarket.getCreateDay()) >= 0) {
+                    while (currentDay.compareTo(autoMarket.getCreateDay()) > 0) {
                         FinanceRecord financeRecord = new FinanceRecord();
                         financeRecord.setRecordId("auto" + UUID.randomUUID().toString());
                         financeRecord.setCategory(autoMarket.getRootCategory());

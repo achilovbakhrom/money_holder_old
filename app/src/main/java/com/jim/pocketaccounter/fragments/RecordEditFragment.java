@@ -1322,7 +1322,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             value = value.substring(0, 14);
         if (account.getNoneMinusAccount()) {
             double accounted = logicManager.isLimitAccess(account, date)
-                    - Double.parseDouble(tvRecordEditDisplay.getText().toString());
+                    - commonOperations.getCost(date, currency, account.getCurrency(), Double.parseDouble(tvRecordEditDisplay.getText().toString()));
             if (accounted < 0) {
                 Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
                 return;
@@ -1330,7 +1330,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         }
         if (account.getIsLimited()) {
             if (-account.getLimite() > logicManager.isLimitAccess(account, date)
-                    - Double.parseDouble(tvRecordEditDisplay.getText().toString())) {
+                    - commonOperations.getCost(date, currency, account.getCurrency(), Double.parseDouble(tvRecordEditDisplay.getText().toString()))) {
                 Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                 return;
             }

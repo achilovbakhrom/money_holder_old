@@ -100,8 +100,7 @@ public class AddAutoMarketFragment extends Fragment {
     private DaysAdapter daysAdapter;
     private RadioGroup radioGroup;
 
-    public AddAutoMarketFragment() {
-    }
+    public AddAutoMarketFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -297,80 +296,6 @@ public class AddAutoMarketFragment extends Fragment {
         ivCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-//                final Dialog dialog = new Dialog(getContext());
-//                final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_category_auto_market, null);
-//                final ImageView catImage = (ImageView) dialogView.findViewById(R.id.ivDialogAutoItemCat);
-//
-//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogAddAutoMarket);
-//                linearLayout.setVisibility(View.GONE);
-//                final TextView catName = (TextView) dialogView.findViewById(R.id.tvAddAutoMarketCatName);
-//
-//                dialog.setContentView(dialogView);
-//                final GridView gridView = (GridView) dialogView.findViewById(R.id.gvDialogAddAutoMarket);
-//
-//                final String[] iconsCategory = new String[daoSession.getRootCategoryDao().loadAll().size()];
-//                for (int i = 0; i < iconsCategory.length; i++) {
-//                    iconsCategory[i] = daoSession.getRootCategoryDao().loadAll().get(i).getIcon();
-//                }
-//                adapter = new IconAdapterCategory(getContext(), iconsCategory, iconsCategory[0]);
-//                gridView.setAdapter(adapter);
-//
-//                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        if (!catSelected) {
-//                            selectCategory = position;
-//                            linearLayout.setVisibility(View.VISIBLE);
-//                            ivCategory.setImageResource(getResources().getIdentifier(iconsCategory[position], "drawable", getActivity().getPackageName()));
-//                            catImage.setImageResource(getResources().getIdentifier(iconsCategory[position], "drawable", getActivity().getPackageName()));
-//                            catName.setText(daoSession.getRootCategoryDao().loadAll().get(selectCategory).getName());
-//
-//                            String[] subString = new String[daoSession.getRootCategoryDao().loadAll().get(selectCategory).getSubCategories().size()];
-//                            for (int i = 0; i < subString.length; i++) {
-//                                subString[i] = daoSession.getRootCategoryDao().loadAll().get(selectCategory).getSubCategories().get(i).getIcon();
-//                            }
-//
-//                            adapter = new IconAdapterCategory(getContext(), subString, subString[0]);
-//                            catSelected = true;
-//                        } else {
-//                            selectSubCategory = position;
-//                            catSelected = false;
-//                            categoryName.setText(daoSession.getRootCategoryDao().loadAll().get(selectCategory).getName());
-//                            subCategoryName.setText(daoSession.getRootCategoryDao().loadAll().get(selectCategory).getSubCategories().get(selectSubCategory).getName());
-//                            dialog.dismiss();
-//                        }
-//                        gridView.setAdapter(adapter);
-//                    }
-//                });
-//
-//                Button cancel = (Button) dialogView.findViewById(R.id.btnDialogAddAutoMarketCancel);
-//                Button ok = (Button) dialogView.findViewById(R.id.btnDialogAddAutoMarketOk);
-//
-//                cancel.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//                ok.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if (catSelected) {
-//                            dialog.dismiss();
-//                        }
-//                    }
-//                });
-//
-//                DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
-//                int width = dm.widthPixels;
-//                getActivity().getWindow().setLayout(width, ActionBar.LayoutParams.MATCH_PARENT);
-//
-//                dialog.show();
-//            }
-
                 final Dialog dialog = new Dialog(getActivity());
                 View dialogView = getActivity().getLayoutInflater().inflate(R.layout.category_choose_list, null);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -404,79 +329,6 @@ public class AddAutoMarketFragment extends Fragment {
                     }
                 });
                 dialog.show();
-
-//
-//                final Dialog dialog = new Dialog(getContext());
-//                final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_category_auto_market, null);
-//                final ImageView catImage = (ImageView) dialogView.findViewById(R.id.ivDialogAutoItemCat);
-//
-//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogAddAutoMarket);
-//                linearLayout.setVisibility(View.GONE);
-//                final TextView catName = (TextView) dialogView.findViewById(R.id.tvAddAutoMarketCatName);
-//
-//                dialog.setContentView(dialogView);
-//                final GridView gridView = (GridView) dialogView.findViewById(R.id.gvDialogAddAutoMarket);
-//
-//                final String[] iconsCategory = new String[daoSession.getRootCategoryDao().loadAll().size()];
-//                for (int i = 0; i < iconsCategory.length; i++) {
-//                    iconsCategory[i] = daoSession.getRootCategoryDao().loadAll().get(i).getIcon();
-//                }
-//                adapter = new IconAdapterCategory(getContext(), iconsCategory, iconsCategory[0]);
-//                gridView.setAdapter(adapter);
-//
-//                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                        if (!catSelected) {
-//                            selectCategory = position;
-//                            linearLayout.setVisibility(View.VISIBLE);
-//                            ivCategory.setImageResource(getResources().getIdentifier(iconsCategory[position], "drawable", getActivity().getPackageName()));
-//                            catImage.setImageResource(getResources().getIdentifier(iconsCategory[position], "drawable", getActivity().getPackageName()));
-//                            catName.setText(daoSession.getRootCategoryDao().loadAll().get(selectCategory).getName());
-//
-//                            String[] subString = new String[daoSession.getRootCategoryDao().loadAll().get(selectCategory).getSubCategories().size()];
-//                            for (int i = 0; i < subString.length; i++) {
-//                                subString[i] = daoSession.getRootCategoryDao().loadAll().get(selectCategory).getSubCategories().get(i).getIcon();
-//                            }
-//
-//                            adapter = new IconAdapterCategory(getContext(), subString, subString[0]);
-//                            catSelected = true;
-//                        } else {
-//                            selectSubCategory = position;
-//                            catSelected = false;
-//                            categoryName.setText(daoSession.getRootCategoryDao().loadAll().get(selectCategory).getName());
-//                            subCategoryName.setText(daoSession.getRootCategoryDao().loadAll().get(selectCategory).getSubCategories().get(selectSubCategory).getName());
-//                            dialog.dismiss();
-//                        }
-//                        gridView.setAdapter(adapter);
-//                    }
-//                });
-//
-//                Button cancel = (Button) dialogView.findViewById(R.id.btnDialogAddAutoMarketCancel);
-//                Button ok = (Button) dialogView.findViewById(R.id.btnDialogAddAutoMarketOk);
-//
-//                cancel.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//
-//                ok.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if (catSelected) {
-//                            dialog.dismiss();
-//                        }
-//                    }
-//                });
-//
-//                DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
-//                int width = dm.widthPixels;
-//                getActivity().getWindow().setLayout(width, ActionBar.LayoutParams.MATCH_PARENT);
-//
-//                dialog.show();
             }
         });
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
