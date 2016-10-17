@@ -42,12 +42,12 @@ public class CurrencyChooseFragment extends Fragment {
     DaoSession daoSession;
     @Inject
     ToolbarManager toolbarManager;
-    @Inject
     WarningDialog dialog;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.currency_choose_fragment, container, false);
+        dialog = new WarningDialog(getContext());
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         toolbarManager.setTitle(getResources().getString(R.string.choose_currencies));
         toolbarManager.setSubtitle("");

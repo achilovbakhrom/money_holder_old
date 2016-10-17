@@ -67,7 +67,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
     @Inject DaoSession daoSession;
     @Inject LogicManager logicManager;
     @Inject ToolbarManager toolbarManager;
-    @Inject WarningDialog dialog;
+    WarningDialog dialog;
     @Inject CommonOperations commonOperations;
 
     public CurrencyEditFragment(Currency currency) {
@@ -78,6 +78,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.currency_edit, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        dialog = new WarningDialog(getContext());
         ivExCurrencyAdd = (ImageView) rootView.findViewById(R.id.ivExCurrencyAdd);
         ivExCurrencyAdd.setOnClickListener(this);
         ivExCurrencyDelete = (ImageView) rootView.findViewById(R.id.ivExCurrencyDelete);

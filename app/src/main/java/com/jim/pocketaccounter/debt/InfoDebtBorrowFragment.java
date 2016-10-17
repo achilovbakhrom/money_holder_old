@@ -89,7 +89,6 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
     DaoSession daoSession;
     @Inject
     DataCache dataCache;
-    @Inject
     WarningDialog warningDialog;
     DebtBorrowDao debtBorrowDao;
     AccountDao accountDao;
@@ -138,6 +137,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
     public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.info_debt_borrow_fragment_mod, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        warningDialog = new WarningDialog(getContext());
         debtBorrowDao = daoSession.getDebtBorrowDao();
         accountDao = daoSession.getAccountDao();
         borrowName = (TextView) view.findViewById(R.id.name_of_borrow);

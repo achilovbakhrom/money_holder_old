@@ -56,7 +56,6 @@ public class SMSParseInfoFragment extends Fragment {
     LogicManager logicManager;
     @Inject
     CommonOperations commonOperations;
-    @Inject
     WarningDialog warningDialog;
 
     private SmsParseObject object;
@@ -69,6 +68,7 @@ public class SMSParseInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         View rootView = inflater.inflate(R.layout.sms_parse_info, container, false);
+        warningDialog = new WarningDialog(getContext());
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setImageToSecondImage(R.drawable.trash);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {

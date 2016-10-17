@@ -82,7 +82,6 @@ public class BorrowFragment extends Fragment {
     DaoSession daoSession;
     @Inject
     DataCache dataCache;
-    @Inject
     WarningDialog warningDialog;
     DebtBorrowDao debtBorrowDao;
     AccountDao accountDao;
@@ -111,6 +110,7 @@ public class BorrowFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TYPE = getArguments().getInt("type", 0);
+        warningDialog = new WarningDialog(getContext());
     }
 
     @Nullable

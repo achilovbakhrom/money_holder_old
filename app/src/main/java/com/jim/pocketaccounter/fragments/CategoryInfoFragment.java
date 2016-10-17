@@ -51,7 +51,7 @@ import javax.inject.Named;
 
 @SuppressLint({"InflateParams", "ValidFragment"})
 public class CategoryInfoFragment extends Fragment {
-	@Inject	WarningDialog warningDialog;
+	WarningDialog warningDialog;
     @Inject LogicManager logicManager;
     @Inject ToolbarManager toolbarManager;
     @Inject DaoSession daoSession;
@@ -79,6 +79,7 @@ public class CategoryInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_info_layout, container, false);
 		((PocketAccounter)getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+		warningDialog = new WarningDialog(getContext());
 		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
 		toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
 		toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
