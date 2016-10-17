@@ -389,7 +389,9 @@ public class PocketAccounter extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBackPressed() {
-        if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
+        if (!drawerInitializer.getDrawer().isClosed()) {
+            drawerInitializer.getDrawer().close();
+        } else if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
                 paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain).
                         getClass().getName().equals(PocketClassess.RECORD_EDIT_FRAGMENT) && isCalcLayoutOpen) {
             ((RecordEditFragment)paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain)).closeLayout();
@@ -494,8 +496,6 @@ public class PocketAccounter extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-
         findViewById(R.id.change).setVisibility(View.VISIBLE);
         drawerInitializer.onActivResultForDrawerCalls(requestCode, resultCode, data);
 
@@ -507,8 +507,6 @@ public class PocketAccounter extends AppCompatActivity {
             }
             finish();
         }
-
-
     }
 }
 

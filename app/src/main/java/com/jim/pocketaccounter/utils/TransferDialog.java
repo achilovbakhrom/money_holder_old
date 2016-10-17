@@ -303,7 +303,7 @@ public class TransferDialog extends Dialog {
                     }
                 }
                 if (accountOperation == null)
-                accountOperation = new AccountOperation();
+                    accountOperation = new AccountOperation();
                 accountOperation.setAmount(Double.parseDouble(etAccountEditName.getText().toString()));
                 accountOperation.setCurrency(currencies.get(spAccManDialog.getSelectedItemPosition()));
                 accountOperation.setDate(calendar);
@@ -311,6 +311,7 @@ public class TransferDialog extends Dialog {
                 accountOperation.setTargetId(second.get(spTransferSecond.getSelectedItemPosition()));
                 logicManager.insertAccountOperation(accountOperation);
                 TransferDialog.this.onTransferDialogSaveListener.OnTransferDialogSave();
+                accountOperation = null;
                 dismiss();
 
             }

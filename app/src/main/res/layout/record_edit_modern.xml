@@ -37,7 +37,6 @@
                     android:id="@+id/recycler_calc"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-
                     >
 
                 </android.support.v7.widget.RecyclerView>
@@ -59,8 +58,6 @@
                    android:src="@drawable/ic_photo_camera_black_24dp"
                    android:scaleType="centerInside"
                    />
-
-
            </LinearLayout>
 
            <LinearLayout
@@ -75,10 +72,9 @@
                    android:layout_height="match_parent"
                    android:layout_weight="1"
                    android:text="@string/cancelb"
+                   android:textSize="@dimen/sixteen_sp"
                    android:gravity="center"
                    android:textColor="@color/black_for_glavniy_text">
-
-
                </TextView>
 
                <ImageView
@@ -91,14 +87,12 @@
                    android:layout_width="0dp"
                    android:layout_height="match_parent"
                    android:layout_weight="1"
+                   android:textSize="@dimen/sixteen_sp"
                    android:text="@string/ok_b"
                    android:gravity="center"
                    android:textColor="@color/black_for_glavniy_text"
                    />
-
-
            </LinearLayout>
-
                 </FrameLayout>
 
        <RelativeLayout

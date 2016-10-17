@@ -107,30 +107,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     private TextView tvperido;
     private TextView etPeriodCount;
 
-    enum Apple {
-        UP("my") {
-            @Override
-            public void direc() {
-            }
-        }, DOWN("your") {
-            @Override
-            public void direc() {
-
-            }
-        };
-        private String named;
-
-        Apple(String name) {
-            this.named = name;
-        }
-
-        public String named() {
-            return named;
-        }
-
-        public abstract void direc();
-    }
-
     public PurposeEditFragment(Purpose purpose) {
         this.purpose = purpose;
     }
@@ -146,6 +122,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     }
 
     boolean keyb = true;
+    DatePickerDialog.OnDateSetListener getDatesetListener2;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.purpose_edit_layout_moder, container, false);
@@ -188,6 +165,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                     purpose.setPurpose(Double.parseDouble(amountPurpose.getText().toString()));
                     purpose.setBegin(begCalendar);
                     purpose.setEnd(endCalendar);
+                    purpose.setPeriodSize(Integer.parseInt(etPeriodCount.getText().toString()));
                     Currency currencyy = null;
                     List<Currency> curListTemp = daoSession.getCurrencyDao().loadAll();
                     for (Currency temp : curListTemp) {
@@ -240,13 +218,11 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         });
         // ------------ end icon set ---------
         // ------------ spinner currency --------
-
         ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getContext(),
                 R.layout.adapter_spiner, curList);
         curPurpose.setAdapter(curAdapter);
         // ------------ end spinner currency -------
         // ------------ period purpose spinner ------
-
         relativeLayoutForGone.setVisibility(View.GONE);
         linearLayoutForGone.setVisibility(View.GONE);
         tvperido.setVisibility(View.VISIBLE);
@@ -292,6 +268,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         etPeriodCount.setVisibility(View.VISIBLE);
                         keyb = false;
                         forCustomPeriod = false;
+                        endDate.setOnClickListener(null);
 
 //                        textView.setText("Enter count week");
 //                        editText.setHint("Enter week");
@@ -315,6 +292,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         etPeriodCount.setVisibility(View.VISIBLE);
                         keyb = false;
                         forCustomPeriod = false;
+                        endDate.setOnClickListener(null);
 
 //                        textView.setText("Enter count month");
 //                        editText.setHint("Enter month");
@@ -338,6 +316,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         etPeriodCount.setVisibility(View.VISIBLE);
                         keyb = false;
                         forCustomPeriod = false;
+                        endDate.setOnClickListener(null);
 
 //
 //                        textView.setText("Enter count year");
@@ -362,7 +341,19 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                         etPeriodCount.setVisibility(View.GONE);
                         keyb = false;
                         forCustomPeriod = true;
-
+                        endDate.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                beginDate.setError(null);
+                                endDate.setError(null);
+                                Calendar calendar = Calendar.getInstance();
+                                Dialog mDialog = new DatePickerDialog(getContext(),
+                                        getDatesetListener2, calendar.get(Calendar.YEAR),
+                                        calendar.get(Calendar.MONTH), calendar
+                                        .get(Calendar.DAY_OF_MONTH));
+                                mDialog.show();
+                            }
+                        });
 //
 //                        textView.setText("Enter between date");
 //                        editTextSecond.setVisibility(View.VISIBLE);
@@ -461,10 +452,8 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                 }
             }
         };
-        final DatePickerDialog.OnDateSetListener getDatesetListener2 = new DatePickerDialog.OnDateSetListener() {
+        getDatesetListener2 = new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(android.widget.DatePicker arg0, int arg1, int arg2, int arg3) {
-
-
                 endCalendar = new GregorianCalendar(arg1, arg2, arg3);
                 endDate.setText(dateFormat.format(endCalendar.getTime()));
                 if (!forCustomPeriod) {
@@ -495,9 +484,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                                 return;
                         }
 
-
-                        // forCompute+=period_long;
-
                         beginDate.setText(dateFormat.format(begCalendar.getTime()));
 
                     } else {
@@ -522,19 +508,21 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                 mDialog.show();
             }
         });
-        endDate.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                beginDate.setError(null);
-                endDate.setError(null);
-                Calendar calendar = Calendar.getInstance();
-                Dialog mDialog = new DatePickerDialog(getContext(),
-                        getDatesetListener2, calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH), calendar
-                        .get(Calendar.DAY_OF_MONTH));
-                mDialog.show();
-            }
-        });
+        if (periodPurpose.getSelectedItemPosition() != 4) {
+            endDate.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    beginDate.setError(null);
+                    endDate.setError(null);
+                    Calendar calendar = Calendar.getInstance();
+                    Dialog mDialog = new DatePickerDialog(getContext(),
+                            getDatesetListener2, calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH), calendar
+                            .get(Calendar.DAY_OF_MONTH));
+                    mDialog.show();
+                }
+            });
+        } else endDate.setOnClickListener(null);
 
         etPeriodCount.addTextChangedListener(new TextWatcher() {
             @Override
@@ -566,6 +554,7 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
             periodPurpose.setSelection(purpose.getPeriodPos());
             beginDate.setText(dateFormat.format(purpose.getBegin().getTime()));
             endDate.setText(dateFormat.format(purpose.getEnd().getTime()));
+            etPeriodCount.setText("" + purpose.getPeriodSize());
         }
         return rootView;
     }

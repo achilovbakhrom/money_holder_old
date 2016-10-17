@@ -207,6 +207,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
             temp = BitmapFactory.decodeResource(getResources(), resId);
             bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
                     (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
+            choosenIcon = account.getIcon();
             fabAccountIcon.setImageBitmap(bitmap);
             chbAccountNoneZero.setChecked(account.getNoneMinusAccount());
             iconChooseDialog.setSelectedIcon(account.getIcon());

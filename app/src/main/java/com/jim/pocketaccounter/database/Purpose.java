@@ -43,6 +43,8 @@ public class Purpose {
     private String id;
     @Property
     private int periodPos;
+    @Property
+    private int periodSize;
     @Generated(hash = 1170963677)
     private transient String currency__resolvedKey;
     /** Used for active entity operations. */
@@ -51,10 +53,12 @@ public class Purpose {
     /** Used to resolve relations */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
+
     @Keep
     public Purpose() {
         id = UUID.randomUUID().toString();
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
      * Entity must attached to an entity context.
@@ -66,6 +70,7 @@ public class Purpose {
         }
         myDao.refresh(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#update(Object)}.
      * Entity must attached to an entity context.
@@ -77,6 +82,7 @@ public class Purpose {
         }
         myDao.update(this);
     }
+
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
      * Entity must attached to an entity context.
@@ -88,6 +94,7 @@ public class Purpose {
         }
         myDao.delete(this);
     }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1889019422)
     public void setCurrency(Currency currency) {
@@ -97,6 +104,7 @@ public class Purpose {
             currency__resolvedKey = currencyId;
         }
     }
+
     /** To-one relationship, resolved on first access. */
     @Generated(hash = 376477166)
     public Currency getCurrency() {
@@ -115,70 +123,98 @@ public class Purpose {
         }
         return currency;
     }
-    public int getPeriodPos() {
-        return this.periodPos;
-    }
-    public void setPeriodPos(int periodPos) {
-        this.periodPos = periodPos;
-    }
-    public String getId() {
-        return this.id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getCurrencyId() {
-        return this.currencyId;
-    }
-    public void setCurrencyId(String currencyId) {
-        this.currencyId = currencyId;
-    }
-    public double getAccumulated() {
-        return this.accumulated;
-    }
-    public void setAccumulated(double accumulated) {
-        this.accumulated = accumulated;
-    }
-    public double getPurpose() {
-        return this.purpose;
-    }
-    public void setPurpose(double purpose) {
-        this.purpose = purpose;
-    }
-    public Calendar getEnd() {
-        return this.end;
-    }
-    public void setEnd(Calendar end) {
-        this.end = end;
-    }
-    public Calendar getBegin() {
-        return this.begin;
-    }
-    public void setBegin(Calendar begin) {
-        this.begin = begin;
-    }
-    public String getDescription() {
-        return this.description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    public String getIcon() {
-        return this.icon;
-    }
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
+
     /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 1602104432)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getPurposeDao() : null;
     }
-    @Generated(hash = 1374484397)
+
+    public int getPeriodSize() {
+        return this.periodSize;
+    }
+
+    public void setPeriodSize(int periodSize) {
+        this.periodSize = periodSize;
+    }
+
+    public int getPeriodPos() {
+        return this.periodPos;
+    }
+
+    public void setPeriodPos(int periodPos) {
+        this.periodPos = periodPos;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCurrencyId() {
+        return this.currencyId;
+    }
+
+    public void setCurrencyId(String currencyId) {
+        this.currencyId = currencyId;
+    }
+
+    public double getAccumulated() {
+        return this.accumulated;
+    }
+
+    public void setAccumulated(double accumulated) {
+        this.accumulated = accumulated;
+    }
+
+    public double getPurpose() {
+        return this.purpose;
+    }
+
+    public void setPurpose(double purpose) {
+        this.purpose = purpose;
+    }
+
+    public Calendar getEnd() {
+        return this.end;
+    }
+
+    public void setEnd(Calendar end) {
+        this.end = end;
+    }
+
+    public Calendar getBegin() {
+        return this.begin;
+    }
+
+    public void setBegin(Calendar begin) {
+        this.begin = begin;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getIcon() {
+        return this.icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    @Generated(hash = 1918704743)
     public Purpose(String icon, String description, Calendar begin, Calendar end,
             double purpose, double accumulated, String currencyId, String id,
-            int periodPos) {
+            int periodPos, int periodSize) {
         this.icon = icon;
         this.description = description;
         this.begin = begin;
@@ -188,5 +224,6 @@ public class Purpose {
         this.currencyId = currencyId;
         this.id = id;
         this.periodPos = periodPos;
+        this.periodSize = periodSize;
     }
 }
