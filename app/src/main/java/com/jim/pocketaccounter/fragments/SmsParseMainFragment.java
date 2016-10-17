@@ -51,7 +51,6 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     @Inject
     CommonOperations commonOperations;
     private RecyclerView recyclerView;
-    private AddSmsParseFragment addSmsParseFragment;
     private FloatingActionButton floatingActionButton;
     private TextView ifListEmpty;
     @Override
@@ -73,7 +72,6 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
         recyclerView.setAdapter(myAdapter);
         floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.fbDebtBorrowFragment);
         floatingActionButton.setOnClickListener(this);
-        addSmsParseFragment = new AddSmsParseFragment(null);
         return rootView;
     }
 
@@ -158,17 +156,17 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
                     final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
                     final CheckBox checkBox = (CheckBox) dialogView.findViewById(R.id.chbIncome);
                     if (checkBox.isChecked()) {
-                        tvIncome.setText("Income");
+                        tvIncome.setText(getResources().getString(R.string.income));
                     } else {
-                        tvIncome.setText("Expance");
+                        tvIncome.setText(getResources().getString(R.string.expanse));
                     }
                     checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if (isChecked) {
-                                tvIncome.setText("Income");
+                                tvIncome.setText(getResources().getString(R.string.income));
                             } else {
-                                tvIncome.setText("Expance");
+                                tvIncome.setText(getResources().getString(R.string.expanse));
                             }
                         }
                     });

@@ -160,7 +160,6 @@ public class PocketAccounter extends AppCompatActivity {
             }
         }
 
-
         checkAutoMarket();
         toolbarManager.init();
         date = Calendar.getInstance();

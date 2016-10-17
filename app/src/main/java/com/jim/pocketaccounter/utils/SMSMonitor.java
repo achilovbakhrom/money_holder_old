@@ -27,22 +27,13 @@ import javax.inject.Inject;
 
 public class SMSMonitor extends BroadcastReceiver {
     private static final String SMS_EXTRA_NAME = "pdus";
-//    @Inject
-//    DaoSession daoSession;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        ((PocketAccounter) context).component((PocketAccounterApplication) context.getApplicationContext())
-//                .inject(this);
-//        ((PocketAccounter) context).component((PocketAccounterApplication)((PocketAccounter) context)
-//                .getApplication()).inject(this);
-
         Bundle extras = intent.getExtras();
         String messages = "";
         if (extras != null) {
             Object[] smsExtra = (Object[]) extras.get(SMS_EXTRA_NAME);
-
-            ContentResolver contentResolver = context.getContentResolver();
             String address = "";
             for (int i = 0; i < smsExtra.length; ++i) {
                 SmsMessage sms = SmsMessage.createFromPdu((byte[]) smsExtra[i]);

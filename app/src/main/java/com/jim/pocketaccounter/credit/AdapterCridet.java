@@ -43,6 +43,7 @@ import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
@@ -71,6 +72,8 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     LogicManager logicManager;
     @Inject
     DataCache dataCache;
+    @Inject
+    WarningDialog warningDialog;
     CreditDetialsDao creditDetialsDao;
     AccountDao accountDao;
 
@@ -445,34 +448,35 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         }
                     }}
                     if (Double.parseDouble(amount) > current.getValue_of_credit_with_procent() - total_paid) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setMessage(context.getString(R.string.payment_balans) + parseToWithoutNull(current.getValue_of_credit_with_procent() - total_paid) +
-                                current.getValyute_currency().getAbbr() + "." + context.getString(R.string.payment_balance2) +
-                                parseToWithoutNull(Double.parseDouble(amount) - (current.getValue_of_credit_with_procent() - total_paid)) +
-                                current.getValyute_currency().getAbbr())
-                                .setPositiveButton(context.getString(R.string.imsure), new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialoge, int id) {
-                                        String amount = enterPay.getText().toString();
-                                        ReckingCredit rec = null;
-                                        if (!amount.matches("") && current.getKey_for_include())
-                                            rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
-                                        else
-                                            rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
-                                        int pos = cardDetials.indexOf(current);
-                                        logicManager.insertReckingCredit(rec);
-                                        current.resetReckings();
-                                        dataCache.updateAllPercents();
-                                        paFragmentManager.updateAllFragmentsOnViewPager();
-                                        notifyItemChanged(position);
-                                        dialog.dismiss();
-                                    }
-                                }).setNegativeButton(context.getString(R.string.cancel1), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-
+                        warningDialog.setOnYesButtonListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String amount = enterPay.getText().toString();
+                                ReckingCredit rec = null;
+                                if (!amount.matches("") && current.getKey_for_include())
+                                    rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
+                                else
+                                    rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
+                                int pos = cardDetials.indexOf(current);
+                                logicManager.insertReckingCredit(rec);
+                                current.resetReckings();
+                                dataCache.updateAllPercents();
+                                paFragmentManager.updateAllFragmentsOnViewPager();
+                                notifyItemChanged(position);
+                                dialog.dismiss();
+                                warningDialog.dismiss();
                             }
                         });
-                        builder.create().show();
+                        warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                warningDialog.dismiss();
+                            }
+                        });
+                        warningDialog.setText(context.getString(R.string.payment_balans) + parseToWithoutNull(current.getValue_of_credit_with_procent() - total_paid) +
+                                current.getValyute_currency().getAbbr() + "." + context.getString(R.string.payment_balance2) +
+                                parseToWithoutNull(Double.parseDouble(amount) - (current.getValue_of_credit_with_procent() - total_paid)) +
+                                current.getValyute_currency().getAbbr());
                     } else {
                         ReckingCredit rec = null;
                         if (!amount.matches("") && current.getKey_for_include())

@@ -173,7 +173,9 @@ public class AddSmsParseFragment extends Fragment {
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new SmsParseMainFragment());
                 } else {
-                    if (etIncome.getText().toString().isEmpty() &&
+                    if (etNumber.getText().toString().isEmpty()) {
+                        etNumber.setError("enter number");
+                    } else if (etIncome.getText().toString().isEmpty() &&
                             etExpance.getText().toString().isEmpty() || etAmount.getText().toString().isEmpty()) {
                         etIncome.setError("enter income key");
                         if (etExpance.getText().toString().isEmpty())

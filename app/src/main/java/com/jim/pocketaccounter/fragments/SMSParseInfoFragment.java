@@ -33,6 +33,7 @@ import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.database.TemplateSms;
+import com.jim.pocketaccounter.utils.WarningDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class SMSParseInfoFragment extends Fragment {
     LogicManager logicManager;
     @Inject
     CommonOperations commonOperations;
+    @Inject
+    WarningDialog warningDialog;
 
     private SmsParseObject object;
     private RecyclerView recyclerView;
@@ -71,21 +74,23 @@ public class SMSParseInfoFragment extends Fragment {
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setMessage(getResources().getString(R.string.delete))
-                        .setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        }).setNegativeButton(getResources().getString(R.string.delete), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
+                warningDialog.setOnYesButtonListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
                         logicManager.deleteSmsParseObject(object);
                         paFragmentManager.getFragmentManager().popBackStack();
                         paFragmentManager.displayFragment(new SmsParseMainFragment());
+                        warningDialog.dismiss();
                     }
                 });
-                builder.create().show();
+                warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        warningDialog.dismiss();
+                    }
+                });
+                warningDialog.setText(getResources().getString(R.string.delete));
+                warningDialog.show();
             }
         });
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvSmsParseInfo);
@@ -130,34 +135,37 @@ public class SMSParseInfoFragment extends Fragment {
             view.deleteImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setMessage(getResources().getString(R.string.delete))
-                            .setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            }).setNegativeButton(getResources().getString(R.string.delete), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
+                    warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            warningDialog.dismiss();
+                        }
+                    });
+                    warningDialog.setOnYesButtonListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                             logicManager.deleteSmsParseSuccess(successList.get(position));
                             notifyDataSetChanged();
                             paFragmentManager.getFragmentManager().popBackStack();
                             paFragmentManager.displayFragment(new SmsParseMainFragment());
+                            warningDialog.dismiss();
                         }
                     });
-                    builder.create().show();
+                    warningDialog.setText(getResources().getString(R.string.delete));
+                    warningDialog.show();
                 }
             });
             if (successList.get(position).getIsSuccess()) {
                 view.linearLayout.setVisibility(View.GONE);
                 view.tvAmount.setText("" + successList.get(position).getAmount()
                         + successList.get(position).getCurrency().getAbbr());
-                view.tvType.setText(successList.get(position).getType() == PocketAccounterGeneral.INCOME ? "income" : "expense");
+                view.tvType.setText(successList.get(position).getType() ==
+                        PocketAccounterGeneral.INCOME ? getResources().getString(R.string.income) : getResources().getString(R.string.expanse));
             } else {
                 view.linearLayout.setVisibility(View.VISIBLE);
-                view.tvAmount.setText("not success");
+                view.tvAmount.setText(R.string.no_success);
                 view.tvAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
-                view.tvType.setText("not parsing");
+                view.tvType.setText(R.string.no_parsing);
                 view.thisExpance.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -176,7 +184,6 @@ public class SMSParseInfoFragment extends Fragment {
         private List<String> smsBodyParse(String body) {
             List<String> words = new ArrayList<>();
             String[] strings = body.split(" ");
-
             for (String s : strings) {
                 if (s.split(" ").length == 1 && s.split("\n").length == 1) {
                     words.add(s);
@@ -302,9 +309,9 @@ public class SMSParseInfoFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (posAmount == -1) {
-                        Toast.makeText(getContext(), "Choose amount", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
                     } else if (posIncExp == -1) {
-                        Toast.makeText(getContext(), "Choose " + (type ? "income " : "expance " + "key"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),  (type ? "Choose income key" : "Choose expance key"), Toast.LENGTH_SHORT).show();
                     } else {
                         for (int i = 0; i < strings.size(); i++) {
                             strings.set(i, strings.get(i).trim());

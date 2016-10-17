@@ -47,6 +47,7 @@ import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.utils.DatePicker;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.io.FileInputStream;
@@ -81,6 +82,8 @@ public class BorrowFragment extends Fragment {
     DaoSession daoSession;
     @Inject
     DataCache dataCache;
+    @Inject
+    WarningDialog warningDialog;
     DebtBorrowDao debtBorrowDao;
     AccountDao accountDao;
     TextView ifListEmpty;
@@ -348,17 +351,10 @@ public class BorrowFragment extends Fragment {
                                             tek = true;
                                         if (!person.getCalculate()) tek = true;
 
-                                        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                                         final String finalAc = ac;
-                                        builder.setMessage(getResources().getString(R.string.incorrect_pay))
-                                                .setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface d, int id) {
-                                                        d.dismiss();
-                                                        dialog.dismiss();
-                                                    }
-                                                }).setNegativeButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface d, int id) {
-                                                d.cancel();
+                                        warningDialog.setOnYesButtonListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
                                                 if (person.getCalculate()) {
                                                     Recking recking = new Recking(date,
                                                             Double.parseDouble(enterPay.getText().toString()),
@@ -402,8 +398,14 @@ public class BorrowFragment extends Fragment {
                                                 dataCache.updateAllPercents();
                                             }
                                         });
+                                        warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                warningDialog.dismiss();
+                                            }
+                                        });
                                         if (tek) {
-                                            builder.create().show();
+                                            warningDialog.show();
                                         }
                                     } else {
                                         Recking recking = null;
