@@ -42,6 +42,7 @@ import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
+import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.RootCategory;
 import com.jim.pocketaccounter.database.SubCategory;
@@ -57,6 +58,7 @@ import com.jim.pocketaccounter.widget.WidgetKeys;
 import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import org.greenrobot.greendao.AbstractDao;
+import org.greenrobot.greendao.database.Database;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -587,7 +589,14 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                 final SQLiteDatabase current = SQLiteDatabase.openDatabase(currentDB.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
                 SQLiteDatabase received = SQLiteDatabase.openDatabase(backupDB.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
                 if (current.getVersion() > received.getVersion()) {
+                    DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "pocketaccounter-db", null);
+                    Database sqLiteDatabase= helper.getWritableDb();
+                    DaoMaster daoMaster= new DaoMaster(sqLiteDatabase);
+                    daoSession= daoMaster.newSession();
+                    daoMaster.dropAllTables(sqLiteDatabase, true);
+                    daoMaster.createAllTables(sqLiteDatabase, true);
                     CommonOperations.migrateDatabase(this,backupDB.getAbsolutePath(),daoSession,sharedPreferences);
+                    daoSession.clear();
                 }
                 else {
                     File currentDB1 = new File(backupDB.getAbsolutePath());

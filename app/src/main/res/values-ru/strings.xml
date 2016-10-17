@@ -17,13 +17,13 @@
         <item>Интервал</item>
     </string-array>
     <string-array name="week_day_auto">
-        <item>Mon</item>
-        <item>Tue</item>
-        <item>Wed</item>
-        <item>Thu</item>
-        <item>Fri</item>
-        <item>Sat</item>
-        <item>Sun</item>
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+        <item>Вс</item>
     </string-array>
     <string-array name="date_picker_period_spinner">
         <item>This Month</item>
@@ -946,7 +946,7 @@
     <string name="borrow_statistics">Дал в долг</string>
     <string name="borrow_recking_statistics">Вернул долг</string>
     <string name="debt_statistics">Взял в долг</string>
-    <string name="debt_recking_statistics">Вернули долг</string>
+    <string name="debt_recking_statistics">Возвращенный долг</string>
     <string name="pay">Оплатить</string>
     <string name="cancel">Отмена</string>
     <string name="repaid">Завершено</string>
@@ -1164,7 +1164,7 @@
     <string name="no_calc_in_balance">Не учитывать в балансе</string>
     <string name="calc_in_balance">Учитывать в балансе</string>
     <string name="delete_question">Удалить?</string>
-    <string name="by">"Через:"</string>
+    <string name="by">Через:</string>
     <string name="pay_daet">"Дата выплаты:  "</string>
     <string name="information">Информация</string>
     <string name="phone_number">Телефонный номер</string>
@@ -1371,17 +1371,17 @@
     <string name="transfer">Трансфер денег</string>
     <string name="limit_interval">Интервал лимита</string>
     <string name="such_account_name_exists_error">Счет с таким названием уже существует!!!</string>
-    <string name="none_zero_account">Не минусовой счет</string>
+    <string name="none_zero_account">Не отрицательный счет</string>
     <string name="operations">Операции</string>
     <string name="add_subcategory">Добавить подкатегорию</string>
     <string name="such_subcat_exist">Подкатекория с таким название уже существует!</string>
     <string name="purposes">Цели</string>
     <string name="earn">Копилка</string>
     <string name="period">Период</string>
-    <string name="none_minus_account_warning">Счет не может быть минусовым!</string>
+    <string name="none_minus_account_warning">Счет не может быть отрицательным!</string>
     <string name="add_category">Добавить категорию</string>
-    <string name="debt_borrow_list_is_empty">Список долгов и займов пуст!</string>
-    <string name="credit_list_is_empty">Список кредитов пуст!</string>
+    <string name="debt_borrow_list_is_empty">Добавьте долг</string>
+    <string name="credit_list_is_empty">Добавьте кредит</string>
     <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
     <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
     <!--operations-->
@@ -1462,67 +1462,67 @@
         <item>icons_412</item>
         <item>icons_413</item>
     </string-array>
-    <string name="accountdo">Account:</string>
-    <string name="balance_invis">Balance detials invisible</string>
-    <string name="borrow_arch">BORROW in Archive</string>
-    <string name="borrow_com">This Borrow included in the balance. But now the record in archive</string>
-    <string name="borrow_coment_incl">This Borrow Not included in the balance</string>
-    <string name="borrow_comment">This Borrow included in the balance</string>
-    <string name="borrow_comment_not_icl_arch">This Borrow Not included in the balance. But now the record in archive</string>
-    <string name="borrow_reckings_var">Borrow recking</string>
-    <string name="borrow_var">Borrow</string>
+    <string name="accountdo">Счет:</string>
+    <string name="balance_invis">Не показывать баланс</string>
+    <string name="borrow_arch">Долг в архиве</string>
+    <string name="borrow_com">Данный долг учитывается в балансе, но находится в архиве.</string>
+    <string name="borrow_coment_incl">Данный долг не учитывается в балансе</string>
+    <string name="borrow_comment">Данный долг учитывается в балансе</string>
+    <string name="borrow_comment_not_icl_arch">Данный долг не учитывается в балансе, но находится в архиве.</string>
+    <string name="borrow_reckings_var">Запись долга</string>
+    <string name="borrow_var">Долг</string>
     <string name="choose_type_p">Выберите операцию</string>
-    <string name="count_pages">Count pages</string>
-    <string name="cred_arch">Credit Archive</string>
-    <string name="cred_include_bal">This credit include the balance</string>
-    <string name="cred_not_include_bal">This Credit Not include the balance</string>
+    <string name="count_pages">Количество страниц</string>
+    <string name="cred_arch">Архив</string>
+    <string name="cred_include_bal">Кредит учитывается в балансе</string>
+    <string name="cred_not_include_bal">Кредит не учитывается в балансе</string>
     <string name="credit_reckings_var">Credit recking</string>
-    <string name="credit_var">Credit</string>
-    <string name="date_with_two_dots">Date:</string>
-    <string name="debt_com">This Debt included in the balance. But now the record in archive</string>
-    <string name="debt_coment">This Debt included in the balance</string>
-    <string name="debt_comment_not_icluded">This Debt Not included in the balance. But now the record in archive</string>
-    <string name="debt_arch">Debt in Archive</string>
-    <string name="debt_comment_to">This Debt Not included in the balance</string>
-    <string name="debt_reckings_var">Debt recking</string>
-    <string name="debt_var">Debt</string>
-    <string name="export_exel">Export Exel</string>
-    <string name="filter">Filter</string>
-    <string name="how_much_pages_you_need">How much pages you need?</string>
-    <string name="in_window_expense_top_window">In window Expenses (top window)</string>
-    <string name="in_windows_incomes_bottom_window">In windows Incomes (bottom window)</string>
-    <string name="include_balance">This Credit included in the balance. But now the record in archive</string>
+    <string name="credit_var">Кредит</string>
+    <string name="date_with_two_dots">Дата:</string>
+    <string name="debt_com">Долг учитывается в балансе, но находится в архиве</string>
+    <string name="debt_coment">Долг учитывается в балансе</string>
+    <string name="debt_comment_not_icluded">Долг не учитывается в балансе и находится в архиве</string>
+    <string name="debt_arch">Долг в архиве</string>
+    <string name="debt_comment_to">Долг не учитывается в балансе</string>
+    <string name="debt_reckings_var">Запись долга</string>
+    <string name="debt_var">Долг</string>
+    <string name="export_exel">Экспорт в Excel</string>
+    <string name="filter">Фильтр</string>
+    <string name="how_much_pages_you_need">Установите количество страниц</string>
+    <string name="in_window_expense_top_window">Количество страниц (расходы)</string>
+    <string name="in_windows_incomes_bottom_window">Количество страниц (доходы)</string>
+    <string name="include_balance">Кредит учитывается в балансе, но находится в архиве</string>
     <string name="limit_page">Limit count must be between 1 and 10</string>
-    <string name="minusable_account">Счет может быть минусовым</string>
-    <string name="none_minusable_account">Не минусовой счет</string>
-    <string name="not_exist">Not exist</string>
+    <string name="minusable_account">Счет может быть отрицательным</string>
+    <string name="none_minusable_account">Не отрицательный счет</string>
+    <string name="not_exist">Не существует</string>
     <string name="not_set">Не установлен</string>
-    <string name="pages_about">Expanse and Income pages</string>
-    <string name="simple_recking">Дневной расчет</string>
-    <string name="some_credit">This Credit Not included in the balance. But now the record in archive</string>
-    <string name="to_earn">В копилку</string>
+    <string name="pages_about">Страницы расходов и доходов</string>
+    <string name="simple_recking">Расходы, доходы</string>
+    <string name="some_credit">Кредит не учитывается в балансе и находится в архиве</string>
+    <string name="to_earn">Накопить</string>
     <string name="type">Type:</string>
     <string name="whole_day_datas_deleting">Записи за текущий день будут удалены!</string>
     <string name="search">Поиск</string>
-    <string name="account_for_parsing">Account for parsing:</string>
-    <string name="all_expense">All expense:</string>
-    <string name="all_incomes">All incomes:</string>
-    <string name="ammount_of_operation">Ammount of operation in this message :</string>
-    <string name="income_decide_with_static_word">Income decide with static word :</string>
-    <string name="info_toliq">Information</string>
-    <string name="it_is_expense">It is Exanpse</string>
-    <string name="it_is_income">It is Income</string>
-    <string name="obyasneniya_pro_parsing">Bu joyda oyyasneniya ketadi buyoda nima   qilinvotgani i bu narsa nimaga  kereligi(sms key words dialogg)</string>
-    <string name="processed">Processed:</string>
+    <string name="account_for_parsing">Счет для парсинга:</string>
+    <string name="all_expense">Все расходы:</string>
+    <string name="all_incomes">Все доходы:</string>
+    <string name="ammount_of_operation">Счет для операции:</string>
+    <string name="income_decide_with_static_word">Выберите ключевое слово (доход)</string>
+    <string name="info_toliq">Информация:</string>
+    <string name="it_is_expense">Доход</string>
+    <string name="it_is_income">Расход</string>
+    <string name="obyasneniya_pro_parsing">Для точности определения распознования СМС сообщений выберите слово определяющее доход или расход, а также сумму!</string>
+    <string name="processed">Обработано:</string>
     <string name="select_word_for_parsing">Выберите слово для парсинга</string>
-    <string name="which_type_is_it">Which type is it?</string>
-    <string name="from_sms">from SMS</string>
+    <string name="which_type_is_it">Определите тип</string>
+    <string name="from_sms">СМС лист</string>
     <string name="do_you_want_to_delete">Вы действительно хотите удалить?</string>
     <string name="please_type">Искать слово</string>
     <string name="cant_find">Не найдено </string>
     <string name="your_purpose">Ваша цель: </string>
     <string name="enter_the_title">Введите название</string>
-    <string name="accumulation">Накопление</string>
+    <string name="accumulation">Накопления</string>
     <string name="enter_the_amount">Введите сумму</string>
     <string name="term_of_purpose">Срок накопления</string>
     <string name="duration">Продолжительность</string>
@@ -1530,7 +1530,7 @@
     <string name="left_acomuleted">Оставшаяся сумма:</string>
     <string name="god_and_years">год</string>
     <string name="let_and_years">лет</string>
-    <string name="purpose_list_empty">Список целей пуст!</string>
+    <string name="purpose_list_empty">Добавьте цель</string>
     <string name="purpose_ammount">Сумма цели:</string>
     <string name="report_by_account_title">Отчет по счетам</string>
     <string name="saved_money">Накопленная сумма</string>
@@ -1547,8 +1547,8 @@
     <string name="sync_suc">Синхронизация выполнена успешно</string>
     <string name="transfer_isnt_done">Перевод не осуществлен!</string>
     <string name="years">год</string>
-    <string name="credit_arcive_are_empty">Список архива пуст!</string>
-    <string name="credit_are_empty">Список кредитов пуст!</string>
+    <string name="credit_arcive_are_empty">Список архивов пуст!</string>
+    <string name="credit_are_empty">Добавьте кредит</string>
     <string name="choose_different_accounts">Выберите разные счета...</string>
     <string name="chooseroot">Choice root</string>
     <string name="category_one">Категория</string>
@@ -1559,7 +1559,7 @@
     <string name="repair_">Восстановить</string>
     <string name="reciver_degree">Получатель:</string>
     <string name="plus_add">+ Добавить</string>
-    <string name="please_confirm_contact_access">please confirm Contacts access</string>
+    <string name="please_confirm_contact_access">Разрешите чтение контактов</string>
     <string name="periods">Периоды</string>
     <string name="period_">Периоды :</string>
     <string name="pay_upper">Оплатить</string>
@@ -1567,35 +1567,53 @@
     <string name="operations_will_calculate">Операции учитываются в балансе</string>
     <string name="number_or_name_of_sender">(номер или имя отправителя)</string>
     <string name="note">Заметка</string>
-    <string name="not_processed_degree">Not processed:</string>
-    <string name="not_identefied_messages">Not identefied messages</string>
+    <string name="not_processed_degree">Не обработано:</string>
+    <string name="not_identefied_messages">Не опознанные сообщения</string>
     <string name="no_message">нет сообщений</string>
     <string name="next">Следующий</string>
     <string name="nachalo">Начало</string>
-    <string name="nachislenie">Nalichnie</string>
+    <string name="nachislenie">Наличные</string>
     <string name="months">Месяцы</string>
     <string name="month_days">Дни месяца</string>
     <string name="konets">Конец</string>
     <string name="key_words">Ключевые слова</string>
-    <string name="income_degree">Приход:</string>
+    <string name="income_degree">Доход:</string>
     <string name="god">Год</string>
-    <string name="for_income">For Income :</string>
-    <string name="for_expance">For Expence :</string>
-    <string name="for_amount">For Amount :</string>
-    <string name="enter_value">Enter Value</string>
-    <string name="enter_date">Enter Date</string>
-    <string name="end_day">end day</string>
-    <string name="contact_access_needed">Contacts access needed</string>
-    <string name="comment_eg">Comment ....</string>
-    <string name="comment_degree">"Comment : "</string>
-    <string name="comment_">Comment</string>
-    <string name="choose_category">Choose Category</string>
-    <string name="choise_account">Choise account :</string>
-    <string name="all_operations">All operations</string>
-    <string name="add_keywords_in_sms_parsing">Add keywords in sms parsing</string>
-    <string name="add_key_word">(add key word)</string>
-    <string name="account_of_operation">Account of operation</string>
-    <string name="account_for_sms_parsing">Account for sms parsing :</string>
-    <string name="account_">Account :</string>
-    <string name="week_days">Week days</string>
+    <string name="for_income">Доход:</string>
+    <string name="for_expance">Расход:</string>
+    <string name="for_amount">Сумма:</string>
+    <string name="enter_value">Введите значение</string>
+    <string name="enter_date">Введите дату</string>
+    <string name="end_day">Крайняя дата</string>
+    <string name="contact_access_needed">Разрешите чтение контактов</string>
+    <string name="comment_eg">Комментарий ....</string>
+    <string name="comment_degree">Комментарий:</string>
+    <string name="comment_">Комментарий</string>
+    <string name="choose_category">Выберите категорию</string>
+    <string name="choise_account">Выберите счет:</string>
+    <string name="all_operations">Все операции</string>
+    <string name="add_keywords_in_sms_parsing">Добавить ключевое слово</string>
+    <string name="add_key_word">(добавить ключевое слово)</string>
+    <string name="account_of_operation">Счет для операции</string>
+    <string name="account_for_sms_parsing">Счет:</string>
+    <string name="account_">Счет:</string>
+    <string name="week_days">Дни недели</string>
+    <string name="add_auto_operation">Добавьте операцию</string>
+    <string name="dates_not_choosen_error">Выберите дату</string>
+    <string name="select_category_error">Выберите категорию</string>
+    <string name="illegal_name_error">Повторяющаяся операция!</string>
+    <string name="amount_of_payment">Сумма для операции</string>
+    <string name="debt_is_empty">Добавьте долги</string>
+    <string name="archive_is_empty">Список архивов пуст!</string>
+    <string name="borrow_is_empty">Добавьте долги</string>
+    <string name="start_day">Начальная дата</string>
+    <string name="such_name_exists">Такое название уже существует!</string>
+    <string name="summa">Сумма</string>
+    <string name="widget">Виджет</string>
+    <string name="sms_not_exist">Смс сообщения отсутсвуют</string>
+    <string name="main_window">Главное окно</string>
+    <string name="cancelb">Отмена</string>
+    <string name="choose_amount">Сумма не выбрана</string>
+    <string name="no_parsing">Не опознано</string>
+    <string name="no_success">Не обработано</string>
 </resources>

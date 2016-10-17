@@ -64,32 +64,36 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/ten_dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
                     <RadioButton
                         android:id="@+id/rbnSmsParseAddAll"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:checked="true"
                         android:text="@string/all_operations"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="@dimen/twelve_dp" />
+                        android:textSize="@dimen/twelve_dp"
+                        android:layout_gravity="center_vertical"/>
                     <RadioButton
                         android:id="@+id/rbnSmsParseAddIncome"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/only_income"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="@dimen/twelve_dp" />
+                        android:textSize="@dimen/twelve_dp"
+                        android:layout_gravity="center_vertical"/>
                     <RadioButton
                         android:id="@+id/rbnSmsParseAddExpance"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/only_expense"
                         android:textColor="@color/black_for_glavniy_text"
-                        android:textSize="@dimen/twelve_dp" />
+                        android:textSize="@dimen/twelve_dp"
+                        android:layout_gravity="center_vertical"/>
                 </RadioGroup>
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -287,7 +291,7 @@
                         android:elevation="0dp"
                         android:gravity="center_vertical"
                         android:paddingTop="@dimen/two_dp"
-                        android:text="@string/account_for_sms_parsing"
+                        android:text="@string/choise_account"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/fourteen_dp" />
                     <Spinner
@@ -347,7 +351,7 @@
                         android:elevation="0dp"
                         android:gravity="center_vertical"
                         android:paddingTop="@dimen/two_dp"
-                        android:text="@string/operations_will_calculate"
+                        android:text="@string/choose_currencies"
                         android:textColor="@color/black_for_glavniy_text"
                         android:textSize="@dimen/fourteen_dp" />
                     <Spinner

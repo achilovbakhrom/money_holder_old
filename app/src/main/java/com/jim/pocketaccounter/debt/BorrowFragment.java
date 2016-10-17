@@ -172,10 +172,10 @@ public class BorrowFragment extends Fragment {
             } else {
                 //TODO Har bittasini zapisi bomi yomi tekshirish kere
                 String isEmpty = "";
-                if (TYPE == DebtBorrow.BORROW) isEmpty = "Borrow ";
-                else if (TYPE == DebtBorrow.DEBT) isEmpty = "Debt ";
-                else isEmpty = "Archive ";
-                ifListEmpty.setText(isEmpty + "is empty");
+                if (TYPE == DebtBorrow.BORROW) isEmpty = getString(R.string.borrow_is_empty);
+                else if (TYPE == DebtBorrow.DEBT) isEmpty = getString(R.string.debt_is_empty);
+                else isEmpty = getString(R.string.archive_is_empty);
+                ifListEmpty.setText(isEmpty);
                 ifListEmpty.setVisibility(View.VISIBLE);
             }
         }

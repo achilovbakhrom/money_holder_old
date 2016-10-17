@@ -237,17 +237,17 @@ public class AddAutoMarketFragment extends Fragment {
 
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setSpinnerVisibility(View.GONE);
-        toolbarManager.setTitle("Adding");
+        toolbarManager.setTitle(getResources().getString(R.string.addedit));
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 daysAdapter.getResult();
                 if (amount.getText().toString().isEmpty()) {
-                    amount.setError("Enter amount");
+                    amount.setError(getResources().getString(R.string.enter_amount_error));
                 } else if (sequence.isEmpty()) {
                     amount.setError(null);
-                    Toast.makeText(getContext(), "Choose dates", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.dates_not_choosen_error, Toast.LENGTH_SHORT).show();
                 } else if (autoMarket != null) {
                     amount.setError(null);
                     if (category_item != null && subCategory !=null) {
@@ -263,7 +263,7 @@ public class AddAutoMarketFragment extends Fragment {
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new AutoMarketFragment());
                 } else if (selectCategory == -1 && selectSubCategory == -1) {
-                    Toast.makeText(getContext(), "select category", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.select_category_error, Toast.LENGTH_SHORT).show();
                 } else {
                     amount.setError(null);
                     AutoMarket autoMarket = new AutoMarket();
@@ -280,7 +280,7 @@ public class AddAutoMarketFragment extends Fragment {
                     autoMarket.setDates(sequence.substring(0, sequence.length() - 1));
                     switch (logicManager.insertAutoMarket(autoMarket)) {
                         case LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS: {
-                            Toast.makeText(getContext(), "this have category market", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.illegal_name_error, Toast.LENGTH_SHORT).show();
                             break;
                         }
                         case LogicManagerConstants.SAVED_SUCCESSFULL: {

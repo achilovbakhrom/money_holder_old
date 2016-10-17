@@ -31,6 +31,8 @@ import com.jim.pocketaccounter.report.IncomeExpanseDayDetails;
 import com.jim.pocketaccounter.report.ReportByIncomeExpanseDialogAdapter;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 
+import org.w3c.dom.Text;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,14 +47,24 @@ public class ReportByIncomeExpanseBarFragment extends Fragment implements OnChar
     private Calendar begin, end;
     private BarReportView reportView;
     private Dialog dialog;
+    private TextView tvReportIncomeExpanseNoDatas;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         View rootView = inflater.inflate(R.layout.report_bar, container, false);
         llReportBarMain = (LinearLayout) rootView.findViewById(R.id.llReportBarMain);
+        tvReportIncomeExpanseNoDatas = (TextView) rootView.findViewById(R.id.tvReportIncomeExpanseNoDatas);
         init();
         reportView = new BarReportView(getContext(), begin, end);
+        if (reportView.getReportIncomeExpanceDatas().isEmpty()) {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.VISIBLE);
+            reportView.setVisibility(View.GONE);
+        }
+        else {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.GONE);
+            reportView.setVisibility(View.VISIBLE);
+        }
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         reportView.setLayoutParams(lp);
         reportView.getBarChart().setOnChartValueSelectedListener(this);
@@ -65,6 +77,14 @@ public class ReportByIncomeExpanseBarFragment extends Fragment implements OnChar
         reportView.setBeginTime(this.begin);
         reportView.setEndTime(this.end);
         reportView.makeReport();
+        if (reportView.getReportIncomeExpanceDatas().isEmpty()) {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.VISIBLE);
+            reportView.setVisibility(View.GONE);
+        }
+        else {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.GONE);
+            reportView.setVisibility(View.VISIBLE);
+        }
         reportView.drawReport();
         llReportBarMain.invalidate();
     }
@@ -106,14 +126,16 @@ public class ReportByIncomeExpanseBarFragment extends Fragment implements OnChar
                     if (row.getDetails().get(i).getCategory().getType() == PocketAccounterGeneral.INCOME)
                         result.add(row.getDetails().get(i));
                 }
-                openDialog(row.getDate(), result, row.getTotalIncome(), dataSetIndex);
+                if (row.getTotalIncome() != 0.0d)
+                    openDialog(row.getDate(), result, row.getTotalIncome(), dataSetIndex);
                 break;
             case 1:
                 for (int i=0; i<row.getDetails().size(); i++) {
                     if (row.getDetails().get(i).getCategory().getType() == PocketAccounterGeneral.EXPENSE)
                         result.add(row.getDetails().get(i));
                 }
-                openDialog(row.getDate(), result, row.getTotalExpanse(), dataSetIndex);
+                if (row.getTotalExpanse() != 0.0d)
+                    openDialog(row.getDate(), result, row.getTotalExpanse(), dataSetIndex);
                 //expanse
                 break;
             case 2:

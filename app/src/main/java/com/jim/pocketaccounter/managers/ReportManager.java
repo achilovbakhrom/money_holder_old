@@ -950,6 +950,7 @@ public class ReportManager {
             result.add(row);
             recordBegin.add(Calendar.DAY_OF_MONTH, 1);
         }
+
         return  result;
     }
 }

@@ -60,7 +60,7 @@ public class SMSParseInfoFragment extends Fragment {
 
     private SmsParseObject object;
     private RecyclerView recyclerView;
-
+    private TextView ifListEmpty;
     public SMSParseInfoFragment(SmsParseObject object) {
         this.object = object;
     }
@@ -71,6 +71,7 @@ public class SMSParseInfoFragment extends Fragment {
         warningDialog = new WarningDialog(getContext());
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setImageToSecondImage(R.drawable.trash);
+        toolbarManager.setSubtitle("");
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +94,7 @@ public class SMSParseInfoFragment extends Fragment {
                 warningDialog.show();
             }
         });
+        ifListEmpty = (TextView) rootView.findViewById(R.id.ifListEmpty);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvSmsParseInfo);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -119,6 +121,13 @@ public class SMSParseInfoFragment extends Fragment {
         public MyAdapter() {
             successList = daoSession.getSmsParseSuccessDao().queryBuilder().
                     where(SmsParseSuccessDao.Properties.SmsParseObjectId.eq(object.getId())).list();
+
+            if (successList.isEmpty()) {
+                ifListEmpty.setVisibility(View.VISIBLE);
+            }
+            else {
+                ifListEmpty.setVisibility(View.GONE);
+            }
             incomeKeys = new ArrayList<>();
             expanceKeys = new ArrayList<>();
             amountKeys = new ArrayList<>();

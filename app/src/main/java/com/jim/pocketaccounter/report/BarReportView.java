@@ -60,10 +60,21 @@ public class BarReportView extends LinearLayout {
         leftAxis.setSpaceTop(30f);
         barChart.getAxisRight().setEnabled(false);
         sortReportIncomeExpance = (ArrayList<IncomeExpanseDataRow>) reportManager.getIncomeExpanceReport(begin,end);
+        for (int i=0; i<sortReportIncomeExpance.size(); i++) {
+            if (sortReportIncomeExpance.get(i).getTotalIncome() == 0.0d &&
+                    sortReportIncomeExpance.get(i).getTotalExpanse() == 0.0d) {
+                sortReportIncomeExpance.remove(i);
+                i--;
+            }
+        }
+
         LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         barChart.setLayoutParams(lp);
         addView(barChart);
         drawReport();
+    }
+    public List<IncomeExpanseDataRow> getReportIncomeExpanceDatas() {
+        return sortReportIncomeExpance;
     }
     public void setBeginTime(Calendar begin) {
         this.begin = (Calendar) begin.clone();
@@ -73,6 +84,13 @@ public class BarReportView extends LinearLayout {
     }
     public void makeReport() {
         sortReportIncomeExpance = (ArrayList<IncomeExpanseDataRow>) reportManager.getIncomeExpanceReport(begin,end);
+        for (int i=0; i<sortReportIncomeExpance.size(); i++) {
+            if (sortReportIncomeExpance.get(i).getTotalIncome() == 0.0d &&
+                    sortReportIncomeExpance.get(i).getTotalExpanse() == 0.0d) {
+                sortReportIncomeExpance.remove(i);
+                i--;
+            }
+        }
     }
     public BarChart getBarChart() {return barChart;}
     public BarReportView(Context context, AttributeSet attrs) {

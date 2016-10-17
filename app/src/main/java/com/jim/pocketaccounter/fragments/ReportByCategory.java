@@ -66,15 +66,8 @@ public class ReportByCategory extends Fragment {
         TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tlReportByCategoryTab);
         final ReportByCategoryIncomesFragment incomesFragment = new ReportByCategoryIncomesFragment();
         final ReportByCategoryExpansesFragment expansesFragment = new ReportByCategoryExpansesFragment();
-
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-//        PocketAccounter.toolbar.findViewById(R.id.ivToolbarExcel).setVisibility(View.GONE);
-//        PocketAccounter.toolbar.findViewById(R.id.spToolbar).setVisibility(View.GONE);
-//        ivToolbarMostRight = (ImageView) PocketAccounter.toolbar.findViewById(R.id.ivToolbarMostRight);
-//        ivToolbarMostRight.setImageResource(R.drawable.ic_filter);
         toolbarManager.setImageToSecondImage(R.drawable.ic_filter);
-//        ivToolbarMostRight.setVisibility(View.VISIBLE);
-//        filterDialog = new FilterDialog(getContext());
         filterDialog.setOnDateSelectedListener(new FilterSelectable() {
             @Override
             public void onDateSelected(Calendar begin, Calendar end) {
@@ -87,19 +80,11 @@ public class ReportByCategory extends Fragment {
                 filterDialog.show();
             }
         });
-//        ivToolbarMostRight.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                filterDialog.show();
-//            }
-//        });
         ArrayList<Fragment> list = new ArrayList<>();
-        list.add(incomesFragment);
         list.add(expansesFragment);
+        list.add(incomesFragment);
         toolbarManager.setTitle(getResources().getString(R.string.report_by_categories));
         toolbarManager.setSubtitle("");
-//        PocketAccounter.toolbar.setTitle(R.string.report_by_categories);
-//        PocketAccounter.toolbar.setSubtitle("");
         vpReportByCategory.setAdapter(new MyViewPagerAdapter(paFragmentManager.getFragmentManager(), list));
         tabLayout.setupWithViewPager(vpReportByCategory);
         vpReportByCategory.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -146,7 +131,7 @@ public class ReportByCategory extends Fragment {
             return 2;
         }
         public CharSequence getPageTitle(int position) {
-            if (position == 0)
+            if (position == 1)
                 return getResources().getString(R.string.income);
             return getResources().getString(R.string.expanse);
         }

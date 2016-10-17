@@ -19,7 +19,7 @@
     <Preference
         android:layout="@layout/my_pref_layout"
         android:selectable="false"
-        android:title="Main window" />
+        android:title="@string/main_window" />
     <Preference
         android:key="mainwind"
         android:summary="@string/pages_about"
@@ -108,7 +108,7 @@
     <Preference
         android:layout="@layout/my_pref_layout"
         android:selectable="false"
-        android:title="Widget" />
+        android:title="@string/widget" />
     <CheckBoxPreference
         android:defaultValue="@bool/widget_def"
         android:key="securewidget"

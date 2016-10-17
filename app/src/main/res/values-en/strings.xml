@@ -586,7 +586,7 @@
     <string name="choose_date">Select date</string>
     <string name="enter_exchange">Enter the exchange rate</string>
     <string name="main_currency_edit">Base currency</string>
-    <string name="costs_selected_all_warning">The list should remain one element</string>
+    <string name="costs_selected_all_warning">In the list should remain one element</string>
     <string name="category">Categories</string>
     <string name="divide_null">Dividing by zero!</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -595,7 +595,7 @@
     <string name="this_period_ends">End of the period:</string>
     <string name="verall_debt">Credit balance:</string>
     <string name="in_this_month_should_pay">Payments this month:</string>
-    <string name="credit_name">Credit Product Name</string>
+    <string name="credit_name">Credit product Name</string>
     <string name="home">Home</string>
     <string name="network">Contact</string>
     <string name="clothes">Clothing</string>
@@ -1164,9 +1164,9 @@
     <string name="debt_delete_meessage">The entry is removed from the balance.</string>
     <string name="delete">Delete</string>
     <string name="no_calc_in_balance">Do not be taken into account in the balance.</string>
-    <string name="calc_in_balance">Consider in the balance</string>
+    <string name="calc_in_balance">Consider in balance</string>
     <string name="delete_question">Delete?</string>
-    <string name="by">"Via:"</string>
+    <string name="by">Via:</string>
     <string name="pay_daet">"Date of payment:"</string>
     <string name="information">Info</string>
     <string name="phone_number">Phone number</string>
@@ -1265,7 +1265,7 @@
     <string name="sms_parse">SMS Parsing</string>
     <string name="all_transfer_operitions_you_can_see_bla_bla_bla_hullas_transactisiya_haqida">All money transfers are fixed in the balance</string>
     <string name="choose_type_sms">Select type of SMS</string>
-    <string name="curenncy_of_sms">Select the currency</string>
+    <string name="curenncy_of_sms">Select currency</string>
     <string name="from_f">From</string>
     <string name="key_for_parsing">Keywords for parsing</string>
     <string name="main_diagramm">Chart</string>
@@ -1301,7 +1301,7 @@
     <string name="about_operat">This option for choosing account to your SMS message</string>
     <string name="sync_and_backup">SYNC AND BACKUP</string>
 
-    <string name="default_settings">All settings and datas will destroy. Do you agree?</string>
+    <string name="default_settings">All settings and datas will be deleted. Do you agree?</string>
 
     <string name="sbrosit">Reset</string>
     <string name="sbrosit_about">All datas and settings will be deleted</string>
@@ -1369,43 +1369,43 @@
     <string name="savein">SAVE</string>
     <string name="ok_b">OK</string>
     <string name="must_be_one_currency">Must be at least one currency!</string>
-    <string name="replanish">To pay in</string>
+    <string name="replanish">Cash in</string>
     <string name="limit_not_setted">Limit no set</string>
-    <string name="transfer">Трансфер денег</string>
+    <string name="transfer">Transfer money</string>
     <string name="limit_interval">Interval of limit</string>
-    <string name="such_account_name_exists_error">Счет с таким названием уже существует!!!</string>
-    <string name="none_zero_account">None negative account</string>
-    <string name="operations">Операции</string>
+    <string name="such_account_name_exists_error">Account with such name is already exist!</string>
+    <string name="none_zero_account">Not a negative account</string>
+    <string name="operations">Operations</string>
     <string name="add_subcategory">Добавить подкатегорию</string>
     <string name="such_subcat_exist">Subcategory with such name is exists!</string>
-    <string name="purposes">Цели</string>
+    <string name="purposes">Purposes</string>
     <string name="earn">Saving box</string>
-    <string name="period">Период</string>
+    <string name="period">Period</string>
     <string name="none_minus_account_warning">Account cannot be negative!</string>
-    <string name="add_category">Добавить категорию</string>
-    <string name="debt_borrow_list_is_empty">Список долгов и займов пуст!</string>
-    <string name="credit_list_is_empty">Cridet list is empty!</string>
-    <string name="account_deleting_error">В системе должно быть хотя бы один счет!!!</string>
-    <string name="purpose_list_is_empty">Список целей пуст! Хотите добавить?</string>
+    <string name="add_category">Add category</string>
+    <string name="debt_borrow_list_is_empty">Add debt</string>
+    <string name="credit_list_is_empty">Add credit</string>
+    <string name="account_deleting_error">It must be at least one account!!!</string>
+    <string name="purpose_list_is_empty">Purpose list is empty! Do you want to add?</string>
     <!--operations-->
     <string-array name="operation_category">
-        <item>Выбрать из существующих</item>
-        <item>Создать новый</item>
+        <item>Choose from exist</item>
+        <item>Create new</item>
     </string-array>
-    <string-array name = "board_operation_names_long_press">
-        <item>Категория</item>
-        <item>Кредиты</item>
-        <item>Долги</item>
-        <item>Функция</item>
-        <item>Страница</item>
+    <string-array name="board_operation_names_long_press">
+        <item>Categories</item>
+        <item>Credits</item>
+        <item>Debts</item>
+        <item>Functions</item>
+        <item>Pages</item>
     </string-array>
     <string-array name="operation_names">
-        <item>Синхронизация с Google</item>
-        <item>Загрузка данных</item>
-        <item>Трансфер денег</item>
-        <item>Очистить данных за весь день</item>
-        <item>Вперед</item>
-        <item>Назад</item>
+        <item>Sync with Google</item>
+        <item>Load datas</item>
+        <item>Transfer money</item>
+        <item>Clear for the day</item>
+        <item>Next</item>
+        <item>Previous</item>
     </string-array>
     <string-array name="operation_ids">
         <item>sync</item>
@@ -1424,18 +1424,18 @@
         <item>icons_317</item>
     </string-array>
     <string-array name="page_names">
-        <item>Валюты</item>
-        <item>Категории</item>
-        <item>Счета</item>
-        <item>Цель</item>
-        <item>Автооперации</item>
-        <item>Кредиты</item>
-        <item>Долги</item>
-        <item>Отчет по счетам</item>
-        <item>Отчет по доходам и расходам</item>
-        <item>Отчет по категориям</item>
-        <item>SMS парсинг</item>
-        <item>Настройки</item>
+        <item>Currencies</item>
+        <item>Categories</item>
+        <item>Accounts</item>
+        <item>Purpose</item>
+        <item>Auto operations</item>
+        <item>Credits</item>
+        <item>Debts</item>
+        <item>Report by account</item>
+        <item>Report by income and expense</item>
+        <item>Report by category</item>
+        <item>SMS Parsing</item>
+        <item>Settings</item>
     </string-array>
     <string-array name="page_ids">
         <item>currency_page</item>
@@ -1466,60 +1466,60 @@
         <item>icons_413</item>
     </string-array>
     <string name="accountdo">Account:</string>
-    <string name="balance_invis">Balance detials invisible</string>
+    <string name="balance_invis">Dont show balance</string>
     <string name="borrow_arch">BORROW in Archive</string>
-    <string name="borrow_com">This Borrow included in the balance. But now the record in archive</string>
-    <string name="borrow_coment_incl">This Borrow Not included in the balance</string>
-    <string name="borrow_comment">This Borrow included in the balance</string>
-    <string name="borrow_comment_not_icl_arch">This Borrow Not included in the balance. But now the record in archive</string>
-    <string name="borrow_reckings_var">Borrow recking</string>
+    <string name="borrow_com">This debt is included in balance, but it is in archive!</string>
+    <string name="borrow_coment_incl">This debt is not included in balance</string>
+    <string name="borrow_comment">This debt is included in balance</string>
+    <string name="borrow_comment_not_icl_arch">This debt is not included in balance, but it is in archive!</string>
+    <string name="borrow_reckings_var">Debt record</string>
     <string name="borrow_var">Borrow</string>
     <string name="choose_type_p">Choose type action</string>
-    <string name="count_pages">Count pages</string>
-    <string name="cred_arch">Credit Archive</string>
-    <string name="cred_include_bal">This credit include the balance</string>
-    <string name="cred_not_include_bal">This Credit Not include the balance</string>
+    <string name="count_pages">Count of pages</string>
+    <string name="cred_arch">Archive</string>
+    <string name="cred_include_bal">This credit is included in balance</string>
+    <string name="cred_not_include_bal">This credit is not included in balance</string>
     <string name="credit_reckings_var">Credit recking</string>
     <string name="credit_var">Credit</string>
     <string name="date_with_two_dots">Date:</string>
-    <string name="debt_com">This Debt included in the balance. But now the record in archive</string>
-    <string name="debt_coment">This Debt included in the balance</string>
-    <string name="debt_comment_not_icluded">This Debt Not included in the balance. But now the record in archive</string>
-    <string name="debt_arch">Debt in Archive</string>
-    <string name="debt_comment_to">This Debt Not included in the balance</string>
-    <string name="debt_reckings_var">Debt recking</string>
+    <string name="debt_com">The debt is included in balance, but it is in archive</string>
+    <string name="debt_coment">The debt is included in balance</string>
+    <string name="debt_comment_not_icluded">The Debt is not included in the balance and is in archive</string>
+    <string name="debt_arch">Debt is in Archive</string>
+    <string name="debt_comment_to">This debt is not included in balance</string>
+    <string name="debt_reckings_var">Debt record</string>
     <string name="debt_var">Debt</string>
-    <string name="export_exel">Export Exel</string>
+    <string name="export_exel">Export Excel</string>
     <string name="filter">Filter</string>
     <string name="how_much_pages_you_need">How much pages you need?</string>
-    <string name="in_window_expense_top_window">In window Expenses (top window)</string>
-    <string name="in_windows_incomes_bottom_window">In windows Incomes (bottom window)</string>
-    <string name="include_balance">This Credit included in the balance. But now the record in archive</string>
+    <string name="in_window_expense_top_window">Count of pages (expenses)</string>
+    <string name="in_windows_incomes_bottom_window">Count of pages (incomes)</string>
+    <string name="include_balance">The credit is included in balance, but is in archive</string>
     <string name="limit_page">Limit count must be between 1 and 10</string>
-    <string name="minusable_account">Account cannot be negative</string>
-    <string name="none_minusable_account">None negative account</string>
+    <string name="minusable_account">Account can be negative</string>
+    <string name="none_minusable_account">Not a negative account</string>
     <string name="not_exist">Not exist</string>
     <string name="not_set">Not set</string>
     <string name="pages_about">Expanse and Income pages</string>
-    <string name="simple_recking">Daily recking</string>
-    <string name="some_credit">This Credit Not included in the balance. But now the record in archive</string>
-    <string name="to_earn">To saving box</string>
+    <string name="simple_recking">Expenses, incomes</string>
+    <string name="some_credit">The credit is not included in balance and is in archive</string>
+    <string name="to_earn">Save</string>
     <string name="type">Type:</string>
-    <string name="whole_day_datas_deleting">Записи за текущий день будут удалены!</string>
+    <string name="whole_day_datas_deleting">Records for current day will be deleted!</string>
     <string name="search">Search</string>
     <string name="account_for_parsing">Account for parsing:</string>
     <string name="all_expense">All expense:</string>
     <string name="all_incomes">All incomes:</string>
-    <string name="ammount_of_operation">Ammount of operation in this message :</string>
-    <string name="income_decide_with_static_word">Income decide with static word :</string>
+    <string name="ammount_of_operation">Amount of operation for message:</string>
+    <string name="income_decide_with_static_word">Select keyword(income)</string>
     <string name="info_toliq">Information</string>
-    <string name="it_is_expense">It is Exanpse</string>
-    <string name="it_is_income">It is Income</string>
-    <string name="obyasneniya_pro_parsing">Bu joyda oyyasneniya ketadi buyoda nima   qilinvotgani i bu narsa nimaga  kereligi(sms key words dialogg)</string>
+    <string name="it_is_expense">Expense</string>
+    <string name="it_is_income">Income</string>
+    <string name="obyasneniya_pro_parsing">For accuracy of SMS Parsing select a keyword for defining income or expense, and select sum</string>
     <string name="processed">Processed:</string>
     <string name="select_word_for_parsing">Select word for parsing</string>
-    <string name="which_type_is_it">Which type is it?</string>
-    <string name="from_sms">from SMS</string>
+    <string name="which_type_is_it">Set type</string>
+    <string name="from_sms">SMS list</string>
     <string name="do_you_want_to_delete">Do you really want to delete?</string>
     <string name="please_type">Search for word</string>
     <string name="cant_find">I can\'t find</string>
@@ -1533,8 +1533,8 @@
     <string name="left_acomuleted">Left amount:</string>
     <string name="god_and_years">years</string>
     <string name="let_and_years">years</string>
-    <string name="purpose_list_empty">Purpose list is empty</string>
-    <string name="purpose_ammount">Purpose amount:</string>
+    <string name="purpose_list_empty">Add purpose</string>
+    <string name="purpose_ammount">Purpose sum:</string>
     <string name="report_by_account_title">Report by accounts</string>
     <string name="saved_money">Cumulative sum:</string>
     <string name="auto_operations">Auto operations</string>
@@ -1550,7 +1550,7 @@
     <string name="sync_suc">Sync is successful</string>
     <string name="transfer_isnt_done">Transfer failed!</string>
     <string name="credit_arcive_are_empty">Archive list is empty</string>
-    <string name="credit_are_empty">Cridet list is empty</string>
+    <string name="credit_are_empty">Add credit</string>
     <string name="choose_different_accounts">Select difference accounts</string>
     <string name="chooseroot">Choice root</string>
     <string name="category_one">Category</string>
@@ -1561,7 +1561,7 @@
     <string name="repair_">Repair</string>
     <string name="reciver_degree">Reciver:</string>
     <string name="plus_add">+ Add</string>
-    <string name="please_confirm_contact_access">please confirm Contacts access</string>
+    <string name="please_confirm_contact_access">Please confirm contacts access</string>
     <string name="periods">Periods</string>
     <string name="period_">Periods :</string>
     <string name="pay_upper">PAY</string>
@@ -1571,33 +1571,51 @@
     <string name="note">Note</string>
     <string name="not_processed_degree">Not processed:</string>
     <string name="not_identefied_messages">Not identefied messages</string>
-    <string name="no_message">no messages</string>
+    <string name="no_message">no message</string>
     <string name="next">Next</string>
     <string name="nachalo">Begin</string>
-    <string name="nachislenie">Nalichnie</string>
+    <string name="nachislenie">Cash</string>
     <string name="months">Months</string>
-    <string name="month_days">Month days</string>
+    <string name="month_days">Monthdays</string>
     <string name="konets">End</string>
     <string name="key_words">Keywords</string>
     <string name="income_degree">Income:</string>
     <string name="god">Year</string>
-    <string name="for_income">For Income :</string>
-    <string name="for_expance">For Expence :</string>
-    <string name="for_amount">For Amount :</string>
-    <string name="enter_value">Enter Value</string>
-    <string name="enter_date">Enter Date</string>
-    <string name="end_day">end day</string>
+    <string name="for_income">Income:</string>
+    <string name="for_expance">Expence:</string>
+    <string name="for_amount">Amount:</string>
+    <string name="enter_value">Enter value</string>
+    <string name="enter_date">Set date</string>
+    <string name="end_day">End date</string>
     <string name="contact_access_needed">Contacts access needed</string>
     <string name="comment_eg">Comment ....</string>
-    <string name="comment_degree">"Comment : "</string>
+    <string name="comment_degree">"Comment: "</string>
     <string name="comment_">Comment</string>
-    <string name="choose_category">Choose Category</string>
-    <string name="choise_account">Choise account :</string>
+    <string name="choose_category">Select category</string>
+    <string name="choise_account">Select account:</string>
     <string name="all_operations">All operations</string>
     <string name="add_keywords_in_sms_parsing">Add keywords in sms parsing</string>
     <string name="add_key_word">(add key word)</string>
-    <string name="account_of_operation">Account of operation</string>
-    <string name="account_for_sms_parsing">Account for sms parsing :</string>
+    <string name="account_of_operation">Account for operation</string>
+    <string name="account_for_sms_parsing">Account:</string>
     <string name="account_">Account :</string>
-    <string name="week_days">Week days</string>
+    <string name="week_days">Weekdays</string>
+    <string name="add_auto_operation">Add an operation</string>
+    <string name="dates_not_choosen_error">Select date</string>
+    <string name="select_category_error">Select category</string>
+    <string name="illegal_name_error">Repeating operation!</string>
+    <string name="amount_of_payment">Sum for operation</string>
+    <string name="debt_is_empty">Add debts</string>
+    <string name="archive_is_empty">Archive list is empty!</string>
+    <string name="borrow_is_empty">Add debts</string>
+    <string name="start_day">Start date</string>
+    <string name="such_name_exists">Such name is already exist!</string>
+    <string name="summa">Sum</string>
+    <string name="widget">Widget</string>
+    <string name="sms_not_exist">SMS messages is not exist</string>
+    <string name="main_window">Main page</string>
+    <string name="cancelb">Cancel</string>
+    <string name="choose_amount">Amount is not choosen</string>
+    <string name="no_parsing">Not parsed</string>
+    <string name="no_success">Not processed</string>
 </resources>

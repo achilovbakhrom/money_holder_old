@@ -72,7 +72,7 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
     private TableView tvReportIncomeExpance;
     private List<IncomeExpanseDataRow> sortReportIncomeExpance;
     private Calendar begin, end;
-    private TextView tvTotalIncome, tvAverageIncome, tvTotalExpanse, tvAverageExpanse, tvTotalProfit, tvAverageProfit;
+    private TextView tvTotalIncome, tvAverageIncome, tvTotalExpanse, tvAverageExpanse, tvTotalProfit, tvAverageProfit, tvReportIncomeExpanseNoDatas;
     private final int PERMISSION_READ_STORAGE = 0;
     @Nullable
     @Override
@@ -103,10 +103,26 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         tvAverageExpanse = (TextView) rootView.findViewById(R.id.tvAverageExpanse);
         tvTotalProfit = (TextView) rootView.findViewById(R.id.tvTotalProfit);
         tvAverageProfit = (TextView) rootView.findViewById(R.id.tvAverageProfit);
+        tvReportIncomeExpanseNoDatas = (TextView) rootView.findViewById(R.id.tvReportIncomeExpanseNoDatas);
         init();
         sortReportIncomeExpance = reportManager.getIncomeExpanceReport(begin,end);
+        for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
+            if (sortReportIncomeExpance.get(i).getTotalIncome() == 0.0d &&
+                    sortReportIncomeExpance.get(i).getTotalExpanse() == 0.0) {
+                sortReportIncomeExpance.remove(i);
+                i--;
+            }
+        }
+        if(sortReportIncomeExpance.isEmpty()) {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.VISIBLE);
+            tvReportIncomeExpance.setVisibility(View.GONE);
+        }
+        else {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.GONE);
+            tvReportIncomeExpance.setVisibility(View.VISIBLE);
+        }
         tvReportIncomeExpance.setTitle(titles, false);
-        tvReportIncomeExpance.setDatas((ArrayList<? extends Object>) sortReportIncomeExpance);
+        tvReportIncomeExpance.setDatas(sortReportIncomeExpance);
         calculateDatas();
         return rootView;
     }
@@ -114,6 +130,21 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         this.begin = (Calendar) begin.clone();
         this.end = (Calendar) end.clone();
         sortReportIncomeExpance = reportManager.getIncomeExpanceReport(begin,end);
+        for (int i = 0; i < sortReportIncomeExpance.size(); i++) {
+            if (sortReportIncomeExpance.get(i).getTotalIncome() == 0.0d &&
+                    sortReportIncomeExpance.get(i).getTotalExpanse() == 0.0) {
+                sortReportIncomeExpance.remove(i);
+                i--;
+            }
+        }
+        if(sortReportIncomeExpance.isEmpty()) {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.VISIBLE);
+            tvReportIncomeExpance.setVisibility(View.GONE);
+        }
+        else {
+            tvReportIncomeExpanseNoDatas.setVisibility(View.GONE);
+            tvReportIncomeExpance.setVisibility(View.VISIBLE);
+        }
         tvReportIncomeExpance.setDatas(sortReportIncomeExpance);
         calculateDatas();
     }
