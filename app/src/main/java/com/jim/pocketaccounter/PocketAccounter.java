@@ -34,6 +34,7 @@ import com.google.firebase.storage.StorageReference;
 import com.jim.pocketaccounter.credit.notificat.NotificationManagerCredit;
 import com.jim.pocketaccounter.database.AutoMarket;
 //import com.jim.pocketaccounter.finance.FinanceManager;
+import com.jim.pocketaccounter.database.AutoMarketDao;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
 import com.jim.pocketaccounter.debt.PocketClassess;
@@ -61,6 +62,7 @@ import com.jim.pocketaccounter.widget.WidgetProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -153,6 +155,7 @@ public class PocketAccounter extends AppCompatActivity {
             try {
                 Intent first = new Intent(this, IntroIndicator.class);
                 PocketAccounter.openActivity=true;
+
                 startActivity(first);
                 finish();
             } finally {
@@ -160,7 +163,7 @@ public class PocketAccounter extends AppCompatActivity {
             }
         }
         notific = new NotificationManagerCredit(PocketAccounter.this);
-        checkAutoMarket();
+//        checkAutoMarket();
         toolbarManager.init();
         date = Calendar.getInstance();
         treatToolbar();
@@ -224,97 +227,126 @@ public class PocketAccounter extends AppCompatActivity {
     public Calendar getDate() {
         return date;
     }
-    private void checkAutoMarket() {
-        Calendar currentDay = Calendar.getInstance();
-        for (FinanceRecord financeRecord : daoSession.getFinanceRecordDao().queryBuilder()
-                .where(FinanceRecordDao.Properties.RecordId.like("%auto%")).list()) {
-            if (financeRecord.getDate().compareTo(currentDay) > 0) {
-                daoSession.getFinanceRecordDao().delete(financeRecord);
-            }
-        }
-        for (AutoMarket autoMarket : daoSession.getAutoMarketDao().loadAll()) {
-            String[] days = autoMarket.getDates().split(",");
-            for (String day : days) {
-                if (autoMarket.getType()) {
-                    int dayInt = Integer.parseInt(day);
-                    currentDay.set(Calendar.YEAR, currentDay.get(Calendar.YEAR));
-                    currentDay.set(Calendar.MONTH, currentDay.get(Calendar.MONTH));
-                    currentDay.set(Calendar.DAY_OF_MONTH, dayInt);
-                    if (dayInt > currentDay.get(Calendar.DAY_OF_MONTH)) {
-                        currentDay.add(Calendar.MONTH, -1);
-                    }
-                    currentDay.set(Calendar.HOUR_OF_DAY, 0);
-                    currentDay.set(Calendar.MINUTE, 0);
-                    currentDay.set(Calendar.SECOND, 0);
-                    currentDay.set(Calendar.MILLISECOND, 0);
 
-                    while (currentDay.compareTo(autoMarket.getCreateDay()) > 0) {
-                        FinanceRecord financeRecord = new FinanceRecord();
-                        financeRecord.setRecordId("auto" + UUID.randomUUID().toString());
-                        financeRecord.setCategory(autoMarket.getRootCategory());
-                        financeRecord.setSubCategory(autoMarket.getSubCategory());
-                        financeRecord.setCurrency(autoMarket.getCurrency());
-                        financeRecord.setAccount(autoMarket.getAccount());
-                        financeRecord.setAmount(autoMarket.getAmount());
-                        financeRecord.setDate(currentDay);
-                        boolean tek = false;
-                        for (FinanceRecord fn : daoSession.getFinanceRecordDao().loadAll()) {
-                            if (fn.getDate().compareTo(financeRecord.getDate()) == 0 && fn.getRecordId().startsWith("auto")
-                                    && fn.getCategory().getId().matches(financeRecord.getCategory().getId())
-                                    && fn.getSubCategory().getId().matches(financeRecord.getSubCategory().getId())) {
-                                tek = true;
-                                break;
-                            } else if (autoMarket.getType() && day.matches("" + getResources().getStringArray(R.array.week_day_auto)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)])) {
-                                tek = true;
-                            }
-                        }
-                        if (!tek)
-                            daoSession.getFinanceRecordDao().insertOrReplace(financeRecord);
-                        currentDay.add(Calendar.MONTH, -1);
-                    }
-                } else {
-                    String[] weekDays = getResources().getStringArray(R.array.week_day_auto);
-                    if (!day.equals(weekDays[currentDay.get(Calendar.DAY_OF_WEEK)])) {
-                        int pos = 1;
-                        for (int i = 0; i < weekDays.length; i++) {
-                            if (weekDays[i].equals(day)) {
-                                pos = i + 1;
-                                break;
-                            }
-                        }
-                        currentDay.set(Calendar.YEAR, currentDay.get(Calendar.YEAR));
-                        currentDay.set(Calendar.WEEK_OF_YEAR, currentDay.get(Calendar.WEEK_OF_YEAR));
-                        currentDay.set(Calendar.DAY_OF_WEEK, pos);
-                    }
-                    while (currentDay.compareTo(autoMarket.getCreateDay()) > 0) {
-                        FinanceRecord financeRecord = new FinanceRecord();
-                        financeRecord.setRecordId("auto" + UUID.randomUUID().toString());
-                        financeRecord.setCategory(autoMarket.getRootCategory());
-                        financeRecord.setSubCategory(autoMarket.getSubCategory());
-                        financeRecord.setCurrency(autoMarket.getCurrency());
-                        financeRecord.setAccount(autoMarket.getAccount());
-                        financeRecord.setAmount(autoMarket.getAmount());
-                        financeRecord.setDate(currentDay);
-                        boolean tek = false;
-                        for (FinanceRecord fn : daoSession.getFinanceRecordDao().loadAll()) {
-                            if (fn.getDate().compareTo(financeRecord.getDate()) == 0 && fn.getRecordId().startsWith("auto")
-                                    && fn.getCategory().getId().matches(financeRecord.getCategory().getId())
-                                    && fn.getSubCategory().getId().matches(financeRecord.getSubCategory().getId())) {
-                                tek = true;
-                                break;
-                            } else if (autoMarket.getType() && day.matches("" + getResources().getStringArray(R.array.week_day_auto)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)])) {
-                                tek = true;
-                            }
-                        }
-                        if (!tek)
-                            daoSession.getFinanceRecordDao().insertOrReplace(financeRecord);
-                        currentDay.add(Calendar.WEEK_OF_MONTH, -1);
-                    }
-                }
-                currentDay = Calendar.getInstance();
-            }
-        }
-    }
+//    private void checkAutoMarket() {
+//        Calendar currentDay = Calendar.getInstance();
+//        for (FinanceRecord financeRecord : daoSession.getFinanceRecordDao().queryBuilder()
+//                .where(FinanceRecordDao.Properties.RecordId.like("%auto%")).list()) {
+//            if (financeRecord.getDate().compareTo(currentDay) > 0) {
+//                daoSession.getFinanceRecordDao().delete(financeRecord);
+//            }
+//        }
+//
+//        for (AutoMarket autoMarket: daoSession.getAutoMarketDao().queryBuilder().where(AutoMarketDao.Properties.Type.eq(false)).list()) {
+//            String [] days = autoMarket.getDates().split(",");
+//            for (String day : days) {
+//                String[] weekDays = getResources().getStringArray(R.array.week_day_auto);
+//                if (!day.equals(weekDays[currentDay.get(Calendar.DAY_OF_WEEK)])) {
+//                    int pos = 1;
+//                    for (int i = 0; i < weekDays.length; i++) {
+//                        if (weekDays[i].equals(day)) {
+//                            pos = i + 1;
+//                            break;
+//                        }
+//                    }
+//                    currentDay.set(Calendar.YEAR, currentDay.get(Calendar.YEAR));
+//                    currentDay.set(Calendar.WEEK_OF_YEAR, currentDay.get(Calendar.WEEK_OF_YEAR));
+//                    currentDay.set(Calendar.DAY_OF_WEEK, pos);
+//                }
+//                while (currentDay.compareTo(autoMarket.getCreateDay()) > 0) {
+//                    FinanceRecord financeRecord = new FinanceRecord();
+//                    financeRecord.setRecordId("auto" + UUID.randomUUID().toString());
+//                    financeRecord.setCategory(autoMarket.getRootCategory());
+//                    financeRecord.setSubCategory(autoMarket.getSubCategory());
+//                    financeRecord.setCurrency(autoMarket.getCurrency());
+//                    financeRecord.setAccount(autoMarket.getAccount());
+//                    financeRecord.setAmount(autoMarket.getAmount());
+//                    financeRecord.setDate(currentDay);
+//                    boolean tek = false;
+//                    try {
+////                        final int pos = Integer.parseInt(day) + 1;
+////                        int posCur = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+//                        for (FinanceRecord fn : daoSession.getFinanceRecordDao().loadAll()) {
+//                            if (format.format(fn.getDate().getTime()).equals(format.format(financeRecord.getDate().getTime())) &&
+//                                    fn.getRecordId().contains("auto")
+//                                    && fn.getCategory().getId().matches(financeRecord.getCategory().getId())
+//                                    && fn.getSubCategory().getId().matches(financeRecord.getSubCategory().getId())) {
+//                                tek = true;
+//                                break;
+//                            }
+//                        }
+//                    } catch (Exception e) {
+//
+//                    }
+//                    if (!tek)
+//                        daoSession.getFinanceRecordDao().insertOrReplace(financeRecord);
+//                    currentDay.add(Calendar.WEEK_OF_MONTH, -1);
+//                }
+//                currentDay = Calendar.getInstance();
+//            }
+//        }
+//
+//        for (AutoMarket autoMarket : daoSession.getAutoMarketDao().loadAll()) {
+//            String[] days = autoMarket.getDates().split(",");
+//            for (String day : days) {
+//                if (autoMarket.getType()) {
+//                    int dayInt = Integer.parseInt(day);
+//                    currentDay.set(Calendar.YEAR, currentDay.get(Calendar.YEAR));
+//                    currentDay.set(Calendar.MONTH, currentDay.get(Calendar.MONTH));
+//                    currentDay.set(Calendar.DAY_OF_MONTH, dayInt);
+//                    if (dayInt > currentDay.get(Calendar.DAY_OF_MONTH)) {
+//                        currentDay.add(Calendar.MONTH, -1);
+//                    }
+//                    currentDay.set(Calendar.HOUR_OF_DAY, 0);
+//                    currentDay.set(Calendar.MINUTE, 0);
+//                    currentDay.set(Calendar.SECOND, 0);
+//                    currentDay.set(Calendar.MILLISECOND, 0);
+//
+//                    while (currentDay.compareTo(autoMarket.getCreateDay()) > 0) {
+//                        FinanceRecord financeRecord = new FinanceRecord();
+//                        financeRecord.setRecordId("auto" + UUID.randomUUID().toString());
+//                        financeRecord.setCategory(autoMarket.getRootCategory());
+//                        financeRecord.setSubCategory(autoMarket.getSubCategory());
+//                        financeRecord.setCurrency(autoMarket.getCurrency());
+//                        financeRecord.setAccount(autoMarket.getAccount());
+//                        financeRecord.setAmount(autoMarket.getAmount());
+//                        financeRecord.setDate(currentDay);
+//                        boolean tek = false;
+//
+//                        for (FinanceRecord fn : daoSession.getFinanceRecordDao().loadAll()) {
+//                            if (format.format(fn.getDate().getTime()).equals(format.format(financeRecord.getDate().getTime())) && fn.getRecordId().contains("auto")
+//                                    && fn.getCategory().getId().matches(financeRecord.getCategory().getId())
+//                                    && fn.getSubCategory().getId().matches(financeRecord.getSubCategory().getId())) {
+//                                tek = true;
+//                                break;
+//                            } else if (autoMarket.getType() && day.equals("" +
+//                                    getResources().getStringArray(R.array.week_day_auto)[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)])) {
+//                                tek = true;
+//                            }
+//                        }
+//                        if (!tek)
+//                            daoSession.getFinanceRecordDao().insertOrReplace(financeRecord);
+//                        currentDay.add(Calendar.MONTH, -1);
+//                    }
+//                }
+//                currentDay = Calendar.getInstance();
+//            }
+//        }
+//
+//        List<FinanceRecord> fns = daoSession.getFinanceRecordDao().queryBuilder()
+//                .where(FinanceRecordDao.Properties.RecordId.like("%auto%")).list();
+//
+//        for (int i = fns.size() - 1; i > 0; i--) {
+//            for (int j = fns.size() - 2; j >= 0; j--) {
+//                if (format.format(fns.get(i).getDate().getTime()).equals(format.format(fns.get(j).getDate().getTime()))
+//                        && fns.get(i).getCategoryId().equals(fns.get(j).getCategoryId())
+//                        && fns.get(i).getSubCategoryId().equals(fns.get(j).getSubCategoryId())) {
+//                    daoSession.getFinanceRecordDao().delete(fns.get(i));
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
     public void treatToolbar() {
         // toolbar set
@@ -429,8 +461,10 @@ public class PocketAccounter extends AppCompatActivity {
                 }
             });
             int width = getResources().getDisplayMetrics().widthPixels;
-            warningDialog.getWindow().setLayout(8*width/10, ViewGroup.LayoutParams.WRAP_CONTENT);
-            warningDialog.show();
+            warningDialog.getWindow().setLayout(8 * width / 10, ViewGroup.LayoutParams.WRAP_CONTENT);
+            try {
+                warningDialog.show();
+            } catch (Exception e){}
         }
     }
 

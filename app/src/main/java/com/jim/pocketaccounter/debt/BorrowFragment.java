@@ -396,6 +396,7 @@ public class BorrowFragment extends Fragment {
                                                 }
                                                 paFragmentManager.updateAllFragmentsOnViewPager();
                                                 dataCache.updateAllPercents();
+                                                warningDialog.dismiss();
                                             }
                                         });
                                         warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {

@@ -442,7 +442,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
                                 return;
                         }
 
-
                         // forCompute+=period_long;
 
                         endDate.setText(dateFormat.format(endCalendar.getTime()));

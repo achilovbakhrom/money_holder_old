@@ -49,6 +49,8 @@ public class AutoMarket {
     private SubCategory subCategory;
     @Convert(columnType = String.class, converter = CalendarConvertor.class)
     private Calendar createDay;
+    @Property
+    private String posDays;
     @Generated(hash = 861346724)
     private transient String subCategory__resolvedKey;
     @Generated(hash = 1021791985)
@@ -214,11 +216,13 @@ public class AutoMarket {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getAutoMarketDao() : null;
     }
+    public String getPosDays() {
+        return this.posDays;
+    }
+    public void setPosDays(String posDays) {
+        this.posDays = posDays;
+    }
     public Calendar getCreateDay() {
-        createDay.set(Calendar.HOUR_OF_DAY, 0);
-        createDay.set(Calendar.MINUTE, 0);
-        createDay.set(Calendar.SECOND, 0);
-        createDay.set(Calendar.MILLISECOND, 0);
         return this.createDay;
     }
     public void setCreateDay(Calendar createDay) {
@@ -272,10 +276,10 @@ public class AutoMarket {
     public void setId(String id) {
         this.id = id;
     }
-    @Generated(hash = 580426749)
+    @Generated(hash = 203716419)
     public AutoMarket(@NotNull String id, double amount, String curId,
             String accountId, String catId, String catSubId, boolean type,
-            String dates, Calendar createDay) {
+            String dates, Calendar createDay, String posDays) {
         this.id = id;
         this.amount = amount;
         this.curId = curId;
@@ -285,6 +289,6 @@ public class AutoMarket {
         this.type = type;
         this.dates = dates;
         this.createDay = createDay;
+        this.posDays = posDays;
     }
-
 }

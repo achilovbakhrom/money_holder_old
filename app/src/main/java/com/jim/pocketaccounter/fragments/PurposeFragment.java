@@ -1,17 +1,21 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +34,7 @@ import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.utils.FABIcon;
+import com.jim.pocketaccounter.utils.ObservableScrollView;
 import com.jim.pocketaccounter.utils.TransferDialog;
 
 import java.text.SimpleDateFormat;
@@ -42,7 +47,7 @@ import javax.inject.Named;
  * Created by DEV on 06.09.2016.
  */
 
-public class PurposeFragment extends Fragment {
+public class PurposeFragment extends Fragment{
     private RecyclerView rvPurposes;
     private FABIcon fabPurposesAdd;
     TextView ifListEmpty;
@@ -65,6 +70,7 @@ public class PurposeFragment extends Fragment {
     SimpleDateFormat dateFormat;
     @Inject
     CommonOperations commonOperations;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.purpose_layout, container, false);
@@ -91,6 +97,20 @@ public class PurposeFragment extends Fragment {
             }
         });
         refreshList();
+        rvPurposes.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                try {
+                    onScrolledList(dy > 0);
+                } catch (NullPointerException e) {
+                }
+            }
+        });
         return  rootView;
     }
     private void refreshList() {
@@ -102,6 +122,21 @@ public class PurposeFragment extends Fragment {
         else ifListEmpty.setVisibility(View.GONE);
         rvPurposes.setAdapter(adapter);
     }
+
+
+    private boolean show = false;
+    public void onScrolledList(boolean k) {
+        if (k) {
+            if (!show)
+                fabPurposesAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_down));
+            show = true;
+        } else {
+            if (show)
+                fabPurposesAdd.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fab_up));
+            show = false;
+        }
+    }
+
 
     private class PurposeAdapter extends RecyclerView.Adapter<PurposeFragment.ViewHolder> {
         private List<Purpose> result;

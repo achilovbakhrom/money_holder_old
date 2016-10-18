@@ -146,90 +146,6 @@ public class AddAutoMarketFragment extends Fragment {
         account_sp.setAdapter(adapter_scet);
         spCurrency.setAdapter(curAdapter);
 
-//        dialog = new Dialog(getActivity());
-//        dialogMonth = new Dialog(getActivity());
-//
-//        List<String> acNames = new ArrayList<>();
-//        for (Account ac : accountDao.loadAll()) {
-//            acNames.add(ac.getId());
-//        }
-//
-//        accountAdapter = new TransferAccountAdapter(getContext(), acNames);
-//        spAccount.setAdapter(accountAdapter);
-//
-//        final List<String> curs = new ArrayList<>();
-//        for (Currency cr : currencyDao.loadAll()) {
-//            curs.add(cr.getAbbr());
-//        }
-//        ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getContext()
-//                , android.R.layout.simple_list_item_1, curs);
-//        spCurrency.setAdapter(curAdapter);
-//        spCurrency.setOnItemSelectedListener(this);
-//        spAccount.setOnItemSelectedListener(this);
-//        btnMonth.setEnabled(false);
-//        rbWeek.setChecked(true);
-//
-//        ivSubCategory.setImageResource(getResources().getIdentifier(daoSession.getRootCategoryDao().loadAll()
-//                .get(selectCategory).getSubCategories().get(selectSubCategory).getIcon(), "drawable", getActivity().getPackageName()));
-//
-//        ivCategory.setImageResource(getResources().getIdentifier(daoSession.getRootCategoryDao().loadAll()
-//                .get(selectCategory).getIcon(), "drawable", getActivity().getPackageName()));
-//
-//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId == R.id.rbAutoMarketAddWeek) {
-//                    btnMonth.setEnabled(false);
-//                    btnWeek.setEnabled(true);
-//                } else {
-//                    btnMonth.setEnabled(true);
-//                    btnWeek.setEnabled(false);
-//                }
-//            }
-//        });
-//
-//        dialog = new Dialog(getActivity());
-//        btnWeek.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                openNotifSettingDialog();
-//            }
-//        });
-
-//        btnMonth.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_market_month_layout, null);
-//                dialogMonth.setContentView(dialogView);
-//                rvDialogMonth = (RecyclerView) dialogView.findViewById(R.id.rvDialogMarketMonth);
-//                RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(5, StaggeredGridLayoutManager.VERTICAL);
-//                rvDialogMonth.setLayoutManager(layoutManager);
-//                final DaysAdapter monthAdapter = new DaysAdapter();
-//                rvDialogMonth.setAdapter(monthAdapter);
-//                dialogView.findViewById(R.id.ivCloseDialog).setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialogMonth.dismiss();
-//                    }
-//                });
-//                dialogView.findViewById(R.id.ivSaveDialog).setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        boolean[] tek = monthAdapter.getResult();
-//                        sequence = "";
-//                        for (int i = 0; i < tek.length; i++) {
-//                            if (tek[i]) {
-//                                sequence = sequence + (i + 1) + ",";
-//                            }
-//                        }
-//                        type = true;
-//                        dialogMonth.dismiss();
-//                    }
-//                });
-//                dialogMonth.show();
-//            }
-//        });
-
         List<String> acNames = new ArrayList<>();
         for (Account ac : accountDao.loadAll()) {
             acNames.add(ac.getId());
@@ -259,6 +175,9 @@ public class AddAutoMarketFragment extends Fragment {
                     autoMarket.setAccount(accountDao.loadAll().get(account_sp.getSelectedItemPosition()));
                     autoMarket.setType(type);
                     autoMarket.setDates(sequence.substring(0, sequence.length() - 1));
+                    if (!type) {
+                        autoMarket.setPosDays(daysAdapter.posDays());
+                    }
                     daoSession.getAutoMarketDao().insertOrReplace(autoMarket);
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new AutoMarketFragment());
@@ -276,6 +195,9 @@ public class AddAutoMarketFragment extends Fragment {
                     autoMarket.setCurrency(currencyDao.queryBuilder().where(CurrencyDao.Properties.Abbr.eq(curs.get(spCurrency.getSelectedItemPosition()))).list().get(0));
                     autoMarket.setAccount(accountDao.loadAll().get(account_sp.getSelectedItemPosition()));
                     autoMarket.setType(type);
+                    if (!type) {
+                        autoMarket.setPosDays(daysAdapter.posDays());
+                    }
                     autoMarket.setCreateDay(Calendar.getInstance());
                     autoMarket.setDates(sequence.substring(0, sequence.length() - 1));
                     switch (logicManager.insertAutoMarket(autoMarket)) {
@@ -500,6 +422,16 @@ public class AddAutoMarketFragment extends Fragment {
                     sequence = sequence + days[i] + ",";
                 }
             }
+        }
+
+        public String posDays() {
+            String posDay = "";
+            for (int i = 0; i < tek.length; i++) {
+                if (tek[i]) {
+                    posDay +=i + ",";
+                }
+            }
+            return posDay;
         }
 
         @Override
