@@ -596,8 +596,10 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                     daoSession= daoMaster.newSession();
                     daoMaster.dropAllTables(sqLiteDatabase, true);
                     daoMaster.createAllTables(sqLiteDatabase, true);
-                    CommonOperations.migrateDatabase(this,backupDB.getAbsolutePath(),daoSession,sharedPreferences);
-                    daoSession.clear();
+                    CommonOperations.migrateDatabase(this,backupDB.getAbsolutePath(), daoSession, sharedPreferences);
+                    for (AbstractDao abstractDao : daoSession.getAllDaos())
+                        abstractDao.detachAll();
+                    dataCache.getBoardBitmapsCache().evictAll();
                 }
                 else {
                     File currentDB1 = new File(backupDB.getAbsolutePath());
