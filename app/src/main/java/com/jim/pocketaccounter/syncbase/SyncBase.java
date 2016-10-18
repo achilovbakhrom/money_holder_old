@@ -171,16 +171,20 @@ public class SyncBase {
                   }
                   if (!context.getClass().getName().equals(SettingsActivity.class.getName())) {
                       PAFragmentManager paFragmentManager=new PAFragmentManager( ((PocketAccounter) context));
-                      pocketAccounterApplicationModule.updateDaoSession();
+
+
                       paFragmentManager.updateAllFragmentsOnViewPager();
                       paFragmentManager.getCurrentFragment().update();
-                      dataCache.updatePercentsWhenSwiping();
+                      dataCache.clearAllCaches();
                       dataCache.updateAllPercents();
                       even.onSuccses();
 
                   } else {
                       Intent intent = new Intent(context, PocketAccounter.class);
                       context.startActivity(intent);
+                      dataCache.clearAllCaches();
+                      dataCache.updateAllPercents();
+                      pocketAccounterApplicationModule.updateDaoSession();
                       ((SettingsActivity) context).setResult(1111);
                       ((SettingsActivity) context).finish();
                   }

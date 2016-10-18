@@ -93,6 +93,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     PocketAccounterApplicationModule pocketAccounterApplicationModule;
     @Inject
     DataCache dataCache;
+
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReferenceFromUrl("gs://pocket-accounter.appspot.com");
 
@@ -599,7 +600,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                     CommonOperations.migrateDatabase(this,backupDB.getAbsolutePath(), daoSession, sharedPreferences);
                     for (AbstractDao abstractDao : daoSession.getAllDaos())
                         abstractDao.detachAll();
-                    dataCache.getBoardBitmapsCache().evictAll();
+
                 }
                 else {
                     File currentDB1 = new File(backupDB.getAbsolutePath());
@@ -615,7 +616,11 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                         e.printStackTrace();
                     }
                 }
+                dataCache.getBoardBitmapsCache().evictAll();
+                dataCache.updateAllPercents();
+                dataCache.clearAllCaches();
                 pocketAccounterApplicationModule.updateDaoSession();
+                Toast.makeText(this,R.string.sync_suc,Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Toast.makeText(getBaseContext(), e.toString(), Toast.LENGTH_LONG).show();

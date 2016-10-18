@@ -84,7 +84,6 @@ public class DataCache {
     }
     public void clearAllCaches(){
         boardBitmaps.evictAll();
-        elements.evictAll();
         percents.evictAll();
     }
 

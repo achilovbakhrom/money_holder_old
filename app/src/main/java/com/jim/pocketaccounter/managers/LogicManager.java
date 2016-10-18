@@ -716,10 +716,7 @@ public class LogicManager {
     }
 
     public int insertDebtBorrow(DebtBorrow debtBorrow) {
-        Query<DebtBorrow> query = debtBorrowDao
-                .queryBuilder()
-                .where(DebtBorrowDao.Properties.Id.eq(debtBorrow.getId()))
-                .build();
+
         debtBorrowDao.insertOrReplace(debtBorrow);
         return LogicManagerConstants.SAVED_SUCCESSFULL;
     }

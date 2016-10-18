@@ -232,6 +232,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         spToolbar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+               if(view!=null){
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("editor_sp", ((TextView) view.findViewById(R.id.tvAccountListName)).getText().toString());
                 try {
@@ -239,7 +240,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                 } catch (Exception o) {
                     editor.apply();
                 }
-                account = accountList.get(position);
+                account = accountList.get(position);}
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
