@@ -177,6 +177,7 @@ public class    PAFragmentManager {
     public void displayMainWindow() {
         activity.treatToolbar();
         PRESSED = false;
+        activity.findViewById(R.id.mainWhite).setVisibility(View.VISIBLE);
         activity.findViewById(R.id.change).setVisibility(View.VISIBLE);
         MainPageFragment leftPage = (MainPageFragment) fragmentManager.findFragmentByTag("android:switcher:"+R.id.lvpMain+":"+(lvpMain.getCurrentItem()-1));
         if (leftPage != null)

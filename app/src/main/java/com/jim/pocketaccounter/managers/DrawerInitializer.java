@@ -378,6 +378,7 @@ public class DrawerInitializer {
                 drawer.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        pocketAccounter.findViewById(R.id.mainWhite).setVisibility(View.VISIBLE);
                         switch (position) {
                             case 0:
                                 fragmentManager.displayMainWindow();
