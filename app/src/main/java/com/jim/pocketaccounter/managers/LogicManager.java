@@ -524,64 +524,6 @@ public class LogicManager {
             currencies.get(currMainPos).setMain(true);
             mainCurrency = currencies.get(currMainPos);
         }
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-//        Calendar calendar = Calendar.getInstance();
-//        String date = simpleDateFormat.format(calendar.getTime());
-//        List<CurrencyChangedHistory> currencyChangedHistory = daoSession
-//                .getCurrencyChangedHistoryDao()
-//                .queryBuilder()
-//                .where(CurrencyChangedHistoryDao.Properties.Date.eq(date))
-//                .list();
-//        CurrencyChangedHistory history;
-//        if (!currencyChangedHistory.isEmpty())
-//            history = currencyChangedHistory.get(0);
-//        else
-//            history = new CurrencyChangedHistory();
-//        history.setDate(calendar);
-//        history.setFromCurrency(oldMain.getId());
-//        history.setToCurrency(mainCurrency.getId());
-//        history.setCost(mainCurrency.getCosts().get(mainCurrency.getCosts().size()-1).getCost());
-//        daoSession.getCurrencyChangedHistoryDao().insertOrReplace(history);
-//        //handling of costs
-//
-//        //trying reestablish main currency
-//        List<CurrencyChangedHistory> historyList = daoSession.getCurrencyChangedHistoryDao().loadAll();
-//        double koeff = mainCurrency.getCosts().get(mainCurrency.getCosts().size() - 1).getCost();
-//        if (!historyList.isEmpty()) {
-//            Collections.sort(historyList, new Comparator<CurrencyChangedHistory>() {
-//                @Override
-//                public int compare(CurrencyChangedHistory lhs, CurrencyChangedHistory rhs) {
-//                    return lhs.getDate().compareTo(rhs.getDate());
-//                }
-//            });
-//            List<CurrencyChangedHistory> mainCurrencyHistory = new ArrayList<>();
-//            for (CurrencyChangedHistory temp : historyList) {
-//                if (temp.getToCurrency().equals(mainCurrency.getId())) {
-//                    mainCurrencyHistory.add(temp);
-//                }
-//            }
-//            if (!mainCurrencyHistory.isEmpty()) {
-//                for (int i = 0; i < mainCurrencyHistory.size(); i++) {
-//                    if (i != 0) {
-//
-//                    }
-//                    else {
-//                        for (CurrencyCost cost : mainCurrency.getCosts()) {
-//                            mainCurrencyHistory.get(i).getDate().set(Calendar.HOUR_OF_DAY, 23);
-//                            mainCurrencyHistory.get(i).getDate().set(Calendar.MINUTE, 59);
-//                            mainCurrencyHistory.get(i).getDate().set(Calendar.SECOND, 59);
-//                            mainCurrencyHistory.get(i).getDate().set(Calendar.MILLISECOND, 59);
-//                            if (cost.getDay().compareTo(mainCurrencyHistory.get(i).getDate()) <= 0) {
-//                                cost.setCost(cost.getCost()/mainCurrencyHistory.get(i).getCost());
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        else {
-
-//        }
         Calendar nextDate, currDay;
         for (int i = 0; i < mainCurrency.getCosts().size(); i++) {
             CurrencyCost current = mainCurrency.getCosts().get(i);
@@ -619,7 +561,7 @@ public class LogicManager {
             }
         }
         currencyDao.insertOrReplaceInTx(currencies);
-        daoSession.clear();
+        daoSession.getCurrencyDao().detachAll();
     }
 
     //currency costs

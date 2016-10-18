@@ -146,8 +146,10 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
             case R.id.ivToolbarMostRight:
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                if (chbCurrencyEditMainCurrency.isChecked())
+                if (chbCurrencyEditMainCurrency.isChecked()) {
                     logicManager.setMainCurrency(currency);
+                    paFragmentManager.updateCurrencyChanges();
+                }
                 paFragmentManager.displayFragment(new CurrencyFragment());
                 break;
         }

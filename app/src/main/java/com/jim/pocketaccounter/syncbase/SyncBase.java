@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,6 +22,7 @@ import com.google.firebase.storage.UploadTask;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
+import com.jim.pocketaccounter.SettingsActivity;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
@@ -167,16 +169,21 @@ public class SyncBase {
                           e.printStackTrace();
                       }
                   }
+                  if (!context.getClass().getName().equals(SettingsActivity.class.getName())) {
+                      PAFragmentManager paFragmentManager=new PAFragmentManager( ((PocketAccounter) context));
+                      pocketAccounterApplicationModule.updateDaoSession();
+                      paFragmentManager.updateAllFragmentsOnViewPager();
+                      paFragmentManager.getCurrentFragment().update();
+                      dataCache.updatePercentsWhenSwiping();
+                      dataCache.updateAllPercents();
+                      even.onSuccses();
 
-
-                  PAFragmentManager paFragmentManager=new PAFragmentManager( ((PocketAccounter) context));
-
-                  pocketAccounterApplicationModule.updateDaoSession();
-                  paFragmentManager.updateAllFragmentsOnViewPager();
-                  paFragmentManager.getCurrentFragment().update();
-                  dataCache.updatePercentsWhenSwiping();
-                  dataCache.updateAllPercents();
-                  even.onSuccses();
+                  } else {
+                      Intent intent = new Intent(context, PocketAccounter.class);
+                      context.startActivity(intent);
+                      ((SettingsActivity) context).setResult(1111);
+                      ((SettingsActivity) context).finish();
+                  }
                   A1.dismiss();
               }
           }).addOnFailureListener(new OnFailureListener() {

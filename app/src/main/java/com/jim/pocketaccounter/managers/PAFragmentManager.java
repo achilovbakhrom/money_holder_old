@@ -164,6 +164,16 @@ public class    PAFragmentManager {
         }
     }
 
+    public void updateCurrencyChanges() {
+        int size = fragmentManager.getFragments().size();
+        for (int i = 0; i < size; i++) {
+            Fragment fragment = fragmentManager.getFragments().get(i);
+            if (fragment != null && fragment.getClass().getName().equals(MainPageFragment.class.getName())) {
+                ((MainPageFragment) fragment).refreshCurrencyChanges();
+            }
+        }
+    }
+
     public void displayMainWindow() {
         activity.treatToolbar();
         PRESSED = false;

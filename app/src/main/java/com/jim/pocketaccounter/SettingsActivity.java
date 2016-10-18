@@ -114,6 +114,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Intent intent = new Intent(SettingsActivity.this, PocketAccounter.class);
                 startActivity(intent);
+                setResult(1111);
                 SettingsActivity.this.finish();
                 return true;
             }

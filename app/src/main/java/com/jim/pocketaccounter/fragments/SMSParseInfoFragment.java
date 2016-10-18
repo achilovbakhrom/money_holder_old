@@ -1,5 +1,6 @@
 package com.jim.pocketaccounter.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Paint;
@@ -44,7 +45,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-
+@SuppressLint({"InflateParams", "ValidFragment"})
 public class SMSParseInfoFragment extends Fragment {
     @Inject
     DaoSession daoSession;
@@ -61,6 +62,7 @@ public class SMSParseInfoFragment extends Fragment {
     private SmsParseObject object;
     private RecyclerView recyclerView;
     private TextView ifListEmpty;
+
     public SMSParseInfoFragment(SmsParseObject object) {
         this.object = object;
     }

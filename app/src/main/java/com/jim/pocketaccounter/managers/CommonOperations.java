@@ -95,6 +95,14 @@ public class CommonOperations {
         }
         return mainCurrency;
     }
+    public void refreshCurrency() {
+        mainCurrency = null;
+        List<Currency> currencies = currencyDao.loadAll();
+        for (Currency currency : currencies) {
+            if (currency.getIsMain())
+                mainCurrency = currency;
+        }
+    }
     public double getCost(FinanceRecord record) {
         double amount = 0.0;
         if (record.getCurrency().getMain())

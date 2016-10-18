@@ -153,7 +153,6 @@ public class PocketAccounter extends AppCompatActivity {
             try {
                 Intent first = new Intent(this, IntroIndicator.class);
                 PocketAccounter.openActivity=true;
-
                 startActivity(first);
                 finish();
             } finally {

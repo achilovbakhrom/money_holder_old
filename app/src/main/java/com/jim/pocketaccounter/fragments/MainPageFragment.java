@@ -134,12 +134,8 @@ public class MainPageFragment extends Fragment {
         rlRecordIncomes.addView(incomeView);
         calculateBalance();
     }
-    public void updateCalendarChanged() {
-        day.setTimeInMillis(dataCache.getEndDate().getTimeInMillis());
-        toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
-        calculateBalance();
-        expenseView.invalidate();
-        incomeView.invalidate();
+    public void refreshCurrencyChanges() {
+        commonOperations.refreshCurrency();
     }
     public void update() {
         toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
