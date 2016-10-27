@@ -8,13 +8,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,50 +22,49 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.database.Account;
-import com.jim.pocketaccounter.database.AutoMarket;
-import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.database.DebtBorrow;
-import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
 import com.jim.pocketaccounter.report.IncomeExpanseDataRow;
-import com.jim.pocketaccounter.report.ReportObject;
 import com.jim.pocketaccounter.report.TableView;
 import com.jim.pocketaccounter.utils.FilterDialog;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import jxl.Workbook;
-import jxl.write.WritableSheet;
 import jxl.write.Label;
+import jxl.write.Number;
+import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
-import jxl.write.Number;
 
 public class ReportByIncomeExpanseTableFragment extends Fragment {
-    @Inject PAFragmentManager paFragmentManager;
-    @Inject DaoSession daoSession;
-    @Inject FilterDialog filterDialog;
-    @Inject ToolbarManager toolbarManager;
+    @Inject
+    PAFragmentManager paFragmentManager;
+    @Inject
+    DaoSession daoSession;
+    @Inject
+    FilterDialog filterDialog;
+    @Inject
+    ToolbarManager toolbarManager;
     @Inject @Named(value = "display_formatter") SimpleDateFormat simpleDateFormat;
-    @Inject ReportManager reportManager;
-    @Inject CommonOperations commonOperations;
+    @Inject
+    ReportManager reportManager;
+    @Inject
+    CommonOperations commonOperations;
     @Inject SharedPreferences sharedPreferences;
     private TableView tvReportIncomeExpance;
     private List<IncomeExpanseDataRow> sortReportIncomeExpance;

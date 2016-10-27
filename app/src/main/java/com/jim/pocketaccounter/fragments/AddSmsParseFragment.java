@@ -14,7 +14,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -43,12 +42,11 @@ import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.SmsParseObject;
 import com.jim.pocketaccounter.database.SmsParseSuccess;
+import com.jim.pocketaccounter.database.TemplateSms;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
-import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
-import com.jim.pocketaccounter.database.TemplateSms;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -111,11 +109,17 @@ public class AddSmsParseFragment extends Fragment {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_sms_sender, container, false);
-        txSize = (int) ((int) (getResources().getDimension(R.dimen.fourteen_dp))/getResources().getDisplayMetrics().density);
+
+        txSize = (int) ((int) (getResources().getDimension(R.dimen.fourteen_dp)) / getResources().getDisplayMetrics().density);
         etNumber = (EditText) rootView.findViewById(R.id.etSmsParseAddNumber);
         ivSms = (TextView) rootView.findViewById(R.id.ivSmsParseGet);
         rgSortSms = (RadioGroup) rootView.findViewById(R.id.rgSmsParseAddSort);
@@ -140,7 +144,13 @@ public class AddSmsParseFragment extends Fragment {
         ArrayAdapter<String> cursAdapter = new ArrayAdapter<String>(getContext(),
                 R.layout.spiner_gravity_right, cursStrings);
         spCurrency.setAdapter(cursAdapter);
-
+        int posMain = 0;
+        for (int i = 0; i < cursStrings.size(); i++) {
+            if (cursStrings.get(i).equals(commonOperations.getMainCurrency().getAbbr())) {
+                posMain = i;
+            }
+        }
+        spCurrency.setSelection(posMain);
         myAdapter = new MyAdapter(ALL_SMS, null);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext()) {
             @Override
@@ -174,39 +184,69 @@ public class AddSmsParseFragment extends Fragment {
                     paFragmentManager.displayFragment(new SmsParseMainFragment());
                 } else {
                     if (etNumber.getText().toString().isEmpty()) {
-                        etNumber.setError("enter number");
+                        etNumber.setError(getString(R.string.enter_contact_error));
                     } else if (etIncome.getText().toString().isEmpty() &&
                             etExpance.getText().toString().isEmpty() || etAmount.getText().toString().isEmpty()) {
-                        etIncome.setError("enter income key");
+                        etIncome.setError(getString(R.string.income_keyword_error));
                         if (etExpance.getText().toString().isEmpty())
-                            etExpance.setError("enter expance key");
+                            etExpance.setError(getString(R.string.expense_keyword_error));
                         if (etAmount.getText().toString().isEmpty()) {
-                            etExpance.setError("enter expance key");
+                            etExpance.setError(getString(R.string.amount_keyword_error));
                         }
                     } else {
-                        String [] incomes = etIncome.getText().toString().split(",");
-                        String [] expanses = etExpance.getText().toString().split(",");
-                        String [] amounts = etAmount.getText().toString().split(",");
+                        String[] incomes = etIncome.getText().toString().split(",");
+                        String[] expanses = etExpance.getText().toString().split(",");
+                        String[] amounts = etAmount.getText().toString().split(",");
                         boolean change = false;
-                        if (incomes.length >  myAdapter.getIncomeKeys().size()) {
-                            myAdapter.getIncomeKeys().clear();
-                            for (String income : incomes)
-                                myAdapter.getIncomeKeys().add(income);
-                            change = true;
+                        for (String income : incomes) {
+                            boolean found = false;
+                            for (String adapter : myAdapter.getIncomeKeys()) {
+                                if (income.equals(adapter)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                change = true;
+                                break;
+                            }
                         }
-                        if (expanses.length > myAdapter.getExpanceKeys().size()) {
-                            myAdapter.getExpanceKeys().clear();
-                            for (String income : expanses)
-                                myAdapter.getExpanceKeys().add(income);
-                            change = true;
+                        if (change) {
+                            templateSmsList.addAll(commonOperations.generateSmsTemplateList(null, 0, 0, myAdapter.getIncomeKeys(),
+                                    myAdapter.getExpanceKeys(), myAdapter.getAmountKeys()));
                         }
-                        if (amounts.length > myAdapter.getAmountKeys().size()) {
-                            myAdapter.getAmountKeys().clear();
-                            for (String income : amounts)
-                                myAdapter.getAmountKeys().add(income);
-                            change = true;
+                        change = false;
+                        for (String expense : expanses) {
+                            boolean found = false;
+                            for (String adapter : myAdapter.getExpanceKeys()) {
+                                if (expense.equals(adapter)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                change = true;
+                                break;
+                            }
                         }
-
+                        if (change) {
+                            templateSmsList.addAll(commonOperations.generateSmsTemplateList(null, 0, 0, myAdapter.getIncomeKeys(),
+                                    myAdapter.getExpanceKeys(), myAdapter.getAmountKeys()));
+                        }
+                        change = false;
+                        for (String amount : amounts) {
+                            boolean found = false;
+                            for (String adapter : myAdapter.getAmountKeys()) {
+                                if (amount.equals(adapter)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                change = true;
+                                break;
+                            }
+                        }
                         if (change) {
                             templateSmsList.addAll(commonOperations.generateSmsTemplateList(null, 0, 0, myAdapter.getIncomeKeys(),
                                     myAdapter.getExpanceKeys(), myAdapter.getAmountKeys()));
@@ -224,7 +264,6 @@ public class AddSmsParseFragment extends Fragment {
                         smsParseObject.setNumber(etNumber.getText().toString());
                         daoSession.getTemplateSmsDao().insertInTx(templateSmsList);
                         daoSession.getSmsParseObjectDao().insertOrReplace(smsParseObject);
-
                         paFragmentManager.getFragmentManager().popBackStack();
                         paFragmentManager.displayFragment(new SmsParseMainFragment());
                     }
@@ -249,7 +288,9 @@ public class AddSmsParseFragment extends Fragment {
         });
         etNumber.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS)
@@ -268,8 +309,10 @@ public class AddSmsParseFragment extends Fragment {
                     rvSmsList.setAdapter(myAdapter);
                 }
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
         ivSms.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -311,7 +354,6 @@ public class AddSmsParseFragment extends Fragment {
                     break;
                 }
             }
-
         }
         return rootView;
     }
@@ -329,31 +371,32 @@ public class AddSmsParseFragment extends Fragment {
     }
 
     public List<Sms> getAllSms() {
-            List<Sms> lstSms = new ArrayList<>();
-            Sms objSms;
-            Uri message = Uri.parse("content://sms/");
-            ContentResolver cr = getActivity().getContentResolver();
+        List<Sms> lstSms = new ArrayList<>();
+        Sms objSms;
+        Uri message = Uri.parse("content://sms/");
+        ContentResolver cr = getActivity().getContentResolver();
 
-            Cursor c = cr.query(message, null, null, null, null);
-            getActivity().startManagingCursor(c);
-            int totalSMS = c.getCount();
+        Cursor c = cr.query(message, null, null, null, null);
+        getActivity().startManagingCursor(c);
+        int totalSMS = c.getCount();
 
-            if (c.moveToFirst()) {
-                for (int i = 0; i < totalSMS; i++) {
-                    objSms = new Sms();
-                    objSms.setId(c.getString(c.getColumnIndexOrThrow("_id")));
-                    objSms.setNumber(c.getString(c.getColumnIndexOrThrow("address")));
-                    objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
-                    objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
-                    if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
-                        objSms.setFolderName("sent");
-                        lstSms.add(objSms);
-                    }
-                    c.moveToNext();
+        if (c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                objSms = new Sms();
+                objSms.setId(c.getString(c.getColumnIndexOrThrow("_id")));
+                objSms.setNumber(c.getString(c.getColumnIndexOrThrow("address")));
+                objSms.setBody(c.getString(c.getColumnIndexOrThrow("body")));
+                objSms.setDate(c.getString(c.getColumnIndexOrThrow("date")));
+                if (c.getString(c.getColumnIndexOrThrow("type")).contains("1")) {
+                    objSms.setFolderName("sent");
+                    lstSms.add(objSms);
                 }
+                c.moveToNext();
             }
-            c.close();
-            return lstSms;
+        }
+        c.close();
+        getActivity().stopManagingCursor(c);
+        return lstSms;
     }
 
     class Sms {
@@ -477,7 +520,7 @@ public class AddSmsParseFragment extends Fragment {
             amountKeyOld = new ArrayList<>();
         }
 
-        public void oldTemplateChange () {
+        public void oldTemplateChange() {
             if (oldObject.getTemplates() != null) {
                 for (int i = list.size() - 1; i >= 0; i--) {
                     for (TemplateSms templateSms : oldObject.getTemplates()) {
@@ -504,9 +547,11 @@ public class AddSmsParseFragment extends Fragment {
         public List<String> getIncomeKeys() {
             return incomeKeys;
         }
+
         public List<String> getExpanceKeys() {
             return expanceKeys;
         }
+
         public List<String> getAmountKeys() {
             return amountKeys;
         }
@@ -557,8 +602,10 @@ public class AddSmsParseFragment extends Fragment {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adding_sms_item, parent, false);
             return new ViewHolder(view);
         }
+
         TextView amountkey;
         TextView parsingkey;
+
         private void dialogSms(final boolean type, final int position) {
             posIncExp = -1;
             posAmount = -1;
@@ -569,12 +616,18 @@ public class AddSmsParseFragment extends Fragment {
             dialog.setContentView(dialogView);
             final ImageView close = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowCancel);
             final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
+            final TextView tvSmsDialogTypeTitle = (TextView) dialogView.findViewById(R.id.tvSmsDialogTypeTitle);
+            if (type) {
+                tvSmsDialogTypeTitle.setText(getResources().getString(R.string.income_decide_with_static_word));
+            }else {
+                tvSmsDialogTypeTitle.setText(R.string.expense_decide_with_static_word);
+            }
             amountkey = (TextView) dialogView.findViewById(R.id.amountKey);
             parsingkey = (TextView) dialogView.findViewById(R.id.parsingKey);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
 
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
-                    - 2 * commonOperations.convertDpToPixel(40))/getResources().getDisplayMetrics().density);
+                    - 2 * commonOperations.convertDpToPixel(40)) / getResources().getDisplayMetrics().density);
 
             strings = smsBodyParse(list.get(position).getBody());
             tvList = new ArrayList<>();
@@ -591,7 +644,6 @@ public class AddSmsParseFragment extends Fragment {
             List<String> tempList = new ArrayList<>();
             int length;
             int row = 1;
-
             for (int i = 0; i < strings.size(); i++) {
                 List<String> temp = new ArrayList<>();
                 temp.addAll(tempList);
@@ -621,7 +673,6 @@ public class AddSmsParseFragment extends Fragment {
                     TextView textView = new TextView(getContext());
                     textView.setTag(row++);
                     textView.setTextSize(txSize);
-//                    textView.setTextColor(ContextCompat.getColor(getContext(), R.color.black_for_glavniy_text));
                     textView.setBackgroundResource(R.drawable.select_grey);
                     textView.setText(lt.get(i));
                     tvList.add(textView);
@@ -660,7 +711,7 @@ public class AddSmsParseFragment extends Fragment {
                         } else {
                             amountKeyOld.add(strings.get(position + 1));
                         }
-                        templateSmsList = commonOperations.generateSmsTemplateList(strings, posIncExp, posAmount, incomeKeys, expanceKeys, amountKeys);
+                        templateSmsList = commonOperations.generateSmsTemplateList(strings, posIncExp, posAmount, incomeKeys, expanceKeys, new ArrayList<String>());
                         for (int i = list.size() - 1; i >= 0; i--) {
                             for (TemplateSms templateSms : templateSmsList) {
                                 if (list.get(i).getBody().matches(templateSms.getRegex())) {
@@ -704,20 +755,20 @@ public class AddSmsParseFragment extends Fragment {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(strings.get((Integer) v.getTag() - 1));
                 if (!matcher.matches() && !strings.get((int) v.getTag() - 1).matches("\\s?[0-9]+\\s?")) {
-                    if (posIncExp != -1){
+                    if (posIncExp != -1) {
                         parsingkey.setText(getResources().getString(R.string.select_word));
                         tvList.get(posIncExp).setBackgroundResource(R.drawable.select_grey);
                     }
                     posIncExp = (int) v.getTag() - 1;
                     v.setBackgroundResource(R.drawable.select_green);
-                    parsingkey.setText(((TextView)v).getText().toString());
+                    parsingkey.setText(((TextView) v).getText().toString());
                 } else {
-                    if (posAmount != -1){
+                    if (posAmount != -1) {
                         amountkey.setText(getResources().getString(R.string.select_word));
                         tvList.get(posAmount).setBackgroundResource(R.drawable.select_grey);
                     }
                     posAmount = (int) v.getTag() - 1;
-                    amountkey.setText(((TextView)v).getText().toString());
+                    amountkey.setText(((TextView) v).getText().toString());
                     v.setBackgroundResource(R.drawable.select_yellow);
                 }
             }

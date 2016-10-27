@@ -237,10 +237,6 @@ public class CommonOperations {
     }
 
     public List<TemplateSms> generateSmsTemplateList(List<String> splittedText, int incExpPos, int amountPos, List<String> incomeKeywords, List<String> expenseKeywords, List<String> amountKeywords) {
-        String number = "[0-9]+[.,]?[0-9]*";
-        String whiteSpaceSeq = "\\s*";
-        String notNumberSeq = "[^0-9]*";
-        String anyVisibleCharSeq = ".*";
         List<TemplateSms> templates = new ArrayList<>();
         int amountBlockPos = 0;
         String regex;
@@ -266,7 +262,7 @@ public class CommonOperations {
                             .openGroup().anyWhitespaceSeq().anyVisibleCharSeq().closeGroup()
                             .build();
                     amountBlockPos = 2;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             } else if (incExpPos == 0 && incExpPos + 1 != amountPos && incExpPos < amountPos && amountPos != splittedText.size()-1) {
@@ -293,7 +289,7 @@ public class CommonOperations {
                             .openGroup().anyWhitespaceSeq().anyVisibleCharSeq().closeGroup()
                             .build();
                     amountBlockPos = 4;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             }
@@ -323,7 +319,7 @@ public class CommonOperations {
                             .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                             .build();
                     amountBlockPos = 4;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             } else if (incExpPos != 0 && amountPos+1 != incExpPos && incExpPos < amountPos && amountPos != splittedText.size()-1) {
@@ -356,7 +352,7 @@ public class CommonOperations {
                             .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                             .build();
                     amountBlockPos = 6;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             } else if (incExpPos != 0 && amountPos+1 != incExpPos && incExpPos < amountPos && amountPos == splittedText.size()-1) {
@@ -387,7 +383,7 @@ public class CommonOperations {
                             .defineNumber()
                             .build();
                     amountBlockPos = 6;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             } else if (incExpPos != 0 && amountPos+1 == incExpPos && amountPos == splittedText.size()-1) {
@@ -414,7 +410,7 @@ public class CommonOperations {
                             .defineNumber()
                             .build();
                     amountBlockPos = 4;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             }
@@ -439,7 +435,7 @@ public class CommonOperations {
                             .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                             .build();
                     amountBlockPos = 1;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             } else if (amountPos == 0 && amountPos+1 != incExpPos && incExpPos != splittedText.size()-1) {
@@ -466,7 +462,7 @@ public class CommonOperations {
                             .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                             .build();
                     amountBlockPos = 1;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             } else if (amountPos != 0 && amountPos+1 == incExpPos && incExpPos != splittedText.size()-1) {
@@ -495,7 +491,7 @@ public class CommonOperations {
                             .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                             .build();
                     amountBlockPos = 3;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             }
@@ -529,7 +525,7 @@ public class CommonOperations {
                             .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                             .build();
                     amountBlockPos = 3;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             }
@@ -561,7 +557,7 @@ public class CommonOperations {
                             .defineWord(keyWord)
                             .build();
                     amountBlockPos = 3;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             }
@@ -589,7 +585,7 @@ public class CommonOperations {
                             .defineWord(keyWord)
                             .build();
                     amountBlockPos = 3;
-                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                    TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                     templates.add(template);
                 }
             }
@@ -621,7 +617,7 @@ public class CommonOperations {
                         template.setPosAmountGroupSecond(secondBlockPos);
                         templates.add(template);
                     }
-                    for (String keyWord : incomeKeywords) {
+                    for (String keyWord : expenseKeywords) {
                         regex = new RegexBuilder().builder()
                                 .openGroup().anyVisibleCharSeq().anyWhitespaceSeq().closeGroup()
                                 .defineWord(keyWord)
@@ -641,196 +637,15 @@ public class CommonOperations {
                                 .build();
                         amountBlockPos = 5;
                         int secondBlockPos = 9;
-                        TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.INCOME, amountBlockPos);
+                        TemplateSms template = new TemplateSms(regex, PocketAccounterGeneral.EXPENSE, amountBlockPos);
                         template.setPosAmountGroupSecond(secondBlockPos);
                         templates.add(template);
                     }
                 }
             }
         }
-//        if (splittedText != null && !splittedText.isEmpty()) {
-//            for (String incomeKeyword : incomeKeywords) {
-//                int type = PocketAccounterGeneral.INCOME;
-//                String regex = ".*\\s*";
-//                if (incExpPos < amountPos) {
-//                    if (incExpPos+1 == amountPos) {
-//                        regex += "(\\b"+incomeKeyword+")\\s*";
-//                        regex += "("+number+").*\\s*";
-//                        amountBlockPos = 2;
-//                    }
-//                    else {
-//                        regex += "(\\b"+incomeKeyword+").*\\s*";
-//                        regex += "(\\b"+splittedText.get(amountPos-1)+")\\s*";
-//                        regex += "("+number+").*\\s*";
-//                        amountBlockPos = 3;
-//                    }
-//                }
-//                else {
-//                    regex = "";
-//                    if (amountPos != 0) {
-//                        regex += ".*\\s*";
-//                        regex += "(\\b" + splittedText.get(amountPos - 1) + ")\\s*";
-//                    }
-//                    regex += "("+number+").*\\s*";
-//                    regex += "(\\b"+incomeKeyword+").*\\s*";
-//                    if (amountPos != 0)
-//                        amountBlockPos = 2;
-//                    else
-//                        amountBlockPos = 1;
-//                }
-//                TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                templates.add(templateSms);
-//            }
-//            for (String expenseKeyword : expenseKeywords) {
-//                int type = PocketAccounterGeneral.EXPENSE;
-//                String regex = ".*\\s*";
-//                if (incExpPos < amountPos) {
-//                    if (incExpPos+1 == amountPos) {
-//                        regex += "(\\b"+expenseKeyword+")\\s*";
-//                        regex += "("+number+").*\\s*";
-//                        amountBlockPos = 2;
-//                    }
-//                    else {
-//                        regex += "(\\b"+expenseKeyword+").*\\s*";
-//                        regex += "(\\b"+splittedText.get(amountPos-1)+")\\s*";
-//                        regex += "("+number+").*\\s*";
-//                        amountBlockPos = 3;
-//                    }
-//                }
-//                else {
-//                    regex = "";
-//                    if (amountPos != 0) {
-//                        regex += ".*\\s*";
-//                        regex += "(\\b" + splittedText.get(amountPos - 1) + ")\\s*";
-//                    }
-//                    regex += "("+number+").*\\s*";
-//                    regex += "(\\b"+expenseKeyword+").*\\s*";
-//                    if (amountPos != 0)
-//                        amountBlockPos = 2;
-//                    else
-//                        amountBlockPos = 1;
-//                }
-//                TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                templates.add(templateSms);
-//            }
-//        } else {
-//            for (String amountKeyword : amountKeywords) {
-//                for (String incomeKeyword : incomeKeywords) {
-//                    int type = PocketAccounterGeneral.INCOME;
-//                    String regex = "(.*\\s*((\\b"+incomeKeyword+").*\\s*(\\b"+amountKeyword+")\\s*("+number+")))|" +
-//                            "(.*\\s*((\\b"+amountKeyword+")\\s*("+number+").*\\s*(\\b"+incomeKeyword+")))";
-//                    amountBlockPos = 5;
-//                    int amountBlockPosSecond = 9;
-//                    TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                    templateSms.setPosAmountGroupSecond(amountBlockPosSecond);
-//                    templates.add(templateSms);
-//                }
-//            }
-//            for (String amountKeyword : amountKeywords) {
-//                for (String expenseKeyword : expenseKeywords) {
-//                    int type = PocketAccounterGeneral.EXPENSE;
-//                    String regex = "(.*\\s*((\\b"+expenseKeyword+").*\\s*(\\b"+amountKeyword+")\\s*("+number+")))|" +
-//                            "(.*\\s*((\\b"+amountKeyword+")\\s*("+number+").*\\s*(\\b"+expenseKeyword+")))";
-//                    amountBlockPos = 5;
-//                    int amountBlockPosSecond = 9;
-//                    TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                    templateSms.setPosAmountGroupSecond(amountBlockPosSecond);
-//                    templates.add(templateSms);
-//                }
-//            }
-//        }
         return templates;
     }
-
-//    public List<TemplateSms> generateSmsTemplateList(String[] splittedText, int incExpPos, int amountPos, String[] incomeKeywords, String[] expenseKeywords, String[] amountKeywords) {
-//        String numberPattern = "[0-9]+[.,]?[0-9]*";
-//        List<TemplateSms> templates = new ArrayList<>();
-//        int amountBlockPos = 0;
-//        if (splittedText != null && incomeKeywords != null && amountKeywords == null) {
-//            for (String incomeKeyword : incomeKeywords) {
-//                int type = PocketAccounterGeneral.INCOME;
-//                String regex = ".*";
-//                if (incExpPos < amountPos) {
-//                    if (incExpPos+1 == amountPos) {
-//                        regex += "(\\b"+incomeKeyword+")\\s*";
-//                        regex += "("+numberPattern+").*";
-//                        amountBlockPos = 3;
-//                    }
-//                    else {
-//                        regex += "(\\b"+incomeKeyword+").*";
-//                        regex += "(\\b"+splittedText[amountPos-1]+")\\s*";
-//                        regex += "("+numberPattern+").*";
-//                        amountBlockPos = 2;
-//                    }
-//                }
-//                else {
-//                    regex = "";
-//                    if (amountPos != 0) {
-//                        regex += ".*";
-//                        regex += "(\\b" + splittedText[amountPos - 1] + ")\\s*";
-//                    }
-//                    regex += "("+numberPattern+").*";
-//                    regex += "(\\b"+incomeKeyword+").*";
-//                    if (amountPos != 0)
-//                        amountBlockPos = 2;
-//                    else
-//                        amountBlockPos = 1;
-//                }
-//                TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                templates.add(templateSms);
-//            }
-//        }
-//        if (splittedText != null && expenseKeywords != null && amountKeywords == null) {
-//            for (String expenseKeyword : expenseKeywords) {
-//                int type = PocketAccounterGeneral.EXPENSE;
-//                String regex = ".*";
-//                if (incExpPos < amountPos) {
-//                    if (incExpPos+1 == amountPos) {
-//                        regex += "(\\b"+expenseKeyword+")\\s*";
-//                        regex += "("+numberPattern+").*";
-//                        amountBlockPos = 2;
-//                    }
-//                    else {
-//                        regex += "(\\b"+expenseKeyword+").*";
-//                        regex += "(\\b"+splittedText[amountPos-1]+")\\s*";
-//                        regex += "("+numberPattern+").*";
-//                        amountBlockPos = 3;
-//                    }
-//                }
-//                else {
-//                    regex = "";
-//                    if (amountPos != 0) {
-//                        regex += ".*";
-//                        regex += "(\\b" + splittedText[amountPos - 1] + ")\\s*";
-//                    }
-//                    regex += "("+numberPattern+").*";
-//                    regex += "(\\b"+expenseKeyword+").*";
-//                    if (amountPos != 0)
-//                        amountBlockPos = 2;
-//                    else
-//                        amountBlockPos = 1;
-//                }
-//                TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                templates.add(templateSms);
-//            }
-//        }
-//        if (splittedText == null && amountKeywords != null && incomeKeywords != null) {
-//            for (String amountKeyword : amountKeywords) {
-//                for (String incomeKeyword : incomeKeywords) {
-//                    int type = PocketAccounterGeneral.INCOME;
-//                    String amountBlock = "amount_block";
-//                    String regex = "(.*((\\b"+incomeKeyword+").*(\\b"+amountKeyword+")\\s*("+numberPattern+")))|" +
-//                            "(.*((\\b"+amountKeyword+")\\s*("+numberPattern+").*(\\b"+incomeKeyword+")))";
-//                    amountBlockPos = 5;
-//                    int amountBlockPosSecond = 9;
-//                    TemplateSms templateSms = new TemplateSms(regex, type, amountBlockPos);
-//                    templateSms.setPosAmountGroupSecond(amountBlockPosSecond);
-//                    templates.add(templateSms);
-//                }
-//            }
-//        }
-//        return templates;
-//    }
 
     public Bitmap getRoundedCornerBitmap(Bitmap bitmap, int cornerRadius) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);

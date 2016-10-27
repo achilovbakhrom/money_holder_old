@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/ten_dp">
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,19 @@
             android:layout_marginLeft="@dimen/sixteen_dp"
             android:text="@string/add_keywords_in_sms_parsing"
             android:textColor="@color/for_darker"
-            android:textSize="@dimen/sixteen_sp" />
+            android:textSize="@dimen/sixteen_sp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/sixteen_dp"/>
+
+        <ImageView
+            android:id="@+id/ivInfoDebtBorrowCancel"
+            android:layout_width="@dimen/twentyfive_dp"
+            android:layout_height="@dimen/twentyfive_dp"
+            android:layout_alignBottom="@+id/ivInfoDebtBorrowSave"
+            android:layout_gravity="center_vertical"
+            android:layout_toLeftOf="@+id/ivInfoDebtBorrowSave"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/cancel_sign" />
         <ImageView
             android:id="@+id/ivInfoDebtBorrowSave"
             android:layout_width="@dimen/twentyfive_dp"
@@ -30,20 +42,13 @@
             android:layout_marginTop="@dimen/sixteen_dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/check_sign" />
-        <ImageView
-            android:id="@+id/ivInfoDebtBorrowCancel"
-            android:layout_width="@dimen/twentyfive_dp"
-            android:layout_height="@dimen/twentyfive_dp"
-            android:layout_alignBottom="@+id/ivInfoDebtBorrowSave"
-            android:layout_gravity="center_vertical"
-            android:layout_toLeftOf="@+id/ivInfoDebtBorrowSave"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/cancel_sign" />
-    </RelativeLayout>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/ten_dp"
+        android:layout_marginBottom="@dimen/ten_dp">
         <CheckBox
             android:id="@+id/chbIncome"
             android:layout_width="wrap_content"

@@ -44,27 +44,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 @SuppressLint("InflateParams")
-public class CurrencyFragment extends Fragment implements OnClickListener, OnItemClickListener {
+public class CurrencyFragment extends PABaseListFragment implements OnClickListener, OnItemClickListener {
 	private FloatingActionButton fabCurrencyAdd;
 	private ListView lvCurrency;
 	private int mode = PocketAccounterGeneral.NORMAL_MODE;
 	private boolean[] selected;
-	@Inject
-	ToolbarManager toolbarManager;
-	@Inject
-	DrawerInitializer drawerInitializer;
-	@Inject
-	DaoSession daoSession;
-	@Inject
-	PAFragmentManager paFragmentManager;
-	@Inject
-	WarningDialog dialog;
-	@Inject
-	LogicManager logicManager;
-	@Inject
-	CommonOperations commonOperations;
-	@Inject
-	DataCache dataCache;
+
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.currency_fragment, container, false);
 		rootView.postDelayed(new Runnable() {
@@ -75,20 +60,9 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 					imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);}
 			}
 		},100);
-		((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext())
-										.inject(this);
-
-		toolbarManager.setImageToHomeButton(R.drawable.ic_drawer);
 		toolbarManager.setTitle(getResources().getString(R.string.currencies));
 		toolbarManager.setSubtitle(getResources().getString(R.string.main_currency)+" "+ commonOperations.getMainCurrency().getAbbr());
-		toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				drawerInitializer.getDrawer().openLeftSide();
-			}
-		});
 		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-		toolbarManager.setSpinnerVisibility(View.GONE);
 		toolbarManager.setImageToSecondImage(R.drawable.pencil);
 		toolbarManager.setOnSecondImageClickListener(this);
 		fabCurrencyAdd = (FloatingActionButton) rootView.findViewById(R.id.fabCurrencyAdd);
@@ -141,7 +115,6 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 				}
 			}
 		});
-
 		refreshList();
 		return rootView;
 	}
@@ -169,6 +142,7 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 		fabCurrencyAdd.setClickable(false);
 		refreshList();
 	}
+
 	private void setCurrencyListMode() {
 		mode = PocketAccounterGeneral.NORMAL_MODE;
 		toolbarManager.setImageToSecondImage(R.drawable.pencil);
@@ -210,6 +184,7 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 						setCurrencyListMode();
 						return;
 					}
+					final WarningDialog dialog = new WarningDialog(getContext());
 					dialog.setOnYesButtonListener(new OnClickListener() {
 						@Override
 						public void onClick(View v) {
@@ -259,7 +234,8 @@ public class CurrencyFragment extends Fragment implements OnClickListener, OnIte
 			}
 		}
 	};
-	private void refreshList() {
+	@Override
+	void refreshList() {
 		CurrencyAdapter adapter = new CurrencyAdapter(getActivity(), daoSession.getCurrencyDao().loadAll(), selected, mode);
 		lvCurrency.setAdapter(adapter);
 	}

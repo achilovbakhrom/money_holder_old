@@ -807,6 +807,9 @@ public class LogicManager {
     }
 
     public int deleteSmsParseObject(SmsParseObject smsParseObject) {
+        smsParseSuccessDao.deleteInTx(smsParseSuccessDao.queryBuilder().
+                where(SmsParseSuccessDao.Properties
+                        .SmsParseObjectId.eq(smsParseObject.getId())).list());
         smsParseObjectDao.delete(smsParseObject);
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
@@ -817,32 +820,40 @@ public class LogicManager {
     }
 
     public double isLimitAccess(Account account, Calendar date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getAmount());
+        List<AccountOperation> operations = daoSession.getAccountOperationDao().loadAll();
+        for (AccountOperation accountOperation : operations) {
+            if (accountOperation.getSourceId().equals(account.getId())) {
+                accounted -= commonOperations.getCost(date, accountOperation.getCurrency(), accountOperation.getAmount());
+            }
+            if (accountOperation.getTargetId().equals(account.getId())) {
+                accounted += commonOperations.getCost(date, accountOperation.getCurrency(), accountOperation.getAmount());
+            }
+        }
         for (int i = 0; i < recordDao.queryBuilder().list().size(); i++) {
             FinanceRecord tempac = recordDao.queryBuilder().list().get(i);
             if (tempac.getAccount().getId().matches(account.getId())) {
                 if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
+                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), tempac.getAmount());
                 else
-                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
+                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), tempac.getAmount());
             }
         }
         for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
             if (debtBorrow.getCalculate()) {
                 if (debtBorrow.getAccount().getId().matches(account.getId())) {
                     if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
+                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), debtBorrow.getAmount());
                     } else {
-                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
+                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), debtBorrow.getAmount());
                     }
                     for (Recking recking : debtBorrow.getReckings()) {
                         Calendar cal = recking.getPayDate();
 
                         if (debtBorrow.getType() == DebtBorrow.DEBT) {
-                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
                         } else {
-                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
                         }
                     }
                 } else {
@@ -851,9 +862,9 @@ public class LogicManager {
                         if (recking.getAccountId().matches(account.getId())) {
 
                             if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
                             } else {
-                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
                             }
                         }
                     }
@@ -864,7 +875,7 @@ public class LogicManager {
             if (creditDetials.getKey_for_include()) {
                 for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
                     if (reckingCredit.getAccountId().matches(account.getId())) {
-                        accounted = accounted - commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(), account.getCurrency(), reckingCredit.getAmount());
+                        accounted = accounted - commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(), reckingCredit.getAmount());
                     }
                 }
             }

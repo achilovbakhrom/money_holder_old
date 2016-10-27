@@ -50,6 +50,7 @@ import com.jim.pocketaccounter.finance.IconAdapterCategory;
 import com.jim.pocketaccounter.finance.RecordCategoryAdapter;
 import com.jim.pocketaccounter.finance.RecordSubCategoryAdapter;
 import com.jim.pocketaccounter.finance.TransferAccountAdapter;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -78,6 +79,8 @@ public class AddAutoMarketFragment extends Fragment {
     LogicManager logicManager;
     @Inject
     SubCatAddEditDialog subCatAddEditDialog;
+    @Inject
+    CommonOperations commonOperations;
 
     private AccountDao accountDao;
     private CurrencyDao currencyDao;
@@ -145,7 +148,13 @@ public class AddAutoMarketFragment extends Fragment {
 
         account_sp.setAdapter(adapter_scet);
         spCurrency.setAdapter(curAdapter);
-
+        int posMain = 0;
+        for (int i = 0; i < curs.size(); i++) {
+            if (curs.get(i).equals(commonOperations.getMainCurrency().getAbbr())) {
+                posMain = i;
+            }
+        }
+        spCurrency.setSelection(posMain);
         List<String> acNames = new ArrayList<>();
         for (Account ac : accountDao.loadAll()) {
             acNames.add(ac.getId());

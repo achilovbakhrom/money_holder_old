@@ -222,6 +222,13 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
         ArrayAdapter<String> curAdapter = new ArrayAdapter<String>(getContext(),
                 R.layout.adapter_spiner, curList);
         curPurpose.setAdapter(curAdapter);
+        int posMain = 0;
+        for (int i = 0; i < curList.size(); i++) {
+            if (curList.get(i).equals(commonOperations.getMainCurrency().getAbbr())) {
+                posMain = i;
+            }
+        }
+        curPurpose.setSelection(posMain);
         // ------------ end spinner currency -------
         // ------------ period purpose spinner ------
         relativeLayoutForGone.setVisibility(View.GONE);

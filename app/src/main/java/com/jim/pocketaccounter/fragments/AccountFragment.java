@@ -49,6 +49,7 @@ import com.jim.pocketaccounter.utils.FloatingActionButton;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.ScrollDirectionListener;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,11 +180,12 @@ public class AccountFragment extends Fragment {
             view.tvAccountListName.setText(result.get(position).getName());
 			int resId = getResources().getIdentifier(result.get(position).getIcon(), "drawable", getContext().getPackageName());
             view.ivAccountListIcon.setImageResource(resId);
+			DecimalFormat format = new DecimalFormat("0.##");
 			String startMoney = "";
 			if (result.get(position).getAmount() == 0)
             	startMoney = getResources().getString(R.string.start_amount) + ": "+0+"\n";
 			else
-				startMoney = getResources().getString(R.string.start_amount) + ": "+result.get(position).getAmount()+result.get(position).getStartMoneyCurrency().getAbbr()+"\n";
+				startMoney = getResources().getString(R.string.start_amount) + ": "+format.format(result.get(position).getAmount())+result.get(position).getStartMoneyCurrency().getAbbr()+"\n";
 			if (result.get(position).getNoneMinusAccount())
 				startMoney += getString(R.string.none_minusable_account);
 			else
@@ -194,11 +196,11 @@ public class AccountFragment extends Fragment {
 			boolean isFirst = true;
 			for (Currency currency : map.keySet()){
 				if(isFirst){
-					text = text + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
+					text = text + currency.getName() + ": " + format.format(map.get(currency).doubleValue()) + " "+currency.getAbbr();
 					isFirst = false;
 				}
 				else
-					text = text + "\n" + currency.getName() + ": " + map.get(currency).doubleValue() + " "+currency.getAbbr();
+					text = text + "\n" + currency.getName() + ": " + format.format(map.get(currency).doubleValue()) + " "+currency.getAbbr();
 
 			}
 			view.view.setOnClickListener(new OnClickListener() {

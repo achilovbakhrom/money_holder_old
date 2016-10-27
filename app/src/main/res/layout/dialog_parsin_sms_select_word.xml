@@ -60,7 +60,8 @@
         android:layout_marginTop="@dimen/ten_dp"
         android:text="@string/income_decide_with_static_word"
         android:textColor="@color/black_for_glavniy_text"
-        android:textSize="@dimen/sixteen_dp" />
+        android:textSize="@dimen/sixteen_dp"
+        android:id="@+id/tvSmsDialogTypeTitle"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

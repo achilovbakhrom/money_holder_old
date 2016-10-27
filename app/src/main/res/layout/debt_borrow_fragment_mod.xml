@@ -17,7 +17,7 @@
         app:tabMaxWidth="0dp"
         app:tabMode="fixed"
         app:tabTextAppearance="@style/MineCustomTabText" />
-    <android.support.v4.view.ViewPager
+    <com.jim.pocketaccounter.photocalc.ViewPagerFixed
         android:id="@+id/vpDebtBorrowFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

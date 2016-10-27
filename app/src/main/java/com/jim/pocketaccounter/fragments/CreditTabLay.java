@@ -1,7 +1,6 @@
 package com.jim.pocketaccounter.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -31,7 +29,7 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 
-public class CreditTabLay extends Fragment  implements View.OnClickListener, ViewPager.OnPageChangeListener{
+public class CreditTabLay extends Fragment implements View.OnClickListener, ViewPager.OnPageChangeListener{
     @Inject
     PAFragmentManager paFragmentManager;
     @Inject

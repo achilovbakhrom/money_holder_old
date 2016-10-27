@@ -51,7 +51,6 @@ public class MainPageFragment extends Fragment {
     private RecordExpanseView expenseView;
     private RecordIncomesView incomeView;
     private Map<String, Double> balance;
-    private Object lock = new Object();
     @Inject ReportManager reportManager;
     @Inject DataCache dataCache;
     @Inject CommonOperations commonOperations;
@@ -60,8 +59,7 @@ public class MainPageFragment extends Fragment {
     @Inject PAFragmentManager paFragmentManager;
     @Inject @Named(value = "begin") Calendar begin;
     @Inject @Named(value = "end") Calendar end;
-    @Inject
-    SharedPreferences preferences;
+    @Inject SharedPreferences preferences;
     public MainPageFragment(Context context, Calendar day) {
         this.day = (Calendar) day.clone();
         this.pocketAccounter = (PocketAccounter) context;

@@ -198,7 +198,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                     BoardButton boardButton = daoSession.getBoardButtonDao().queryBuilder()
                                             .where(BoardButtonDao.Properties.CategoryId.eq(debtBorrow.getId()))
                                             .list().get(0);
-                                    addBorrowFragment.setMainView(boardButton.getPos(), boardButton.getTable());
+                                    addBorrowFragment.setMainView(boardButton);
                                 }
 
                                 int count = paFragmentManager.getFragmentManager().getBackStackEntryCount();

@@ -847,7 +847,7 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 										case 2:
 											paFragmentManager.setMainReturn(true);
 											AddBorrowFragment fragment = (AddBorrowFragment) AddBorrowFragment.getInstance(DebtBorrow.DEBT, null);
-											fragment.setMainView(currentPage*16 + pos, PocketAccounterGeneral.EXPENSE);
+											fragment.setMainView(buttons.get(pos).getCategory());
 											paFragmentManager.displayFragment(fragment);
 											break;
 									}

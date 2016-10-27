@@ -1510,8 +1510,8 @@
     <string name="ammount_of_operation">Счет для операции:</string>
     <string name="income_decide_with_static_word">Выберите ключевое слово (доход)</string>
     <string name="info_toliq">Информация:</string>
-    <string name="it_is_expense">Доход</string>
-    <string name="it_is_income">Расход</string>
+    <string name="it_is_expense">Расход</string>
+    <string name="it_is_income">Доход</string>
     <string name="obyasneniya_pro_parsing">Для точности определения распознования СМС сообщений выберите слово определяющее доход или расход, а также сумму!</string>
     <string name="processed">Обработано:</string>
     <string name="select_word_for_parsing">Выберите слово для парсинга</string>
@@ -1611,6 +1611,7 @@
     <string name="summa">Сумма</string>
     <string name="widget">Виджет</string>
     <string name="sms_not_exist">Смс сообщения отсутсвуют</string>
+    <string name="there_is_no_operations_for_today">Сегодня не было никаких операций!</string>
     <string name="main_window">Главное окно</string>
     <string name="cancelb">Отмена</string>
     <string name="choose_amount">Сумма не выбрана</string>
@@ -1618,4 +1619,10 @@
     <string name="no_success">Не обработано</string>
     <string name="period_of_save">Введите период</string>
     <string name="select_category">Выберите категорию</string>
+    <string name="enter_contact_error">Введите контакт</string>
+    <string name="expense_decide_with_static_word">Выберите ключевое слово(расход):</string>
+    <string name="expense_keyword_error">Введите ключевое слово(расход)</string>
+    <string name="income_keyword_error">Введите ключевое слово(доход)</string>
+    <string name="amount_keyword_error">Введите ключевое слово для определения суммы</string>
 </resources>
+

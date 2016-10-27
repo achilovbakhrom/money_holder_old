@@ -117,6 +117,11 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rvRecordDetail.setLayoutManager(llm);
+        if (records.isEmpty()) {
+            rvRecordDetail.setVisibility(View.GONE);
+        } else {
+            rvRecordDetail.setVisibility(View.VISIBLE);
+        }
         rvRecordDetail.setAdapter(adapter);
     }
 

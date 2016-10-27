@@ -848,8 +848,7 @@ public class ReportManager {
             e.set(Calendar.MILLISECOND, 59);
             for (Account account : accountDao.loadAll()) {
                 if (account.getAmount() != 0) {
-                    Calendar calendar = (Calendar) recordBegin.clone();
-                    if (calendar.compareTo(b) >= 0 && calendar.compareTo(e) <= 0) {
+                    if (account.getCalendar().compareTo(b) >= 0 && account.getCalendar().compareTo(e) <= 0) {
                         IncomeExpanseDayDetails detail = new IncomeExpanseDayDetails();
                         RootCategory category = new RootCategory();
                         category.setType(PocketAccounterGeneral.INCOME);

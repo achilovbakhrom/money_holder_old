@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,8 @@ public class SMSParseInfoFragment extends Fragment {
                     }
                 });
                 warningDialog.setText(getResources().getString(R.string.delete));
+                int width = getResources().getDisplayMetrics().widthPixels;
+                warningDialog.getWindow().setLayout(8*width/10, ViewGroup.LayoutParams.WRAP_CONTENT);
                 warningDialog.show();
             }
         });
@@ -170,6 +173,10 @@ public class SMSParseInfoFragment extends Fragment {
                 view.linearLayout.setVisibility(View.GONE);
                 view.tvAmount.setText("" + successList.get(position).getAmount()
                         + successList.get(position).getCurrency().getAbbr());
+                if (successList.get(position).getType() == PocketAccounterGeneral.EXPENSE)
+                    view.tvAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.red));
+                else
+                    view.tvAmount.setTextColor(ContextCompat.getColor(getContext(), R.color.green_just));
                 view.tvType.setText(successList.get(position).getType() ==
                         PocketAccounterGeneral.INCOME ? getResources().getString(R.string.income) : getResources().getString(R.string.expanse));
             } else {
@@ -256,6 +263,13 @@ public class SMSParseInfoFragment extends Fragment {
             final ImageView save = (ImageView) dialogView.findViewById(R.id.ivInfoDebtBorrowSave);
 //            final TextView content = (TextView) dialogView.findViewById(R.id.tvSmsParseAddDialogContent);
             final LinearLayout linearLayout = (LinearLayout) dialogView.findViewById(R.id.llDialogSmsParseAdd);
+            final TextView tvSmsDialogTypeTitle = (TextView) dialogView.findViewById(R.id.tvSmsDialogTypeTitle);
+            if (type) {
+                tvSmsDialogTypeTitle.setText(getResources().getString(R.string.income_decide_with_static_word));
+            }
+            else {
+                tvSmsDialogTypeTitle.setText(getResources().getString(R.string.expense_decide_with_static_word));
+            }
             amountkey = (TextView) dialogView.findViewById(R.id.amountKey);
             parsingkey = (TextView) dialogView.findViewById(R.id.parsingKey);
             int eni = (int) ((8 * getResources().getDisplayMetrics().widthPixels / 10
@@ -406,7 +420,7 @@ public class SMSParseInfoFragment extends Fragment {
         private int measureListText(List<String> list) {
             Paint paint = new Paint();
             Rect rect = new Rect();
-            paint.setTextSize(txSize/getResources().getDisplayMetrics().densityDpi);
+            paint.setTextSize(txSize);
             int length = 0;
             for (String s : list) {
                 paint.getTextBounds(s, 0, s.length(), rect);
@@ -414,7 +428,6 @@ public class SMSParseInfoFragment extends Fragment {
             }
             return length;
         }
-
 
         public SMSParseInfoFragment.ViewHolder onCreateViewHolder(ViewGroup parent, int var2) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.sms_recived_item, parent, false);

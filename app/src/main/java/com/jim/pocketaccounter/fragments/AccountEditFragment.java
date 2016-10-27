@@ -4,17 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -22,53 +17,26 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyDao;
-import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
-import com.jim.pocketaccounter.managers.PAFragmentManager;
-import com.jim.pocketaccounter.managers.ToolbarManager;
-import com.jim.pocketaccounter.utils.DatePicker;
+import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.IconChooseDialog;
 import com.jim.pocketaccounter.utils.OnIconPickListener;
-import com.jim.pocketaccounter.utils.FABIcon;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 @SuppressLint({"InflateParams", "ValidFragment"})
-public class AccountEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
-    @Inject
-    LogicManager logicManager;
-    @Inject
-    ToolbarManager toolbarManager;
-    @Inject
-    DaoSession daoSession;
-    @Inject
-    @Named(value = "display_formatter")
-    SimpleDateFormat dateFormat;
-    @Inject
-    PAFragmentManager paFragmentManager;
-    @Inject
-    IconChooseDialog iconChooseDialog;
-    @Inject
-    DatePicker datePicker;
+public class AccountEditFragment extends PABaseInfoFragment implements OnClickListener {
     private Account account;
     private EditText etAccountEditName;
     private FABIcon fabAccountIcon;
-    private RelativeLayout checkBoxSum;
     private CheckBox chbAccountStartSumEnabled;
     private RelativeLayout rlStartSumContainer;
     private RelativeLayout rlStartLimitContainer;
@@ -76,7 +44,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
     private EditText etStartLimit;
     private Spinner spStartMoneyCurrency;
     private CheckBox chbAccountNoneZero;
-    private CheckBox chbAccountLimit;
+    private CheckBox chbAccountEnabledLimit;
     private Spinner spStartLimit;
     private String choosenIcon = "icons_1";
     private TextView tvNoneMinusAccountTitle, tvStartSumAccountTitle;
@@ -95,8 +63,6 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                 imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
             }
         }, 100);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
         toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,8 +72,6 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
         });
         toolbarManager.setTitle(getResources().getString(R.string.addedit));
         toolbarManager.setSubtitle("");
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-        toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setImageToSecondImage(R.drawable.check_sign);
         toolbarManager.setOnSecondImageClickListener(this);
         List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
@@ -119,12 +83,8 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
             items[i] = currencies.get(i).getAbbr();
         }
         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, items);
-
-        //1 account name
-        etAccountEditName = (EditText) rootView.findViewById(R.id.etAccountEditName);
-
-        //2 account icon
-        fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon);
+        etAccountEditName = (EditText) rootView.findViewById(R.id.etAccountEditName); // account name
+        fabAccountIcon = (FABIcon) rootView.findViewById(R.id.fabAccountIcon); // icon chooser
         int resId = getResources().getIdentifier(choosenIcon, "drawable", getContext().getPackageName());
         Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
         Bitmap bitmap = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp),
@@ -133,6 +93,8 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
         fabAccountIcon.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                final IconChooseDialog iconChooseDialog = new IconChooseDialog(getContext());
+                if (account != null) iconChooseDialog.setSelectedIcon(account.getIcon());
                 iconChooseDialog.setOnIconPickListener(new OnIconPickListener() {
                     @Override
                     public void OnIconPick(String icon) {
@@ -149,21 +111,19 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                 iconChooseDialog.show();
             }
         });
-
-        //3 account start sum
-        chbAccountStartSumEnabled = (CheckBox) rootView.findViewById(R.id.chbAccountStartSumEnabled);
+        chbAccountStartSumEnabled = (CheckBox) rootView.findViewById(R.id.chbAccountStartSumEnabled); // start sum
         rlStartLimitContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartLimitContainer);
         chbAccountStartSumEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) { // for enabling and disabling start sum
                 if (isChecked)
                     rlStartSumContainer.setVisibility(View.VISIBLE);
                 else
                     rlStartSumContainer.setVisibility(View.GONE);
             }
         });
-        chbAccountLimit = (CheckBox) rootView.findViewById(R.id.chbAccountEnabledLimit);
-        chbAccountLimit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        chbAccountEnabledLimit = (CheckBox) rootView.findViewById(R.id.chbAccountEnabledLimit); // for enabling and disabling account limit
+        chbAccountEnabledLimit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
@@ -172,27 +132,23 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                     rlStartLimitContainer.setVisibility(View.GONE);
             }
         });
-        checkBoxSum = (RelativeLayout) rootView.findViewById(R.id.checkBoxSum);
         rlStartSumContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartSumContainer);
         rlStartSumContainer.setVisibility(View.GONE);
-        etStartMoney = (EditText) rootView.findViewById(R.id.etStartMoney);
-        spStartMoneyCurrency = (Spinner) rootView.findViewById(R.id.spStartMoneyCurrency);
+        etStartMoney = (EditText) rootView.findViewById(R.id.etStartMoney); // start money amount
+        spStartMoneyCurrency = (Spinner) rootView.findViewById(R.id.spStartMoneyCurrency); //start money currency
         spStartMoneyCurrency.setAdapter(arrayAdapter);
         spStartMoneyCurrency.setSelection(mainCurrencyPos);
         tvStartSumAccountTitle = (TextView) rootView.findViewById(R.id.tvStartSumAccountTitle);
-        etStartLimit = (EditText) rootView.findViewById(R.id.etStartLimit);
-        spStartLimit = (Spinner) rootView.findViewById(R.id.spStartLimitCurrency);
+        etStartLimit = (EditText) rootView.findViewById(R.id.etStartLimit); //limit amount
+        spStartLimit = (Spinner) rootView.findViewById(R.id.spStartLimitCurrency); //limit currency
         spStartLimit.setAdapter(arrayAdapter);
-
         tvStartSumAccountTitle.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 chbAccountStartSumEnabled.toggle();
             }
         });
-
-        //4 account none zero
-        chbAccountNoneZero = (CheckBox) rootView.findViewById(R.id.noneZeroAccount);
+        chbAccountNoneZero = (CheckBox) rootView.findViewById(R.id.noneZeroAccount); // none minus account's checkbox
         tvNoneMinusAccountTitle = (TextView) rootView.findViewById(R.id.tvNoneMinusAccountTitle);
         tvNoneMinusAccountTitle.setOnClickListener(new OnClickListener() {
             @Override
@@ -200,7 +156,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                 chbAccountNoneZero.toggle();
             }
         });
-        if (account != null) {
+        if (account != null) { // fill, if account is editing
             etAccountEditName.setText(account.getName());
             resId = getResources().getIdentifier(account.getIcon(), "drawable", getContext().getPackageName());
             temp = BitmapFactory.decodeResource(getResources(), resId);
@@ -209,7 +165,6 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
             choosenIcon = account.getIcon();
             fabAccountIcon.setImageBitmap(bitmap);
             chbAccountNoneZero.setChecked(account.getNoneMinusAccount());
-            iconChooseDialog.setSelectedIcon(account.getIcon());
             if (account.getAmount() != 0) {
                 chbAccountStartSumEnabled.setChecked(true);
                 rlStartSumContainer.setVisibility(View.VISIBLE);
@@ -221,7 +176,7 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                     }
             }
             if (account.getIsLimited()) {
-                chbAccountLimit.setChecked(true);
+                chbAccountEnabledLimit.setChecked(true);
                 etStartLimit.setText("" + account.getLimite());
                 for (int i = 0; i < currencies.size(); i++) {
                     if (currencies.get(i).getId().equals(account.getLimitCurId())) {
@@ -232,12 +187,6 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
             }
         }
         return rootView;
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        paFragmentManager.getFragmentManager().popBackStack();
     }
 
     @Override
@@ -258,21 +207,43 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                 } else
                     account = this.account;
                 account.setName(etAccountEditName.getText().toString());
-
                 if (!etStartMoney.getText().toString().matches("") && Double.parseDouble(etStartMoney.getText().toString()) != 0)
                     account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
                 else
                     account.setAmount(0);
-                if (chbAccountLimit.isChecked()) {
+                if (chbAccountEnabledLimit.isChecked()) {
+                    if (etStartLimit.getText().toString().equals("")) {
+                        etStartLimit.setError(getResources().getString(R.string.enter_amount_error));
+                        return;
+                    }
+                    if (this.account != null) {
+                        double limit = logicManager.isLimitAccess(this.account, Calendar.getInstance());
+                        double limitSum = Double.parseDouble(etStartLimit.getText().toString());
+                        Currency limitCurrency = daoSession.getCurrencyDao().queryBuilder()
+                                .where(CurrencyDao.Properties.Id.eq(this.account.getLimitCurId())).list().get(0);
+                        if (limit + commonOperations.getCost(Calendar.getInstance(), this.account.getStartMoneyCurrency(), this.account.getAmount()) <
+                                -(commonOperations.getCost(Calendar.getInstance(), limitCurrency, limitSum))) {
+                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     account.setIsLimited(true);
                     account.setLimite(Double.parseDouble(etStartLimit.getText().toString()));
-                    account.setLimitCurId(daoSession.getCurrencyDao().queryBuilder().where
-                            (CurrencyDao.Properties.Abbr.eq(spStartLimit.
-                                    getSelectedItem().toString())).list().get(0).getId());
+                    List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
+                    account.setLimitCurId(currencies.get(spStartLimit.getSelectedItemPosition()).getId());
+                } else {
+                    account.setIsLimited(false);
                 }
                 account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
                         .get(spStartMoneyCurrency.getSelectedItemPosition()));
                 account.setIcon(choosenIcon);
+                if (account != null && chbAccountNoneZero.isChecked()) {
+                    double limit = logicManager.isLimitAccess(account, Calendar.getInstance());
+                    if (limit < 0) {
+                        Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
                 account.setNoneMinusAccount(chbAccountNoneZero.isChecked());
                 if (this.account != null) {
                     daoSession.getAccountDao().insertOrReplace(account);
@@ -289,5 +260,9 @@ public class AccountEditFragment extends Fragment implements OnClickListener, On
                 }
                 break;
         }
+    }
+    @Override
+    void refreshList() {
+
     }
 }

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jim.pocketaccounter"
-    android:versionCode="16"
+    android:versionCode="22"
     android:versionName="v7.00">
 
     <uses-sdk
@@ -25,7 +25,6 @@
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.intent.action.DATE_CHANGED" />
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />

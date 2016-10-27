@@ -45,14 +45,13 @@ import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
 import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
+import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.Person;
-import com.jim.pocketaccounter.database.PersonDao;
 import com.jim.pocketaccounter.database.Recking;
-import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -128,8 +127,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private ArrayList<String> adapter;
     private FrameLayout btnDetalization;
     private String mode = PocketAccounterGeneral.EVERY_DAY, sequence = "";
-    private int MAINTYPE;
-
+    private BoardButton boardButton;
     public static AddBorrowFragment getInstance(int type, DebtBorrow debtBorrow) {
         AddBorrowFragment fragment = new AddBorrowFragment();
         Bundle bundle = new Bundle();
@@ -145,9 +143,8 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private static boolean mainView = false;
     private int posMain = -1;
 
-    public AddBorrowFragment setMainView(int posMain, int type) {
-        this.posMain = posMain;
-        this.MAINTYPE = type;
+    public AddBorrowFragment setMainView(BoardButton boardButton) {
+        this.boardButton = boardButton;
         return this;
     }
 
@@ -288,6 +285,13 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         arrayValyuAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item);
         PersonValyuta.setAdapter(arrayValyuAdapter);
+        int posMain = 0;
+        for (int i = 0; i < valyuts.length; i++) {
+            if (valyuts[i].equals(commonOperations.getMainCurrency().getAbbr())) {
+                posMain = i;
+            }
+        }
+        PersonValyuta.setSelection(posMain);
         PersonDataGet.setText(dateFormat.format(getDate.getTime()));
         PersonDataGet.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -537,13 +541,6 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         fragment.setArguments(bundle);
                     }
                     logicManager.insertDebtBorrow(currentDebtBorrow);
-                    int count = paFragmentManager.getFragmentManager().getBackStackEntryCount();
-                    while (count > 0) {
-                        paFragmentManager.getFragmentManager().popBackStack();
-                        count--;
-                    }
-                    paFragmentManager.displayFragment(new DebtBorrowFragment());
-
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.RGB_565;
                     Bitmap temp = null;
@@ -559,30 +556,13 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 
                     temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), false);
 
-                    if (!paFragmentManager.isMainReturn()) {
-                        List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
-                                .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
-                                .list();
-                        if (!buttons.isEmpty()) {
-                            for (BoardButton button : buttons) {
-                                dataCache.getBoardBitmapsCache().put(button.getId(), temp);
-                            }
-                            dataCache.updateAllPercents();
-                            paFragmentManager.updateAllFragmentsOnViewPager();
-                        }
-
-                        paFragmentManager.getFragmentManager().popBackStackImmediate();
-                        if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0)
-                            paFragmentManager.getFragmentManager().popBackStackImmediate();
-                        paFragmentManager.displayFragment(new DebtBorrowFragment());
-                    } else {
+                    if (boardButton != null) {
                         paFragmentManager.getFragmentManager().popBackStack();
-                        logicManager.changeBoardButton(MAINTYPE, posMain, currentDebtBorrow.getId());
-
+                        logicManager.changeBoardButton(boardButton.getTable(), boardButton.getPos(), currentDebtBorrow.getId());
                         if (!mainView) {
                             List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
-                                    .where(BoardButtonDao.Properties.Table.eq(MAINTYPE),
-                                            BoardButtonDao.Properties.Pos.eq(posMain)).list();
+                                    .where(BoardButtonDao.Properties.Table.eq(boardButton.getTable()),
+                                            BoardButtonDao.Properties.Pos.eq(boardButton.getPos())).list();
                             for (BoardButton boardButton : buttons) {
                                 dataCache.getBoardBitmapsCache().put(boardButton.getId(), temp);
                             }
@@ -600,6 +580,56 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         paFragmentManager.updateAllFragmentsOnViewPager();
                         paFragmentManager.setMainReturn(false);
                     }
+                    else {
+                        List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
+                                .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
+                                .list();
+                        if (!buttons.isEmpty()) {
+                            for (BoardButton button : buttons) {
+                                dataCache.getBoardBitmapsCache().put(button.getId(), temp);
+                            }
+                            dataCache.updateAllPercents();
+                            paFragmentManager.updateAllFragmentsOnViewPager();
+                        }
+                        paFragmentManager.displayFragment(fragment);
+                    }
+
+//                    if (!paFragmentManager.isMainReturn()) {
+//                        List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
+//                                .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
+//                                .list();
+//                        if (!buttons.isEmpty()) {
+//                            for (BoardButton button : buttons) {
+//                                dataCache.getBoardBitmapsCache().put(button.getId(), temp);
+//                            }
+//                            dataCache.updateAllPercents();
+//                            paFragmentManager.updateAllFragmentsOnViewPager();
+//                        }
+//                        paFragmentManager.displayFragment(fragment);
+//                    } else {
+//                        paFragmentManager.getFragmentManager().popBackStack();
+//                        logicManager.changeBoardButton(MAINTYPE, posMain, currentDebtBorrow.getId());
+//                        if (!mainView) {
+//                            List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
+//                                    .where(BoardButtonDao.Properties.Table.eq(MAINTYPE),
+//                                            BoardButtonDao.Properties.Pos.eq(posMain)).list();
+//                            for (BoardButton boardButton : buttons) {
+//                                dataCache.getBoardBitmapsCache().put(boardButton.getId(), temp);
+//                            }
+//                        } else {
+//                            List<BoardButton> buttons = daoSession.getBoardButtonDao().queryBuilder()
+//                                    .where(BoardButtonDao.Properties.CategoryId.eq(currentDebtBorrow.getId()))
+//                                    .list();
+//                            for (BoardButton button : buttons) {
+//                                dataCache.getBoardBitmapsCache().put(button.getId(), temp);
+//                            }
+//                        }
+//                        mainView = false;
+//                        paFragmentManager.displayMainWindow();
+//                        dataCache.updateAllPercents();
+//                        paFragmentManager.updateAllFragmentsOnViewPager();
+//                        paFragmentManager.setMainReturn(false);
+//                    }
                 }
             }
         }
@@ -611,6 +641,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             double limit = account.getLimite();
             double accounted = logicManager.isLimitAccess(account, getDate);
             if (debt.getType() == DebtBorrow.DEBT) {
+                currentDebtBorrow.__setDaoSession(daoSession);
                 if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
                         dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
                     accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),

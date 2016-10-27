@@ -24,6 +24,7 @@ import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.photocalc.ViewPagerFixed;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
     private final int BORROW_FRAGMENT = 0;
     private final int DEBT_FRAGMENT = 1;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private ViewPagerFixed viewPager;
     private FloatingActionButton fb;
 
     @Nullable
@@ -63,7 +64,7 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
             }
         },100);
         tabLayout = (TabLayout) view.findViewById(R.id.tlDebtBorrowFragment);
-        viewPager = (ViewPager) view.findViewById(R.id.vpDebtBorrowFragment);
+        viewPager = (ViewPagerFixed) view.findViewById(R.id.vpDebtBorrowFragment);
 
         toolbarManager.setTitle(getResources().getString(R.string.debts_title));
         toolbarManager.setSubtitle("");

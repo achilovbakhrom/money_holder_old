@@ -898,9 +898,9 @@
     <string name="to">To: </string>
     <string name="from_email">from_email</string>
     <string name="to_email">basicstepsdevelopment@gmail.com</string>
-    <string name="rate_app_web">https://play.google.com/store/apps/details?debtBorrowsId=com.jim.pocketaccounter</string>
+    <string name="rate_app_web">https://play.google.com/store/apps/details?id=com.jim.pocketaccounter</string>
     <string name="share_app_text">I recommend "Money Holder"
-        https://play.google.com/store/apps/details?debtBorrowsId=com.jim.pocketaccounter</string>
+        https://play.google.com/store/apps/details?id=com.jim.pocketaccounter</string>
     <string name="feedback_hint">Contact Us</string>
     <string name="feedback_subject">Subject: </string>
     <string name="feedback_content">Content: </string>
@@ -1619,4 +1619,10 @@
     <string name="no_success">Not processed</string>
     <string name="period_of_save">Set period</string>
     <string name="select_category">Select category</string>
+    <string name="there_is_no_operations_for_today">There is no operations for today!</string>
+    <string name="expense_decide_with_static_word">Select keyword(expense):</string>
+    <string name="enter_contact_error">Enter contact</string>
+    <string name="income_keyword_error">Enter keyword(income)</string>
+    <string name="expense_keyword_error">Enter keyword(expense)</string>
+    <string name="amount_keyword_error">Enter keyword for defining amount</string>
 </resources>

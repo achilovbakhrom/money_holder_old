@@ -200,7 +200,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
                         }
                     });
                     int width = getResources().getDisplayMetrics().widthPixels;
-                    dialog.getWindow().setLayout(8 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                    dialog.getWindow().setLayout(9 * width / 10, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
                     dialog.show();
                 }
             });

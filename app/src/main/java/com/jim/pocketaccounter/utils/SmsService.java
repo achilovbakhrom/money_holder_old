@@ -77,54 +77,29 @@ public class SmsService extends Service {
             for (TemplateSms templateSms : smsParseObject.getTemplates()) {
                 Pattern pattern = Pattern.compile(templateSms.getRegex());
                 Matcher matcher = pattern.matcher(intent.getStringExtra("body"));
-                matcher.matches();
                 if (matcher.matches()) {
                     smsParseSuccess = new SmsParseSuccess();
                     smsParseSuccess.setBody(intent.getStringExtra("body"));
                     double summ = 0;
-                    try {
-                        smsParseSuccess.setDate(calendar);
-                        smsParseSuccess.setCurrency(smsParseObject.getCurrency());
-                        smsParseSuccess.setAccount(smsParseObject.getAccount());
-                        smsParseSuccess.setNumber(intent.getStringExtra("number"));
-                        smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
-                        if (matcher.group(templateSms.getPosAmountGroup()) != null
-                                && !matcher.group(templateSms.getPosAmountGroup()).isEmpty()) {
-                            try {
-                                summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroup()));
-                                smsParseSuccess.setAmount(summ);
-                                smsParseSuccess.setIsSuccess(true);
-                                smsParseSuccess.setType(templateSms.getType());
-                            } catch (Exception e) {
-                                try {
-                                    if (matcher.group(templateSms.getPosAmountGroupSecond()) != null
-                                            && !matcher.group(templateSms.getPosAmountGroupSecond()).isEmpty()) {
-                                        summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroupSecond()));
-                                        smsParseSuccess.setAmount(summ);
-                                        smsParseSuccess.setIsSuccess(true);
-                                        smsParseSuccess.setType(templateSms.getType());
-                                    }
-                                } catch (Exception e1) {
-                                    smsParseSuccess.setIsSuccess(false);
-                                }
-                            }
-                        } else if (matcher.group(templateSms.getPosAmountGroupSecond()) != null
-                                && !matcher.group(templateSms.getPosAmountGroupSecond()).isEmpty()) {
-                            try {
-                                summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroupSecond()));
-                                smsParseSuccess.setAmount(summ);
-                                smsParseSuccess.setIsSuccess(true);
-                                smsParseSuccess.setType(templateSms.getType());
-                            } catch (Exception e1) {
-                                smsParseSuccess.setIsSuccess(false);
-                            }
-                        } else {
-                            smsParseSuccess.setIsSuccess(false);
-                        }
+                    smsParseSuccess.setDate(calendar);
+                    smsParseSuccess.setCurrency(smsParseObject.getCurrency());
+                    smsParseSuccess.setAccount(smsParseObject.getAccount());
+                    smsParseSuccess.setNumber(intent.getStringExtra("number"));
+                    smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
+                    String posAmountGroup = matcher.group(templateSms.getPosAmountGroup());
+                    if (posAmountGroup != null
+                            && posAmountGroup.matches("([0-9]+[.,]?[0-9]*)")) {
+                        summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroup()));
                         smsParseSuccess.setAmount(summ);
-                        smsParseSuccess.setType(templateSms.getType());
                         smsParseSuccess.setIsSuccess(true);
-                    } catch (Exception e) {
+                        smsParseSuccess.setType(templateSms.getType());
+                    } else if (matcher.group(templateSms.getPosAmountGroupSecond()) != null
+                            && matcher.group(templateSms.getPosAmountGroupSecond()).matches("([0-9]+[.,]?[0-9]*)")) {
+                        summ = Double.parseDouble(matcher.group(templateSms.getPosAmountGroupSecond()));
+                        smsParseSuccess.setAmount(summ);
+                        smsParseSuccess.setIsSuccess(true);
+                        smsParseSuccess.setType(templateSms.getType());
+                    } else {
                         smsParseSuccess.setIsSuccess(false);
                     }
                     break;
@@ -132,12 +107,12 @@ public class SmsService extends Service {
             }
             if (smsParseSuccess == null) {
                 smsParseSuccess = new SmsParseSuccess();
-                smsParseSuccess.setNumber("number");
+                smsParseSuccess.setNumber(intent.getStringExtra("number"));
                 smsParseSuccess.setDate(calendar);
                 smsParseSuccess.setSmsParseObjectId(smsParseObject.getId());
                 smsParseSuccess.setAccount(smsParseObject.getAccount());
                 smsParseSuccess.setCurrency(smsParseObject.getCurrency());
-                smsParseSuccess.setBody("number");
+                smsParseSuccess.setBody(intent.getStringExtra("body"));
                 smsParseSuccess.setIsSuccess(false);
             }
             daoSession.getSmsParseSuccessDao().insertOrReplace(smsParseSuccess);

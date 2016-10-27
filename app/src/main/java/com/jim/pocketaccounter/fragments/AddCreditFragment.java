@@ -3,7 +3,6 @@ package com.jim.pocketaccounter.fragments;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -42,18 +40,12 @@ import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.BoardButtonDao;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
+import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyDao;
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.DebtBorrowDao;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
-import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
-import com.jim.pocketaccounter.database.RootCategory;
-import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.FinanceRecord;
-import com.jim.pocketaccounter.finance.IconAdapterAccount;
-import com.jim.pocketaccounter.intropage.IntroIndicator;
 import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
@@ -65,7 +57,6 @@ import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -552,6 +543,13 @@ public class AddCreditFragment extends Fragment {
                 R.layout.spiner_gravity_right, accs);
 
         spiner_forValut.setAdapter(adapter_valyuta);
+        int posMain = 0;
+        for (int i = 0; i < valyutes.length; i++) {
+            if (valyutes[i].equals(commonOperations.getMainCurrency().getAbbr())) {
+                posMain = i;
+            }
+        }
+        spiner_forValut.setSelection(posMain);
         spiner_procent.setAdapter(adapter);
         spinner_peiod.setAdapter(adapter_period);
         spiner_trasnact.setAdapter(adapter_scet);
@@ -591,10 +589,9 @@ public class AddCreditFragment extends Fragment {
             }
 
             for (ReckingCredit temp : currentCredit.getReckings()) {
-                Log.d("gogogo", "onCreateView: " + temp.getAmount());
-                Log.d("gogogo", "onCreateView: " + temp.getPayDate() + "  ==  " + currentCredit.getTake_time().getTimeInMillis());
                 if (temp.getPayDate().getTimeInMillis() == currentCredit.getTake_time().getTimeInMillis()) {
-                    transactionCred.setText(parseToWithoutNull(temp.getAmount()));
+
+                    transactionCred.setText(parseToWithoutNull(temp.getAmount()).replace(",", "."));
                     if (currentCredit.getKey_for_include())
                         for (Account acca : accounts) {
                             if (acca.getId().matches(temp.getAccountId()))
@@ -949,29 +946,6 @@ public class AddCreditFragment extends Fragment {
 
                 A1.setInfo(mode + ":" + sequence);
 
-//                if (!daoSession.getBoardButtonDao().queryBuilder()
-//                        .where(BoardButtonDao.Properties.CategoryId.eq(Long.toString(A1.getMyCredit_id())))
-//                        .list().isEmpty()) {
-//                    BitmapFactory.Options options = new BitmapFactory.Options();
-//                    options.inPreferredConfig = Bitmap.Config.RGB_565;
-////                    int resId = getResources().getIdentifier(icon, "drawable", getContext().getPackageName());
-//
-////                    Bitmap temp = BitmapFactory.decodeResource(getResources(), resId);
-////                    Bitmap iconik = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.twentyfive_dp), (int) getResources().getDimension(R.dimen.twentyfive_dp), false);
-//
-//                    Bitmap temp = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(selectedIcon, "drawable", context.getPackageName()), options);
-//
-//
-//                        temp = Bitmap.createScaledBitmap(temp, (int) getResources().getDimension(R.dimen.thirty_dp), (int) getResources().getDimension(R.dimen.thirty_dp), true);
-//                        List<BoardButton> boardButtons = daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.Table.eq(modeFromMain), BoardButtonDao.Properties.Pos.eq(posFromMain)).build().list();
-//                        if (!boardButtons.isEmpty()) {
-//                            dataCache.getBoardBitmapsCache().put(boardButtons.get(0).getId(),
-//                                    temp);
-//                        }
-//                        dataCache.updateOneDay(dataCache.getEndDate());
-//
-//                    }
-
                 if (isEdit()) {
                     logicManager.insertCredit(A1);
                     //TODO CLOSE ALL FRAGMENTS
@@ -1001,6 +975,7 @@ public class AddCreditFragment extends Fragment {
                         dataCache.updateAllPercents();
                         paFragmentManager.updateAllFragmentsOnViewPager();
                     }
+                    toolbarManager.setToolbarIconsVisibility(View.GONE,View.GONE,View.GONE);
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.getFragmentManager().popBackStack();
                     paFragmentManager.displayFragment(new CreditTabLay());
@@ -1019,14 +994,11 @@ public class AddCreditFragment extends Fragment {
                                     } else {
                                         logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, boardButton.getPos(), Long.toString(A1.getMyCredit_id()));
                                     }
-
-
                                 }
                             }
                         }
                     }
-                    else
-                    {
+                    else {
                         if (modeFromMain == PocketAccounterGeneral.EXPENSE)
                             logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, posFromMain, Long.toString(A1.getMyCredit_id()));
                         else
@@ -1038,24 +1010,20 @@ public class AddCreditFragment extends Fragment {
                     Bitmap temp=BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(A1.getIcon_ID(),"drawable",context.getPackageName()),options);
                     temp=Bitmap.createScaledBitmap(temp,(int)getResources().getDimension(R.dimen.thirty_dp),(int)getResources().getDimension(R.dimen.thirty_dp),true);
 
-
-
-
                     List<BoardButton> boardButtonss=daoSession.getBoardButtonDao().queryBuilder().where(BoardButtonDao.Properties.CategoryId.eq(Long.toString(A1.getMyCredit_id()))).build().list();
                     if(!boardButtonss.isEmpty()){
                         for(BoardButton boardButton:boardButtonss){
-                            dataCache.getBoardBitmapsCache().put(boardButton.getId(),
-                                    temp);
+                            dataCache.getBoardBitmapsCache().put(boardButton.getId(), temp);
                         }
                     }
 
-
                     dataCache.updateAllPercents();
                     paFragmentManager.updateAllFragmentsOnViewPager();
+                    toolbarManager.setToolbarIconsVisibility(View.GONE,View.GONE,View.GONE);
                     paFragmentManager.displayMainWindow();
                 }
                 else {
-                    Log.d("testttt", "adding");
+                    toolbarManager.setToolbarIconsVisibility(View.GONE,View.GONE,View.GONE);
                     paFragmentManager.getFragmentManager().popBackStack();
                 }
 
@@ -1077,7 +1045,7 @@ public class AddCreditFragment extends Fragment {
             return Integer.toString((int) A);
         else {
             DecimalFormat format = new DecimalFormat("0.##");
-            return format.format(A);
+            return format.format(A).replace(",", ".");
         }
     }
 

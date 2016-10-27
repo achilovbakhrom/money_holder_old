@@ -422,7 +422,7 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 										case 2:
 											paFragmentManager.setMainReturn(true);
 											AddBorrowFragment fragment = (AddBorrowFragment) AddBorrowFragment.getInstance(DebtBorrow.BORROW, null);
-											fragment.setMainView(currentPage*4 + pos, PocketAccounterGeneral.INCOME);
+											fragment.setMainView(buttons.get(pos).getCategory());
 											paFragmentManager.displayFragment(fragment);
 											break;
 									}

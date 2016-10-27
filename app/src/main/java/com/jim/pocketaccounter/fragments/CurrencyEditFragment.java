@@ -3,10 +3,7 @@ package com.jim.pocketaccounter.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SlidingPaneLayout.LayoutParams;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -25,25 +22,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyCost;
-import com.jim.pocketaccounter.database.CurrencyCostState;
-import com.jim.pocketaccounter.database.CurrencyCostStateDao;
-import com.jim.pocketaccounter.database.CurrencyWithAmount;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.UserEnteredCalendars;
-import com.jim.pocketaccounter.database.UserEnteredCalendarsDao;
 import com.jim.pocketaccounter.finance.CurrencyExchangeAdapter;
-import com.jim.pocketaccounter.managers.CommonOperations;
-import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
-import com.jim.pocketaccounter.managers.PAFragmentManager;
-import com.jim.pocketaccounter.managers.ToolbarManager;
-import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.WarningDialog;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -52,10 +38,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.inject.Inject;
-
 @SuppressLint("ValidFragment")
-public class CurrencyEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
+public class CurrencyEditFragment extends PABaseInfoFragment implements OnClickListener, OnItemClickListener {
     private ImageView ivExCurrencyAdd, ivExCurrencyDelete;
     private ListView lvCurrencyEditExchange;
     private Currency currency;
@@ -63,12 +47,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
     private Calendar day = Calendar.getInstance();
     private int mode = PocketAccounterGeneral.NORMAL_MODE;
     private boolean[] selected;
-    @Inject PAFragmentManager paFragmentManager;
-    @Inject DaoSession daoSession;
-    @Inject LogicManager logicManager;
-    @Inject ToolbarManager toolbarManager;
     WarningDialog dialog;
-    @Inject CommonOperations commonOperations;
 
     public CurrencyEditFragment(Currency currency) {
         this.currency = currency;
@@ -76,17 +55,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.currency_edit, container, false);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         dialog = new WarningDialog(getContext());
-        ivExCurrencyAdd = (ImageView) rootView.findViewById(R.id.ivExCurrencyAdd);
-        ivExCurrencyAdd.setOnClickListener(this);
-        ivExCurrencyDelete = (ImageView) rootView.findViewById(R.id.ivExCurrencyDelete);
-        ivExCurrencyDelete.setOnClickListener(this);
-        lvCurrencyEditExchange = (ListView) rootView.findViewById(R.id.lvCurrencyEditExchange);
-        lvCurrencyEditExchange.setOnItemClickListener(this);
-        chbCurrencyEditMainCurrency = (CheckBox) rootView.findViewById(R.id.chbCurrencyEditMainCurrency);
-        chbCurrencyEditMainCurrency.setChecked(currency.getMain());
-        toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
         toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,20 +64,27 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
         });
         toolbarManager.setTitle(currency.getName());
         toolbarManager.setSubtitle(getResources().getString(R.string.edit));
-        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
-        toolbarManager.setImageToSecondImage(R.drawable.check_sign);
-        toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setOnSecondImageClickListener(this);
-        refreshExchangeList();
+        ivExCurrencyAdd = (ImageView) rootView.findViewById(R.id.ivExCurrencyAdd);
+        ivExCurrencyAdd.setOnClickListener(this);
+        ivExCurrencyDelete = (ImageView) rootView.findViewById(R.id.ivExCurrencyDelete);
+        ivExCurrencyDelete.setOnClickListener(this);
+        lvCurrencyEditExchange = (ListView) rootView.findViewById(R.id.lvCurrencyEditExchange);
+        lvCurrencyEditExchange.setOnItemClickListener(this);
+        chbCurrencyEditMainCurrency = (CheckBox) rootView.findViewById(R.id.chbCurrencyEditMainCurrency);
+        chbCurrencyEditMainCurrency.setChecked(currency.getMain());
+        refreshList();
         return rootView;
     }
 
-    private void refreshExchangeList() {
+    @Override
+    void refreshList() {
         currency.resetUserEnteredCalendarses();
         CurrencyExchangeAdapter adapter = new CurrencyExchangeAdapter(getActivity(),
                 (ArrayList<CurrencyCost>) currency.getCosts(), selected, mode, currency.getAbbr());
         lvCurrencyEditExchange.setAdapter(adapter);
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -130,10 +106,10 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
                 break;
             case R.id.ivExCurrencyDelete:
                 if (mode == PocketAccounterGeneral.NORMAL_MODE) {
-                    selected = new boolean[currency.getCosts().size()];
                     mode = PocketAccounterGeneral.EDIT_MODE;
                     ivExCurrencyDelete.setImageDrawable(null);
                     ivExCurrencyDelete.setImageResource(R.drawable.ic_cat_trash);
+                    selected = new boolean[currency.getCosts().size()];
                 } else {
                     mode = PocketAccounterGeneral.NORMAL_MODE;
                     ivExCurrencyDelete.setImageDrawable(null);
@@ -141,7 +117,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
                     deleteCosts();
                     selected = null;
                 }
-                refreshExchangeList();
+                refreshList();
                 break;
             case R.id.ivToolbarMostRight:
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -221,7 +197,7 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
                 else {
                     logicManager.generateForDefinetilyCurrentDay((Calendar)day.clone(), Double.parseDouble(etExchange.getText().toString()), currency);
                 }
-                refreshExchangeList();
+                refreshList();
                 dialog.dismiss();
             }
         });
@@ -247,6 +223,8 @@ public class CurrencyEditFragment extends Fragment implements OnClickListener, O
         if (currencyCostList.isEmpty() || currencyCostList == null) return;
         if (logicManager.deleteCurrencyCosts(currencyCostList, currency) == LogicManagerConstants.LIST_IS_EMPTY)
             Toast.makeText(getActivity(), getResources().getString(R.string.costs_selected_all_warning), Toast.LENGTH_SHORT).show();
-        refreshExchangeList();
+        refreshList();
     }
+
+
 }

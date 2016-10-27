@@ -154,7 +154,7 @@ public class PocketAccounter extends AppCompatActivity {
         if (getSharedPreferences("infoFirst", MODE_PRIVATE).getBoolean("FIRST_KEY", true)) {
             try {
                 Intent first = new Intent(this, IntroIndicator.class);
-                PocketAccounter.openActivity=true;
+                PocketAccounter.openActivity = true;
 
                 startActivity(first);
                 finish();
@@ -178,6 +178,7 @@ public class PocketAccounter extends AppCompatActivity {
                 public void onPasswordRight() {
                     pwPassword.setVisibility(View.GONE);
                 }
+
                 @Override
                 public void onExit() {
                     finish();
@@ -436,7 +437,7 @@ public class PocketAccounter extends AppCompatActivity {
         } else if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
                 paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain).
                         getClass().getName().equals(PocketClassess.RECORD_EDIT_FRAGMENT) && isCalcLayoutOpen) {
-            ((RecordEditFragment)paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain)).closeLayout();
+            ((RecordEditFragment) paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain)).closeLayout();
         } else if (paFragmentManager.getFragmentManager().getBackStackEntryCount() > 0) {
             if (paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain) != null &&
                     paFragmentManager.getFragmentManager().findFragmentById(R.id.flMain).
@@ -464,7 +465,8 @@ public class PocketAccounter extends AppCompatActivity {
             warningDialog.getWindow().setLayout(8 * width / 10, ViewGroup.LayoutParams.WRAP_CONTENT);
             try {
                 warningDialog.show();
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -528,6 +530,7 @@ public class PocketAccounter extends AppCompatActivity {
                 public void onPasswordRight() {
                     pwPassword.setVisibility(View.GONE);
                 }
+
                 @Override
                 public void onExit() {
                     finish();
@@ -544,9 +547,11 @@ public class PocketAccounter extends AppCompatActivity {
         drawerInitializer.onActivResultForDrawerCalls(requestCode, resultCode, data);
         if (requestCode == key_for_restat && resultCode == 1111) {
             if (WidgetID >= 0) {
-                if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
-                    WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
-                            WidgetID);
+                try {
+                    if (AppWidgetManager.INVALID_APPWIDGET_ID != WidgetID)
+                        WidgetProvider.updateWidget(this, AppWidgetManager.getInstance(this),
+                                WidgetID);
+                } catch (Exception e) {}
             }
             finish();
         }
