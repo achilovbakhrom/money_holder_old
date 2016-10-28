@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
@@ -41,30 +40,12 @@ public class SmsService extends Service {
             bundle= intent.getExtras();
         if(bundle==null)
             return 0;
-//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(getActivity(), DATABASE_NAME, null);
-//        if (db == null) {
-//            db = helper.getWritableDatabase();
-//            logE("initializeDB->: db==null");
-//        } else {
-//            if (!db.isOpen()) {
-//                db = helper.getWritableDatabase();
-//                logE("initializeDB->: db!=null && !db.isOpen()");
-//            } else {
-//                logE("initializeDB->: db!=null && db.isOpen()");
-//            }
-//
-//        }
-//        daoMaster = new DaoMaster(db);
-//        daoSession = daoMaster.newSession();
-//
-//        userDao = daoSession.getUserDao();
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(getApplicationContext(), PocketAccounterGeneral.CURRENT_DB_NAME);
         SQLiteDatabase sqLiteDatabase = helper.getWritableDatabase();
         if (!sqLiteDatabase.isOpen()) {
             Database db = helper.getWritableDb();
             daoSession = new DaoMaster(db).newSession();
         }
-
 
         List<SmsParseObject> smsParseObjects = daoSession.getSmsParseObjectDao().queryBuilder()
                 .where(SmsParseObjectDao.Properties.Number.eq(intent.getStringExtra("number"))).list();

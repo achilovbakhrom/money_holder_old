@@ -352,13 +352,17 @@ public class SMSParseInfoFragment extends Fragment {
                             incomeKeys.add(strings.get(posIncExp));
                         else
                             expanceKeys.add(strings.get(posIncExp));
-                        amountKeys.add(strings.get(posAmount));
+//                        amountKeys.add(strings.get(posAmount));
                         if (posAmount != 0) {
                             amountKeyOld.add(strings.get(posAmount - 1));
                         } else {
                             amountKeyOld.add(strings.get(position + 1));
                         }
-                        templateSmsList = commonOperations.generateSmsTemplateList(strings, posIncExp, posAmount, incomeKeys, expanceKeys, amountKeys);
+                        templateSmsList = commonOperations.generateSmsTemplateList(strings, posIncExp, posAmount, incomeKeys, expanceKeys, new ArrayList<String>());
+                        for (TemplateSms templateSms : templateSmsList) {
+                            templateSms.setParseObjectId(object.getId());
+                            daoSession.getTemplateSmsDao().insertOrReplace(templateSms);
+                        }
                         for (int i = successList.size() - 1; i >= 0; i--) {
                             for (TemplateSms templateSms : templateSmsList) {
                                 if (!successList.get(i).getIsSuccess() && successList.get(i).getBody().matches(templateSms.getRegex())) {
@@ -403,6 +407,7 @@ public class SMSParseInfoFragment extends Fragment {
                                 }
                             }
                         }
+                        object.resetTemplates();
                         try {
                             successList.get(position).setAmount(Double.parseDouble(strings.get(posAmount)));
                             successList.get(position).setIsSuccess(true);
