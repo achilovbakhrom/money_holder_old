@@ -1624,5 +1624,6 @@
     <string name="expense_keyword_error">Введите ключевое слово(расход)</string>
     <string name="income_keyword_error">Введите ключевое слово(доход)</string>
     <string name="amount_keyword_error">Введите ключевое слово для определения суммы</string>
+    <string name="wrong_input_type">Неправильный формат ввода</string>
 </resources>
 

@@ -207,24 +207,41 @@ public class AccountEditFragment extends PABaseInfoFragment implements OnClickLi
                 } else
                     account = this.account;
                 account.setName(etAccountEditName.getText().toString());
-                if (!etStartMoney.getText().toString().matches("") && Double.parseDouble(etStartMoney.getText().toString()) != 0)
-                    account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
-                else
+                if (chbAccountStartSumEnabled.isChecked() && !etStartMoney.getText().toString().matches("")) {
+                    try {
+                        Double.parseDouble(etStartMoney.getText().toString());
+                        etStartMoney.setError(null);
+                        account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
+                    } catch (Exception e) {
+                        etStartMoney.setError(getString(R.string.wrong_input_type));
+                        return;
+                    }
+                }else
                     account.setAmount(0);
                 if (chbAccountEnabledLimit.isChecked()) {
                     if (etStartLimit.getText().toString().equals("")) {
                         etStartLimit.setError(getResources().getString(R.string.enter_amount_error));
                         return;
                     }
+                    double limitSum;
+                    try {
+                        String temp = etStartLimit.getText().toString();
+                        temp.replace(",", ".");
+                        limitSum = Double.parseDouble(temp);
+                    } catch (Exception e) {
+                        etStartLimit.setError(getString(R.string.wrong_input_type));
+                        return;
+                    }
                     if (this.account != null) {
                         double limit = logicManager.isLimitAccess(this.account, Calendar.getInstance());
-                        double limitSum = Double.parseDouble(etStartLimit.getText().toString());
-                        Currency limitCurrency = daoSession.getCurrencyDao().queryBuilder()
-                                .where(CurrencyDao.Properties.Id.eq(this.account.getLimitCurId())).list().get(0);
-                        if (limit + commonOperations.getCost(Calendar.getInstance(), this.account.getStartMoneyCurrency(), this.account.getAmount()) <
-                                -(commonOperations.getCost(Calendar.getInstance(), limitCurrency, limitSum))) {
-                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                            return;
+                        if (this.account.getLimitCurId() != null) {
+                            Currency limitCurrency = daoSession.getCurrencyDao().queryBuilder()
+                                    .where(CurrencyDao.Properties.Id.eq(this.account.getLimitCurId())).list().get(0);
+                            if (limit + commonOperations.getCost(Calendar.getInstance(), this.account.getStartMoneyCurrency(), this.account.getAmount()) <
+                                    -(commonOperations.getCost(Calendar.getInstance(), limitCurrency, limitSum))) {
+                                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                         }
                     }
                     account.setIsLimited(true);

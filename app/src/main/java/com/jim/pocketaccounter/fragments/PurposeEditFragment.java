@@ -560,7 +560,10 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
             endCalendar = purpose.getEnd();
             periodPurpose.setSelection(purpose.getPeriodPos());
             beginDate.setText(dateFormat.format(purpose.getBegin().getTime()));
-            endDate.setText(dateFormat.format(purpose.getEnd().getTime()));
+            if (purpose.getEnd() != null)
+            {
+                endDate.setText(dateFormat.format(purpose.getEnd().getTime()));
+            }
             etPeriodCount.setText("" + purpose.getPeriodSize());
         }
         return rootView;
