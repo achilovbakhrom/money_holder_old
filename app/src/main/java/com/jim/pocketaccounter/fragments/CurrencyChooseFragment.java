@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.UserEnteredCalendars;
@@ -142,7 +140,7 @@ public class CurrencyChooseFragment extends PABaseInfoFragment {
                                     userEnteredCalendars.setCalendar(Calendar.getInstance());
                                     daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
                                     daoSession.getCurrencyDao().insertOrReplace(currency);
-                                    logicManager.generateWhenAddingNewCurrency(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
+                                    logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
                                 }
                             }
                             dialog.dismiss();
@@ -181,7 +179,7 @@ public class CurrencyChooseFragment extends PABaseInfoFragment {
                             userEnteredCalendars.setCalendar(Calendar.getInstance());
                             daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
                             daoSession.getCurrencyDao().insertOrReplace(currency);
-                            logicManager.generateWhenAddingNewCurrency(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
+                            logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
                         }
                     }
                     paFragmentManager.getFragmentManager().popBackStack();

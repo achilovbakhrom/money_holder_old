@@ -53,41 +53,43 @@ public class Currency {
 	}
 	@Keep
 	public List<CurrencyCost> getCosts() {
-		costs = new ArrayList<>();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		Currency mainCur = daoSession.getCurrencyDao()
-					.queryBuilder()
-					.where(CurrencyDao.Properties.IsMain.eq(true))
-					.list()
-					.get(0);
-		List<CurrencyCostState> costStateList = daoSession.getCurrencyCostStateDao()
-				.queryBuilder()
-				.where(CurrencyCostStateDao.Properties
-						.MainCurId.eq(mainCur.getId()))
-				.list();
-		for (UserEnteredCalendars userCalendar : getUserEnteredCalendarses()) {
-			for (CurrencyCostState currencyCostState : costStateList) {
-				String formattedUserCalendar = simpleDateFormat.format(userCalendar.getCalendar().getTime());
-				String formattedStateDay = simpleDateFormat.format(currencyCostState.getDay().getTime());
-				if (formattedUserCalendar.equals(formattedStateDay)) {
-					double cost = 0;
-					for (CurrencyWithAmount withAmount : currencyCostState.getCurrencyWithAmountList()) {
-						if (withAmount.getCurrencyId().equals(getId())) {
-							cost = withAmount.getAmount();
-							break;
-						}
-					}
-					CurrencyCost currencyCost = new CurrencyCost(cost, userCalendar.getCalendar());
-					costs.add(currencyCost);
-				}
-			}
-		}
-		Collections.sort(costs, new Comparator<CurrencyCost>() {
-			@Override
-			public int compare(CurrencyCost lhs, CurrencyCost rhs) {
-				return lhs.getDay().compareTo(rhs.getDay());
-			}
-		});
+        if (costs == null) {
+            costs = new ArrayList<>();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            for (UserEnteredCalendars userCalendar : getUserEnteredCalendarses()) {
+                List<Currency> currencies = daoSession
+                        .queryBuilder(Currency.class)
+                        .where(CurrencyDao.Properties.IsMain.eq(true))
+                        .list();
+                Currency mainCurrency = currencies.get(0);
+                List<CurrencyCostState> mainState = daoSession
+                        .queryBuilder(CurrencyCostState.class)
+                        .where(CurrencyCostStateDao.Properties.Day.eq(simpleDateFormat.format(userCalendar.getCalendar().getTime())),
+                                CurrencyCostStateDao.Properties.MainCurId.eq(mainCurrency.getId()))
+                        .list();
+                if (mainState.isEmpty()) {
+                    double cost = 1.0;
+                    CurrencyCost currencyCost = new CurrencyCost(cost, userCalendar.getCalendar());
+                    costs.add(currencyCost);
+                } else {
+                    double cost = 1.0d;
+                    for (CurrencyWithAmount withAmount : mainState.get(0).getCurrencyWithAmountList()) {
+                        if (withAmount.getCurrencyId().equals(getId())) {
+                            cost = withAmount.getAmount();
+                            break;
+                        }
+                    }
+                    CurrencyCost currencyCost = new CurrencyCost(cost, userCalendar.getCalendar());
+                    costs.add(currencyCost);
+                }
+            }
+            Collections.sort(costs, new Comparator<CurrencyCost>() {
+                @Override
+                public int compare(CurrencyCost lhs, CurrencyCost rhs) {
+                    return lhs.getDay().compareTo(rhs.getDay());
+                }
+            });
+        }
 		return costs;
 	}
 	/**
@@ -132,6 +134,11 @@ public class Currency {
 	 * To-many relationship, resolved on first access (and after reset).
 	 * Changes to to-many relations are not persisted, make changes to the target entity.
 	 */
+	@Keep
+	public void refreshCosts() {
+		costs = null;
+	}
+
 	@Keep
 	public List<UserEnteredCalendars> getUserEnteredCalendarses() {
 	    if (userEnteredCalendarses == null) {

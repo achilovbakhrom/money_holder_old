@@ -124,8 +124,11 @@ public class CurrencyEditFragment extends PABaseInfoFragment implements OnClickL
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 if (chbCurrencyEditMainCurrency.isChecked()) {
                     logicManager.setMainCurrency(currency);
-                    paFragmentManager.updateCurrencyChanges();
                 }
+                commonOperations.refreshCurrency();
+                dataCache.updateAllPercents();
+                paFragmentManager.updateAllFragmentsPageChanges();
+                paFragmentManager.updateCurrencyChanges();
                 paFragmentManager.displayFragment(new CurrencyFragment());
                 break;
         }
@@ -191,13 +194,19 @@ public class CurrencyEditFragment extends PABaseInfoFragment implements OnClickL
                     etExchange.setError(getString(R.string.incorrect_value));
                     return;
                 }
-                if (logicManager.insertUserEnteredCalendars(currency, (Calendar)day.clone()) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
-                    logicManager.updateGenerateDefinetilyCurrentDay((Calendar)day.clone(), Double.parseDouble(etExchange.getText().toString()), currency);
+                //TODO WHAT IS IT
+                if (logicManager.insertUserEnteredCalendars(currency, (Calendar) day.clone()) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
+                    logicManager.generateCurrencyCosts((Calendar) day.clone(), Double.parseDouble(etExchange.getText().toString()) , currency);
+                } else {
+                    logicManager.generateCurrencyCosts((Calendar) day.clone(), Double.parseDouble(etExchange.getText().toString()) , currency);
                 }
-                else {
-                    logicManager.generateForDefinetilyCurrentDay((Calendar)day.clone(), Double.parseDouble(etExchange.getText().toString()), currency);
-                }
+
+                commonOperations.refreshCurrency();
+                dataCache.updateAllPercents();
+                paFragmentManager.updateAllFragmentsPageChanges();
                 refreshList();
+                currency.refreshCosts();
+
                 dialog.dismiss();
             }
         });
