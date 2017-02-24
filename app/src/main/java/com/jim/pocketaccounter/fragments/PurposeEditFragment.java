@@ -71,7 +71,6 @@ import javax.inject.Named;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-@SuppressLint({"InflateParams", "ValidFragment"})
 public class PurposeEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
     @Inject
     LogicManager logicManager;
@@ -106,11 +105,6 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     private Calendar endCalendar;
     private TextView tvperido;
     private TextView etPeriodCount;
-
-    public PurposeEditFragment(Purpose purpose) {
-        this.purpose = purpose;
-    }
-
     boolean forCustomPeriod = false;
 
     @Override
@@ -126,6 +120,11 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.purpose_edit_layout_moder, container, false);
+        if (getArguments() != null) {
+            String purposeId = getArguments().getString(PurposeFragment.PURPOSE_ID);
+            if (purposeId != null)
+                purpose = daoSession.load(Purpose.class, purposeId);
+        }
         purposeName = (EditText) rootView.findViewById(R.id.etPurposeEditName);
         iconPurpose = (ImageView) rootView.findViewById(R.id.fabPurposeIcon);
         amountPurpose = (EditText) rootView.findViewById(R.id.etPurposeTotal);

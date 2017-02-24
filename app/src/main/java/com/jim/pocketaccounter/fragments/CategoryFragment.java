@@ -55,6 +55,9 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	@Inject	DaoSession daoSession;
 	@Inject	PAFragmentManager paFragmentManager;
 	@Inject	DataCache dataCache;
+	public static final String CATEGORY_ID = "category_id";
+	public static final String MODE = "mode";
+	public static final String POSITION = "position";
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_layout, container, false);
 		rootView.postDelayed(new Runnable() {
@@ -136,7 +139,7 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 	public void onClick(View v) {
 		switch(v.getId()) {
 			case R.id.fabAccountAdd:
-				paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.NO_MODE, 0, null));
+				paFragmentManager.displayFragment(RootCategoryEditFragment.newInstance(null, 0,PocketAccounterGeneral.NO_MODE));
 				break;
 		}
 	}
@@ -188,13 +191,13 @@ public class CategoryFragment extends Fragment implements OnClickListener, OnChe
 				@Override
 				public void onClick(View v) {
 					dataCache.getCategoryEditFragmentDatas().setMode(PocketAccounterGeneral.NO_MODE);
-					paFragmentManager.displayFragment(new RootCategoryEditFragment(result.get(position), PocketAccounterGeneral.NO_MODE, 0, null));
+					paFragmentManager.displayFragment(RootCategoryEditFragment.newInstance(result.get(position), 0,PocketAccounterGeneral.NO_MODE));
 				}
 			});
 			view.view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					paFragmentManager.displayFragment(new CategoryInfoFragment(result.get(position)));
+					paFragmentManager.displayFragment(CategoryInfoFragment.newInstance(result.get(position)));
 				}
 			});
 		}

@@ -49,6 +49,7 @@ import javax.inject.Named;
 
 public class PurposeFragment extends Fragment{
     private RecyclerView rvPurposes;
+    public static final String PURPOSE_ID = "purpose_id";
     private FABIcon fabPurposesAdd;
     TextView ifListEmpty;
     @Inject
@@ -93,7 +94,7 @@ public class PurposeFragment extends Fragment{
         fabPurposesAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                paFragmentManager.displayFragment(new PurposeEditFragment(null));
+                paFragmentManager.displayFragment(new PurposeEditFragment());
             }
         });
         refreshList();
@@ -157,7 +158,12 @@ public class PurposeFragment extends Fragment{
                 @Override
                 public void onClick(View v) {
                     paFragmentManager.getFragmentManager().popBackStack();
-                    paFragmentManager.displayFragment(new PurposeInfoFragment(item));
+
+                    PurposeInfoFragment fragment = new PurposeInfoFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(PurposeFragment.PURPOSE_ID, item.getId());
+                    fragment.setArguments(bundle);
+                    paFragmentManager.displayFragment(fragment);
                 }
             });
             view.tvPutMoney.setOnClickListener(new View.OnClickListener() {

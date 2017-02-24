@@ -40,6 +40,7 @@ import com.jim.pocketaccounter.fragments.CategoryFragment;
 import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
+import com.jim.pocketaccounter.fragments.RecordDetailFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
 import com.jim.pocketaccounter.fragments.ReportByCategory;
@@ -76,6 +77,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.support.annotation.UiThread;
@@ -97,7 +99,6 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@SuppressLint("DrawAllocation")
 public class RecordExpanseView extends View implements 	GestureDetector.OnGestureListener {
 	private final float workspaceCornerRadius, workspaceMargin;
 	private Bitmap workspaceShader;
@@ -371,7 +372,12 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.CREDIT) {
 							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(buttons.get(position).getCategory().getCategoryId()));
 							InfoCreditFragment temp = new InfoCreditFragment();
-							temp.setContentFromMainWindow(item,currentPage * 16 + position,PocketAccounterGeneral.EXPANSE_MODE);
+                            Bundle bundle = new Bundle();
+                            bundle.putInt(CreditTabLay.MODE,PocketAccounterGeneral.EXPANSE_MODE);
+                            bundle.putInt(CreditTabLay.POSITION,currentPage * 16 + position);
+                            bundle.putLong(CreditTabLay.CREDIT_ID, item.getMyCredit_id());
+                            bundle.putBoolean(CreditTabLay.FROM_MAIN, true);
+                            temp.setArguments(bundle);
 							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(temp);
 
@@ -838,11 +844,17 @@ public class RecordExpanseView extends View implements 	GestureDetector.OnGestur
 									switch (position) {
 										case 0:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.EXPANSE_MODE, currentPage*16+pos, date));
+											paFragmentManager.displayFragment(RootCategoryEditFragment.newInstance(null, currentPage*16+pos,PocketAccounterGeneral.EXPANSE_MODE));
 											break;
 										case 1:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.EXPANSE_MODE,currentPage*16+pos));
+											AddCreditFragment addCreditFragment = new AddCreditFragment();
+											Bundle bundle = new Bundle();
+											bundle.putBoolean(CreditTabLay.FROM_MAIN, true);
+											bundle.putInt(CreditTabLay.MODE, PocketAccounterGeneral.EXPANSE_MODE);
+											bundle.putInt(CreditTabLay.POSITION,currentPage*16+pos);
+											addCreditFragment.setArguments(bundle);
+											paFragmentManager.displayFragment(addCreditFragment);
 											break;
 										case 2:
 											paFragmentManager.setMainReturn(true);

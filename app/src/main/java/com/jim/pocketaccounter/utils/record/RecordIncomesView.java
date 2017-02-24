@@ -38,6 +38,7 @@ import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.CurrencyFragment;
 import com.jim.pocketaccounter.fragments.InfoCreditFragment;
 import com.jim.pocketaccounter.fragments.PurposeFragment;
+import com.jim.pocketaccounter.fragments.RecordDetailFragment;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
 import com.jim.pocketaccounter.fragments.ReportByAccountFragment;
 import com.jim.pocketaccounter.fragments.ReportByCategory;
@@ -75,6 +76,7 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -99,7 +101,6 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@SuppressLint("DrawAllocation")
 public class RecordIncomesView extends View implements 	GestureDetector.OnGestureListener{
 	private final float workspaceCornerRadius, workspaceMargin;
 	private Bitmap workspaceShader;
@@ -413,11 +414,17 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 									switch (position) {
 										case 0:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment(new RootCategoryEditFragment(null, PocketAccounterGeneral.INCOME_MODE, currentPage*4+pos, date));
+											paFragmentManager.displayFragment(RootCategoryEditFragment.newInstance(null,currentPage*4+pos,PocketAccounterGeneral.INCOME_MODE));
 											break;
 										case 1:
 											paFragmentManager.setMainReturn(true);
-											paFragmentManager.displayFragment((new AddCreditFragment()).setDateFormatModes(PocketAccounterGeneral.INCOME,currentPage*4 + pos));
+											AddCreditFragment addCreditFragment = new AddCreditFragment();
+											Bundle bundle = new Bundle();
+											bundle.putBoolean(CreditTabLay.FROM_MAIN, true);
+											bundle.putInt(CreditTabLay.MODE, PocketAccounterGeneral.INCOME);
+											bundle.putInt(CreditTabLay.POSITION,currentPage*4+pos);
+											addCreditFragment.setArguments(bundle);
+											paFragmentManager.displayFragment(addCreditFragment);
 											break;
 										case 2:
 											paFragmentManager.setMainReturn(true);
@@ -548,7 +555,12 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 
 							CreditDetials item=daoSession.getCreditDetialsDao().load(Long.parseLong(buttons.get(position).getCategory().getCategoryId()));
 							InfoCreditFragment temp = new InfoCreditFragment();
-							temp.setContentFromMainWindow(item,currentPage * 4 + position,PocketAccounterGeneral.INCOME);
+							Bundle bundle = new Bundle();
+							bundle.putInt(CreditTabLay.MODE,PocketAccounterGeneral.INCOME);
+							bundle.putInt(CreditTabLay.POSITION,currentPage * 4 + position);
+							bundle.putLong(CreditTabLay.CREDIT_ID, item.getMyCredit_id());
+							bundle.putBoolean(CreditTabLay.FROM_MAIN, true);
+							temp.setArguments(bundle);
 							paFragmentManager.setMainReturn(true);
 							paFragmentManager.displayFragment(temp);
 

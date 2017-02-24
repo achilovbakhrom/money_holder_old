@@ -54,7 +54,6 @@ import javax.inject.Named;
 /**
  * Created by root on 9/7/16.
  */
-@SuppressLint("ValidFragment")
 public class PurposeInfoFragment extends Fragment implements View.OnClickListener {
     @Inject
     ToolbarManager toolbarManager;
@@ -95,12 +94,6 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     private Calendar beginDate;
     private Calendar endDate;
 
-    public PurposeInfoFragment(Purpose purpose) {
-        this.purpose = purpose;
-        if (purpose == null) {
-            this.purpose = new Purpose();
-        }
-    }
 
     @Nullable
     @Override
@@ -109,6 +102,11 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
         View rooView = inflater.inflate(R.layout.purpose_info_layout_modern, container, false);
         beginDate = null;
         endDate = null;
+        if (getArguments() != null) {
+            String purposeId = getArguments().getString(PurposeFragment.PURPOSE_ID);
+            if (purposeId != null)
+                purpose = daoSession.load(Purpose.class, purposeId);
+        }
         forGoneLeftDate = (RelativeLayout) rooView.findViewById(R.id.forGoneLeftDate);
         deleteOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoDelete);
         filterOpertions = (ImageView) rooView.findViewById(R.id.ivPurposeInfoFilter);
@@ -129,7 +127,12 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         if (position == 0) {
-                            paFragmentManager.displayFragment(new PurposeEditFragment(purpose));
+
+                            PurposeEditFragment fragment = new PurposeEditFragment();
+                            Bundle bundle = new Bundle();
+                            bundle.putString(PurposeFragment.PURPOSE_ID, purpose.getId());
+                            fragment.setArguments(bundle);
+                            paFragmentManager.displayFragment(fragment);
                             operationsListDialog.dismiss();
                         } else {
                             switch (logicManager.deletePurpose(purpose)) {

@@ -43,13 +43,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-@SuppressLint("InflateParams")
 public class CurrencyFragment extends PABaseListFragment implements OnClickListener, OnItemClickListener {
 	private FloatingActionButton fabCurrencyAdd;
 	private ListView lvCurrency;
 	private int mode = PocketAccounterGeneral.NORMAL_MODE;
 	private boolean[] selected;
-
+	public static final String CURRENCY_ID = "currency_id";
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.currency_fragment, container, false);
 		rootView.postDelayed(new Runnable() {
@@ -230,10 +229,15 @@ public class CurrencyFragment extends PABaseListFragment implements OnClickListe
 					Toast.makeText(getActivity(), getResources().getString(R.string.main_currency_edit), Toast.LENGTH_SHORT).show();
 					return;
 				}
-				paFragmentManager.displayFragment(new CurrencyEditFragment(daoSession.getCurrencyDao().loadAll().get(position)));
+
+				CurrencyEditFragment fragment = new CurrencyEditFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString(CurrencyFragment.CURRENCY_ID,daoSession.getCurrencyDao().loadAll().get(position).getId());
+				fragment.setArguments(bundle);
+				paFragmentManager.displayFragment(fragment);
 			}
 		}
-	};
+	}
 	@Override
 	void refreshList() {
 		CurrencyAdapter adapter = new CurrencyAdapter(getActivity(), daoSession.getCurrencyDao().loadAll(), selected, mode);

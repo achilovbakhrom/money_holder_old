@@ -46,7 +46,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-@SuppressLint({"InflateParams", "ValidFragment"})
 public class SMSParseInfoFragment extends Fragment {
     @Inject
     DaoSession daoSession;
@@ -64,14 +63,17 @@ public class SMSParseInfoFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView ifListEmpty;
 
-    public SMSParseInfoFragment(SmsParseObject object) {
-        this.object = object;
-    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         View rootView = inflater.inflate(R.layout.sms_parse_info, container, false);
         warningDialog = new WarningDialog(getContext());
+        if (getArguments() != null)
+        {
+            String smsID = getArguments().getString(SmsParseMainFragment.SMS_PARSE_OBJECT_ID);
+            if (smsID != null)
+                object = daoSession.load(SmsParseObject.class, smsID);
+        }
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setImageToSecondImage(R.drawable.trash);
         toolbarManager.setSubtitle("");

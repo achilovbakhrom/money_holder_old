@@ -36,14 +36,19 @@ public class CreditTabLay extends Fragment implements View.OnClickListener, View
     ToolbarManager toolbarManager;
     @Inject
     DrawerInitializer drawerInitializer;
-
     ForFab A1;
     FloatingActionButton fb;
     SvyazkaFragmentov svyaz;
+
     private ArrayList<Fragment> list;
     public static int pos = 0;
     private ViewPager viewPager;
     private int position = 0;
+    public static final String FROM_MAIN = "from_main";
+    public static final String FROM_SEARCH = "from_search";
+    public static final String CREDIT_ID = "credit_id";
+    public static final String POSITION = "credit_position";
+    public static final String MODE = "credit_mode";
     public CreditTabLay() {
         Log.d("gogogo", "CreditTabLay: ");
         // Required empty public constructor

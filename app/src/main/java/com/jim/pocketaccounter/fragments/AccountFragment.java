@@ -58,7 +58,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@SuppressLint("InflateParams")
 public class AccountFragment extends Fragment {
 	private FABIcon fabAccountAdd;
     private RecyclerView recyclerView;
@@ -79,6 +78,7 @@ public class AccountFragment extends Fragment {
 	PAFragmentManager paFragmentManager;
 	@Inject
 	DrawerInitializer drawerInitializer;
+	public static final String ACCOUNT_ID = "account_id";
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_layout, container, false);
 		rootView.postDelayed(new Runnable() {
@@ -143,7 +143,7 @@ public class AccountFragment extends Fragment {
 		fabAccountAdd.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				paFragmentManager.displayFragment(new AccountEditFragment(null));
+				paFragmentManager.displayFragment(new AccountEditFragment());
 			}
 		});
         refreshList();
@@ -206,7 +206,11 @@ public class AccountFragment extends Fragment {
 			view.view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					paFragmentManager.displayFragment(new AccountInfoFragment(result.get(position)));
+					AccountInfoFragment fragment = new AccountInfoFragment();
+					Bundle bundle = new Bundle();
+					bundle.putString(AccountFragment.ACCOUNT_ID, result.get(position).getId());
+					fragment.setArguments(bundle);
+					paFragmentManager.displayFragment(fragment);
 				}
 			});
 			if(!text.equals(""))

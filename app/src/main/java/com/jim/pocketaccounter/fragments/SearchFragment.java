@@ -496,7 +496,10 @@ public class SearchFragment extends Fragment {
                                     }
                                     else {
                                         InfoCreditFragment temp = new InfoCreditFragment();
-                                        temp.setDefaultContent(((CreditDetials) item.getParrentObject()));
+                                        Bundle bundle = new Bundle();
+                                        bundle.putLong(CreditTabLay.CREDIT_ID, ((CreditDetials) item.getParrentObject()).getMyCredit_id() );
+                                        bundle.putBoolean(CreditTabLay.FROM_SEARCH, true);
+                                        temp.setArguments(bundle);
                                         toolbarManager.closeSearchFragment();
                                         paFragmentManager.displayFragment(temp);
                                     }
@@ -529,7 +532,10 @@ public class SearchFragment extends Fragment {
                                     }
                                     else {
                                         InfoCreditFragment temp = new InfoCreditFragment();
-                                        temp.setDefaultContent(parentCreditDetials);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putLong(CreditTabLay.CREDIT_ID, parentCreditDetials.getMyCredit_id() );
+                                        bundle.putBoolean(CreditTabLay.FROM_SEARCH, true);
+                                        temp.setArguments(bundle);
                                         paFragmentManager.displayFragment(temp);
                                         toolbarManager.closeSearchFragment();
                                     }

@@ -41,7 +41,7 @@ public class DebtBorrowFragment extends Fragment implements View.OnClickListener
     private DebtBorrowDao debtBorrowDao;
 
     private BorrowFragment archiv;
-
+    public static String DEBT_BORROW_ID = "debt_borrow_id";
     private final int BORROW_FRAGMENT = 0;
     private final int DEBT_FRAGMENT = 1;
     private TabLayout tabLayout;

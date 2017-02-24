@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-@SuppressLint("ValidFragment")
 public class CurrencyEditFragment extends PABaseInfoFragment implements OnClickListener, OnItemClickListener {
     private ImageView ivExCurrencyAdd, ivExCurrencyDelete;
     private ListView lvCurrencyEditExchange;
@@ -49,13 +48,16 @@ public class CurrencyEditFragment extends PABaseInfoFragment implements OnClickL
     private boolean[] selected;
     WarningDialog dialog;
 
-    public CurrencyEditFragment(Currency currency) {
-        this.currency = currency;
-    }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.currency_edit, container, false);
         dialog = new WarningDialog(getContext());
+        if (getArguments() != null) {
+            String currencyID = getArguments().getString(CurrencyFragment.CURRENCY_ID);
+            if (currencyID != null) {
+                currency = daoSession.load(Currency.class, currencyID);
+            }
+        }
         toolbarManager.setOnHomeButtonClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

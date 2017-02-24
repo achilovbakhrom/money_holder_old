@@ -122,23 +122,6 @@ public class AddCreditFragment extends Fragment {
     boolean fromMainWindow = false;
     int modeFromMain;
     int posFromMain;
-
-    public AddCreditFragment() {
-        // Required empty public constructor
-        ThisFragment = this;
-    }
-
-    public AddCreditFragment setDateFormatModes(int mode, int pos) {
-        fromMainWindow = true;
-        this.modeFromMain = mode;
-        this.posFromMain = pos;
-        return this;
-    }
-
-    public void shareForEdit(CreditDetials currentCredit) {
-        this.currentCredit = currentCredit;
-    }
-
     public boolean isEdit() {
         return currentCredit != null;
     }
@@ -147,7 +130,18 @@ public class AddCreditFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        if(getArguments()!=null){
 
+            Long creditId = getArguments().getLong(CreditTabLay.CREDIT_ID);
+            if(creditId!=null){
+                currentCredit = daoSession.load(CreditDetials.class,creditId);
+            }
+            fromMainWindow = getArguments().getBoolean(CreditTabLay.FROM_MAIN);
+            modeFromMain = getArguments().getInt(CreditTabLay.MODE);
+            posFromMain = getArguments().getInt(CreditTabLay.POSITION);
+
+
+        }
         creditDetialsDao = daoSession.getCreditDetialsDao();
         accountDao = daoSession.getAccountDao();
         currencyDao = daoSession.getCurrencyDao();

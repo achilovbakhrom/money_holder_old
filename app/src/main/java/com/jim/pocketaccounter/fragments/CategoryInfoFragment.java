@@ -49,7 +49,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@SuppressLint({"InflateParams", "ValidFragment"})
 public class CategoryInfoFragment extends Fragment {
 	WarningDialog warningDialog;
     @Inject LogicManager logicManager;
@@ -71,13 +70,23 @@ public class CategoryInfoFragment extends Fragment {
 	private ImageView ivCategoryInfoFilter;
 	private TextView tvCategoryInfoTotal;
 	private TextView tvCategoryInfoSubcategories;
-	@SuppressLint("ValidFragment")
-	public CategoryInfoFragment(RootCategory rootCategory) {
-		this.rootCategory = rootCategory;
+
+	public static CategoryInfoFragment newInstance(RootCategory category) {
+		CategoryInfoFragment fragment = new CategoryInfoFragment();
+		Bundle bundle = new Bundle();
+		bundle.putString(CategoryFragment.CATEGORY_ID, category.getId());
+		fragment.setArguments(bundle);
+		return fragment;
 	}
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.category_info_layout, container, false);
 		((PocketAccounter)getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+		if (getArguments() != null) {
+			String categoryId = getArguments().getString(CategoryFragment.CATEGORY_ID);
+			if (categoryId != null) {
+				rootCategory = daoSession.load(RootCategory.class, categoryId);
+			}
+		}
 		warningDialog = new WarningDialog(getContext());
 		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
 		toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
@@ -156,7 +165,7 @@ public class CategoryInfoFragment extends Fragment {
 				switch(position) {
 					case 0:
 						paFragmentManager.getFragmentManager().popBackStack();
-						paFragmentManager.displayFragment(new RootCategoryEditFragment(rootCategory, PocketAccounterGeneral.NO_MODE, 0, null));
+						paFragmentManager.displayFragment(RootCategoryEditFragment.newInstance(rootCategory, 0,PocketAccounterGeneral.NO_MODE));
 						break;
 					case 1:
 						warningDialog.setText(getResources().getString(R.string.category_delete_warning));

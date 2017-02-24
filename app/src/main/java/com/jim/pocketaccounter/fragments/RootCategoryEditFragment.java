@@ -51,7 +51,6 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
-@SuppressLint({"InflateParams", "ValidFragment"})
 public class RootCategoryEditFragment extends Fragment implements OnClickListener, OnItemClickListener {
     private EditText etCatEditName;
     private CheckBox chbCatEditExpanse, chbCatEditIncome;
@@ -83,15 +82,26 @@ public class RootCategoryEditFragment extends Fragment implements OnClickListene
     @Inject
     DataCache dataCache;
 
-    public RootCategoryEditFragment(RootCategory rootCategory, int mode, int pos, Calendar date) {
-        category = rootCategory;
-        editMode = mode;
-        this.pos = pos;
+    public static RootCategoryEditFragment newInstance(RootCategory category, int position, int mode) {
+        RootCategoryEditFragment fragment = new RootCategoryEditFragment();
+        Bundle bundle = new Bundle();
+        if (category != null) bundle.putString(CategoryFragment.CATEGORY_ID, category.getId());
+        bundle.putInt(CategoryFragment.POSITION, position);
+        bundle.putInt(CategoryFragment.MODE, mode);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.cat_edit_layout, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        if (getArguments() != null) {
+            categoryId = getArguments().getString(CategoryFragment.CATEGORY_ID);
+            if (categoryId != null)
+                category = daoSession.load(RootCategory.class, categoryId);
+            pos = getArguments().getInt(CategoryFragment.POSITION);
+            editMode = getArguments().getInt(CategoryFragment.MODE);
+        }
         toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setTitle(getResources().getString(R.string.category));

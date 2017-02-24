@@ -50,7 +50,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@SuppressLint({"InflateParams", "ValidFragment"})
 public class AccountInfoFragment extends Fragment {
     @Inject LogicManager logicManager;
     @Inject ToolbarManager toolbarManager;
@@ -68,11 +67,6 @@ public class AccountInfoFragment extends Fragment {
 	private ImageView ivAccountInfoOperationsFilter;
 	private TextView getPay;
 	private TextView sendPay;
-
-	@SuppressLint("ValidFragment")
-	public AccountInfoFragment(Account account) {
-		this.account = account;
-	}
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -96,7 +90,12 @@ public class AccountInfoFragment extends Fragment {
 				showOperationsList();
 			}
 		});
-
+		if (getArguments() != null) {
+			String accountId = getArguments().getString(AccountFragment.ACCOUNT_ID);
+			if (accountId != null) {
+				account = daoSession.load(Account.class, accountId);
+			}
+		}
 		getPay = (TextView) rootView.findViewById(R.id.tvAccountInfoReplanish);
 		sendPay = (TextView) rootView.findViewById(R.id.tvAccountInfoToCash);
 
@@ -204,7 +203,11 @@ public class AccountInfoFragment extends Fragment {
 				switch(position) {
 					case 0:
 						paFragmentManager.getFragmentManager().popBackStack();
-						paFragmentManager.displayFragment(new AccountEditFragment(account));
+						Bundle bundle = new Bundle();
+						bundle.putString(AccountFragment.ACCOUNT_ID, account.getId());
+						AccountEditFragment fragment = new AccountEditFragment();
+						fragment.setArguments(bundle);
+						paFragmentManager.displayFragment(fragment);
 						break;
 					case 1:
 						List<Account> accounts = new ArrayList<>();

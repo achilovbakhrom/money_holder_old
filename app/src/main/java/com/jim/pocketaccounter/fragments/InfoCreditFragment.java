@@ -141,19 +141,6 @@ public class InfoCreditFragment extends Fragment {
         this.currentPOS = currentPOS;
     }
 
-    public void setContentFromMainWindow(CreditDetials temp, int positionOfBourd, int modeOfMain) {
-        fromMainWindow = true;
-
-        currentCredit = temp;
-        this.positionOfBourdMain = positionOfBourd;
-        this.modeOfMain = modeOfMain;
-    }
-
-    public void setDefaultContent(CreditDetials temp) {
-        currentCredit = temp;
-        fromSearch = true;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +160,13 @@ public class InfoCreditFragment extends Fragment {
                              Bundle savedInstanceState) {
         View V = inflater.inflate(R.layout.fragment_info_credit, container, false);
         Date dateForSimpleDate = (new Date());
+        if(getArguments()!=null){
+            currentCredit = daoSession.load(CreditDetials.class,getArguments().getLong(CreditTabLay.CREDIT_ID));
+            modeOfMain = getArguments().getInt(CreditTabLay.MODE);
+            positionOfBourdMain = getArguments().getInt(CreditTabLay.POSITION);
+            fromSearch = getArguments().getBoolean(CreditTabLay.FROM_SEARCH);
+            fromMainWindow = getArguments().getBoolean(CreditTabLay.FROM_MAIN);
+        }
         if (fromMainWindow)
             paFragmentManager.setMainReturn(true);
         expandableBut = (ImageView) V.findViewById(R.id.wlyuzik_opener);
@@ -214,9 +208,16 @@ public class InfoCreditFragment extends Fragment {
                         if (which == 0) {
                             paFragmentManager.getFragmentManager().popBackStack();
                             AddCreditFragment forEdit = new AddCreditFragment();
+                            Bundle bundle = new Bundle();
+
                             if (fromMainWindow)
-                                forEdit.setDateFormatModes(modeOfMain, positionOfBourdMain);
-                            forEdit.shareForEdit(currentCredit);
+                            {
+                             bundle.putBoolean(CreditTabLay.FROM_MAIN, true);
+                             bundle.putInt(CreditTabLay.MODE, modeOfMain);
+                             bundle.putInt(CreditTabLay.POSITION, positionOfBourdMain);
+                            }
+                            bundle.putLong(CreditTabLay.CREDIT_ID, currentCredit.getMyCredit_id());
+                            forEdit.setArguments(bundle);
                             paFragmentManager.displayFragment(forEdit);
                         } else {
                             warningDialog.setOnYesButtonListener(new View.OnClickListener() {

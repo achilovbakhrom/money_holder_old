@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.managers;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +28,7 @@ import com.jim.pocketaccounter.fragments.RecordDetailFragment;
 import com.jim.pocketaccounter.fragments.SmsParseMainFragment;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.inject.Inject;

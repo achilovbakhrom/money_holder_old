@@ -53,6 +53,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButton;
     private TextView ifListEmpty;
+    public static final String SMS_PARSE_OBJECT_ID = "sms_parse_object_id";
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +81,7 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
         switch (v.getId()) {
             case R.id.fbDebtBorrowFragment: {
                 paFragmentManager.getFragmentManager().popBackStack();
-                paFragmentManager.displayFragment(new AddSmsParseFragment(null));
+                paFragmentManager.displayFragment(new AddSmsParseFragment());
                 break;
             }
         }
@@ -139,7 +140,11 @@ public class SmsParseMainFragment extends Fragment implements View.OnClickListen
                 @Override
                 public void onClick(View v) {
                     paFragmentManager.getFragmentManager().popBackStack();
-                    paFragmentManager.displayFragment(new SMSParseInfoFragment(smsParseObjects.get(position)));
+                    SMSParseInfoFragment fragment = new SMSParseInfoFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(SmsParseMainFragment.SMS_PARSE_OBJECT_ID,smsParseObjects.get(position).getId());
+                    fragment.setArguments(bundle);
+                    paFragmentManager.displayFragment(fragment);
                 }
             });
             view.addKeys.setOnClickListener(new View.OnClickListener() {

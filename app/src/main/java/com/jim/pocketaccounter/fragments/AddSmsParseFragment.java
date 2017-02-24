@@ -64,7 +64,6 @@ import javax.inject.Inject;
  * Created by root on 9/29/16.
  */
 
-@SuppressLint("ValidFragment")
 public class AddSmsParseFragment extends Fragment {
     @Inject
     DaoSession daoSession;
@@ -98,10 +97,6 @@ public class AddSmsParseFragment extends Fragment {
     private List<TemplateSms> templateSmsList;
 
     int txSize;
-
-    public AddSmsParseFragment(SmsParseObject object) {
-        this.oldObject = object;
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
