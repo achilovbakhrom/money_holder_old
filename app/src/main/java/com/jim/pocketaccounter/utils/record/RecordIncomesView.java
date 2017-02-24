@@ -549,7 +549,14 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 								if (!categoryList.isEmpty())
 									category = categoryList.get(0);
 							}
-							paFragmentManager.displayFragment(new RecordEditFragment(category, date, null, PocketAccounterGeneral.MAIN));
+							SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+							RecordEditFragment fragment = new RecordEditFragment();
+							Bundle bundle = new Bundle();
+							bundle.putString(RecordDetailFragment.DATE, format.format(date.getTime()));
+							bundle.putString(RecordDetailFragment.CATEGORY_ID, (category.getId()));
+							bundle.putInt(RecordDetailFragment.PARENT, PocketAccounterGeneral.MAIN);
+							fragment.setArguments(bundle);
+							paFragmentManager.displayFragment(fragment);
 						}
 						else if (buttons.get(position).getCategory().getType() == PocketAccounterGeneral.CREDIT) {
 
@@ -1104,7 +1111,15 @@ public class RecordIncomesView extends View implements 	GestureDetector.OnGestur
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				paFragmentManager.setMainReturn(true);
-				paFragmentManager.displayFragment(new RecordEditFragment(records.get(position).getCategory(), date, records.get(position), PocketAccounterGeneral.MAIN));
+				SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+				RecordEditFragment fragment = new RecordEditFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString(RecordDetailFragment.DATE, format.format(date.getTime()));
+				bundle.putString(RecordDetailFragment.RECORD_ID, (records.get(position).getRecordId()));
+				bundle.putString(RecordDetailFragment.CATEGORY_ID, (records.get(position).getCategory().getId()));
+				bundle.putInt(RecordDetailFragment.PARENT, PocketAccounterGeneral.MAIN);
+				fragment.setArguments(bundle);
+				paFragmentManager.displayFragment(fragment);
 				PocketAccounter.PRESSED = false;
 				dialog.dismiss();
 			}

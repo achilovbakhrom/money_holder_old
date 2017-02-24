@@ -35,6 +35,7 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,9 +44,13 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.microedition.khronos.opengles.GL10;
 
-@SuppressLint("ValidFragment")
 public class RecordDetailFragment extends Fragment implements OnClickListener {
     private Calendar date;
+    public static String DATE = "date";
+    public static String PARENT = "parent";
+    public static String CATEGORY_ID = "category_id";
+    public static String RECORD_ID = "record_id";
+    private SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
     private RecyclerView rvRecordDetail;
     private int mode = PocketAccounterGeneral.NORMAL_MODE;
     private ArrayList<FinanceRecord> records;
@@ -61,13 +66,18 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
     LogicManager logicManager;
     @Inject
     DataCache dataCache;
-    @SuppressLint("ValidFragment")
-    public RecordDetailFragment(Calendar date) {
-        this.date = (Calendar) date.clone();
-    }
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.record_detail_layout, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        date = Calendar.getInstance();
+        if (getArguments() != null) {
+            String tempDate = getArguments().getString(RecordDetailFragment.DATE);
+            try {
+                date.setTime(format.parse(tempDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
         toolbarManager.setImageToSecondImage(R.drawable.pencil);
         toolbarManager.setOnSecondImageClickListener(this);
@@ -244,8 +254,15 @@ public class RecordDetailFragment extends Fragment implements OnClickListener {
                 public void onClick(View v) {
                     if (mode == PocketAccounterGeneral.NORMAL_MODE) {
                         paFragmentManager.getFragmentManager().popBackStack();
-                        paFragmentManager.displayFragment(new RecordEditFragment(null,
-                                financeRecord.getDate(), financeRecord, PocketAccounterGeneral.DETAIL));
+                        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                        RecordEditFragment fragment = new RecordEditFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(RecordDetailFragment.DATE, format.format(financeRecord.getDate().getTime()));
+                        bundle.putString(RecordDetailFragment.RECORD_ID, financeRecord.getRecordId());
+                        bundle.putInt(RecordDetailFragment.PARENT, PocketAccounterGeneral.DETAIL);
+                        fragment.setArguments(bundle);
+                        paFragmentManager.displayFragment(fragment);
+
                     }
                     else {
                         holder.chbRecordDetail.setChecked(!holder.chbRecordDetail.isChecked());

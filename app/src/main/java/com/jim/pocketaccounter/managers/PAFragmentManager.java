@@ -286,7 +286,12 @@ public class    PAFragmentManager {
             } else if (fragName.equals(PocketClassess.INFO_PURPOSE) || fragName.equals(PocketClassess.ADD_PURPOSE)) {
                 displayFragment(new PurposeFragment());
             } else if (fragName.equals(PocketClassess.RECORD_EDIT_FRAGMENT)) {
-                displayFragment(new RecordDetailFragment(dataCache.getEndDate()));
+                RecordDetailFragment fragment = new RecordDetailFragment();
+                Bundle bundle = new Bundle();
+                SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                bundle.putString(RecordDetailFragment.DATE, format.format(dataCache.getEndDate()));
+                fragment.setArguments(bundle);
+                displayFragment(fragment);
             } else if (fragName.equals(PocketClassess.ADD_SMS_PARSE_FRAGMENT) || fragName.equals(PocketClassess.INFO_SMS_PARSE_FRAGMENT)) {
                 displayFragment(new SmsParseMainFragment());
             }

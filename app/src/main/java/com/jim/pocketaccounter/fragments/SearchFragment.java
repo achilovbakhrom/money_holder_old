@@ -469,7 +469,14 @@ public class SearchFragment extends Fragment {
                                         }
                                     });
                                     toolbarManager.setVisiblityEditSearch();
-                                    paFragmentManager.displayFragment(new RecordEditFragment(null, ((FinanceRecord) item.getParrentObject()).getDate(), ((FinanceRecord) item.getParrentObject()), PocketAccounterGeneral.DETAIL));
+                                    SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+                                    RecordEditFragment fragment = new RecordEditFragment();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString(RecordDetailFragment.DATE, format.format(((FinanceRecord) item.getParrentObject()).getDate().getTime()));
+                                    bundle.putString(RecordDetailFragment.RECORD_ID, ((FinanceRecord) item.getParrentObject()).getRecordId());
+                                    bundle.putInt(RecordDetailFragment.PARENT, PocketAccounterGeneral.DETAIL);
+                                    fragment.setArguments(bundle);
+                                    paFragmentManager.displayFragment(fragment);
 
                                 }
                             }, 500);
