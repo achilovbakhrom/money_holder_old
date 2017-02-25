@@ -72,6 +72,12 @@ public class AccountInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		final View rootView = inflater.inflate(R.layout.account_info_layout, container, false);
 		((PocketAccounter)getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+		if (getArguments() != null) {
+			String accountId = getArguments().getString(AccountFragment.ACCOUNT_ID);
+			if (accountId != null) {
+				account = daoSession.load(Account.class, accountId);
+			}
+		}
 		toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.VISIBLE);
 		toolbarManager.setImageToSecondImage(R.drawable.ic_more_vert_black_48dp);
 		toolbarManager.setImageToHomeButton(R.drawable.ic_back_button);
@@ -90,12 +96,6 @@ public class AccountInfoFragment extends Fragment {
 				showOperationsList();
 			}
 		});
-		if (getArguments() != null) {
-			String accountId = getArguments().getString(AccountFragment.ACCOUNT_ID);
-			if (accountId != null) {
-				account = daoSession.load(Account.class, accountId);
-			}
-		}
 		getPay = (TextView) rootView.findViewById(R.id.tvAccountInfoReplanish);
 		sendPay = (TextView) rootView.findViewById(R.id.tvAccountInfoToCash);
 

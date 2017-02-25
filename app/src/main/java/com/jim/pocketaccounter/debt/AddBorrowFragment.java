@@ -113,7 +113,9 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private String photoPath = "";
     private Calendar getDate;
     private Calendar returnDate;
-    private CheckBox calculate;
+    private LinearLayout llFirstPayment;
+    private CheckBox calculate, chbfirstPay;
+    private TextView tvFirstPayCurr;
     private int TYPE = 0;
     private static final int REQUEST_SELECT_CONTACT = 2;
     public static int RESULT_LOAD_IMAGE = 1;
@@ -245,6 +247,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             }
         });
         contactBtn = (FrameLayout) view.findViewById(R.id.btBorrowAddPopupContact);
+        llFirstPayment = (LinearLayout) view.findViewById(R.id.llFirstPayment);
         imageView = (CircleImageView) view.findViewById(R.id.ivBorrowAddPopup);
         PersonName = (EditText) view.findViewById(R.id.etBorrowAddPopupName);
         PersonNumber = (EditText) view.findViewById(R.id.etBorrowAddPopupNumber);
@@ -255,6 +258,8 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         PersonValyuta = (Spinner) view.findViewById(R.id.spBorrowAddPopupValyuta);
         PersonAccount = (Spinner) view.findViewById(R.id.spBorrowAddPopupAccount);
         calculate = (CheckBox) view.findViewById(R.id.chbAddDebtBorrowCalculate);
+        chbfirstPay = (CheckBox) view.findViewById(R.id.chbAddFirstPayment);
+        tvFirstPayCurr = (TextView) view.findViewById(R.id.tvFirstPayCurr);
         getDate = paFragmentManager.isMainReturn() ? dataCache.getEndDate() : Calendar.getInstance();
         if (TYPE == DebtBorrow.DEBT) {
             PersonSumm.setHint(getResources().getString(R.string.enter_borrow_amoount));
@@ -267,13 +272,13 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         for (int i = 0; i < accaounts.length; i++) {
             accaounts[i] = accountDao.queryBuilder().list().get(i).getName();
         }
-        String[] valyuts = new String[currencyDao.queryBuilder().list().size()];
+        final String[] valyuts = new String[currencyDao.queryBuilder().list().size()];
         for (int i = 0; i < valyuts.length; i++) {
             valyuts[i] = currencyDao.queryBuilder().list().get(i).getAbbr();
         }
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                getContext(), R.layout.spiner_gravity_right, accaounts);
+                getContext(), android.R.layout.simple_spinner_item, accaounts);
 
         ArrayAdapter<String> arrayValyuAdapter = new ArrayAdapter<>(
                 getContext(), R.layout.spiner_gravity_right, valyuts);
@@ -289,9 +294,21 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         for (int i = 0; i < valyuts.length; i++) {
             if (valyuts[i].equals(commonOperations.getMainCurrency().getAbbr())) {
                 posMain = i;
+                tvFirstPayCurr.setText(valyuts[i]);
             }
         }
         PersonValyuta.setSelection(posMain);
+        PersonValyuta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                tvFirstPayCurr.setText(valyuts[i]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         PersonDataGet.setText(dateFormat.format(getDate.getTime()));
         PersonDataGet.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -335,6 +352,16 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                     PersonAccount.setVisibility(View.VISIBLE);
                 } else {
                     PersonAccount.setVisibility(View.GONE);
+                }
+            }
+        });
+        chbfirstPay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (chbfirstPay.isChecked()) {
+                    llFirstPayment.setVisibility(View.VISIBLE);
+                } else {
+                    llFirstPayment.setVisibility(View.GONE);
                 }
             }
         });
@@ -422,6 +449,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             }
             if (!currentDebtBorrow.getReckings().isEmpty() && dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()).matches(dateFormat.format(getDate.getTime())))
                 firstPay.setText("" + currentDebtBorrow.getReckings().get(0).getAmount());
+            tvFirstPayCurr.setText(currentDebtBorrow.getCurrency().getAbbr());
         }
         return view;
     }
@@ -483,7 +511,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                         currentDebtBorrow.getPerson().setName(PersonName.getText().toString());
                         currentDebtBorrow.getPerson().setPhoneNumber(PersonNumber.getText().toString());
                         currentDebtBorrow.getPerson().setPhoto(file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath);
-
+                        tvFirstPayCurr.setText(currentDebtBorrow.getCurrency().getAbbr());
                         currentDebtBorrow.setAmount(Double.parseDouble(PersonSumm.getText().toString()));
                         currentDebtBorrow.setCurrency(currency);
                         currentDebtBorrow.setCalculate(calculate.isChecked());
@@ -652,6 +680,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                 }
             } else {
+                currentDebtBorrow.__setDaoSession(daoSession);
                 if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
                         dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
                     accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
