@@ -142,7 +142,7 @@ public class PocketAccounter extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(null);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.pocket_accounter);
         component((PocketAccounterApplication) getApplication()).inject(this);
         String lang = preferences.getString("language", getResources().getString(R.string.language_default));

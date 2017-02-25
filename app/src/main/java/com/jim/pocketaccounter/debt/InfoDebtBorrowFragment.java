@@ -516,9 +516,9 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
             double limit = account.getLimite();
             double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
             if (debt.getType() == DebtBorrow.DEBT) {
-                accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(), summ);
+                accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),  summ);
             } else {
-                accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(), summ);
+                accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),  summ);
             }
             if (account.getNoneMinusAccount()) {
                 if (accounted < 0) {

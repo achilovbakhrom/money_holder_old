@@ -644,21 +644,21 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 currentDebtBorrow.__setDaoSession(daoSession);
                 if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
                         dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
-                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),
+                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                     accounted = accounted - currentDebtBorrow.getReckings().get(0).getAmount();
                 } else {
-                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),
+                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                 }
             } else {
                 if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
                         dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
-                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),
+                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                     accounted = accounted + currentDebtBorrow.getReckings().get(0).getAmount();
                 } else {
-                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(), account.getCurrency(),
+                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
                             Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
                 }
             }

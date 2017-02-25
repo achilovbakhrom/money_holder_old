@@ -441,7 +441,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         double limit = account.getLimite();
                         double accounted =  logicManager.isLimitAccess(account, date);
 
-                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
+                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(),  Double.parseDouble(amount));
                         if (-limit > accounted) {
                             Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                             return;
