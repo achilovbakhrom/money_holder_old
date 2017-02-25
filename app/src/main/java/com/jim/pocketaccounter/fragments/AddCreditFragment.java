@@ -111,7 +111,9 @@ public class AddCreditFragment extends Fragment {
     List<Currency> currencies;
     CreditFragment.EventFromAdding eventLis;
     AddCreditFragment ThisFragment;
-    CheckBox isOpkey;
+    CheckBox isOpkey, chbFirsPay;
+    private TextView tvCurr;
+    private LinearLayout llFirstPay;
     public static final String OPENED_TAG = "Addcredit";
     public static boolean to_open_dialog = false;
     CreditDetials currentCredit;
@@ -163,6 +165,9 @@ public class AddCreditFragment extends Fragment {
         spinner_peiod = (Spinner) V.findViewById(R.id.spinner_period);
         spiner_trasnact = (Spinner) V.findViewById(R.id.spinner_sceta);
         isOpkey = (CheckBox) V.findViewById(R.id.key_for_balance);
+        chbFirsPay = (CheckBox) V.findViewById(R.id.chbFirstPayment);
+        tvCurr = (TextView) V.findViewById(R.id.tvFirstPayCurrency);
+        llFirstPay = (LinearLayout) V.findViewById(R.id.llFirstPayment);
         to_open_dialog = false;
 
         nameCred = (EditText) V.findViewById(R.id.editText);
@@ -414,6 +419,14 @@ public class AddCreditFragment extends Fragment {
                 } else spiner_trasnact.setVisibility(View.GONE);
             }
         });
+        chbFirsPay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (chbFirsPay.isChecked()) {
+                    llFirstPay.setVisibility(View.VISIBLE);
+                } else llFirstPay.setVisibility(View.GONE);
+            }
+        });
         procentCred.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -534,15 +547,27 @@ public class AddCreditFragment extends Fragment {
         });
 
         ArrayAdapter<String> adapter_scet = new ArrayAdapter<String>(getActivity(),
-                R.layout.spiner_gravity_right, accs);
+                android.R.layout.simple_spinner_item, accs);
 
         spiner_forValut.setAdapter(adapter_valyuta);
         int posMain = 0;
         for (int i = 0; i < valyutes.length; i++) {
             if (valyutes[i].equals(commonOperations.getMainCurrency().getAbbr())) {
                 posMain = i;
+                tvCurr.setText(valyutes[i]);
             }
         }
+        spiner_forValut.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                tvCurr.setText(valyutes[i]);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         spiner_forValut.setSelection(posMain);
         spiner_procent.setAdapter(adapter);
         spinner_peiod.setAdapter(adapter_period);
