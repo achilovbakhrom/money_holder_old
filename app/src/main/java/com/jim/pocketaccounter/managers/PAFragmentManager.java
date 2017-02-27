@@ -231,7 +231,10 @@ public class    PAFragmentManager {
         public Fragment getItem(int position) {
             Calendar end = Calendar.getInstance();
             end.add(Calendar.DAY_OF_MONTH, position - 5000);
-            Fragment fragment = new MainPageFragment(activity, end);
+            Fragment fragment = new MainPageFragment();
+            Bundle bundle = new Bundle();
+            bundle.putLong(MainPageFragment.CALENDAR_DAY,end.getTimeInMillis());
+            fragment.setArguments(bundle);
             nextPage = (MainPageFragment) fragment;
             return fragment;
         }

@@ -50,9 +50,9 @@ public class ReportByCategory extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
 
         final View rootView = inflater.inflate(R.layout.report_by_category, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         rootView.postDelayed(new Runnable() {
             @Override
             public void run() {

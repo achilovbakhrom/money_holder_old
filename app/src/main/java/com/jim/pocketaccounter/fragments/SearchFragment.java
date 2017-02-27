@@ -92,8 +92,7 @@ public class SearchFragment extends Fragment {
 
     public SearchFragment() {
         // Required empty public constructor
-        dateformarter = new SimpleDateFormat("dd.MM.yyyy");
-        formater = new DecimalFormat("0.00##");
+
 
     }
 
@@ -117,7 +116,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
     }
 
     String[] tempIcons;
@@ -127,6 +125,9 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
 //        setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        dateformarter = new SimpleDateFormat("dd.MM.yyyy");
+        formater = new DecimalFormat("0.00##");
         rvSearchItems = (RecyclerView) view.findViewById(R.id.recyc_item_search);
         textViewSearch = (TextView) view.findViewById(R.id.textViewSearch);
         textViewSearch.setVisibility(View.VISIBLE);

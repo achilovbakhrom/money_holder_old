@@ -144,13 +144,7 @@ public class InfoCreditFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        creditDetialsDao = daoSession.getCreditDetialsDao();
-        reckingCreditDao = daoSession.getReckingCreditDao();
-        accountDao = daoSession.getAccountDao();
-        formater = new DecimalFormat("0.##");
-        context = getActivity();
-        warningDialog = new WarningDialog(context);
+
 
     }
 
@@ -159,6 +153,13 @@ public class InfoCreditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View V = inflater.inflate(R.layout.fragment_info_credit, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        creditDetialsDao = daoSession.getCreditDetialsDao();
+        reckingCreditDao = daoSession.getReckingCreditDao();
+        accountDao = daoSession.getAccountDao();
+        formater = new DecimalFormat("0.##");
+        context = getActivity();
+        warningDialog = new WarningDialog(context);
         Date dateForSimpleDate = (new Date());
         if(getArguments()!=null){
             currentCredit = daoSession.load(CreditDetials.class,getArguments().getLong(CreditTabLay.CREDIT_ID));

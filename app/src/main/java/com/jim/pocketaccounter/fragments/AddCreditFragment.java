@@ -126,9 +126,11 @@ public class AddCreditFragment extends Fragment {
         return currentCredit != null;
     }
 
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View V = inflater.inflate(R.layout.fragment_add_credit, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         if(getArguments()!=null){
 
@@ -147,12 +149,6 @@ public class AddCreditFragment extends Fragment {
         currencyDao = daoSession.getCurrencyDao();
         financeRecordDao = daoSession.getFinanceRecordDao();
         debtBorrowDao = daoSession.getDebtBorrowDao();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View V = inflater.inflate(R.layout.fragment_add_credit, container, false);
         if (fromMainWindow) {
             paFragmentManager.setMainReturn(true);
         }

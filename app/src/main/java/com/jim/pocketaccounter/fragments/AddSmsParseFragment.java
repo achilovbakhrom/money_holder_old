@@ -98,11 +98,6 @@ public class AddSmsParseFragment extends Fragment {
 
     int txSize;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-    }
 
     @Override
     public void onStart() {
@@ -113,6 +108,7 @@ public class AddSmsParseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.add_sms_sender, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
 
         txSize = (int) ((int) (getResources().getDimension(R.dimen.fourteen_dp)) / getResources().getDisplayMetrics().density);
         etNumber = (EditText) rootView.findViewById(R.id.etSmsParseAddNumber);

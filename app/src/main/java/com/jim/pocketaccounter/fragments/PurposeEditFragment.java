@@ -107,19 +107,16 @@ public class PurposeEditFragment extends Fragment implements OnClickListener, On
     private TextView etPeriodCount;
     boolean forCustomPeriod = false;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        begCalendar = Calendar.getInstance();
-        endCalendar = Calendar.getInstance();
-    }
+
 
     boolean keyb = true;
     DatePickerDialog.OnDateSetListener getDatesetListener2;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.purpose_edit_layout_moder, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        begCalendar = Calendar.getInstance();
+        endCalendar = Calendar.getInstance();
         if (getArguments() != null) {
             String purposeId = getArguments().getString(PurposeFragment.PURPOSE_ID);
             if (purposeId != null)

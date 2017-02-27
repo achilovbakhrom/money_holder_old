@@ -109,13 +109,14 @@ public class InfoCreditFragmentForArchive extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context=getActivity();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View V=inflater.inflate(R.layout.fragment_info_credit_archive, container, false);
+        context=getActivity();
+
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
         reckingCreditDao = daoSession.getReckingCreditDao();

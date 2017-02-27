@@ -46,38 +46,33 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.Currency;
-//    import com.jim.pocketaccounter.finance.FinanceManager;
 import com.jim.pocketaccounter.database.DaoMaster;
 import com.jim.pocketaccounter.database.DaoSession;
-import com.jim.pocketaccounter.database.DatabaseMigration;
 import com.jim.pocketaccounter.database.DebtBorrow;
 import com.jim.pocketaccounter.database.FinanceRecord;
 import com.jim.pocketaccounter.database.FinanceRecordDao;
+import com.jim.pocketaccounter.database.PhotoDetails;
 import com.jim.pocketaccounter.database.Recking;
 import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.database.RootCategory;
+import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.finance.RecordAccountAdapter;
 import com.jim.pocketaccounter.finance.RecordCategoryAdapter;
 import com.jim.pocketaccounter.finance.RecordSubCategoryAdapter;
-import com.jim.pocketaccounter.database.RootCategory;
-import com.jim.pocketaccounter.database.SubCategory;
 import com.jim.pocketaccounter.fragments.RecordEditFragment;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.photocalc.PhotoAdapter;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
-//    import com.jim.pocketaccounter.photocalc.PhotoAdapter;
-import com.jim.pocketaccounter.database.PhotoDetails;
 import com.transitionseverywhere.AutoTransition;
 import com.transitionseverywhere.Transition;
 import com.transitionseverywhere.TransitionManager;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
-
 
 import org.greenrobot.greendao.database.Database;
 
@@ -92,7 +87,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,6 +95,9 @@ import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKE
 import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE;
 import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
 import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
+
+//    import com.jim.pocketaccounter.finance.FinanceManager;
+//    import com.jim.pocketaccounter.photocalc.PhotoAdapter;
 //    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH;
 //    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE;
 //    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
@@ -128,6 +125,7 @@ public class CalcActivity extends AppCompatActivity implements View.OnClickListe
     private Animation buttonClick;
     private TextView comment;
     private EditText comment_add;
+    LogicManager logicManager;
     private String oraliqComment = "";
     boolean keykeboard = false;
     private final int PERMISSION_READ_STORAGE = 6;
@@ -153,6 +151,7 @@ public class CalcActivity extends AppCompatActivity implements View.OnClickListe
         mainView = (LinearLayout) findViewById(R.id.llRoot);
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, PocketAccounterGeneral.CURRENT_DB_NAME);
         db = helper.getWritableDb();
+        logicManager=  new LogicManager(this);
         daoSession = new DaoMaster(db).newSession();
         comment = (TextView) findViewById(R.id.textView18);
         comment_add = (EditText) findViewById(R.id.comment_add);
@@ -1210,16 +1209,23 @@ public class CalcActivity extends AppCompatActivity implements View.OnClickListe
         String value = tvRecordEditDisplay.getText().toString();
         if (value.length() > 14)
             value = value.substring(0, 14);
-        if (account.getIsLimited()) {
-            double limit = account.getLimite();
-            double accounted = isLimitAccess(daoSession, getApplicationContext(), account, Calendar.getInstance());
-            accounted = accounted - getCost(date, currency, daoSession.getCurrencyDao().load(account.getLimitCurId()), Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(",",".")));
-            if (-limit > accounted) {
-                Toast.makeText(getApplicationContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                return;
+        if(category!=null){
+            if(category.getType()==PocketAccounterGeneral.EXPENSE){
+                    int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(',','.')),currency,date,0,null,null);
+                    if(state == LogicManager.CAN_NOT_NEGATIVE){
+
+                        Toast.makeText(this, R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }
+                    else if(state == LogicManager.LIMIT){
+                        Toast.makeText(this, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }
+
             }
         }
-
         if (Double.parseDouble(value.replace(",",".")) != 0) {
 
             FinanceRecord newRecord = new FinanceRecord();

@@ -39,8 +39,8 @@ public class TableBarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         final View view = inflater.inflate(R.layout.table_bar_fragment_layout, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.VISIBLE, View.VISIBLE);
         toolbarManager.setImageToFirstImage(R.drawable.ic_excel);

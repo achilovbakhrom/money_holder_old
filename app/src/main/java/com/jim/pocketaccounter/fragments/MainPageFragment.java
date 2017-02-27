@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,13 +62,28 @@ public class MainPageFragment extends Fragment {
     @Inject @Named(value = "begin") Calendar begin;
     @Inject @Named(value = "end") Calendar end;
     @Inject SharedPreferences preferences;
-    public MainPageFragment(Context context, Calendar day) {
-        this.day = (Calendar) day.clone();
-        this.pocketAccounter = (PocketAccounter) context;
-        pocketAccounter.component((PocketAccounterApplication) pocketAccounter.getApplicationContext()).inject(this);
+    public static String CALENDAR_DAY = "fromPaFragment";
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
     }
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.main_page_fragment, container, false);
+        this.pocketAccounter = (PocketAccounter) getActivity();
+        pocketAccounter.component((PocketAccounterApplication) pocketAccounter.getApplicationContext()).inject(this);
+        if(getArguments()!=null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(getArguments().getLong(CALENDAR_DAY));
+            Log.d("TESTTTT", "onCreateView: " + calendar.getTime().getTime());
+            this.day = calendar;
+
+        }
+        if(day==null){
+            Log.d("TESTTTT", "onCreateView: " + " hi is null");
+        }
         pocketAccounter.findViewById(R.id.main).setVisibility(View.VISIBLE);
         pocketAccounter.findViewById(R.id.main).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -141,6 +158,8 @@ public class MainPageFragment extends Fragment {
         commonOperations.refreshCurrency();
     }
     public void update() {
+        Log.d("TESTTTT", "update: ");
+        if(day==null) return;
         toolbarManager.setSubtitle(simpleDateFormat.format(day.getTime()));
         calculateBalance();
         expenseView.invalidate();
@@ -152,6 +171,14 @@ public class MainPageFragment extends Fragment {
         incomeView.updatePageCountAndPosition();
         incomeView.invalidate();
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+
+
     public void calculateBalance() {
         String mode = preferences.getString("balance_solve", "0");
         end.setTimeInMillis(day.getTimeInMillis());

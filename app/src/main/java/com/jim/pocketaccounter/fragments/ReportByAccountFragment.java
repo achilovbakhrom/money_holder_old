@@ -89,8 +89,8 @@ public class ReportByAccountFragment extends Fragment implements View.OnClickLis
     private List<AccountCurrencyPair> pairs;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         final View rootView = inflater.inflate(R.layout.report_by_account, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         rootView.postDelayed(new Runnable() {
             @Override
             public void run() {

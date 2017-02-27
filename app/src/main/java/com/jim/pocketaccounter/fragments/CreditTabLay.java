@@ -54,11 +54,7 @@ public class CreditTabLay extends Fragment implements View.OnClickListener, View
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-    }
+
     public void setArchivePosition(){
         position=1;
     }
@@ -66,6 +62,8 @@ public class CreditTabLay extends Fragment implements View.OnClickListener, View
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View V=inflater.inflate(R.layout.fragment_credit_tab_lay, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
 
         V.postDelayed(new Runnable() {

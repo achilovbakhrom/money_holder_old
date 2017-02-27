@@ -51,8 +51,8 @@ public class ReportByIncomeExpanseBarFragment extends Fragment implements OnChar
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         View rootView = inflater.inflate(R.layout.report_bar, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         llReportBarMain = (LinearLayout) rootView.findViewById(R.id.llReportBarMain);
         tvReportIncomeExpanseNoDatas = (TextView) rootView.findViewById(R.id.tvReportIncomeExpanseNoDatas);
         init();

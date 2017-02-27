@@ -81,8 +81,8 @@ public class ReportByIncomeExpanseTableFragment extends Fragment {
         begin.set(Calendar.SECOND, 0);
         begin.set(Calendar.MILLISECOND, 0);
         end = Calendar.getInstance();
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         final View rootView = inflater.inflate(R.layout.report_by_income_expanse, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         rootView.postDelayed(new Runnable() {
             @Override
             public void run() {

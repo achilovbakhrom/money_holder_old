@@ -62,9 +62,7 @@ public class CreditFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-        creditDetialsDao = daoSession.getCreditDetialsDao();
-        This=getActivity();
+
     }
     public  CreditTabLay.ForFab getEvent(){
         return new CreditTabLay.ForFab() {
@@ -81,11 +79,14 @@ public class CreditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View V=inflater.inflate(R.layout.fragment_credit, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+        creditDetialsDao = daoSession.getCreditDetialsDao();
+        This=getActivity();
         toolbarManager.setTitle(getResources().getString(R.string.cred_managment));
         toolbarManager.setSubtitle("");
         toolbarManager.setSpinnerVisibility(View.GONE);
         toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
-        View V=inflater.inflate(R.layout.fragment_credit, container, false);
         ifListEmpty=(TextView) V.findViewById(R.id.ifListEmpty);
         if(creditDetialsDao.queryBuilder()
                 .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list().size()==0){

@@ -98,8 +98,8 @@ public class PurposeInfoFragment extends Fragment implements View.OnClickListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         View rooView = inflater.inflate(R.layout.purpose_info_layout_modern, container, false);
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         beginDate = null;
         endDate = null;
         if (getArguments() != null) {

@@ -23,7 +23,7 @@ import javax.inject.Inject;
 public class CreditArchiveFragment extends Fragment {
     RecyclerView crRV;
     AdapterCridetArchive crAdap;
-    Context This;
+    Context contextt;
     @Inject
     DaoSession daoSession;
     TextView ifListEmpty;
@@ -37,9 +37,7 @@ public class CreditArchiveFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         This=getActivity();
-        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
-    }
+       }
     public CreditTabLay.SvyazkaFragmentov getSvyaz(){
         return new CreditTabLay.SvyazkaFragmentov() {
             @Override
@@ -55,6 +53,9 @@ public class CreditArchiveFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d("checkInterfaces", "onCreatView : " );
         View V=inflater.inflate(R.layout.fragment_credit, container, false);
+        contextt =getActivity();
+        ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+
         ifListEmpty=(TextView) V.findViewById(R.id.ifListEmpty);
         if(daoSession.getCreditDetialsDao().queryBuilder()
                 .where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).build().list().size()==0){
@@ -65,9 +66,9 @@ public class CreditArchiveFragment extends Fragment {
             ifListEmpty.setVisibility(View.GONE);
         }
         crRV=(RecyclerView) V.findViewById(R.id.my_recycler_view);
-        LinearLayoutManager llm = new LinearLayoutManager(This);
+        LinearLayoutManager llm = new LinearLayoutManager(contextt);
         crRV.setLayoutManager(llm);
-        crAdap=new AdapterCridetArchive(This);
+        crAdap=new AdapterCridetArchive(contextt);
         crAdap.setSvyazToAdapter(svyazForNotifyFromArchAdap);
         crRV.setAdapter(crAdap);
         return V;
