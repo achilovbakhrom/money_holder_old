@@ -192,15 +192,15 @@ public class CurrencyEditFragment extends PABaseInfoFragment implements OnClickL
         ivCurrencyEditDialogOk.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (etExchange.getText().toString().matches("") || Double.parseDouble(etExchange.getText().toString()) == 0) {
+                if (etExchange.getText().toString().matches("") || Double.parseDouble(etExchange.getText().toString().replace(",",".")) == 0) {
                     etExchange.setError(getString(R.string.incorrect_value));
                     return;
                 }
                 //TODO WHAT IS IT
                 if (logicManager.insertUserEnteredCalendars(currency, (Calendar) day.clone()) == LogicManagerConstants.SUCH_NAME_ALREADY_EXISTS) {
-                    logicManager.generateCurrencyCosts((Calendar) day.clone(), Double.parseDouble(etExchange.getText().toString()) , currency);
+                    logicManager.generateCurrencyCosts((Calendar) day.clone(), Double.parseDouble(etExchange.getText().toString().replace(",",".")) , currency);
                 } else {
-                    logicManager.generateCurrencyCosts((Calendar) day.clone(), Double.parseDouble(etExchange.getText().toString()) , currency);
+                    logicManager.generateCurrencyCosts((Calendar) day.clone(), Double.parseDouble(etExchange.getText().toString().replace(",",".")) , currency);
                 }
 
                 commonOperations.refreshCurrency();

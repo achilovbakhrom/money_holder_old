@@ -230,7 +230,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
                                 RecordDetailFragment fragment = new RecordDetailFragment();
                                 Bundle bundle = new Bundle();
                                 SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-                                bundle.putString(RecordDetailFragment.DATE, format.format(date));
+                                bundle.putString(RecordDetailFragment.DATE, format.format(date.getTime()));
                                 fragment.setArguments(bundle);
                                 paFragmentManager.displayFragment(fragment);
                             }
@@ -1333,22 +1333,36 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
         String value = tvRecordEditDisplay.getText().toString();
         if (value.length() > 14)
             value = value.substring(0, 14);
-        if (account.getNoneMinusAccount()) {
-            double accounted = logicManager.isLimitAccess(account, date)
-                    - commonOperations.getCost(date, currency, Double.parseDouble(tvRecordEditDisplay.getText().toString()));
-            if (accounted < 0) {
-                Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
-                return;
+        if(category!=null){
+            if(category.getType()==PocketAccounterGeneral.EXPENSE){
+                if(record==null){
+                    int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(",",".")),currency,date,0,null,null);
+                    if(state == LogicManager.CAN_NOT_NEGATIVE){
+
+                        Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }
+                    else if(state == LogicManager.LIMIT){
+                        Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                        return;
+
+                    }
+                }
+                else {
+                    int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(",",".")),currency,date,record.getAmount(),record.getCurrency(),record.getAccount());
+                    if(state == LogicManager.CAN_NOT_NEGATIVE){
+                        Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    else if(state == LogicManager.LIMIT){
+                        Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
             }
         }
-        if (account.getIsLimited()) {
-            if (-account.getLimite() > logicManager.isLimitAccess(account, date)
-                    - commonOperations.getCost(date, currency, Double.parseDouble(tvRecordEditDisplay.getText().toString()))) {
-                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-        if (Double.parseDouble(value) != 0) {
+        if (Double.parseDouble(value.replace(",",".")) != 0) {
             FinanceRecord savingRecord = null;
             if (record != null)
                 savingRecord = record;
@@ -1359,7 +1373,7 @@ public class RecordEditFragment extends Fragment implements OnClickListener {
             savingRecord.setDate(date);
             savingRecord.setAccount(account);
             savingRecord.setCurrency(currency);
-            savingRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
+            savingRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(",",".")));
             if (record != null)
                 savingRecord.setRecordId(record.getRecordId());
             else

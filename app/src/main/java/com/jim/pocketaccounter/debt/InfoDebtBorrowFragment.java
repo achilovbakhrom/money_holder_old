@@ -504,35 +504,29 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
         }
     }
 
-    private boolean isMumkin(DebtBorrow debt, String accountId, Double summ) {
+    private boolean isMumkin(DebtBorrow debt, String accountId, Double summ,Calendar date) {
         Account account = null;
-        for (Account ac : accountDao.queryBuilder().list()) {
+        for (Account ac : daoSession.getAccountDao().queryBuilder().list()) {
             if (ac.getId().matches(accountId)) {
                 account = ac;
                 break;
             }
         }
-        if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
-            double limit = account.getLimite();
-            double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
-            if (debt.getType() == DebtBorrow.DEBT) {
-                accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),  summ);
-            } else {
-                accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),  summ);
+        if (account != null ) {
+            int state = logicManager.isItPosibleToAdd(account,summ,debt.getCurrency(),date,0,null,null);
+            if(state == LogicManager.CAN_NOT_NEGATIVE){
+                Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+
             }
-            if (account.getNoneMinusAccount()) {
-                if (accounted < 0) {
-                    Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-            } else {
-                if (-limit > accounted) {
-                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
+            else if(state == LogicManager.LIMIT){
+                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+
+            }
+            else {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     boolean tek = false;
@@ -599,14 +593,17 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                 public void onClick(View v) {
                     tek = true;
                     int len = debtBorrow.getCurrency().getAbbr().length();
-                    if (!enterPay.getText().toString().isEmpty() && Double.parseDouble(enterPay.getText().toString()) != 0) {
-                        if (debtBorrow.getCalculate() && isMumkin(debtBorrow, accountDao.queryBuilder().list().
-                                get(accountSp.getSelectedItemPosition()).getId(), Double.parseDouble(enterPay.getText().toString())))
-                            tek = true;
+
+                    if (!enterPay.getText().toString().isEmpty() && Double.parseDouble(enterPay.getText().toString().replace(",",".")) != 0) {
+                        List<Account> accs = daoSession.loadAll(Account.class);
+                        String ac = accs.get(accountSp.getSelectedItemPosition()).getId();
+                        if (debtBorrow.getCalculate())
+                            if ( !isMumkin(debtBorrow, ac, Double.parseDouble(enterPay.getText().toString().replace(",", ".")),date))
+                            return;
                         if (!debtBorrow.getCalculate()) tek = true;
 
-                        if (Double.parseDouble(leftAmount.getText().toString().substring(0, leftAmount.getText().toString().length() - len))
-                                - Double.parseDouble(enterPay.getText().toString()) < 0) {
+                        if (Double.parseDouble(leftAmount.getText().toString().substring(0, leftAmount.getText().toString().length() - len).replace(",","."))
+                                - Double.parseDouble(enterPay.getText().toString().replace(",",".")) < 0) {
                             warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -617,7 +614,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                                 @Override
                                 public void onClick(View v) {
                                     if (tek) {
-                                        peysAdapter.setDataChanged(date, Double.parseDouble(enterPay.getText().toString()),
+                                        peysAdapter.setDataChanged(date, Double.parseDouble(enterPay.getText().toString().replace(",",".")),
                                                 "" + accountSp.getSelectedItem(), comment.getText().toString());
                                     }
                                     warningDialog.dismiss();
@@ -631,7 +628,7 @@ public class InfoDebtBorrowFragment extends Fragment implements View.OnClickList
                             }
                         } else {
                             if (tek) {
-                                peysAdapter.setDataChanged(date, Double.parseDouble(enterPay.getText().toString()),
+                                peysAdapter.setDataChanged(date, Double.parseDouble(enterPay.getText().toString().replace(",",".")),
                                         "" + accountSp.getSelectedItem(), comment.getText().toString());
                                 warningDialog.dismiss();
                                 dialog.dismiss();

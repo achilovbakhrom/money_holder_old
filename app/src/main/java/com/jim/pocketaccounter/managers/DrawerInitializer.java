@@ -438,13 +438,6 @@ public class DrawerInitializer {
                                 break;
                             case 17:
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
-                                rate_app_web = new Intent(Intent.ACTION_VIEW);
-                                PocketAccounter.openActivity=true;
-                                rate_app_web.setData(Uri.parse(pocketAccounter.getString(R.string.rate_app_web)));
-                                pocketAccounter.startActivity(rate_app_web);
-                                break;
-                            case 18:
-                                pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
                                 Intent Email = new Intent(Intent.ACTION_SEND);
                                 PocketAccounter.openActivity=true;
                                 Email.setType("text/email");
@@ -452,13 +445,18 @@ public class DrawerInitializer {
                                 Email.putExtra(Intent.EXTRA_TEXT, pocketAccounter.getString(R.string.share_app_text));
                                 pocketAccounter.startActivity(Intent.createChooser(Email, pocketAccounter.getString(R.string.share_app)));
                                 break;
-                            case 19:
+                            case 18:
                                 pocketAccounter.findViewById(R.id.change).setVisibility(View.VISIBLE);
-                                openGmail(pocketAccounter, new String[]{pocketAccounter.getString(R.string.to_email)},
+                                try {
+                                    openGmail(pocketAccounter, new String[]{pocketAccounter.getString(R.string.to_email)},
                                             pocketAccounter.getString(R.string.feedback_subject),
                                             pocketAccounter.getString(R.string.feedback_content));
+                                    break;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 break;
-                        }
+                                }
 
                     }
                 }, 170);

@@ -140,7 +140,7 @@ public class CurrencyChooseFragment extends PABaseInfoFragment {
                                     userEnteredCalendars.setCalendar(Calendar.getInstance());
                                     daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
                                     daoSession.getCurrencyDao().insertOrReplace(currency);
-                                    logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
+                                    logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos].replace(",",".")), currency);
                                 }
                             }
                             dialog.dismiss();
@@ -179,7 +179,7 @@ public class CurrencyChooseFragment extends PABaseInfoFragment {
                             userEnteredCalendars.setCalendar(Calendar.getInstance());
                             daoSession.getUserEnteredCalendarsDao().insertOrReplace(userEnteredCalendars);
                             daoSession.getCurrencyDao().insertOrReplace(currency);
-                            logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos]), currency);
+                            logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos].replace(",",".")), currency);
                         }
                     }
                     paFragmentManager.getFragmentManager().popBackStack();

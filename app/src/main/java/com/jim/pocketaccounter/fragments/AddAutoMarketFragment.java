@@ -179,7 +179,7 @@ public class AddAutoMarketFragment extends Fragment {
                         autoMarket.setRootCategory(category_item);
                         autoMarket.setSubCategory(subCategory);
                     }
-                    autoMarket.setAmount(Double.parseDouble(amount.getText().toString()));
+                    autoMarket.setAmount(Double.parseDouble(amount.getText().toString().replace(",",".")));
                     autoMarket.setCurrency(currencyDao.queryBuilder().where(CurrencyDao.Properties.Abbr.eq(curs.get(spCurrency.getSelectedItemPosition()))).list().get(0));
                     autoMarket.setAccount(accountDao.loadAll().get(account_sp.getSelectedItemPosition()));
                     autoMarket.setType(type);
@@ -196,7 +196,7 @@ public class AddAutoMarketFragment extends Fragment {
                     amount.setError(null);
                     AutoMarket autoMarket = new AutoMarket();
                     autoMarket.__setDaoSession(daoSession);
-                    autoMarket.setAmount(Double.parseDouble(amount.getText().toString()));
+                    autoMarket.setAmount(Double.parseDouble(amount.getText().toString().replace(",",".")));
 
                     autoMarket.setRootCategory(category_item);
                     autoMarket.setSubCategory(subCategory);

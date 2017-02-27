@@ -344,74 +344,7 @@
                             android:layout_alignParentLeft="true"
                             android:layout_marginTop="@dimen/fourteen_dp" />
                     </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
 
-                        <TextView
-                            android:id="@+id/textView5"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginTop="@dimen/five_dp"
-                            android:layout_toLeftOf="@+id/chbAddFirstPayment"
-                            android:text="@string/enter_first_transaction"
-                            android:textColor="@color/black_for_glavniy_text"
-                            android:textSize="@dimen/twelve_sp"
-                            android:layout_marginBottom="@dimen/five_dp" />
-                        <CheckBox
-                            android:id="@+id/chbAddFirstPayment"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBottom="@+id/textView5"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_alignTop="@+id/textView5"
-                            android:checked="true"
-                            android:text="" />
-                        <LinearLayout
-                            android:id="@+id/llFirstPayment"
-                            android:layout_below="@+id/textView5"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true">
-
-                            <EditText
-                                android:id="@+id/etDebtBorrowFirstPay"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginRight="@dimen/six_dp"
-                                android:hint="@string/enter_first_transaction"
-                                android:inputType="numberDecimal"
-                                android:maxLength="13"
-                                android:layout_weight="1"
-                                android:textSize="@dimen/fourteen_sp" />
-
-                            <ImageView
-                                android:layout_width="2px"
-                                android:layout_height="match_parent"
-                                android:layout_margin="@dimen/ten_dp"
-                                android:background="@color/green_light_forline" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/tvFirstPayCurr"
-                                android:layout_marginRight="@dimen/five_dp"
-                                android:textSize="@dimen/fourteen_sp"
-                                android:text=""/>
-
-                        </LinearLayout>
-
-                        <FrameLayout
-                            android:layout_below="@+id/llFirstPayment"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp" />
-
-                    </RelativeLayout>
                 </LinearLayout>
                 <RelativeLayout
                     android:layout_width="match_parent"

@@ -100,7 +100,7 @@ public class AddCreditFragment extends Fragment {
     String[] accs;
     ArrayList<Account> accounts;
     String selectedIcon;
-    EditText nameCred, valueCred, procentCred, periodCred, firstCred, lastCred, transactionCred;
+    EditText nameCred, valueCred, procentCred, periodCred, firstCred, lastCred;
     Context context;
     int argFirst[] = new int[3];
     int argLast[] = new int[3];
@@ -111,9 +111,7 @@ public class AddCreditFragment extends Fragment {
     List<Currency> currencies;
     CreditFragment.EventFromAdding eventLis;
     AddCreditFragment ThisFragment;
-    CheckBox isOpkey, chbFirsPay;
-    private TextView tvCurr;
-    private LinearLayout llFirstPay;
+    CheckBox isOpkey;
     public static final String OPENED_TAG = "Addcredit";
     public static boolean to_open_dialog = false;
     CreditDetials currentCredit;
@@ -165,9 +163,6 @@ public class AddCreditFragment extends Fragment {
         spinner_peiod = (Spinner) V.findViewById(R.id.spinner_period);
         spiner_trasnact = (Spinner) V.findViewById(R.id.spinner_sceta);
         isOpkey = (CheckBox) V.findViewById(R.id.key_for_balance);
-        chbFirsPay = (CheckBox) V.findViewById(R.id.chbFirstPayment);
-        tvCurr = (TextView) V.findViewById(R.id.tvFirstPayCurrency);
-        llFirstPay = (LinearLayout) V.findViewById(R.id.llFirstPayment);
         to_open_dialog = false;
 
         nameCred = (EditText) V.findViewById(R.id.editText);
@@ -176,7 +171,6 @@ public class AddCreditFragment extends Fragment {
         periodCred = (EditText) V.findViewById(R.id.for_period_credit);
         firstCred = (EditText) V.findViewById(R.id.date_pick_edit);
         lastCred = (EditText) V.findViewById(R.id.date_ends_edit);
-        transactionCred = (EditText) V.findViewById(R.id.for_trasaction_credit);
 
         spNotifMode = (Spinner) V.findViewById(R.id.spNotifModeCredit);
         btnDetalization = (FrameLayout) V.findViewById(R.id.btnDetalizationCredit);
@@ -254,7 +248,7 @@ public class AddCreditFragment extends Fragment {
                     isMojno = false;
                 } else {
                     try {
-                        if (!(Double.parseDouble(valueCred.getText().toString()) > 0)) {
+                        if (!(Double.parseDouble(valueCred.getText().toString().replace(",",".")) > 0)) {
                             valueCred.setError(getString(R.string.incorrect_value));
                             isMojno = false;
                         }
@@ -419,14 +413,7 @@ public class AddCreditFragment extends Fragment {
                 } else spiner_trasnact.setVisibility(View.GONE);
             }
         });
-        chbFirsPay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (chbFirsPay.isChecked()) {
-                    llFirstPay.setVisibility(View.VISIBLE);
-                } else llFirstPay.setVisibility(View.GONE);
-            }
-        });
+
         procentCred.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -554,20 +541,9 @@ public class AddCreditFragment extends Fragment {
         for (int i = 0; i < valyutes.length; i++) {
             if (valyutes[i].equals(commonOperations.getMainCurrency().getAbbr())) {
                 posMain = i;
-                tvCurr.setText(valyutes[i]);
             }
         }
-        spiner_forValut.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                tvCurr.setText(valyutes[i]);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
         spiner_forValut.setSelection(posMain);
         spiner_procent.setAdapter(adapter);
         spinner_peiod.setAdapter(adapter_period);
@@ -607,18 +583,6 @@ public class AddCreditFragment extends Fragment {
                 spiner_trasnact.setVisibility(View.GONE);
             }
 
-            for (ReckingCredit temp : currentCredit.getReckings()) {
-                if (temp.getPayDate().getTimeInMillis() == currentCredit.getTake_time().getTimeInMillis()) {
-
-                    transactionCred.setText(parseToWithoutNull(temp.getAmount()).replace(",", "."));
-                    if (currentCredit.getKey_for_include())
-                        for (Account acca : accounts) {
-                            if (acca.getId().matches(temp.getAccountId()))
-                                spiner_trasnact.setSelection(getIndex(spiner_trasnact, acca.getName()));
-                        }
-                    break;
-                }
-            }
 
             firstCred.setText(dateFormat.format(currentCredit.getTake_time().getTime()));
 
@@ -844,7 +808,7 @@ public class AddCreditFragment extends Fragment {
             sb.deleteCharAt(a);
         value.setText(valueCred.getText().toString());
         procent.setText(procentCred.getText().toString());
-        solution.setText(parseToWithoutNull(Double.parseDouble(valueCred.getText().toString()) * (1d + Double.parseDouble(sb.toString()) / 100)));
+        solution.setText(parseToWithoutNull(Double.parseDouble(valueCred.getText().toString().replace(",",".")) * (1d + Double.parseDouble(sb.toString().replace(",",".")) / 100)));
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -900,65 +864,66 @@ public class AddCreditFragment extends Fragment {
                 CreditDetials A1;
                 Account account = accounts.get(spiner_trasnact.getSelectedItemPosition());
 
-                if (account.getIsLimited() && key) {
-                    double limit = account.getLimite();
-                    double accounted = logicManager.isLimitAccess(account, new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]));
-                    if (isEdit() && currentCredit.getKey_for_include()) {
-                        for (ReckingCredit reckingCredit : currentCredit.getReckings()) {
-                            if (currentCredit.getTake_time().getTimeInMillis() == reckingCredit.getPayDate().getTimeInMillis())
-                                accounted=+commonOperations.getCost(reckingCredit.getPayDate(), currentCredit.getValyute_currency(), reckingCredit.getAmount());
-                        }
-                    }
-                    accounted = accounted - commonOperations.getCost((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), currencies.get(spiner_forValut.getSelectedItemPosition()), account.getCurrency(), Double.parseDouble(transactionCred.getText().toString()));
-                    if (-limit > accounted) {
-                        Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
+
+//                if (account.getIsLimited() && key) {
+//                    double limit = account.getLimite();
+//                    double accounted = logicManager.isLimitAccess(account, new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]));
+//                    if (isEdit() && currentCredit.getKey_for_include()) {
+//                        for (ReckingCredit reckingCredit : currentCredit.getReckings()) {
+//                            if (currentCredit.getTake_time().getTimeInMillis() == reckingCredit.getPayDate().getTimeInMillis())
+//                                accounted=+commonOperations.getCost(reckingCredit.getPayDate(), currentCredit.getValyute_currency(), reckingCredit.getAmount());
+//                        }
+//                    }
+//                    accounted = accounted - commonOperations.getCost((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), currencies.get(spiner_forValut.getSelectedItemPosition()), account.getCurrency(), Double.parseDouble(transactionCred.getText().toString()));
+//                    if (-limit > accounted) {
+//                        Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                }
 
                 if (isEdit()) {
-                    Log.d("sbb",Double.parseDouble(sb.toString())+"" );
+                    Log.d("sbb",Double.parseDouble(sb.toString().replace(",","."))+"" );
                     A1 = new CreditDetials(selectedIcon, nameCred.getText().toString(), new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]),
-                            Double.parseDouble(sb.toString()), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString()),
-                            currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution), currentCredit.getMyCredit_id());
+                            Double.parseDouble(sb.toString()), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString().replace(",",".")),
+                            currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution.replace(",",".")), currentCredit.getMyCredit_id());
 
                 } else {
                     A1 = new CreditDetials(selectedIcon, nameCred.getText().toString(), new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2]),
-                            Double.parseDouble(sb.toString()), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString()),
-                            currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution), System.currentTimeMillis());
+                            Double.parseDouble(sb.toString().replace(",",".")), procent_inter, period_inter, period_tip, key, Double.parseDouble(valueCred.getText().toString().replace(",",".")),
+                            currencies.get(spiner_forValut.getSelectedItemPosition()), Double.parseDouble(sloution.replace(",",".")), System.currentTimeMillis());
                 }
                 A1.__setDaoSession(daoSession);
-                String transactionCredString = transactionCred.getText().toString();
-                if (!transactionCredString.matches("")) {
-                    ReckingCredit first_pay;
-
-                    if (key && accounts.size() != 0) {
-                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), Double.parseDouble(transactionCredString), accounts.get(spiner_trasnact.getSelectedItemPosition()).getId(),
-                                A1.getMyCredit_id(), getString(R.string.this_first_comment));
-                    } else {
-                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), Double.parseDouble(transactionCredString), "pustoy",
-                                A1.getMyCredit_id(), getString(R.string.this_first_comment));
-                    }
-                    first_pay.__setDaoSession(daoSession);
-                    if (isEdit()){
-                        List<ReckingCredit> tempiker = currentCredit.getReckings();
-                        boolean iskeeeep = true;
-                        for (ReckingCredit temp : tempiker) {
-                            if (temp.getPayDate().getTimeInMillis() == currentCredit.getTake_time().getTimeInMillis()) {
-                                first_pay.setId(temp.getId());
-                                logicManager.insertReckingCredit(first_pay);
-                                iskeeeep = false;
-                                break;
-                            }
-                        }
-                        if (iskeeeep) {
-                           logicManager.insertReckingCredit(first_pay);
-                        }
-                    }
-                else {
-                        logicManager.insertReckingCredit(first_pay);
-                    }
-                }
+//                String transactionCredString = transactionCred.getText().toString();
+//                if (!transactionCredString.matches("")) {
+//                    ReckingCredit first_pay;
+//
+//                    if (key && accounts.size() != 0) {
+//                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), Double.parseDouble(transactionCredString), accounts.get(spiner_trasnact.getSelectedItemPosition()).getId(),
+//                                A1.getMyCredit_id(), getString(R.string.this_first_comment));
+//                    } else {
+//                        first_pay = new ReckingCredit((new GregorianCalendar(argFirst[0], argFirst[1], argFirst[2])), Double.parseDouble(transactionCredString), "pustoy",
+//                                A1.getMyCredit_id(), getString(R.string.this_first_comment));
+//                    }
+//                    first_pay.__setDaoSession(daoSession);
+//                    if (isEdit()){
+//                        List<ReckingCredit> tempiker = currentCredit.getReckings();
+//                        boolean iskeeeep = true;
+//                        for (ReckingCredit temp : tempiker) {
+//                            if (temp.getPayDate().getTimeInMillis() == currentCredit.getTake_time().getTimeInMillis()) {
+//                                first_pay.setId(temp.getId());
+//                                logicManager.insertReckingCredit(first_pay);
+//                                iskeeeep = false;
+//                                break;
+//                            }
+//                        }
+//                        if (iskeeeep) {
+//                           logicManager.insertReckingCredit(first_pay);
+//                        }
+//                    }
+//                else {
+//                        logicManager.insertReckingCredit(first_pay);
+//                    }
+//                }
 
                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(dialogView.getWindowToken(), 0);

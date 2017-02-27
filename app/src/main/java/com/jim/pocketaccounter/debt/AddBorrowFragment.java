@@ -100,7 +100,8 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private DebtBorrowDao debtBorrowDao;
     private AccountDao accountDao;
     private CurrencyDao currencyDao;
-
+    double oldAmount=0;
+    Currency oldCurency ;
     private FrameLayout contactBtn;
     private CircleImageView imageView;
     private EditText PersonName;
@@ -113,14 +114,11 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
     private String photoPath = "";
     private Calendar getDate;
     private Calendar returnDate;
-    private LinearLayout llFirstPayment;
-    private CheckBox calculate, chbfirstPay;
-    private TextView tvFirstPayCurr;
+    private CheckBox calculate;
     private int TYPE = 0;
     private static final int REQUEST_SELECT_CONTACT = 2;
     public static int RESULT_LOAD_IMAGE = 1;
     private ImageView ivToolbarMostRight;
-    private EditText firstPay;
     private final int PERMISSION_REQUEST_CONTACT = 5;
     private int PICK_CONTACT = 10;
     private final int PERMISSION_READ_STORAGE = 6;
@@ -247,19 +245,15 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
             }
         });
         contactBtn = (FrameLayout) view.findViewById(R.id.btBorrowAddPopupContact);
-        llFirstPayment = (LinearLayout) view.findViewById(R.id.llFirstPayment);
         imageView = (CircleImageView) view.findViewById(R.id.ivBorrowAddPopup);
         PersonName = (EditText) view.findViewById(R.id.etBorrowAddPopupName);
         PersonNumber = (EditText) view.findViewById(R.id.etBorrowAddPopupNumber);
         PersonDataGet = (EditText) view.findViewById(R.id.etBorrowAddPopupDataGet);
         PersonDataRepeat = (EditText) view.findViewById(R.id.etBorrowAddPopupDataRepeat);
         PersonSumm = (EditText) view.findViewById(R.id.etBorrowAddPopupSumm);
-        firstPay = (EditText) view.findViewById(R.id.etDebtBorrowFirstPay);
         PersonValyuta = (Spinner) view.findViewById(R.id.spBorrowAddPopupValyuta);
         PersonAccount = (Spinner) view.findViewById(R.id.spBorrowAddPopupAccount);
         calculate = (CheckBox) view.findViewById(R.id.chbAddDebtBorrowCalculate);
-        chbfirstPay = (CheckBox) view.findViewById(R.id.chbAddFirstPayment);
-        tvFirstPayCurr = (TextView) view.findViewById(R.id.tvFirstPayCurr);
         getDate = paFragmentManager.isMainReturn() ? dataCache.getEndDate() : Calendar.getInstance();
         if (TYPE == DebtBorrow.DEBT) {
             PersonSumm.setHint(getResources().getString(R.string.enter_borrow_amoount));
@@ -294,21 +288,10 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         for (int i = 0; i < valyuts.length; i++) {
             if (valyuts[i].equals(commonOperations.getMainCurrency().getAbbr())) {
                 posMain = i;
-                tvFirstPayCurr.setText(valyuts[i]);
             }
         }
         PersonValyuta.setSelection(posMain);
-        PersonValyuta.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                tvFirstPayCurr.setText(valyuts[i]);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
         PersonDataGet.setText(dateFormat.format(getDate.getTime()));
         PersonDataGet.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -355,16 +338,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 }
             }
         });
-        chbfirstPay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (chbfirstPay.isChecked()) {
-                    llFirstPayment.setVisibility(View.VISIBLE);
-                } else {
-                    llFirstPayment.setVisibility(View.GONE);
-                }
-            }
-        });
+
 
         toolbarManager.setOnSecondImageClickListener(new View.OnClickListener() {
             @Override
@@ -381,7 +355,12 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 askForContactPermission();
             }
         });
+        if(currentDebtBorrow!=null)
+        if(currentDebtBorrow.getCalculate()){
+            oldAmount  = currentDebtBorrow.getAmount();
+            oldCurency = currentDebtBorrow.getCurrency();
 
+        }
         imageView.setImageResource(R.drawable.no_photo);
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -447,9 +426,6 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 }
                 photoPath = currentDebtBorrow.getPerson().getPhoto();
             }
-            if (!currentDebtBorrow.getReckings().isEmpty() && dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()).matches(dateFormat.format(getDate.getTime())))
-                firstPay.setText("" + currentDebtBorrow.getReckings().get(0).getAmount());
-            tvFirstPayCurr.setText(currentDebtBorrow.getCurrency().getAbbr());
         }
         return view;
     }
@@ -458,7 +434,7 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         if (PersonName.getText().toString().equals("")) {
             PersonName.setError(getString(R.string.enter_name_error));
         } else {
-            if (PersonSumm.getText().toString().equals("") || Double.parseDouble(PersonSumm.getText().toString()) == 0) {
+            if (PersonSumm.getText().toString().equals("") || Double.parseDouble(PersonSumm.getText().toString().replace(",",".")) == 0) {
                 PersonSumm.setError(getString(R.string.enter_amount_error));
             } else {
                 if (PersonDataGet.getText().toString().matches("")) {
@@ -466,7 +442,6 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                 } else {
                     ArrayList<DebtBorrow> list = (ArrayList<DebtBorrow>) debtBorrowDao.queryBuilder().list();
                     Currency currency = currencyDao.queryBuilder().list().get(PersonValyuta.getSelectedItemPosition());
-                    ArrayList<Recking> reckings = new ArrayList<>();
                     Account account = accountDao.queryBuilder().list().get(PersonAccount.getSelectedItemPosition());
                     File file = null;
                     if (!photoPath.matches("")) {
@@ -506,35 +481,47 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
 
                     DebtBorrowFragment fragment = new DebtBorrowFragment();
                     if (currentDebtBorrow != null) {
+                        if (calculate.isChecked()&& TYPE == DebtBorrow.BORROW ) {
+                            int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(PersonSumm.getText().toString().replace(",",".")),currency,getDate,oldAmount,oldCurency,currentDebtBorrow.getAccount());
+                            if(state == LogicManager.CAN_NOT_NEGATIVE){
+
+                                Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                                return;
+
+                            }
+                            else if(state == LogicManager.LIMIT){
+                                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                                return;
+
+                            }
+
+                        }
+
                         if (calculate.isChecked())
                             currentDebtBorrow.setAccount(account);
                         currentDebtBorrow.getPerson().setName(PersonName.getText().toString());
                         currentDebtBorrow.getPerson().setPhoneNumber(PersonNumber.getText().toString());
                         currentDebtBorrow.getPerson().setPhoto(file != null ? file.getAbsolutePath() : photoPath == "" ? "" : photoPath);
-                        tvFirstPayCurr.setText(currentDebtBorrow.getCurrency().getAbbr());
-                        currentDebtBorrow.setAmount(Double.parseDouble(PersonSumm.getText().toString()));
+                        currentDebtBorrow.setAmount(Double.parseDouble(PersonSumm.getText().toString().replace(",",".")));
                         currentDebtBorrow.setCurrency(currency);
                         currentDebtBorrow.setCalculate(calculate.isChecked());
                         currentDebtBorrow.setInfo(mode + ":" + sequence);
                         currentDebtBorrow.setReturnDate(returnDate);
                         currentDebtBorrow.setTakenDate(getDate);
                         currentDebtBorrow.__setDaoSession(daoSession);
-                        if (!isMumkin(currentDebtBorrow)) {
-                            return;
-                        } else {
+
                             logicManager.insertPerson(currentDebtBorrow.getPerson());
                             logicManager.insertDebtBorrow(currentDebtBorrow);
-                        }
-                        if (!firstPay.getText().toString().isEmpty()) {
-                            if (!currentDebtBorrow.getReckings().isEmpty() && dateFormat.format(currentDebtBorrow.getReckings().get(0)
-                                    .getPayDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getTakenDate().getTime()))) {
-                                currentDebtBorrow.getReckings().get(0).setAmount(Double.parseDouble(firstPay.getText().toString()));
-                            } else {
-                                currentDebtBorrow.getReckings().add(0, new Recking(getDate,
-                                        Double.parseDouble(firstPay.getText().toString()), currentDebtBorrow.getId(),
-                                        account.getId(), ""));
-                            }
-                        }
+//                        if (!firstPay.getText().toString().isEmpty()) {
+//                            if (!currentDebtBorrow.getReckings().isEmpty() && dateFormat.format(currentDebtBorrow.getReckings().get(0)
+//                                    .getPayDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getTakenDate().getTime()))) {
+//                                currentDebtBorrow.getReckings().get(0).setAmount(Double.parseDouble(firstPay.getText().toString()));
+//                            } else {
+//                                currentDebtBorrow.getReckings().add(0, new Recking(getDate,
+//                                        Double.parseDouble(firstPay.getText().toString()), currentDebtBorrow.getId(),
+//                                        account.getId(), ""));
+//                            }
+//                        }
                         Bundle bundle = new Bundle();
                         bundle.putInt("pos", currentDebtBorrow.getType());
                         fragment.setArguments(bundle);
@@ -548,21 +535,29 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
                                 "borrow_" + UUID.randomUUID().toString(),
                                 account,
                                 currency,
-                                Double.parseDouble(PersonSumm.getText().toString()),
+                                Double.parseDouble(PersonSumm.getText().toString().replace(",",".")),
                                 TYPE, calculate.isChecked()
                         );
-                        if (!isMumkin(currentDebtBorrow)) {
-                            return;
+                        currentDebtBorrow.__setDaoSession(daoSession);
+                        if (calculate.isChecked() && TYPE == DebtBorrow.BORROW ) {
+                            int state = logicManager.isItPosibleToAdd(currentDebtBorrow.getAccount(),currentDebtBorrow.getAmount(),currentDebtBorrow.getCurrency(),currentDebtBorrow.getTakenDate(),0,null,null);
+                            if(state == LogicManager.CAN_NOT_NEGATIVE){
+                                Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else if(state == LogicManager.LIMIT){
+                                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            else {
+                                logicManager.insertDebtBorrow(currentDebtBorrow);
+                            }
+
                         } else {
                             logicManager.insertDebtBorrow(currentDebtBorrow);
                         }
-                        if (!firstPay.getText().toString().isEmpty()) {
-                            Recking recking = new Recking(getDate,
-                                    Double.parseDouble(firstPay.getText().toString()), currentDebtBorrow.getId(),
-                                    currentDebtBorrow.getAccount().getId(), "");
-                            logicManager.insertReckingDebt(recking);
-                            reckings.add(recking);
-                        }
+
+
                         currentDebtBorrow.setInfo(mode + ":" + sequence);
                         list.add(0, currentDebtBorrow);
                         Bundle bundle = new Bundle();
@@ -663,49 +658,49 @@ public class AddBorrowFragment extends Fragment implements AdapterView.OnItemSel
         }
     }
 
-    private boolean isMumkin(DebtBorrow debt) {
-        Account account = accountDao.queryBuilder().list().get(PersonAccount.getSelectedItemPosition());
-        if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
-            double limit = account.getLimite();
-            double accounted = logicManager.isLimitAccess(account, getDate);
-            if (debt.getType() == DebtBorrow.DEBT) {
-                currentDebtBorrow.__setDaoSession(daoSession);
-                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
-                        dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
-                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                    accounted = accounted - currentDebtBorrow.getReckings().get(0).getAmount();
-                } else {
-                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                }
-            } else {
-                currentDebtBorrow.__setDaoSession(daoSession);
-                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
-                        dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
-                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                    accounted = accounted + currentDebtBorrow.getReckings().get(0).getAmount();
-                } else {
-                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
-                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
-                }
-            }
-
-            if (account.getNoneMinusAccount()) {
-                if (accounted < 0) {
-                    Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-            } else {
-                if (-limit > accounted) {
-                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+//    private boolean isMumkin(DebtBorrow debt) {
+//        Account account = accountDao.queryBuilder().list().get(PersonAccount.getSelectedItemPosition());
+//        if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
+//            double limit = account.getLimite();
+//            double accounted = logicManager.isLimitAccess(account, getDate);
+//            if (debt.getType() == DebtBorrow.DEBT) {
+//                currentDebtBorrow.__setDaoSession(daoSession);
+//                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
+//                        dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
+//                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                    accounted = accounted - currentDebtBorrow.getReckings().get(0).getAmount();
+//                } else {
+//                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                }
+//            } else {
+//                currentDebtBorrow.__setDaoSession(daoSession);
+//                if (currentDebtBorrow != null && !currentDebtBorrow.getReckings().isEmpty() &&
+//                        dateFormat.format(currentDebtBorrow.getTakenDate().getTime()).matches(dateFormat.format(currentDebtBorrow.getReckings().get(0).getPayDate().getTime()))) {
+//                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                    accounted = accounted + currentDebtBorrow.getReckings().get(0).getAmount();
+//                } else {
+//                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),
+//                            Double.parseDouble(PersonSumm.getText().toString()) - (!firstPay.getText().toString().isEmpty() ? Double.parseDouble(firstPay.getText().toString()) : 0));
+//                }
+//            }
+//
+//            if (account.getNoneMinusAccount()) {
+//                if (accounted < 0) {
+//                    Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+//                    return false;
+//                }
+//            } else {
+//                if (-limit > accounted) {
+//                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
 
     private void openNotifSettingDialog() {
         final Dialog dialog = new Dialog(getActivity());

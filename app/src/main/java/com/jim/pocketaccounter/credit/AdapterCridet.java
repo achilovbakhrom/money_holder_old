@@ -428,35 +428,38 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             @Override
             public void onClick(View v) {
                 final String amount = enterPay.getText().toString();
-
                 double total_paid = 0;
                 for (ReckingCredit item : current.getReckings())
                     total_paid += item.getAmount();
 
                 if (!amount.matches("")) {
                     if(current.getKey_for_include()){
-                    Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-                    if (account.getIsLimited()) {
-                        //TODO editda tekwir ozini hisoblamaslini
-                        double limit = account.getLimite();
-                        double accounted =  logicManager.isLimitAccess(account, date);
+                        Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
+                        if (account.getIsLimited()) {
 
-                        accounted = accounted - commonOperations.getCost(date, current.getValyute_currency(),  Double.parseDouble(amount));
-                        if (-limit > accounted) {
+                        int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(amount.replace(",",".")),current.getValyute_currency(),date,0,null,null);
+                        if(state == LogicManager.CAN_NOT_NEGATIVE){
+
+                            Toast.makeText(context, R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                            return;
+
+                        }
+                        else if(state == LogicManager.LIMIT){
                             Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                             return;
+
                         }
                     }}
-                    if (Double.parseDouble(amount) > current.getValue_of_credit_with_procent() - total_paid) {
+                    if (Double.parseDouble(amount.replace(",",".")) > current.getValue_of_credit_with_procent() - total_paid) {
                         warningDialog.setOnYesButtonListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 String amount = enterPay.getText().toString();
                                 ReckingCredit rec = null;
                                 if (!amount.matches("") && current.getKey_for_include())
-                                    rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
+                                    rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
                                 else
-                                    rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
+                                    rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), "", current.getMyCredit_id(), comment.getText().toString());
                                 int pos = cardDetials.indexOf(current);
                                 logicManager.insertReckingCredit(rec);
                                 current.resetReckings();
@@ -475,15 +478,15 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         });
                         warningDialog.setText(context.getString(R.string.payment_balans) + parseToWithoutNull(current.getValue_of_credit_with_procent() - total_paid) +
                                 current.getValyute_currency().getAbbr() + "." + context.getString(R.string.payment_balance2) +
-                                parseToWithoutNull(Double.parseDouble(amount) - (current.getValue_of_credit_with_procent() - total_paid)) +
+                                parseToWithoutNull(Double.parseDouble(amount.replace(",",".")) - (current.getValue_of_credit_with_procent() - total_paid)) +
                                 current.getValyute_currency().getAbbr());
                         warningDialog.show();
                     } else {
                         ReckingCredit rec = null;
                         if (!amount.matches("") && current.getKey_for_include())
-                            rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
+                            rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), current.getMyCredit_id(), comment.getText().toString());
                         else
-                            rec = new ReckingCredit(date, Double.parseDouble(amount), "", current.getMyCredit_id(), comment.getText().toString());
+                            rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), "", current.getMyCredit_id(), comment.getText().toString());
                         int pos = cardDetials.indexOf(current);
                         logicManager.insertReckingCredit(rec);
                         current.resetReckings();

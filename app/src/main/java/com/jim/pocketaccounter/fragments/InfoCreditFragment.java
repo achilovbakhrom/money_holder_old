@@ -658,21 +658,23 @@ public class InfoCreditFragment extends Fragment {
                 if (!amount.matches("")) {
                     if (currentCredit.getKey_for_include()) {
                         Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-                        if (account.getIsLimited()) {
-                            //TODO editda tekwir ozini hisoblamaslini
-                            double limit = account.getLimite();
-                            double accounted = logicManager.isLimitAccess(account, date);
 
-                            accounted = accounted - commonOperations.getCost(date, currentCredit.getValyute_currency(), account.getCurrency(), Double.parseDouble(amount));
-                            if (-limit > accounted) {
-                                Toast.makeText(context, R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                        int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(amount.replace(",",".")),currentCredit.getValyute_currency(),date,0,null,null);
+                        if(state == LogicManager.CAN_NOT_NEGATIVE){
+
+                            Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+                            return;
+
+                        }
+                        else if(state == LogicManager.LIMIT){
+                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+
                         }
                     }
 
 
-                    if (Double.parseDouble(amount) > currentCredit.getValue_of_credit_with_procent() - total_paid) {
+                    if (Double.parseDouble(amount.replace(",",".")) > currentCredit.getValue_of_credit_with_procent() - total_paid) {
                         warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -684,10 +686,10 @@ public class InfoCreditFragment extends Fragment {
                             public void onClick(View v) {
                                 ReckingCredit rec = null;
                                 if (!amount.matches("") && currentCredit.getKey_for_include())
-                                    rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(),
+                                    rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(),
                                             currentCredit.getMyCredit_id(), comment.getText().toString());
                                 else
-                                    rec = new ReckingCredit(date, Double.parseDouble(amount), "",
+                                    rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), "",
                                             currentCredit.getMyCredit_id(), comment.getText().toString());
 //                                        rcList.add(rec);
 //                                        currentCredit.getReckings().addAll(rcList);
@@ -712,15 +714,15 @@ public class InfoCreditFragment extends Fragment {
                         });
                         warningDialog.setText(context.getString(R.string.payment_balans) + parseToWithoutNull(currentCredit.getValue_of_credit_with_procent() - total_paid) +
                                 currentCredit.getValyute_currency().getAbbr() + "." + context.getString(R.string.payment_balance2) +
-                                parseToWithoutNull(Double.parseDouble(amount) - (currentCredit.getValue_of_credit_with_procent() - total_paid)) +
+                                parseToWithoutNull(Double.parseDouble(amount.replace(",",".")) - (currentCredit.getValue_of_credit_with_procent() - total_paid)) +
                                 currentCredit.getValyute_currency().getAbbr());
                         warningDialog.show();
                     } else {
                         ReckingCredit rec = null;
                         if (!amount.matches("") && currentCredit.getKey_for_include())
-                            rec = new ReckingCredit(date, Double.parseDouble(amount), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), currentCredit.getMyCredit_id(), comment.getText().toString());
+                            rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), accaunt_AC.get(accountSp.getSelectedItemPosition()).getId(), currentCredit.getMyCredit_id(), comment.getText().toString());
                         else
-                            rec = new ReckingCredit(date, Double.parseDouble(amount), "", currentCredit.getMyCredit_id(), comment.getText().toString());
+                            rec = new ReckingCredit(date, Double.parseDouble(amount.replace(",",".")), "", currentCredit.getMyCredit_id(), comment.getText().toString());
 //                        currentCredit.getReckings().add(rec);
 //                        rcList.add(rec);
                         logicManager.insertReckingCredit(rec);

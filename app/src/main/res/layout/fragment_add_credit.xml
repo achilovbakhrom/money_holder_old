@@ -363,65 +363,10 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginTop="@dimen/fourteen_dp" />
                 </RelativeLayout>
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/five_dp"
-                    android:layout_marginTop="@dimen/five_dp">
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/five_dp"
-                    android:text="@string/enter_first_transaction"
-                    android:textColor="@color/black_for_glavniy_text"
-                    android:textSize="@dimen/twelve_sp" />
-                <CheckBox
-                    android:id="@+id/chbFirstPayment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/textView5"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignTop="@+id/textView5"
-                    android:checked="true"
-                    android:text="" />
-                </RelativeLayout>
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:id="@+id/llFirstPayment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <EditText
-                        android:id="@+id/for_trasaction_credit"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/six_dp"
-                        android:hint="@string/enter_first_transaction"
-                        android:inputType="numberDecimal"
-                        android:layout_weight="1"
-                        android:maxLength="13"
-                        android:textSize="@dimen/fourteen_sp" />
-
-                    <ImageView
-                        android:layout_width="2px"
-                        android:layout_height="match_parent"
-                        android:layout_margin="@dimen/ten_dp"
-                        android:background="@color/green_light_forline" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tvFirstPayCurrency"
-                        android:layout_marginRight="@dimen/five_dp"
-                        android:textSize="@dimen/fourteen_sp"
-                        android:text=""/>
-
-                </LinearLayout>
 
                 <FrameLayout
                     android:layout_below="@+id/llFirstPayment"
-                    android:layout_width="20dp"
+                    android:layout_width="match_parent"
                     android:layout_height="20dp" />
             </LinearLayout>
             <RelativeLayout

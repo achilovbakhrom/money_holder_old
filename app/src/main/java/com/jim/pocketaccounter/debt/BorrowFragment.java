@@ -52,6 +52,7 @@ import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -89,7 +90,7 @@ public class BorrowFragment extends Fragment {
     private RecyclerView recyclerView;
     private LinearLayoutManager mLayoutManager;
     private MyAdapter myAdapter;
-
+    DecimalFormat formater;
     private DebtBorrowFragment debtBorrowFragment;
     private int TYPE = 0;
 
@@ -110,6 +111,7 @@ public class BorrowFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TYPE = getArguments().getInt("type", 0);
+        formater = new DecimalFormat("0.##");
         warningDialog = new WarningDialog(getContext());
     }
 
@@ -342,22 +344,23 @@ public class BorrowFragment extends Fragment {
                                         }
                                     }
                                 }
-                                boolean tek = false;
+                                boolean tek = true;
                                 if (!enterPay.getText().toString().isEmpty()) {
                                     int len = person.getCurrency().getAbbr().length();
-                                    if (Double.parseDouble(view.BorrowPersonSumm.getText().toString().substring(0, view.BorrowPersonSumm.getText().toString().length() - len))
-                                            - Double.parseDouble(enterPay.getText().toString()) < 0) {
-                                        if (person.getCalculate() && isMumkin(person, ac, Double.parseDouble(enterPay.getText().toString())))
-                                            tek = true;
-                                        if (!person.getCalculate()) tek = true;
+                                    if (Double.parseDouble(view.BorrowPersonSumm.getText().toString().substring(0, view.BorrowPersonSumm.getText().toString().length() - len).replace(",","."))
+                                            - Double.parseDouble(enterPay.getText().toString().replace(",",".")) < 0) {
+                                        if (person.getCalculate() &&person.getType()==DebtBorrow.DEBT)
+                                            if (!isMumkin(person,ac,Double.parseDouble(enterPay.getText().toString().replace(",", ".")),date))
+                                           return;
 
                                         final String finalAc = ac;
+
                                         warningDialog.setOnYesButtonListener(new View.OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
                                                 if (person.getCalculate()) {
                                                     Recking recking = new Recking(date,
-                                                            Double.parseDouble(enterPay.getText().toString()),
+                                                            Double.parseDouble(enterPay.getText().toString().replace(",",".")),
                                                             persons.get(position).getId(), finalAc,
                                                             comment.getText().toString());
 
@@ -377,7 +380,7 @@ public class BorrowFragment extends Fragment {
                                                     dialog.dismiss();
                                                 } else {
                                                     Recking recking = new Recking(date,
-                                                            Double.parseDouble(enterPay.getText().toString()),
+                                                            Double.parseDouble(enterPay.getText().toString().replace(",",".")),
                                                             persons.get(position).getId(), comment.getText().toString());
                                                     logicManager.insertReckingDebt(recking);
                                                     persons.get(position).getReckings().add(0, recking);
@@ -406,13 +409,16 @@ public class BorrowFragment extends Fragment {
                                             }
                                         });
                                         if (tek) {
+                                            warningDialog.setText(getResources().getString(R.string.incorrect_pay));
                                             warningDialog.show();
                                         }
                                     } else {
                                         Recking recking = null;
-                                        if (person.getCalculate() && isMumkin(person, ac, Double.parseDouble(enterPay.getText().toString()))) {
+                                        if (person.getCalculate()){
+                                            if(!isMumkin(person, ac, Double.parseDouble(enterPay.getText().toString().replace(",", ".")), date)&&person.getType()==DebtBorrow.DEBT)
+                                                    return;
                                             recking = new Recking(date,
-                                                    Double.parseDouble(enterPay.getText().toString()),
+                                                    Double.parseDouble(enterPay.getText().toString().replace(",",".")),
                                                     persons.get(position).getId(), ac,
                                                     comment.getText().toString());
                                             persons.get(position).getReckings().add(0, recking);
@@ -434,10 +440,9 @@ public class BorrowFragment extends Fragment {
                                             paFragmentManager.updateAllFragmentsOnViewPager();
                                             dataCache.updateAllPercents();
                                             dialog.dismiss();
-                                        } else {
-                                            if (!person.getCalculate()) {
+                                        } else if (!person.getCalculate()) {
                                                 recking = new Recking(date,
-                                                        Double.parseDouble(enterPay.getText().toString()),
+                                                        Double.parseDouble(enterPay.getText().toString().replace(",",".")),
                                                         persons.get(position).getId(),
                                                         comment.getText().toString());
                                                 persons.get(position).getReckings().add(0, recking);
@@ -462,7 +467,7 @@ public class BorrowFragment extends Fragment {
                                                 dialog.dismiss();
                                             }
                                         }
-                                    }
+
                                 } else {
                                     enterPay.setError(getString(R.string.enter_pay_value));
                                 }
@@ -507,7 +512,13 @@ public class BorrowFragment extends Fragment {
             });
         }
 
-        private boolean isMumkin(DebtBorrow debt, String accountId, Double summ) {
+        public String parseToWithoutNull(double A) {
+            if (A == (int) A)
+                return Integer.toString((int) A);
+            else
+                return formater.format(A);
+        }
+        private boolean isMumkin(DebtBorrow debt, String accountId, Double summ,Calendar date) {
             Account account = null;
             for (Account ac : accountDao.queryBuilder().list()) {
                 if (ac.getId().matches(accountId)) {
@@ -515,29 +526,22 @@ public class BorrowFragment extends Fragment {
                     break;
                 }
             }
-            if (account != null && (account.getIsLimited() || account.getNoneMinusAccount())) {
-                double limit = account.getLimite();
-                double accounted = logicManager.isLimitAccess(account, debt.getTakenDate());
-                if (debt.getType() == DebtBorrow.DEBT) {
-                    accounted = accounted - commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),  summ);
-                } else {
-                    accounted = accounted + commonOperations.getCost(Calendar.getInstance(), debt.getCurrency(),  summ);
+            if (account != null ) {
+                int state = logicManager.isItPosibleToAdd(account,summ,debt.getCurrency(),date,0,null,null);
+                if(state == LogicManager.CAN_NOT_NEGATIVE){
+                    Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
+
                 }
-                if (account.getNoneMinusAccount()) {
-                    if (accounted < 0) {
-                        Toast.makeText(getContext(), R.string.none_minus_account_warning, Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                } else {
-                    if (-limit > accounted) {
-                        Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
+                else if(state == LogicManager.LIMIT){
+                    Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
-
         private Bitmap queryContactImage(int imageDataRow) {
             Cursor c = getContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI, new String[]{
                     ContactsContract.CommonDataKinds.Photo.PHOTO

@@ -23,6 +23,7 @@ import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.Currency;
 import com.jim.pocketaccounter.database.CurrencyDao;
+import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
 import com.jim.pocketaccounter.utils.FABIcon;
 import com.jim.pocketaccounter.utils.IconChooseDialog;
@@ -209,9 +210,9 @@ public class AccountEditFragment extends PABaseInfoFragment implements OnClickLi
                 account.setName(etAccountEditName.getText().toString());
                 if (chbAccountStartSumEnabled.isChecked() && !etStartMoney.getText().toString().matches("")) {
                     try {
-                        Double.parseDouble(etStartMoney.getText().toString());
+                        Double.parseDouble(etStartMoney.getText().toString().replace(",","."));
                         etStartMoney.setError(null);
-                        account.setAmount(Double.parseDouble(etStartMoney.getText().toString()));
+                        account.setAmount(Double.parseDouble(etStartMoney.getText().toString().replace(",",".")));
                     } catch (Exception e) {
                         etStartMoney.setError(getString(R.string.wrong_input_type));
                         return;
@@ -227,29 +228,42 @@ public class AccountEditFragment extends PABaseInfoFragment implements OnClickLi
                     try {
                         String temp = etStartLimit.getText().toString();
                         temp.replace(",", ".");
-                        limitSum = Double.parseDouble(temp);
+                        limitSum = Double.parseDouble(temp.replace(",","."));
                     } catch (Exception e) {
                         etStartLimit.setError(getString(R.string.wrong_input_type));
                         return;
                     }
                     if (this.account != null) {
-                        double limit = logicManager.isLimitAccess(this.account, Calendar.getInstance());
-                        if (this.account.getLimitCurId() != null) {
-                            Currency limitCurrency = daoSession.getCurrencyDao().queryBuilder()
-                                    .where(CurrencyDao.Properties.Id.eq(this.account.getLimitCurId())).list().get(0);
-                            if (limit + commonOperations.getCost(Calendar.getInstance(), this.account.getStartMoneyCurrency(), this.account.getAmount()) <
-                                    -(commonOperations.getCost(Calendar.getInstance(), limitCurrency, limitSum))) {
-                                Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                        List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
+                        int state = logicManager.changeAccount(account,Calendar.getInstance(),limitSum,currencies.get(spStartLimit.getSelectedItemPosition()),account.getAmount(),daoSession.getCurrencyDao().loadAll()
+                                .get(spStartMoneyCurrency.getSelectedItemPosition()));
+                        if(state == LogicManager.LIMIT){
+                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
                         }
+
                     }
                     account.setIsLimited(true);
-                    account.setLimite(Double.parseDouble(etStartLimit.getText().toString()));
+                    account.setLimite(Double.parseDouble(etStartLimit.getText().toString().replace(",",".")));
                     List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
                     account.setLimitCurId(currencies.get(spStartLimit.getSelectedItemPosition()).getId());
                 } else {
                     account.setIsLimited(false);
+
+                    if(chbAccountNoneZero.isChecked()){
+                        List<Currency> currencies = daoSession.getCurrencyDao().loadAll();
+                        int state = logicManager.changeAccount(account,Calendar.getInstance(),0,currencies.get(spStartLimit.getSelectedItemPosition()),account.getAmount(),daoSession.getCurrencyDao().loadAll()
+                                .get(spStartMoneyCurrency.getSelectedItemPosition()));
+                        if(state == LogicManager.LIMIT){
+                            Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    if(chbAccountNoneZero.isChecked()){
+                        account.setLimitCurId(commonOperations.getMainCurrency().getId());
+                    } else
+                        account.setLimitCurId(null);
                 }
                 account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
                         .get(spStartMoneyCurrency.getSelectedItemPosition()));

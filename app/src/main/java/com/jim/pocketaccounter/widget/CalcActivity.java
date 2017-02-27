@@ -1213,14 +1213,14 @@ public class CalcActivity extends AppCompatActivity implements View.OnClickListe
         if (account.getIsLimited()) {
             double limit = account.getLimite();
             double accounted = isLimitAccess(daoSession, getApplicationContext(), account, Calendar.getInstance());
-            accounted = accounted - getCost(date, currency, daoSession.getCurrencyDao().load(account.getLimitCurId()), Double.parseDouble(tvRecordEditDisplay.getText().toString()));
+            accounted = accounted - getCost(date, currency, daoSession.getCurrencyDao().load(account.getLimitCurId()), Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(",",".")));
             if (-limit > accounted) {
                 Toast.makeText(getApplicationContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
 
-        if (Double.parseDouble(value) != 0) {
+        if (Double.parseDouble(value.replace(",",".")) != 0) {
 
             FinanceRecord newRecord = new FinanceRecord();
             newRecord.setCategory(category);
@@ -1228,7 +1228,7 @@ public class CalcActivity extends AppCompatActivity implements View.OnClickListe
             newRecord.setDate(date);
             newRecord.setAccount(account);
             newRecord.setCurrency(currency);
-            newRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString()));
+            newRecord.setAmount(Double.parseDouble(tvRecordEditDisplay.getText().toString().replace(",",".")));
             newRecord.setRecordId(uid_code);
             newRecord.setAllTickets(myTickets);
             for (PhotoDetails photoDetails : myTickets) {

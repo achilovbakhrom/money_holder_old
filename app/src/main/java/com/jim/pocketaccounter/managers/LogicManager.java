@@ -979,73 +979,158 @@ public class LogicManager {
         return LogicManagerConstants.DELETED_SUCCESSFUL;
     }
 
+    public static int CAN_NOT_NEGATIVE = 121;
+    public static int LIMIT = 101;
+    public static int YOU_CAN_ADD = 111;
+
+    public int isItPosibleToAdd(Account account,double amount, Currency amountCurrency, Calendar date, double oldEdit,Currency oldAmount,Account oldValueAccount){
+        if(account.getIsLimited()||account.getNoneMinusAccount()){
+            double limit = account.getLimite();
+            double state = isLimitAccess(account,date);
+            if(oldEdit!=0){
+                if(oldValueAccount.getId().equals(account.getId()))
+                    state += commonOperations.getCost(date,oldAmount,account.getCurrency(),oldEdit);
+            }
+            if(account.getNoneMinusAccount()){
+                if(state-commonOperations.getCost(date,amountCurrency,account.getCurrency(),amount)<0){
+                    return CAN_NOT_NEGATIVE;
+                }
+            }
+            if((-1*limit)<=(state-commonOperations.getCost(date,amountCurrency,account.getCurrency(),amount))){
+                return YOU_CAN_ADD;
+            }
+            else return LIMIT;
+        }
+        else return YOU_CAN_ADD;
+    }
+    public int changeAccount(Account account, Calendar date, double newLimit,Currency newLimitCurrency,double startMoney , Currency startmoneyCurrency){
+        double state = isLimitSatet(account,date,newLimitCurrency,startMoney,startmoneyCurrency);
+        if(newLimit*(-1)<=state){
+            return YOU_CAN_ADD;
+        }
+        else return LIMIT;
+
+    }
     public double isLimitAccess(Account account, Calendar date) {
-        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(), account.getAmount());
+        double accounted = commonOperations.getCost(date, account.getStartMoneyCurrency(),account.getCurrency(), account.getAmount());
         List<AccountOperation> operations = daoSession.getAccountOperationDao().loadAll();
         for (AccountOperation accountOperation : operations) {
             if (accountOperation.getSourceId().equals(account.getId())) {
-                accounted -= commonOperations.getCost(date, accountOperation.getCurrency(), accountOperation.getAmount());
+                accounted -= commonOperations.getCost(date, accountOperation.getCurrency(), account.getCurrency(), accountOperation.getAmount());
             }
             if (accountOperation.getTargetId().equals(account.getId())) {
-                accounted += commonOperations.getCost(date, accountOperation.getCurrency(), accountOperation.getAmount());
+                accounted += commonOperations.getCost(date, accountOperation.getCurrency(), account.getCurrency(), accountOperation.getAmount());
             }
         }
         for (int i = 0; i < recordDao.queryBuilder().list().size(); i++) {
             FinanceRecord tempac = recordDao.queryBuilder().list().get(i);
-            if (tempac.getAccount().getId().matches(account.getId())) {
+            if (tempac.getAccount().getId().equals(account.getId())) {
                 if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
-                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), tempac.getAmount());
+                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
                 else
-                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), tempac.getAmount());
+                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), account.getCurrency(), tempac.getAmount());
             }
         }
         for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
             if (debtBorrow.getCalculate()) {
-                if (debtBorrow.getAccount().getId().matches(account.getId())) {
+                if(debtBorrow.getAccount() == null) continue;
+                if (debtBorrow.getAccount().getId().equals(account.getId()))
                     if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), debtBorrow.getAmount());
+                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
                     } else {
-                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), debtBorrow.getAmount());
+                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), account.getCurrency(), debtBorrow.getAmount());
                     }
-                    for (Recking recking : debtBorrow.getReckings()) {
-                        Calendar cal = recking.getPayDate();
-
-                        if (debtBorrow.getType() == DebtBorrow.DEBT) {
-                            accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
-                        } else {
-                            accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
-                        }
-                    }
-                } else {
-                    for (Recking recking : debtBorrow.getReckings()) {
-                        Calendar cal = recking.getPayDate();
-                        if (recking.getAccountId().matches(account.getId())) {
-
-                            if (debtBorrow.getType() == DebtBorrow.BORROW) {
-                                accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
-                            } else {
-                                accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), recking.getAmount());
-                            }
-                        }
+            }
+            for (Recking recking : debtBorrow.getReckings()) {
+                if(recking.getAccountId() == null) continue;
+                if (recking.getAccountId().equals(account.getId())) {
+                    Calendar cal = recking.getPayDate();
+                    if (debtBorrow.getType() == DebtBorrow.DEBT) {
+                        accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
+                    } else {
+                        accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), account.getCurrency(), recking.getAmount());
                     }
                 }
             }
         }
+
         for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
             if (creditDetials.getKey_for_include()) {
-                for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
-                    if (reckingCredit.getAccountId().matches(account.getId())) {
-                        accounted = accounted - commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(), reckingCredit.getAmount());
-                    }
+            for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+                if (reckingCredit.getAccountId().equals(account.getId())) {
+                    accounted -= commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(), account.getCurrency(), reckingCredit.getAmount());
                 }
+            }
             }
         }
         for (SmsParseSuccess success: smsParseSuccessDao.loadAll()) {
-            if (success.getType() == PocketAccounterGeneral.INCOME) {
-                accounted += commonOperations.getCost(success.getDate(), success.getCurrency(), success.getAmount());
-            } else {
-                accounted -= commonOperations.getCost(success.getDate(), success.getCurrency(), success.getAmount());
+            if(success.getAccountId().equals(account.getId()))
+                if (success.getType() == PocketAccounterGeneral.INCOME) {
+                    accounted += commonOperations.getCost(success.getDate(), success.getCurrency(), account.getCurrency(), success.getAmount());
+                } else {
+                    accounted -= commonOperations.getCost(success.getDate(), success.getCurrency(),account.getCurrency(),  success.getAmount());
+                }
+        }
+        return accounted;
+    }
+    public double isLimitSatet(Account account, Calendar date,Currency currency,double startMoney , Currency startmoneyCurrency){
+        double accounted = commonOperations.getCost(date, startmoneyCurrency,currency, startMoney);
+        List<AccountOperation> operations = daoSession.getAccountOperationDao().loadAll();
+        for (AccountOperation accountOperation : operations) {
+            if (accountOperation.getSourceId().equals(account.getId())) {
+                accounted -= commonOperations.getCost(date, accountOperation.getCurrency(), currency, accountOperation.getAmount());
             }
+            if (accountOperation.getTargetId().equals(account.getId())) {
+                accounted += commonOperations.getCost(date, accountOperation.getCurrency(), currency, accountOperation.getAmount());
+            }
+        }
+        for (int i = 0; i < recordDao.queryBuilder().list().size(); i++) {
+            FinanceRecord tempac = recordDao.queryBuilder().list().get(i);
+            if (tempac.getAccount().getId().equals(account.getId())) {
+                if (tempac.getCategory().getType() == PocketAccounterGeneral.INCOME)
+                    accounted = accounted + commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), currency, tempac.getAmount());
+                else
+                    accounted = accounted - commonOperations.getCost(tempac.getDate(), tempac.getCurrency(), currency, tempac.getAmount());
+            }
+        }
+        for (DebtBorrow debtBorrow : debtBorrowDao.queryBuilder().list()) {
+            if (debtBorrow.getCalculate()) {
+                if(debtBorrow.getAccount() == null) continue;
+                if (debtBorrow.getAccount().getId().equals(account.getId()))
+                    if (debtBorrow.getType() == DebtBorrow.BORROW) {
+                        accounted = accounted - commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), currency, debtBorrow.getAmount());
+                    } else {
+                        accounted = accounted + commonOperations.getCost(debtBorrow.getTakenDate(), debtBorrow.getCurrency(), currency, debtBorrow.getAmount());
+                    }
+            }
+            for (Recking recking : debtBorrow.getReckings()) {
+                if(recking.getAccountId() == null) continue;
+                if (recking.getAccountId().equals(account.getId())) {
+                    Calendar cal = recking.getPayDate();
+                    if (debtBorrow.getType() == DebtBorrow.DEBT) {
+                        accounted = accounted - commonOperations.getCost(cal, debtBorrow.getCurrency(), currency, recking.getAmount());
+                    } else {
+                        accounted = accounted + commonOperations.getCost(cal, debtBorrow.getCurrency(), currency, recking.getAmount());
+                    }
+                }
+            }
+        }
+
+        for (CreditDetials creditDetials : creditDetialsDao.queryBuilder().list()) {
+            if (creditDetials.getKey_for_include()) {
+            for (ReckingCredit reckingCredit : creditDetials.getReckings()) {
+                if (reckingCredit.getAccountId().equals(account.getId())) {
+                    accounted -= commonOperations.getCost(reckingCredit.getPayDate(), creditDetials.getValyute_currency(), currency, reckingCredit.getAmount());
+                }
+            }}
+        }
+        for (SmsParseSuccess success: smsParseSuccessDao.loadAll()) {
+            if(success.getAccountId().equals(account.getId()))
+                if (success.getType() == PocketAccounterGeneral.INCOME) {
+                    accounted += commonOperations.getCost(success.getDate(), success.getCurrency(),currency, success.getAmount());
+                } else {
+                    accounted -= commonOperations.getCost(success.getDate(), success.getCurrency(),currency, success.getAmount());
+                }
         }
         return accounted;
     }
