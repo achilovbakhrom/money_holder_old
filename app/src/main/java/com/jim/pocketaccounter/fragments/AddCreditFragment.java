@@ -29,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
@@ -109,7 +108,6 @@ public class AddCreditFragment extends Fragment {
     long forWeek = 1000L * 60L * 60L * 24L * 7L;
     long forYear = 1000L * 60L * 60L * 24L * 365L;
     List<Currency> currencies;
-    CreditFragment.EventFromAdding eventLis;
     AddCreditFragment ThisFragment;
     CheckBox isOpkey;
     public static final String OPENED_TAG = "Addcredit";
@@ -1005,6 +1003,7 @@ public class AddCreditFragment extends Fragment {
                 else {
                     toolbarManager.setToolbarIconsVisibility(View.GONE,View.GONE,View.GONE);
                     paFragmentManager.getFragmentManager().popBackStack();
+                    paFragmentManager.displayFragment(new CreditTabLay());
                 }
 
                 onSucsessed = true;
@@ -1016,9 +1015,6 @@ public class AddCreditFragment extends Fragment {
         dialog.show();
     }
 
-    public void addEventLis(CreditFragment.EventFromAdding even) {
-        eventLis = even;
-    }
 
     public String parseToWithoutNull(double A) {
         if (A == (int) A)
@@ -1031,13 +1027,7 @@ public class AddCreditFragment extends Fragment {
 
     @Override
     public void onDetach() {
-        if(!fromMainWindow){
-            if (!onSucsessed && currentCredit == null)
-                eventLis.canceledAdding();
-            else if (currentCredit == null) {
-                eventLis.addedCredit();
-            }
-        }
+
         super.onDetach();
     }
 

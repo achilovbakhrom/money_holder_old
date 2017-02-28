@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,18 +15,17 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.credit.AdapterCridet;
-import com.jim.pocketaccounter.credit.AdapterCridetArchive;
 import com.jim.pocketaccounter.credit.LinearManagerWithOutEx;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
-import com.jim.pocketaccounter.utils.SearchResultConten;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -42,39 +40,13 @@ public class CreditFragment extends Fragment {
     private CreditDetialsDao creditDetialsDao;
     RecyclerView crRV;
     AdapterCridet crAdap;
-    Context This;
+    Context contextt;
     TextView ifListEmpty;
-    CreditTabLay.SvyazkaFragmentov svyaz;
     private CreditTabLay creditTabLay;
 
-    public AdapterCridetArchive.GoCredFragForNotify getInterfaceNotify(){
-        return new AdapterCridetArchive.GoCredFragForNotify() {
-            @Override
-            public void notifyCredFrag() {
-                crAdap.notifyDataSetChanged();
-            }
-        };
-    }
 
-    public CreditFragment() {
-        // Required empty public constructor
-    }
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-    }
-    public  CreditTabLay.ForFab getEvent(){
-        return new CreditTabLay.ForFab() {
-            @Override
-            public void pressedFab() {
-                openFragment(new AddCreditFragment(),AddCreditFragment.OPENED_TAG);
-            }
-        };
-    }
-    public void setSvyaz(CreditTabLay.SvyazkaFragmentov A){
-        svyaz=A;
-    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -82,7 +54,7 @@ public class CreditFragment extends Fragment {
         View V=inflater.inflate(R.layout.fragment_credit, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
         creditDetialsDao = daoSession.getCreditDetialsDao();
-        This=getActivity();
+        contextt =getActivity();
         toolbarManager.setTitle(getResources().getString(R.string.cred_managment));
         toolbarManager.setSubtitle("");
         toolbarManager.setSpinnerVisibility(View.GONE);
@@ -95,11 +67,10 @@ public class CreditFragment extends Fragment {
         }
         else ifListEmpty.setVisibility(View.GONE);
         crRV=(RecyclerView) V.findViewById(R.id.my_recycler_view);
-        LinearManagerWithOutEx llm = new LinearManagerWithOutEx(This);
+        LinearManagerWithOutEx llm = new LinearManagerWithOutEx(contextt);
         crRV.setLayoutManager(llm);
 
-        crAdap=new AdapterCridet(This,svyaz);
-        crRV.setAdapter(crAdap);
+        updateList();
 
         crRV.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -109,70 +80,36 @@ public class CreditFragment extends Fragment {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if(creditTabLay==null) {
+                    for (Fragment fragment : paFragmentManager.getFragmentManager().getFragments()){
+                        if (fragment == null) continue;
+                        if (fragment.getClass().getName().equals(CreditTabLay.class.getName())){
+                            creditTabLay = (CreditTabLay) fragment;
+                            break;
+                        }
+                    }
+                }
                 creditTabLay.onScrolledList(dy > 0);
             }
         });
         return V;
     }
 
-    public void setCreditTabLay (CreditTabLay creditTabLay) {
-        this.creditTabLay = creditTabLay;
-    }
-
-    public void openFragment(Fragment fragment,String tag) {
-        if (fragment != null) {
-            if(tag.matches("Addcredit"))
-                ((AddCreditFragment)fragment).addEventLis(new EventFromAdding() {
-                    @Override
-                    public void addedCredit() {
-                        updateToFirst();
-                    }
-
-                    @Override
-                    public void canceledAdding() {
-                    }
-                });
-//            paFragmentManager.getFragmentManager().popBackStack();
-//            paFragmentManager.displayFragment(fragment);
-            final android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            ft.add(R.id.flMain, fragment,tag);
-            ft.commit();
-        }
-    }
-    public void updateToFirst(){
-        Log.d("checkInterfaces", (crAdap==null)?"ADDING - AdapterIsNull":"ADDING - AdapterIsNotNull");
-         ifListEmpty.setVisibility(View.GONE);
-        crAdap.updateList();
-        try{
-            (new Handler()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                   crAdap.notifyItemInserted(0);
-                }
-            }, 50);
-            try {
-                (new Handler()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                      crRV.scrollToPosition(0);
-                    }
-                }, 100);
-            }
-            catch (Exception o){}
-        }
-        catch (Exception o){}
-    }
-
-    public void sortListFromDate(ArrayList<CreditDetials> crList){
-
-        Collections.sort(crList, new Comparator<CreditDetials>() {
-            @Override
-            public int compare(CreditDetials con1, CreditDetials con2)
-            {
-                return  con1.getMyCredit_id()<con2.getMyCredit_id()?1:-1;
-            }
-        });
-
+    public void updateList(){
+        toolbarManager.setToolbarIconsVisibility(View.GONE, View.GONE, View.GONE);
+        toolbarManager.setSubtitle("");
+        List<CreditDetials> creditDetialses = creditDetialsDao
+                .queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(false))
+                .orderDesc(CreditDetialsDao.Properties.MyCredit_id)
+                .build()
+                .list();
+        if (creditDetialses.isEmpty())
+            ifListEmpty.setVisibility(View.VISIBLE);
+        else
+            ifListEmpty.setVisibility(View.GONE);
+        AdapterCridet adapterCridet = new AdapterCridet(getContext());
+        if(crRV!=null) crRV.setAdapter(adapterCridet);
     }
 
     @Override

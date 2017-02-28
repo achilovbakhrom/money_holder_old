@@ -112,7 +112,6 @@ public class InfoCreditFragment extends Fragment {
     TextView myTotalPaid;
     TextView calculeted;
     ImageView icon_credit;
-    ConWithFragments A1;
     PaysCreditAdapter adapRecyc;
     List<ReckingCredit> rcList;
     boolean delete_flag = false;
@@ -133,12 +132,6 @@ public class InfoCreditFragment extends Fragment {
 
     public InfoCreditFragment() {
         // Required empty public constructor
-    }
-
-    public void setConteent(CreditDetials temp, int currentPOS, ConWithFragments A1) {
-        currentCredit = temp;
-        this.A1 = A1;
-        this.currentPOS = currentPOS;
     }
 
     @Override
@@ -242,7 +235,6 @@ public class InfoCreditFragment extends Fragment {
                                         dataCache.updateAllPercents();
                                         paFragmentManager.updateAllFragmentsOnViewPager();
 
-                                        A1.delete_item(currentPOS);
                                     } else if (fromSearch) {
                                         List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
                                         for (BoardButton boardButton : boardButtons) {
@@ -340,8 +332,6 @@ public class InfoCreditFragment extends Fragment {
                     currentCredit.setKey_for_archive(true);
                     logicManager.insertCredit(currentCredit);
                     if (!fromMainWindow) {
-                        A1.to_Archive(currentPOS);
-                        paFragmentManager.getFragmentManager().popBackStack();
                         List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
                         for (BoardButton boardButton : boardButtons) {
                             if (boardButton.getCategoryId() != null)
@@ -357,6 +347,8 @@ public class InfoCreditFragment extends Fragment {
                         dataCache.updateAllPercents();
                         paFragmentManager.updateAllFragmentsOnViewPager();
 
+                        paFragmentManager.getFragmentManager().popBackStack();
+                        paFragmentManager.displayFragment(new CreditTabLay());
                     } else if (fromSearch) {
 
                         List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
@@ -373,7 +365,6 @@ public class InfoCreditFragment extends Fragment {
                         }
                         dataCache.updateAllPercents();
                         paFragmentManager.updateAllFragmentsOnViewPager();
-
                         paFragmentManager.getFragmentManager().popBackStack();
                     } else {
                         if (modeOfMain == PocketAccounterGeneral.EXPENSE)
@@ -702,8 +693,7 @@ public class InfoCreditFragment extends Fragment {
                                 rcList = currentCredit.getReckings();
                                 updateDate();
                                 adapRecyc.setMyList(rcList);
-                                if (!fromMainWindow && A1 != null)
-                                    A1.change_item(currentCredit, currentPOS);
+
                                 isCheks = new boolean[rcList.size()];
                                 for (int i = 0; i < isCheks.length; i++) {
                                     isCheks[i] = false;
@@ -737,11 +727,7 @@ public class InfoCreditFragment extends Fragment {
                         for (int i = 0; i < isCheks.length; i++) {
                             isCheks[i] = false;
                         }
-                        if (!fromMainWindow)
-                            A1.change_item(currentCredit, currentPOS);
-                        else if (fromSearch) {
 
-                        }
                         adapRecyc.notifyDataSetChanged();
                         dialog.dismiss();
                     }
@@ -807,8 +793,7 @@ public class InfoCreditFragment extends Fragment {
                             rcList = currentCredit.getReckings();
                             adapRecyc.setMyList(rcList);
                             adapRecyc.notifyItemRemoved(t);
-                            if (!fromMainWindow)
-                                A1.change_item(currentCredit, currentPOS);
+
                         } else adapRecyc.notifyItemChanged(t);
                     }
                     isCheks = new boolean[rcList.size()];

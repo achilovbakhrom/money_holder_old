@@ -1476,7 +1476,7 @@
     <string name="cred_arch">Архив</string>
     <string name="cred_include_bal">Кредит учитывается в балансе</string>
     <string name="cred_not_include_bal">Кредит не учитывается в балансе</string>
-    <string name="credit_reckings_var">Credit recking</string>
+    <string name="credit_reckings_var">Оплата кредита</string>
     <string name="credit_var">Кредит</string>
     <string name="date_with_two_dots">Дата:</string>
     <string name="debt_com">Долг учитывается в балансе, но находится в архиве</string>

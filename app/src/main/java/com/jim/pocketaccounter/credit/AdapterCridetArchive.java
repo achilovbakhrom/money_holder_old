@@ -1,6 +1,7 @@
 package com.jim.pocketaccounter.credit;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.ReckingCredit;
+import com.jim.pocketaccounter.fragments.CreditTabLay;
 import com.jim.pocketaccounter.fragments.InfoCreditFragmentForArchive;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
@@ -69,19 +71,11 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
         cardDetials = creditDetialsDao.queryBuilder().where(CreditDetialsDao.Properties.Key_for_archive.eq(true)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
      }
 
-    AdapterCridetArchive.GoCredFragForNotify svyazForNotifyFromArchAdap;
 
-    public void setSvyazToAdapter(AdapterCridetArchive.GoCredFragForNotify goNotify) {
-        svyazForNotifyFromArchAdap = goNotify;
-    }
 
-    public interface ListnerDel {
-        void delete_item(int position);
-    }
 
-    public interface GoCredFragForNotify {
-        void notifyCredFrag();
-    }
+
+
 
     @Override
     public void onBindViewHolder(myViewHolder holder, final int position) {
@@ -161,17 +155,10 @@ public class AdapterCridetArchive extends RecyclerView.Adapter<AdapterCridetArch
             @Override
             public void onClick(View v) {
                 InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
-                int pos = cardDetials.indexOf(itemCr);
-                temp.setConteent(itemCr, pos, new ListnerDel() {
-                    @Override
-                    public void delete_item(int position) {
-                        CreditDetials Az = cardDetials.get(position);
-                        logicManager.deleteCredit(Az);
-                        cardDetials.remove(position);
-                        notifyItemRemoved(position);
-                    }
-                });
-                openFragment(temp, "InfoFragment");
+                Bundle bundle = new Bundle();
+                bundle.putLong(CreditTabLay.CREDIT_ID,itemCr.getMyCredit_id());
+                temp.setArguments(bundle);
+                paFragmentManager.displayFragment(temp);
             }
         });
     }

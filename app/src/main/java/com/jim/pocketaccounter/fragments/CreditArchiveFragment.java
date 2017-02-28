@@ -15,8 +15,11 @@ import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.credit.AdapterCridetArchive;
+import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,10 +30,7 @@ public class CreditArchiveFragment extends Fragment {
     @Inject
     DaoSession daoSession;
     TextView ifListEmpty;
-    AdapterCridetArchive.GoCredFragForNotify svyazForNotifyFromArchAdap;
-    public void setSvyazToAdapter(AdapterCridetArchive.GoCredFragForNotify goNotify){
-        svyazForNotifyFromArchAdap=goNotify;
-    }
+
     public CreditArchiveFragment() {
 
     }
@@ -38,16 +38,23 @@ public class CreditArchiveFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        }
-    public CreditTabLay.SvyazkaFragmentov getSvyaz(){
-        return new CreditTabLay.SvyazkaFragmentov() {
-            @Override
-            public void itemInsertedToArchive() {
-                updateList();
-                ifListEmpty.setVisibility(View.GONE);
-                Log.d("checkInterfaces", "ARCHIVE - updateList();");
-            }
-        };
+
+    public void updateList(){
+        List<CreditDetials> creditDetialses = daoSession.getCreditDetialsDao()
+                .queryBuilder()
+                .where(CreditDetialsDao.Properties.Key_for_archive.eq(true))
+                .orderDesc(CreditDetialsDao.Properties.MyCredit_id)
+                .build()
+                .list();
+        if (creditDetialses.isEmpty())
+            ifListEmpty.setVisibility(View.VISIBLE);
+        else
+            ifListEmpty.setVisibility(View.GONE);
+
+        AdapterCridetArchive adapterCridetArchive = new AdapterCridetArchive(getContext());
+        if(crRV!=null) crRV.setAdapter(adapterCridetArchive);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,16 +76,9 @@ public class CreditArchiveFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(contextt);
         crRV.setLayoutManager(llm);
         crAdap=new AdapterCridetArchive(contextt);
-        crAdap.setSvyazToAdapter(svyazForNotifyFromArchAdap);
         crRV.setAdapter(crAdap);
         return V;
     }
 
-    public void updateList(){
-        Log.d("checkInterfaces", (crAdap==null)?"AdapterIsNull":"AdapterIsNotNull");
-        crAdap.updateBase();
-        crAdap.notifyDataSetChanged();
-        if(crRV.getChildCount()>0);
-        crRV.scrollToPosition(0);
-    }
+
 }

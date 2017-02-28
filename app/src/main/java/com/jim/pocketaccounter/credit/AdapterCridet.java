@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -75,13 +76,12 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     WarningDialog warningDialog;
     CreditDetialsDao creditDetialsDao;
     AccountDao accountDao;
-
+    private CreditTabLay creditTabLay;
     @Inject
     @Named(value = "display_formatter")
     SimpleDateFormat dateFormat;
 
     List<CreditDetials> cardDetials;
-    CreditTabLay.SvyazkaFragmentov svyaz;
     Context context;
     ArrayList<Account> accaunt_AC;
     DecimalFormat formater;
@@ -93,7 +93,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.cardDetials=creditDetialsDao.queryBuilder()
                 .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
     }
-    public AdapterCridet(Context This, CreditTabLay.SvyazkaFragmentov svyaz) {
+    public AdapterCridet(Context This ) {
         ((PocketAccounter) This).component((PocketAccounterApplication) This.getApplicationContext()).inject(this);
         warningDialog = new WarningDialog(This);
         creditDetialsDao = daoSession.getCreditDetialsDao();
@@ -102,7 +102,6 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .where(CreditDetialsDao.Properties.Key_for_archive.eq(false)).orderDesc(CreditDetialsDao.Properties.MyCredit_id).build().list();
         this.context = This;
         formater = new DecimalFormat("0.##");
-        this.svyaz = svyaz;
     }
 
     @Override
@@ -192,31 +191,11 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         holder.glav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final int pos = cardDetials.indexOf(itemCr);
                 InfoCreditFragment temp = new InfoCreditFragment();
-                temp.setConteent(itemCr, pos, new InfoCreditFragment.ConWithFragments() {
-                    @Override
-                    public void change_item(CreditDetials creditDetials, int position) {
-//                        updateList();
-                        double obswiy = 0;
-                         notifyItemChanged(position);
-//                        notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void to_Archive(int position) {
-
-                        svyaz.itemInsertedToArchive();
-                        notifyItemChanged(position);
-                    }
-
-                    @Override
-                    public void delete_item(int position) {
-                        updateList();
-                        notifyItemRemoved(position);
-                    }
-                });
-                openFragment(temp, "InfoFragment");
+                Bundle bundle = new Bundle();
+                bundle.putLong(CreditTabLay.CREDIT_ID,itemCr.getMyCredit_id());
+                temp.setArguments(bundle);
+                paFragmentManager.displayFragment(temp);
             }
         });
         holder.pay_or_archive.setOnClickListener(new View.OnClickListener() {
@@ -243,10 +222,18 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
                             }
                     }
-
+                    if(creditTabLay==null) {
+                        for (Fragment fragment : paFragmentManager.getFragmentManager().getFragments()){
+                            if (fragment == null) continue;
+                            if (fragment.getClass().getName().equals(CreditTabLay.class.getName())){
+                                creditTabLay = (CreditTabLay) fragment;
+                                break;
+                            }
+                        }
+                    }
                     dataCache.updateAllPercents();
                     paFragmentManager.updateAllFragmentsOnViewPager();
-                    svyaz.itemInsertedToArchive();
+                    creditTabLay.updateArchive();
                 } else
                     openDialog(itemCr, position);
             }
@@ -351,23 +338,6 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
     }
 
-    public void openFragment(Fragment fragment, String tag) {
-        if (fragment != null) {
-            if (tag.matches("Addcredit"))
-                ((AddCreditFragment) fragment).addEventLis(new CreditFragment.EventFromAdding() {
-                    @Override
-                    public void addedCredit() {
-                        notifyItemInserted(0);
-                    }
-                    @Override
-                    public void canceledAdding() {}
-                });
-            paFragmentManager.displayFragment(fragment,tag);
-//            final android.support.v4.app.FragmentTransaction ft = ((PocketAccounter) context).getSupportFragmentManager().beginTransaction().addToBackStack(tag).setTransition(android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//            ft.add(R.id.flMain, fragment, tag);
-//            ft.commit();
-        }
-    }
 
     private void openDialog(final CreditDetials current, final int position) {
         final Dialog dialog = new Dialog(context);
@@ -435,7 +405,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (!amount.matches("")) {
                     if(current.getKey_for_include()){
                         Account account = accaunt_AC.get(accountSp.getSelectedItemPosition());
-                        if (account.getIsLimited()) {
+
 
                         int state = logicManager.isItPosibleToAdd(account,Double.parseDouble(amount.replace(",",".")),current.getValyute_currency(),date,0,null,null);
                         if(state == LogicManager.CAN_NOT_NEGATIVE){
@@ -449,7 +419,7 @@ public class AdapterCridet extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             return;
 
                         }
-                    }}
+                    }
                     if (Double.parseDouble(amount.replace(",",".")) > current.getValue_of_credit_with_procent() - total_paid) {
                         warningDialog.setOnYesButtonListener(new View.OnClickListener() {
                             @Override

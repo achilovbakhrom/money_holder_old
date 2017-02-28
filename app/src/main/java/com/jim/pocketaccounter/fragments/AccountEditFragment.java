@@ -129,9 +129,17 @@ public class AccountEditFragment extends PABaseInfoFragment implements OnClickLi
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)
+                {
                     rlStartLimitContainer.setVisibility(View.VISIBLE);
-                else
+                    chbAccountNoneZero.setEnabled(false);
+                    tvNoneMinusAccountTitle.setEnabled(false);
+                    chbAccountNoneZero.setChecked(false);
+                }
+                else {
                     rlStartLimitContainer.setVisibility(View.GONE);
+                    tvNoneMinusAccountTitle.setEnabled(true);
+                    chbAccountNoneZero.setEnabled(true);
+                }
             }
         });
         rlStartSumContainer = (RelativeLayout) rootView.findViewById(R.id.rlStartSumContainer);
@@ -269,13 +277,7 @@ public class AccountEditFragment extends PABaseInfoFragment implements OnClickLi
                 account.setStartMoneyCurrency(daoSession.getCurrencyDao().loadAll()
                         .get(spStartMoneyCurrency.getSelectedItemPosition()));
                 account.setIcon(choosenIcon);
-                if (account != null && chbAccountNoneZero.isChecked()) {
-                    double limit = logicManager.isLimitAccess(account, Calendar.getInstance());
-                    if (limit < 0) {
-                        Toast.makeText(getContext(), R.string.limit_exceed, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                }
+
                 account.setNoneMinusAccount(chbAccountNoneZero.isChecked());
                 if (this.account != null) {
                     daoSession.getAccountDao().insertOrReplace(account);

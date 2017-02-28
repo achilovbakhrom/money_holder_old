@@ -126,6 +126,7 @@ public class SearchFragment extends Fragment {
 //        setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+
         dateformarter = new SimpleDateFormat("dd.MM.yyyy");
         formater = new DecimalFormat("0.00##");
         rvSearchItems = (RecyclerView) view.findViewById(R.id.recyc_item_search);
@@ -487,6 +488,8 @@ public class SearchFragment extends Fragment {
                         }
                     });
                     break;
+                case CREDIT_ARCHIVE:
+
                 case CREDIT_VAR:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -498,7 +501,10 @@ public class SearchFragment extends Fragment {
                                     toolbarManager.closeSearchFragment();
                                     if(((CreditDetials) item.getParrentObject()).getKey_for_archive()){
                                         InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
-                                        temp.setConteentFragment((CreditDetials) item.getParrentObject());
+                                        Bundle bundle = new Bundle();
+                                        bundle.putLong(CreditTabLay.CREDIT_ID,((CreditDetials) item.getParrentObject()).getMyCredit_id());
+                                        bundle.putInt(CreditTabLay.MODE,PocketAccounterGeneral.SEARCH_MODE);
+                                        temp.setArguments(bundle);
                                         toolbarManager.closeSearchFragment();
                                         paFragmentManager.displayFragment(temp);
                                     }
@@ -520,7 +526,7 @@ public class SearchFragment extends Fragment {
                     });
 
                     break;
-                case CREDIT_ARCHIVE:
+
                 case CREDIT_RECKING:
                     holder.mainItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -530,22 +536,24 @@ public class SearchFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     ReckingCredit reckingCredit=(ReckingCredit) item.getParrentObject();
-                                    toolbarManager.closeSearchFragment();
                                     CreditDetials parentCreditDetials = daoSession.getCreditDetialsDao().load(reckingCredit.getMyCredit_id());
                                     if(parentCreditDetials.getKey_for_archive()){
                                         InfoCreditFragmentForArchive temp = new InfoCreditFragmentForArchive();
-                                        temp.setConteentFragment(parentCreditDetials);
-                                        paFragmentManager.displayFragment(temp);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putLong(CreditTabLay.CREDIT_ID,((ReckingCredit) item.getParrentObject()).getMyCredit_id());
+                                        bundle.putInt(CreditTabLay.MODE,PocketAccounterGeneral.SEARCH_MODE);
+                                        temp.setArguments(bundle);
                                         toolbarManager.closeSearchFragment();
+                                        paFragmentManager.displayFragment(temp);
                                     }
                                     else {
                                         InfoCreditFragment temp = new InfoCreditFragment();
                                         Bundle bundle = new Bundle();
-                                        bundle.putLong(CreditTabLay.CREDIT_ID, parentCreditDetials.getMyCredit_id() );
-                                        bundle.putBoolean(CreditTabLay.FROM_SEARCH, true);
+                                        bundle.putLong(CreditTabLay.CREDIT_ID,((ReckingCredit) item.getParrentObject()).getMyCredit_id());
+                                        bundle.putInt(CreditTabLay.MODE,PocketAccounterGeneral.SEARCH_MODE);
                                         temp.setArguments(bundle);
-                                        paFragmentManager.displayFragment(temp);
                                         toolbarManager.closeSearchFragment();
+                                        paFragmentManager.displayFragment(temp);
                                     }
 
                                 }

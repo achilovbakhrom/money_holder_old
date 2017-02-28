@@ -2,6 +2,7 @@ package com.jim.pocketaccounter.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -19,17 +20,21 @@ import android.widget.TextView;
 import com.jim.pocketaccounter.PocketAccounter;
 import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
-import com.jim.pocketaccounter.credit.AdapterCridetArchive;
 import com.jim.pocketaccounter.database.Account;
 import com.jim.pocketaccounter.database.AccountDao;
+import com.jim.pocketaccounter.database.BoardButton;
 import com.jim.pocketaccounter.database.CreditDetials;
 import com.jim.pocketaccounter.database.CreditDetialsDao;
 import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.database.ReckingCredit;
 import com.jim.pocketaccounter.database.ReckingCreditDao;
+import com.jim.pocketaccounter.managers.CommonOperations;
 import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.PAFragmentManager;
+import com.jim.pocketaccounter.managers.ReportManager;
 import com.jim.pocketaccounter.managers.ToolbarManager;
+import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
+import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.cache.DataCache;
 
 import java.text.DecimalFormat;
@@ -37,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,6 +62,12 @@ public class InfoCreditFragmentForArchive extends Fragment {
     LogicManager logicManager;
     @Inject
     DataCache dataCache;
+    @Inject
+    SharedPreferences sPref;
+    @Inject
+    CommonOperations commonOperations;
+    @Inject
+    ReportManager reportManager;
     private CreditDetialsDao creditDetialsDao;
     private ReckingCreditDao reckingCreditDao;
     private AccountDao accountDao;
@@ -79,6 +91,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
     ImageView icon_credit;
     PaysCreditAdapter adapRecyc;
     ArrayList<ReckingCredit> rcList;
+    WarningDialog warningDialog;
     final static long forDay=1000L*60L*60L*24L;
     final static long forMoth=1000L*60L*60L*24L*30L;
     final static long forWeek=1000L*60L*60L*24L*7L;
@@ -88,24 +101,14 @@ public class InfoCreditFragmentForArchive extends Fragment {
     boolean isExpandOpen=false;
     private Context context;
     TextView myPay,myDelete;
-    DecimalFormat  formater;
-    AdapterCridetArchive.ListnerDel A1;
-    int POSITIOn;
-    boolean fromSearch=false;
+    private DecimalFormat formater =new DecimalFormat("0.##");
+    int position;
+    int modeOfMain = PocketAccounterGeneral.NO_MODE;
     public InfoCreditFragmentForArchive() {
         // Required empty public constructor
     }
-    public void setConteent(CreditDetials temp,int position, AdapterCridetArchive.ListnerDel A1){
-        currentCredit=temp;
-        this.A1=A1;
-        formater=new DecimalFormat("0.##");
-        POSITIOn=position;
-    }
-    public void setConteentFragment(CreditDetials temp){
-        currentCredit=temp;
-        formater=new DecimalFormat("0.##");
-        fromSearch=true;
-    }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,12 +119,20 @@ public class InfoCreditFragmentForArchive extends Fragment {
                              Bundle savedInstanceState) {
         View V=inflater.inflate(R.layout.fragment_info_credit_archive, container, false);
         context=getActivity();
-
         ((PocketAccounter) getContext()).component((PocketAccounterApplication) getContext().getApplicationContext()).inject(this);
+
+        if(getArguments()!=null){
+            currentCredit = daoSession.load(CreditDetials.class,getArguments().getLong(CreditTabLay.CREDIT_ID));
+            modeOfMain = getArguments().getInt(CreditTabLay.MODE);
+            position = getArguments().getInt(CreditTabLay.POSITION);
+            if (currentCredit != null){
+                sPref.edit().putLong("CREDIT_ID", currentCredit.getMyCredit_id()).apply();
+            }
+        }
         creditDetialsDao = daoSession.getCreditDetialsDao();
         reckingCreditDao = daoSession.getReckingCreditDao();
         accountDao = daoSession.getAccountDao();
-
+        warningDialog = new WarningDialog(context);
         Date dateForSimpleDate = (new Date());
         expandableBut=(ImageView) V.findViewById(R.id.wlyuzik_opener);
         expandablePanel=(FrameLayout) V.findViewById(R.id.shlyuzik);
@@ -139,7 +150,7 @@ public class InfoCreditFragmentForArchive extends Fragment {
         calculeted=(TextView) V.findViewById(R.id.it_is_include_balance);
         tranact_recyc=(RecyclerView) V.findViewById(R.id.recycler_for_transactions);
         icon_credit=(ImageView) V.findViewById(R.id.icon_creditt);
-        rcList= (ArrayList<ReckingCredit>) reckingCreditDao.queryBuilder().list();
+        rcList= (ArrayList<ReckingCredit>) currentCredit.getReckings();
         adapRecyc=new PaysCreditAdapter(rcList);
         myPay=(TextView)  V.findViewById(R.id.paybut);
         myDelete=(TextView)  V.findViewById(R.id.deleterbut);
@@ -166,48 +177,104 @@ public class InfoCreditFragmentForArchive extends Fragment {
             @Override
             public void onClick(View v) {
                 if(currentCredit.getKey_for_include()){
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage(getString(R.string.dou_delete))
-                            .setPositiveButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialoge, int id) {
-                                    dialoge.cancel();
+                    warningDialog.setOnYesButtonListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (modeOfMain == PocketAccounterGeneral.NO_MODE) {
+                                List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
+                                for (BoardButton boardButton : boardButtons) {
+                                    if (boardButton.getCategoryId() != null)
+                                        if (boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))) {
+                                            if (boardButton.getTable() == PocketAccounterGeneral.EXPENSE)
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, boardButton.getPos(), null);
+                                            else
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, boardButton.getPos(), null);
+                                            commonOperations.changeIconToNull(boardButton.getPos(), dataCache, boardButton.getTable());
+
+                                        }
                                 }
-                            }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            if(!fromSearch)
-                            A1.delete_item(POSITIOn);
-                            getActivity().getSupportFragmentManager().popBackStack ();
-                            paFragmentManager.displayFragment(new CreditTabLay());
-                        }
-                    });
-                    builder.create().show();
-                }
-                else{
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage(getString(R.string.dou_delete_arc))
-                            .setPositiveButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialoge, int id) {
-                                    dialoge.cancel();
+                                for(ReckingCredit reckingCredit:currentCredit.getReckings()){
+                                    logicManager.deleteReckingCredit(reckingCredit);
                                 }
-                            }).setNegativeButton(getString(R.string.delete_anyway), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            if(!fromSearch)
-                                A1.delete_item(POSITIOn);
-                            else
                                 logicManager.deleteCredit(currentCredit);
-                            //TODO CHALSI BOR PROSENTI YENGILAVOR Ozin eslab kor sardor
-                            dataCache.updateAllPercents();
-                            paFragmentManager.updateAllFragmentsOnViewPager();
-                            getActivity().getSupportFragmentManager().popBackStack ();
+                                dataCache.updateAllPercents();
+                                paFragmentManager.updateAllFragmentsPageChanges();
+                            } else if (modeOfMain == PocketAccounterGeneral.SEARCH_MODE) {
+                                List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
+                                for (BoardButton boardButton : boardButtons) {
+                                    if (boardButton.getCategoryId() != null)
+                                        if (boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))) {
 
-                            if(fromSearch)
+                                            if (boardButton.getTable() == PocketAccounterGeneral.EXPENSE)
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, boardButton.getPos(), null);
+                                            else
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, boardButton.getPos(), null);
+
+                                            commonOperations.changeIconToNull(boardButton.getPos(), dataCache, boardButton.getTable());
+
+                                        }
+                                }
+                                for(ReckingCredit reckingCredit:currentCredit.getReckings()){
+                                    logicManager.deleteReckingCredit(reckingCredit);
+                                }
+                                logicManager.deleteCredit(currentCredit);
+                                dataCache.updateAllPercents();
+                                paFragmentManager.updateAllFragmentsPageChanges();
+
+                            } else {
+                                if (modeOfMain == PocketAccounterGeneral.EXPANSE_MODE) {
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, position, null);
+                                } else {
+                                    logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, position, null);
+                                }
+                                commonOperations.changeIconToNull(position, dataCache, modeOfMain);
+
+                                List<BoardButton> boardButtons = daoSession.getBoardButtonDao().loadAll();
+                                for (BoardButton boardButton : boardButtons) {
+                                    if (boardButton.getCategoryId() != null) {
+                                        if (boardButton.getCategoryId().equals(Long.toString(currentCredit.getMyCredit_id()))) {
+
+                                            if (boardButton.getTable() == PocketAccounterGeneral.EXPENSE) {
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.EXPENSE, boardButton.getPos(), null);
+                                            } else {
+                                                logicManager.changeBoardButton(PocketAccounterGeneral.INCOME, boardButton.getPos(), null);
+                                            }
+
+                                            commonOperations.changeIconToNull(boardButton.getPos(), dataCache, boardButton.getTable());
+
+                                        }
+                                    }
+                                }
+                                for(ReckingCredit reckingCredit:currentCredit.getReckings()){
+                                    logicManager.deleteReckingCredit(reckingCredit);
+                                }
+                                logicManager.deleteCredit(currentCredit);
+                                dataCache.updateAllPercents();
+                                paFragmentManager.updateAllFragmentsPageChanges();
+
+
+                            }
+                            if (modeOfMain != PocketAccounterGeneral.NO_MODE && modeOfMain !=PocketAccounterGeneral.DETAIL && modeOfMain!= PocketAccounterGeneral.SEARCH_MODE){
+                                dataCache.updateOneDay(dataCache.getEndDate());
+                                getActivity().getSupportFragmentManager().popBackStack();
                                 paFragmentManager.displayMainWindow();
-                            paFragmentManager.displayFragment(new CreditTabLay());
+                            } else {
 
+                                    paFragmentManager.getFragmentManager().popBackStack();
+                                    paFragmentManager.displayFragment(new CreditTabLay());
 
+                            }
+                            warningDialog.dismiss();
                         }
                     });
-                    builder.create().show();
+                    warningDialog.setOnNoButtonClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            warningDialog.dismiss();
+                        }
+                    });
+                    warningDialog.setText(getString(R.string.delete_credit));
+                    warningDialog.show();
                 }
             }
         });

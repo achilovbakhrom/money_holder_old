@@ -1479,7 +1479,7 @@
     <string name="cred_arch">Archive</string>
     <string name="cred_include_bal">This credit is included in balance</string>
     <string name="cred_not_include_bal">This credit is not included in balance</string>
-    <string name="credit_reckings_var">Credit recking</string>
+    <string name="credit_reckings_var">Credit payment</string>
     <string name="credit_var">Credit</string>
     <string name="date_with_two_dots">Date:</string>
     <string name="debt_com">The debt is included in balance, but it is in archive</string>
