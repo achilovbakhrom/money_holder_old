@@ -268,15 +268,15 @@ public class SearchFragment extends Fragment {
             for (DebtBorrow temp : dbors) {
                 if (temp.getType() == DebtBorrow.DEBT)
                     if (temp.getTo_archive()) {
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount() * -1d, DEBT_ARCHIVE, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.debt_com) : getString(R.string.debt_comment_not_icluded), temp.getCurrency(), temp.getAccount()));
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount(), DEBT_ARCHIVE, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.debt_com) : getString(R.string.debt_comment_not_icluded), temp.getCurrency(), temp.getAccount()));
                     } else
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount() * -1d, DEBT_VAR, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.debt_coment) : getString(R.string.debt_comment_to), temp.getCurrency(), temp.getAccount()));
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount(), DEBT_VAR, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.debt_coment) : getString(R.string.debt_comment_to), temp.getCurrency(), temp.getAccount()));
 
                 if (temp.getType() == DebtBorrow.BORROW)
                     if (temp.getTo_archive()) {
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount(), BORROW_ARCHIVE, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.borrow_com) : getString(R.string.borrow_comment_not_icl_arch), temp.getCurrency(), temp.getAccount()));
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount() * -1d, BORROW_ARCHIVE, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.borrow_com) : getString(R.string.borrow_comment_not_icl_arch), temp.getCurrency(), temp.getAccount()));
                     } else
-                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount(), BORROW_VAR, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.borrow_comment) : getString(R.string.borrow_coment_incl), temp.getCurrency(), temp.getAccount()));
+                        searchItemsToSend.add(new SearchResultConten(temp.getPerson().getName(), temp.getAmount() * -1d, BORROW_VAR, temp.getTakenDate(), temp, temp.getPerson().getPhoto(), (temp.getCalculate()) ? getString(R.string.borrow_comment) : getString(R.string.borrow_coment_incl), temp.getCurrency(), temp.getAccount()));
             }
             QueryBuilder<Recking> queryBuilderDebtBorrowRecking = daoSession.getReckingDao().queryBuilder();
             Join anmeJoin = queryBuilderDebtBorrowRecking.join(ReckingDao.Properties.DebtBorrowsId, DebtBorrow.class, DebtBorrowDao.Properties.Id);
@@ -293,7 +293,7 @@ public class SearchFragment extends Fragment {
                 DebtBorrow debtBorrowTemp = daoSession.getDebtBorrowDao().load(temp.getDebtBorrowsId());
                 Account acc = daoSession.getAccountDao().load(temp.getAccountId());
                 if (debtBorrowTemp.getType() == DebtBorrow.DEBT)
-                    searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(), temp.getAmount(), DEBT_RECKING, temp.getPayDate(), temp, debtBorrowTemp.getPerson().getPhoto(), temp.getComment(), debtBorrowTemp.getCurrency(), acc));
+                    searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(), temp.getAmount() * -1d, DEBT_RECKING, temp.getPayDate(), temp, debtBorrowTemp.getPerson().getPhoto(), temp.getComment(), debtBorrowTemp.getCurrency(), acc));
                 else if (debtBorrowTemp.getType() == DebtBorrow.BORROW)
                     searchItemsToSend.add(new SearchResultConten(debtBorrowTemp.getPerson().getName(), temp.getAmount(), BORROW_RECKING, temp.getPayDate(), temp, debtBorrowTemp.getPerson().getPhoto(), temp.getComment(), debtBorrowTemp.getCurrency(), acc));
 
