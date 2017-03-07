@@ -924,9 +924,9 @@
     <string name="to">To: </string>
     <string name="from_email">from_email</string>
     <string name="to_email">basicstepsdevelopment@gmail.com</string>
-    <string name="rate_app_web">https://play.google.com/store/apps/details?debtBorrowsId=com.jim.pocketaccounter</string>
+    <string name="rate_app_web">https://play.google.com/store/apps/details?id=com.jim.pocketaccounter</string>
     <string name="share_app_text">I recommend "Money Holder"
-        https://play.google.com/store/apps/details?debtBorrowsId=com.jim.pocketaccounter</string>
+        https://play.google.com/store/apps/details?id=com.jim.pocketaccounter</string>
     <string name="feedback_hint">Contact Us</string>
     <string name="feedback_subject">Subject: </string>
     <string name="feedback_content">Content: </string>

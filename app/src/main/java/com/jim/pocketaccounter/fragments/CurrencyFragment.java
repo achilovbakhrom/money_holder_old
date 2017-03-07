@@ -1,11 +1,7 @@
 package com.jim.pocketaccounter.fragments;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,27 +17,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.jim.pocketaccounter.PocketAccounter;
-import com.jim.pocketaccounter.PocketAccounterApplication;
 import com.jim.pocketaccounter.R;
 import com.jim.pocketaccounter.database.Currency;
-import com.jim.pocketaccounter.database.DaoSession;
 import com.jim.pocketaccounter.finance.CurrencyAdapter;
-import com.jim.pocketaccounter.managers.CommonOperations;
-import com.jim.pocketaccounter.managers.DrawerInitializer;
-import com.jim.pocketaccounter.managers.LogicManager;
 import com.jim.pocketaccounter.managers.LogicManagerConstants;
-import com.jim.pocketaccounter.managers.PAFragmentManager;
-import com.jim.pocketaccounter.managers.ToolbarManager;
-import com.jim.pocketaccounter.utils.WarningDialog;
 import com.jim.pocketaccounter.utils.FloatingActionButton;
 import com.jim.pocketaccounter.utils.PocketAccounterGeneral;
 import com.jim.pocketaccounter.utils.ScrollDirectionListener;
-import com.jim.pocketaccounter.utils.cache.DataCache;
-
+import com.jim.pocketaccounter.utils.WarningDialog;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 public class CurrencyFragment extends PABaseListFragment implements OnClickListener, OnItemClickListener {
 	private FloatingActionButton fabCurrencyAdd;

@@ -96,12 +96,7 @@ import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKE
 import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
 import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
 
-//    import com.jim.pocketaccounter.finance.FinanceManager;
-//    import com.jim.pocketaccounter.photocalc.PhotoAdapter;
-//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH;
-//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.BEGIN_DELETE_TICKKETS_PATH_CACHE;
-//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.COUNT_DELETES;
-//    import static com.jim.pocketaccounter.photocalc.PhotoAdapter.REQUEST_DELETE_PHOTOS;
+
 
 public class CalcActivity extends AppCompatActivity implements View.OnClickListener {
     private boolean keyforback = false;

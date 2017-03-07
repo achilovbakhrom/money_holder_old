@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:installLocation="preferExternal"
     package="com.jim.pocketaccounter"
-    android:versionCode="22"
-    android:versionName="v7.00">
+    android:versionCode="25"
+    android:versionName="v7.20">
 
     <uses-sdk
         android:minSdkVersion="9"

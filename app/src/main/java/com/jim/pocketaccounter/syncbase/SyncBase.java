@@ -135,7 +135,7 @@ public class SyncBase {
        try {
            final File file = new File(PATH_FOR_INPUT);
            final File fileDirectory = new File(context.getFilesDir(),DB_NAME) ;
-           final SQLiteDatabase current = SQLiteDatabase.openDatabase(file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
+               final SQLiteDatabase current = SQLiteDatabase.openDatabase(file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READONLY);
 
           refStorage.child(auth_uid+"/"+PocketAccounterGeneral.OLD_DB_NAME).getFile(fileDirectory).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
               @Override

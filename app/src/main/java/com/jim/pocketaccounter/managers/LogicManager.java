@@ -672,44 +672,8 @@ public class LogicManager {
             }
             currencies.get(oldMainPos).setMain(false);
             currencies.get(currMainPos).setMain(true);
-            mainCurrency = currencies.get(currMainPos);
         }
-        Calendar nextDate, currDay;
-        for (int i = 0; i < mainCurrency.getCosts().size(); i++) {
-            CurrencyCost current = mainCurrency.getCosts().get(i);
-            currDay = (Calendar) current.getDay().clone();
-            currDay.set(Calendar.HOUR_OF_DAY, 0);
-            currDay.set(Calendar.MINUTE, 0);
-            currDay.set(Calendar.SECOND, 0);
-            currDay.set(Calendar.MILLISECOND, 0);
-            if (i != mainCurrency.getCosts().size() - 1) {
-                nextDate = (Calendar) mainCurrency.getCosts().get(i + 1).getDay().clone();
-                nextDate.set(Calendar.HOUR_OF_DAY, 0);
-                nextDate.set(Calendar.MINUTE, 0);
-                nextDate.set(Calendar.SECOND, 0);
-                nextDate.set(Calendar.MILLISECOND, 0);
-            } else {
-                nextDate = Calendar.getInstance();
-                nextDate.set(Calendar.HOUR_OF_DAY, 23);
-                nextDate.set(Calendar.MINUTE, 59);
-                nextDate.set(Calendar.SECOND, 59);
-                nextDate.set(Calendar.MILLISECOND, 59);
-            }
 
-            for (int j = 0; j < currencies.size(); j++) {
-                if (currencies.get(j).getMain()) continue;
-                for (int k = 0; k < currencies.get(j).getCosts().size(); k++) {
-                    CurrencyCost currencyCost = currencies.get(j).getCosts().get(k);
-                    if (i == 0) {
-                        if (currencyCost.getDay().compareTo(nextDate) < 0) {
-                            currencyCost.setCost(currencyCost.getCost() / current.getCost());
-                        }
-                    } else if (currencyCost.getDay().compareTo(currDay) >= 0 && currencyCost.getDay().compareTo(nextDate) < 0)
-                        currencyCost.setCost(currencyCost.getCost() / current.getCost());
-                    currencies.get(j).getCosts().set(k,currencyCost);
-                }
-            }
-        }
         daoSession.getCurrencyDao().insertOrReplaceInTx(currencies);
         List<CurrencyCostState> allStates = daoSession.loadAll(CurrencyCostState.class);
         for (CurrencyCostState state : allStates)
