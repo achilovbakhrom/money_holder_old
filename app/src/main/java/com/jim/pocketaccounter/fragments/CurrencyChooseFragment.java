@@ -105,25 +105,11 @@ public class CurrencyChooseFragment extends PABaseInfoFragment {
                     dialog.setOnYesButtonListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            for (Currency currency : dbCurrencies) {
-                                boolean found = false;
-                                for (Currency curr : checkedCurrencies) {
-                                    if (curr.getId().equals(currency.getId())) {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    List<Currency> currencies = new ArrayList<>();
-                                    currencies.add(currency);
-                                    logicManager.deleteCurrency(currencies);
-                                }
-                            }
+                            List<Currency> dbCurrs = daoSession.getCurrencyDao().loadAll();
                             for (Currency currency : checkedCurrencies) {
                                 boolean found = false;
-                                List<Currency> dbCurrs = daoSession.getCurrencyDao().loadAll();
                                 for (Currency curr : dbCurrs) {
-                                    if (currency.getId().matches(curr.getId())) {
+                                    if (currency.getId().equals(curr.getId())) {
                                         found = true;
                                         break;
                                     }
@@ -144,7 +130,22 @@ public class CurrencyChooseFragment extends PABaseInfoFragment {
                                     logicManager.generateCurrencyCosts(Calendar.getInstance(), Double.parseDouble(costs[pos].replace(",",".")), currency);
                                 }
                             }
+                            daoSession.getCurrencyDao().detachAll();
+                            List<Currency> currencies = new ArrayList<>();
+                            for (Currency currency : dbCurrencies) {
+                                boolean found = false;
+                                for (Currency curr : checkedCurrencies) {
+                                    if (curr.getId().equals(currency.getId())) {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found)
+                                    currencies.add(currency);
+                            }
+                            logicManager.deleteCurrency(currencies);
                             dialog.dismiss();
+                            paFragmentManager.updateCurrencyChanges();
                             paFragmentManager.getFragmentManager().popBackStack();
                             paFragmentManager.displayFragment(new CurrencyFragment());
 

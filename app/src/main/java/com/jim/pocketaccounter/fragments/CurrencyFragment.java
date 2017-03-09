@@ -187,6 +187,7 @@ public class CurrencyFragment extends PABaseListFragment implements OnClickListe
 								return;
 							}
 							refreshList();
+							paFragmentManager.updateCurrencyChanges();
 							dataCache.updateAllPercents();
 							toolbarManager.setSubtitle(getResources().getString(R.string.main_currency) + " " + commonOperations.getMainCurrency().getAbbr());
 							dialog.dismiss();
