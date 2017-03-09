@@ -126,7 +126,12 @@ public class LogicManager {
                 if (debtBorrow.getCurrency().getId().matches(currency.getId()))
                     debtBorrowDao.delete(debtBorrow);
             }
-
+            List<AccountOperation> accountOperations = accountOperationDao.loadAll();
+            for (AccountOperation operation: accountOperations)
+            {
+                if (operation.getCurrency().getId().matches(currency.getId()))
+                    accountOperationDao.delete(operation);
+            }
             List<CreditDetials> creditDetialses = creditDetialsDao.loadAll();
             for (CreditDetials creditDetials : creditDetialses) {
                 if (creditDetials.getValyute_currency().getId().equals(currency.getId()))
